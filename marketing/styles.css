@@ -260,8 +260,9 @@ img {
 }
 
 .store-badge-icon {
-  font-size: 28px;
-  line-height: 1;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
 .store-badge-text {
