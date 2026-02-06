@@ -1,0 +1,87 @@
+{
+  "cli": {
+    "version": ">=16.7.0",
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "channel": "development",
+      "distribution": "internal",
+      "developmentClient": true,
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "image": "latest"
+      },
+      "env": {
+        "APP_ENV": "development"
+      }
+    },
+    "development-simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "APP_ENV": "development"
+      },
+      "channel": "development-simulator"
+    },
+    "preview": {
+      "channel": "preview",
+      "distribution": "internal",
+      "autoIncrement": true,
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "image": "latest"
+      },
+      "env": {
+        "APP_ENV": "preview"
+      }
+    },
+    "preview-store": {
+      "extends": "preview",
+      "distribution": "store",
+      "env": {
+        "APP_ENV": "preview"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "distribution": "store",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "image": "latest"
+      },
+      "env": {
+        "APP_ENV": "production"
+      }
+    }
+  },
+  "submit": {
+    "preview": {
+      "ios": {
+        "appleId": "support@westmorelandcreative.com",
+        "appleTeamId": "KUF6U27VW2",
+        "ascAppId": "6758861410"
+      }
+    },
+    "production": {
+      "ios": {
+        "appleId": "support@westmorelandcreative.com",
+        "appleTeamId": "KUF6U27VW2",
+        "ascAppId": "6758861410"
+      }
+    }
+  }
+}

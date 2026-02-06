@@ -1,0 +1,51 @@
+import { getDatabase } from '@/database/db';
+import type { Setting } from '@/types/database';
+
+// ── Settings Keys ─────────────────────────────────────────────────────
+
+export const SETTINGS_KEYS = {
+  SHOW_ENGLISH_HINT: 'show_english_hint',
+} as const;
+
+// ── Settings Service ──────────────────────────────────────────────────
+
+class SettingsService {
+  private db = getDatabase();
+
+  /** Read a setting value by key. Returns `null` if not set. */
+  async getSetting(key: string): Promise<string | null> {
+    const row = await this.db.getFirstAsync<Setting>(
+      'SELECT * FROM settings WHERE key = ?',
+      [key],
+    );
+    return row?.value ?? null;
+  }
+
+  /** Upsert a setting value. */
+  async setSetting(key: string, value: string): Promise<void> {
+    await this.db.runAsync(
+      `INSERT INTO settings (key, value, updated_at)
+       VALUES (?, ?, datetime('now'))
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`,
+      [key, value],
+    );
+  }
+
+  // ── Convenience: Show English Hint ────────────────────────────────
+
+  /** Whether to show the English translation during the quiz. Default: true. */
+  async getShowEnglishHint(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.SHOW_ENGLISH_HINT);
+    // Default to true if never set
+    return value !== 'false';
+  }
+
+  async setShowEnglishHint(enabled: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.SHOW_ENGLISH_HINT,
+      enabled ? 'true' : 'false',
+    );
+  }
+}
+
+export const settingsService = new SettingsService();
