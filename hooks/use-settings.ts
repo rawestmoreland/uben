@@ -9,6 +9,9 @@ import { settingsService } from '@/services/settingsService';
  */
 export function useSettings() {
   const [showEnglishHint, setShowEnglishHintState] = useState(true);
+  const [eszettPreference, setEszettPreferenceState] = useState<
+    'eszett' | 'ss'
+  >('eszett');
   const [isLoading, setIsLoading] = useState(true);
 
   // ── Load on mount ──────────────────────────────────────────────────
@@ -18,9 +21,13 @@ export function useSettings() {
 
     (async () => {
       try {
-        const value = await settingsService.getShowEnglishHint();
+        const [englishHint, eszett] = await Promise.all([
+          settingsService.getShowEnglishHint(),
+          settingsService.getEszettPreference(),
+        ]);
         if (!cancelled) {
-          setShowEnglishHintState(value);
+          setShowEnglishHintState(englishHint);
+          setEszettPreferenceState(eszett);
         }
       } catch (error) {
         console.error('[Settings] Failed to load settings:', error);
@@ -49,5 +56,25 @@ export function useSettings() {
     }
   }, []);
 
-  return { showEnglishHint, setShowEnglishHint, isLoading };
+  const setEszettPreference = useCallback(
+    async (preference: 'eszett' | 'ss') => {
+      setEszettPreferenceState(preference);
+      try {
+        await settingsService.setEszettPreference(preference);
+      } catch (error) {
+        console.error('[Settings] Failed to save eszett preference:', error);
+        // Revert optimistic update on failure
+        setEszettPreferenceState(preference === 'eszett' ? 'ss' : 'eszett');
+      }
+    },
+    [],
+  );
+
+  return {
+    showEnglishHint,
+    setShowEnglishHint,
+    eszettPreference,
+    setEszettPreference,
+    isLoading,
+  };
 }

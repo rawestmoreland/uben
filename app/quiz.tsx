@@ -23,6 +23,7 @@ import {
   shadowStyle,
   shadowStyleSmall,
 } from '@/constants/design';
+import { applyGermanTextPreference } from '@/utils/germanText';
 
 // ── Constants ────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ const FEEDBACK_DELAY_MS = 1200;
 export default function QuizScreen() {
   const quiz = useQuizSession();
   const { phase, nextCard, results } = quiz;
-  const { showEnglishHint } = useSettings();
+  const { showEnglishHint, eszettPreference } = useSettings();
 
   // Auto-advance after feedback
   useEffect(() => {
@@ -53,9 +54,15 @@ export default function QuizScreen() {
       {phase === 'loading' && <LoadingState />}
       {phase === 'empty' && <EmptyState />}
       {(phase === 'playing' || phase === 'feedback') && (
-        <PlayingState quiz={quiz} showEnglishHint={showEnglishHint} />
+        <PlayingState
+          quiz={quiz}
+          showEnglishHint={showEnglishHint}
+          eszettPreference={eszettPreference}
+        />
       )}
-      {phase === 'complete' && <CompleteState results={results} />}
+      {phase === 'complete' && (
+        <CompleteState results={results} eszettPreference={eszettPreference} />
+      )}
     </SafeAreaView>
   );
 }
@@ -102,9 +109,14 @@ function EmptyState() {
 interface PlayingStateProps {
   quiz: ReturnType<typeof useQuizSession>;
   showEnglishHint: boolean;
+  eszettPreference: 'eszett' | 'ss';
 }
 
-function PlayingState({ quiz, showEnglishHint }: PlayingStateProps) {
+function PlayingState({
+  quiz,
+  showEnglishHint,
+  eszettPreference,
+}: PlayingStateProps) {
   const { currentCard, phase, selectedArticle, isCorrect, progress } = quiz;
 
   const isFeedback = phase === 'feedback';
@@ -170,10 +182,12 @@ function PlayingState({ quiz, showEnglishHint }: PlayingStateProps) {
               >
                 {currentCard.article}{' '}
               </Text>
-              {currentCard.word}
+              {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           ) : (
-            <Text style={styles.wordText}>{currentCard.word}</Text>
+            <Text style={styles.wordText}>
+              {applyGermanTextPreference(currentCard.word, eszettPreference)}
+            </Text>
           )}
           {showEnglishHint && currentCard.english && (
             <Text style={styles.englishHint}>{currentCard.english}</Text>
@@ -235,9 +249,10 @@ function PlayingState({ quiz, showEnglishHint }: PlayingStateProps) {
 
 interface CompleteStateProps {
   results: QuizResult[];
+  eszettPreference: 'eszett' | 'ss';
 }
 
-function CompleteState({ results }: CompleteStateProps) {
+function CompleteState({ results, eszettPreference }: CompleteStateProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const accuracy =
@@ -285,7 +300,7 @@ function CompleteState({ results }: CompleteStateProps) {
               <Text style={styles.resultArticle}>
                 {result.correctArticle}{' '}
               </Text>
-              {result.card.word}
+              {applyGermanTextPreference(result.card.word, eszettPreference)}
             </Text>
             {!result.isCorrect && (
               <Text style={styles.resultYourAnswer}>

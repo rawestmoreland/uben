@@ -5,6 +5,7 @@ import type { Setting } from '@/types/database';
 
 export const SETTINGS_KEYS = {
   SHOW_ENGLISH_HINT: 'show_english_hint',
+  ESZETT_PREFERENCE: 'eszett_preference',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -45,6 +46,18 @@ class SettingsService {
       SETTINGS_KEYS.SHOW_ENGLISH_HINT,
       enabled ? 'true' : 'false',
     );
+  }
+
+  // ── Convenience: Eszett Preference ────────────────────────────────
+
+  /** German spelling preference: 'eszett' (ß) or 'ss' (Swiss). Default: 'eszett'. */
+  async getEszettPreference(): Promise<'eszett' | 'ss'> {
+    const value = await this.getSetting(SETTINGS_KEYS.ESZETT_PREFERENCE);
+    return value === 'ss' ? 'ss' : 'eszett';
+  }
+
+  async setEszettPreference(preference: 'eszett' | 'ss'): Promise<void> {
+    await this.setSetting(SETTINGS_KEYS.ESZETT_PREFERENCE, preference);
   }
 }
 
