@@ -18,6 +18,9 @@ export async function seedVocabulary(
   await seedA1Nouns(db, '1.1.0_a1_nouns_expanded');
   await seedA1Nouns(db, '1.2.0_a1_nouns_full');
 
+  // Backfill categories for nouns that were seeded before the category system
+  await backfillNounCategories(db, '2.0.0_backfill_noun_categories');
+
   // Enforce NOT NULL constraint on category_id after all nouns have categories
   await enforceNounCategoryConstraint(db, '2.0.1_noun_category_not_null');
 }
@@ -126,6 +129,103 @@ async function seedA1Nouns(
 }
 
 /**
+ * Backfill category assignments for nouns that were seeded before categories existed.
+ * Uses nounCategoryMap to assign proper categories, falls back to 'general'.
+ */
+async function backfillNounCategories(
+  db: SQLite.SQLiteDatabase,
+  version: string,
+): Promise<void> {
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [version],
+  );
+
+  if (exists) {
+    return; // Already applied
+  }
+
+  // Check if there are any nouns without categories
+  const orphanedCount = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM nouns WHERE category_id IS NULL',
+  );
+
+  if (!orphanedCount || orphanedCount.count === 0) {
+    // No orphaned nouns, just mark as done
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+    return;
+  }
+
+  console.log(
+    `[DB] Backfilling categories for ${orphanedCount.count} nouns...`,
+  );
+
+  // Pre-fetch category ID mappings
+  const categoryIdMap = new Map<string, number>();
+  for (const categoryName of new Set(Object.values(nounCategoryMap))) {
+    const category = await db.getFirstAsync<{ id: number }>(
+      'SELECT id FROM categories WHERE name = ?',
+      [categoryName],
+    );
+    if (category) {
+      categoryIdMap.set(categoryName, category.id);
+    }
+  }
+
+  // Get 'general' category as fallback
+  const generalCategory = await db.getFirstAsync<{ id: number }>(
+    'SELECT id FROM categories WHERE name = ?',
+    ['general'],
+  );
+
+  if (!generalCategory) {
+    throw new Error('[DB] General category not found — cannot backfill');
+  }
+
+  await db.withTransactionAsync(async () => {
+    // Fetch all nouns without a category
+    const orphanedNouns = await db.getAllAsync<{
+      id: number;
+      german: string;
+    }>('SELECT id, german FROM nouns WHERE category_id IS NULL');
+
+    let mapped = 0;
+    let fallback = 0;
+
+    for (const noun of orphanedNouns) {
+      const categoryName = nounCategoryMap[noun.german];
+      const categoryId = categoryName
+        ? categoryIdMap.get(categoryName)
+        : undefined;
+
+      if (categoryId) {
+        await db.runAsync('UPDATE nouns SET category_id = ? WHERE id = ?', [
+          categoryId,
+          noun.id,
+        ]);
+        mapped++;
+      } else {
+        await db.runAsync('UPDATE nouns SET category_id = ? WHERE id = ?', [
+          generalCategory.id,
+          noun.id,
+        ]);
+        fallback++;
+      }
+    }
+
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+
+    console.log(
+      `[DB] Backfilled categories: ${mapped} mapped, ${fallback} assigned to 'general'`,
+    );
+  });
+}
+
+/**
  * Enforce NOT NULL constraint on category_id after data migration.
  * This recreates the nouns table with proper foreign key constraint.
  */
@@ -145,14 +245,14 @@ async function enforceNounCategoryConstraint(
   console.log('[DB] Enforcing NOT NULL constraint on nouns.category_id...');
 
   await db.withTransactionAsync(async () => {
-    // Check if any nouns lack a category
+    // Safety check: any remaining NULLs get assigned to 'general'
     const orphanedCount = await db.getFirstAsync<{ count: number }>(
       'SELECT COUNT(*) as count FROM nouns WHERE category_id IS NULL',
     );
 
     if (orphanedCount && orphanedCount.count > 0) {
       console.warn(
-        `[DB] Found ${orphanedCount.count} nouns without categories. Assigning to 'general'...`,
+        `[DB] Found ${orphanedCount.count} nouns still without categories. Assigning to 'general'...`,
       );
 
       const generalCategory = await db.getFirstAsync<{ id: number }>(
@@ -185,10 +285,12 @@ async function enforceNounCategoryConstraint(
       );
     `);
 
-    // Copy data
+    // Copy data with explicit column mapping (column order differs between
+    // the ALTERed table and the new definition)
     await db.execAsync(`
-      INSERT INTO nouns_new
-      SELECT * FROM nouns;
+      INSERT INTO nouns_new (id, german, article, plural, english, level, category_id, is_user_added, created_at)
+      SELECT id, german, article, plural, english, level, category_id, is_user_added, created_at
+      FROM nouns;
     `);
 
     // Drop old table and rename new
