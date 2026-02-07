@@ -1,10 +1,10 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { AppColors, Layout, Typography } from '@/constants/design';
+import { HapticTab } from "@/components/haptic-tab";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { AppColors, Layout, Typography } from "@/constants/design";
 
 export default function TabLayout() {
   return (
@@ -18,11 +18,12 @@ export default function TabLayout() {
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIconStyle: styles.tabBarIcon,
         tabBarItemStyle: styles.tabBarItem,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'PRACTICE',
+          title: "PRACTICE",
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="book.fill" color={color} />
@@ -34,7 +35,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'ABOUT',
+          title: "ABOUT",
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="info.circle.fill" color={color} />
@@ -46,7 +47,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'SETTINGS',
+          title: "SETTINGS",
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="gearshape.fill" color={color} />
@@ -64,8 +65,8 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.cream,
     borderTopWidth: Layout.borderWidth,
     borderTopColor: AppColors.black,
-    height: 64,
-    paddingBottom: 8,
+    height: Platform.OS === "android" ? 72 : 64,
+    paddingBottom: Platform.OS === "android" ? 72 : 8,
     paddingTop: 8,
     elevation: 0, // Remove default Android shadow
     shadowOpacity: 0, // Remove any iOS-style shadow leak
@@ -82,12 +83,12 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
   activeIndicator: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -6,
     width: 20,
     height: 3,
