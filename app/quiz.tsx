@@ -259,71 +259,75 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
     totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   return (
-    <ScrollView
-      style={styles.completeScroll}
-      contentContainerStyle={styles.completeContent}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* ── Summary header ──────────────────────────────────── */}
-      <Text style={styles.completeTitle}>SESSION COMPLETE</Text>
-
-      <View style={styles.summaryRow}>
-        <View style={[styles.summaryCard, shadowStyleSmall]}>
-          <Text style={styles.summaryValue}>{totalCount}</Text>
-          <Text style={styles.summaryLabel}>REVIEWED</Text>
-        </View>
-        <View style={[styles.summaryCard, shadowStyleSmall]}>
-          <Text style={styles.summaryValue}>{correctCount}</Text>
-          <Text style={styles.summaryLabel}>CORRECT</Text>
-        </View>
-        <View style={[styles.summaryCard, shadowStyleSmall]}>
-          <Text style={styles.summaryValue}>{accuracy}%</Text>
-          <Text style={styles.summaryLabel}>ACCURACY</Text>
-        </View>
-      </View>
-
-      {/* ── Results list ────────────────────────────────────── */}
-      <View style={styles.resultsList}>
-        {results.map((result, index) => (
-          <View key={index} style={styles.resultRow}>
-            <View
-              style={[
-                styles.resultIndicator,
-                {
-                  backgroundColor: result.isCorrect
-                    ? AppColors.green
-                    : AppColors.red,
-                },
-              ]}
-            />
-            <Text style={styles.resultWord}>
-              <Text style={styles.resultArticle}>
-                {result.correctArticle}{' '}
-              </Text>
-              {applyGermanTextPreference(result.card.word, eszettPreference)}
-            </Text>
-            {!result.isCorrect && (
-              <Text style={styles.resultYourAnswer}>
-                you said: {result.selectedArticle}
-              </Text>
-            )}
-          </View>
-        ))}
-      </View>
-
-      {/* ── Back button ─────────────────────────────────────── */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.backButton,
-          pressed && styles.backButtonPressed,
-        ]}
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Back to home"
+    <View style={styles.completeContainer}>
+      <ScrollView
+        style={styles.completeScroll}
+        contentContainerStyle={styles.completeContent}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.backButtonText}>BACK TO HOME</Text>
-      </Pressable>
-    </ScrollView>
+        {/* ── Summary header ──────────────────────────────────── */}
+        <Text style={styles.completeTitle}>SESSION COMPLETE</Text>
+
+        <View style={styles.summaryRow}>
+          <View style={[styles.summaryCard, shadowStyleSmall]}>
+            <Text style={styles.summaryValue}>{totalCount}</Text>
+            <Text style={styles.summaryLabel}>REVIEWED</Text>
+          </View>
+          <View style={[styles.summaryCard, shadowStyleSmall]}>
+            <Text style={styles.summaryValue}>{correctCount}</Text>
+            <Text style={styles.summaryLabel}>CORRECT</Text>
+          </View>
+          <View style={[styles.summaryCard, shadowStyleSmall]}>
+            <Text style={styles.summaryValue}>{accuracy}%</Text>
+            <Text style={styles.summaryLabel}>ACCURACY</Text>
+          </View>
+        </View>
+
+        {/* ── Results list ────────────────────────────────────── */}
+        <View style={styles.resultsList}>
+          {results.map((result, index) => (
+            <View key={index} style={styles.resultRow}>
+              <View
+                style={[
+                  styles.resultIndicator,
+                  {
+                    backgroundColor: result.isCorrect
+                      ? AppColors.green
+                      : AppColors.red,
+                  },
+                ]}
+              />
+              <Text style={styles.resultWord}>
+                <Text style={styles.resultArticle}>
+                  {result.correctArticle}{' '}
+                </Text>
+                {applyGermanTextPreference(result.card.word, eszettPreference)}
+              </Text>
+              {!result.isCorrect && (
+                <Text style={styles.resultYourAnswer}>
+                  you said: {result.selectedArticle}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* ── Floating back button ────────────────────────────── */}
+      <View style={styles.floatingButtonContainer}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && styles.backButtonPressed,
+          ]}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Back to home"
+        >
+          <Text style={styles.backButtonText}>BACK TO HOME</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
@@ -479,12 +483,23 @@ const styles = StyleSheet.create({
   },
 
   // ── Complete state ───────────────────────────────────────────────
+  completeContainer: {
+    flex: 1,
+  },
   completeScroll: {
     flex: 1,
   },
   completeContent: {
     padding: Layout.screenPadding,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: 100, // Extra space for floating button (64px button + spacing)
+  },
+  floatingButtonContainer: {
+    backgroundColor: AppColors.cream,
+    paddingHorizontal: Layout.screenPadding,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
+    borderTopWidth: Layout.borderWidthThin,
+    borderTopColor: AppColors.black,
   },
   completeTitle: {
     fontSize: Typography.title,
