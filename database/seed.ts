@@ -7,9 +7,7 @@ import { categories, nounCategoryMap } from './seeds/categories';
  * Uses the `data_versions` table to ensure each seed set is only applied once.
  * Categories must be seeded before nouns for foreign key relationships.
  */
-export async function seedVocabulary(
-  db: SQLite.SQLiteDatabase,
-): Promise<void> {
+export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // Seed categories first (required for foreign key relationships)
   await seedCategories(db, '2.0.0_categories');
 

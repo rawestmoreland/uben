@@ -1,5 +1,5 @@
-import type * as SQLite from 'expo-sqlite';
 import type { Migration } from '@/types/database';
+import type * as SQLite from 'expo-sqlite';
 
 /**
  * All database migrations, ordered by version.
