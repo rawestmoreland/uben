@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // ── Home Screen ──────────────────────────────────────────────────────
 
 export default function HomeScreen() {
-  const { stats, nounCount, streak, isLoading } = useHomeData();
+  const { stats, nounCount, streak, hasReviewedToday, isLoading } = useHomeData();
 
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText = stats.success_rate != null
@@ -47,6 +47,7 @@ export default function HomeScreen() {
             value={isLoading ? "-" : String(streak)}
             label="STREAK"
             accentColor={streak > 0 ? AppColors.yellow : AppColors.lightGray}
+            showIndicator={!isLoading && streak > 0 && !hasReviewedToday}
           />
           <StatCard
             value={isLoading ? "-" : accuracyText}
@@ -120,13 +121,21 @@ interface StatCardProps {
   value: string;
   label: string;
   accentColor: string;
+  showIndicator?: boolean;
 }
 
-function StatCard({ value, label, accentColor }: StatCardProps) {
+function StatCard({ value, label, accentColor, showIndicator }: StatCardProps) {
   return (
     <View style={[styles.statCard, shadowStyleSmall]}>
       <View style={[styles.statAccent, { backgroundColor: accentColor }]} />
-      <Text style={styles.statValue}>{value}</Text>
+      <View style={styles.statValueContainer}>
+        <Text style={styles.statValue}>{value}</Text>
+        {showIndicator && (
+          <View style={styles.indicator}>
+            <Text style={styles.indicatorText}>!</Text>
+          </View>
+        )}
+      </View>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
@@ -192,12 +201,34 @@ const styles = StyleSheet.create({
     right: 0,
     height: 6,
   },
+  statValueContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: Spacing.xs,
+  },
   statValue: {
     fontSize: Typography.heading,
     fontWeight: Typography.bold,
     color: AppColors.black,
     textAlign: "center",
-    marginTop: Spacing.xs,
+  },
+  indicator: {
+    backgroundColor: AppColors.red,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: Spacing.xs,
+  },
+  indicatorText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    lineHeight: Typography.small,
   },
   statLabel: {
     fontSize: Typography.tiny,

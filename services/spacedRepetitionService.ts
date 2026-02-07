@@ -227,7 +227,22 @@ export class SpacedRepetitionService {
   }
 
   /**
+   * Check if the user has completed at least one review today.
+   */
+  async hasReviewedToday(): Promise<boolean> {
+    const result = await this.db.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count
+       FROM review_history
+       WHERE date(reviewed_at) = date('now')`,
+    );
+
+    return (result?.count ?? 0) > 0;
+  }
+
+  /**
    * Get the user's current study streak (consecutive days with at least one review).
+   * Allows a grace period for the current day - streak is only broken if the most recent
+   * review is 2+ days old.
    */
   async getStudyStreak(): Promise<number> {
     const reviews = await this.db.getAllAsync<{ review_date: string }>(
@@ -239,22 +254,42 @@ export class SpacedRepetitionService {
 
     if (reviews.length === 0) return 0;
 
-    let streak = 0;
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
+
+    // Check the most recent review date
+    const mostRecentReviewDate = new Date(reviews[0].review_date);
+    mostRecentReviewDate.setHours(0, 0, 0, 0);
+
+    const daysSinceMostRecent = Math.floor(
+      (currentDate.getTime() - mostRecentReviewDate.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+
+    // If most recent review is 2+ days ago, streak is broken
+    if (daysSinceMostRecent >= 2) {
+      return 0;
+    }
+
+    // Start counting streak from the most recent review day
+    // This allows a grace period for the current day
+    let streak = 0;
+    let expectedDaysDiff = daysSinceMostRecent; // 0 if reviewed today, 1 if reviewed yesterday
 
     for (const review of reviews) {
       const reviewDate = new Date(review.review_date);
       reviewDate.setHours(0, 0, 0, 0);
 
       const daysDiff = Math.floor(
-        (currentDate.getTime() - reviewDate.getTime()) / (1000 * 60 * 60 * 24),
+        (currentDate.getTime() - reviewDate.getTime()) /
+          (1000 * 60 * 60 * 24),
       );
 
-      if (daysDiff === streak) {
+      if (daysDiff === expectedDaysDiff) {
         streak++;
-      } else if (daysDiff > streak) {
-        break;
+        expectedDaysDiff++;
+      } else if (daysDiff > expectedDaysDiff) {
+        break; // Gap detected, streak ends
       }
     }
 

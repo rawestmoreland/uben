@@ -8,6 +8,7 @@ interface HomeData {
   stats: UserStats;
   nounCount: number;
   streak: number;
+  hasReviewedToday: boolean;
   isLoading: boolean;
 }
 
@@ -28,6 +29,7 @@ export function useHomeData(): HomeData {
   const [stats, setStats] = useState<UserStats>(defaultStats);
   const [nounCount, setNounCount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [hasReviewedToday, setHasReviewedToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
@@ -36,17 +38,19 @@ export function useHomeData(): HomeData {
 
       async function load() {
         try {
-          const [fetchedStats, fetchedCount, fetchedStreak] =
+          const [fetchedStats, fetchedCount, fetchedStreak, fetchedHasReviewedToday] =
             await Promise.all([
               vocabularyService.getUserStats(),
               vocabularyService.getNounCount(),
               spacedRepetitionService.getStudyStreak(),
+              spacedRepetitionService.hasReviewedToday(),
             ]);
 
           if (!cancelled) {
             setStats(fetchedStats);
             setNounCount(fetchedCount);
             setStreak(fetchedStreak);
+            setHasReviewedToday(fetchedHasReviewedToday);
           }
         } catch (error) {
           console.error('[HomeData] Failed to load:', error);
@@ -65,5 +69,5 @@ export function useHomeData(): HomeData {
     }, []),
   );
 
-  return { stats, nounCount, streak, isLoading };
+  return { stats, nounCount, streak, hasReviewedToday, isLoading };
 }
