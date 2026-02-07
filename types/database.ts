@@ -8,7 +8,17 @@ export interface Noun {
   plural: string | null;
   english: string | null;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
+  category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
+  created_at: string;
+}
+
+/** A category for organizing vocabulary */
+export interface Category {
+  id: number;
+  name: string;
+  display_name: string;
+  display_order: number;
   created_at: string;
 }
 
@@ -103,6 +113,7 @@ export interface ReviewSession {
 export interface UserNounInput {
   german: string;
   article: 'der' | 'die' | 'das';
+  category_id: number;
   plural?: string;
   english?: string;
 }
@@ -114,6 +125,13 @@ export interface SeedNoun {
   plural: string | null;
   english: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/** Shape for seed category data */
+export interface SeedCategory {
+  name: string;
+  display_name: string;
+  display_order: number;
 }
 
 /** Migration definition */

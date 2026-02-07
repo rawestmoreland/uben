@@ -125,6 +125,82 @@ export const migrations: Migration[] = [
       `);
     },
   },
+  {
+    version: '002',
+    name: 'add_categories',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      // ── Categories ──────────────────────────────────────────────────
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS categories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE,
+          display_name TEXT NOT NULL,
+          display_order INTEGER NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_categories_display_order ON categories(display_order);',
+      );
+
+      // ── Add category_id column to nouns ─────────────────────────────
+      // SQLite doesn't support ADD COLUMN with foreign key constraint,
+      // so we add it nullable first, then enforce NOT NULL after data migration
+      await db.execAsync(`
+        ALTER TABLE nouns ADD COLUMN category_id INTEGER;
+      `);
+
+      // Create index for category filtering
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_category ON nouns(category_id);',
+      );
+
+      // Note: Categories will be seeded via seed.ts
+      // Note: NOT NULL constraint and foreign key will be enforced after seeding
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Recreate nouns table without category_id column
+      await db.execAsync(`
+        CREATE TABLE nouns_backup AS SELECT
+          id, german, article, plural, english, level, is_user_added, created_at
+        FROM nouns;
+      `);
+
+      await db.execAsync('DROP TABLE nouns;');
+
+      await db.execAsync(`
+        CREATE TABLE nouns (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          german TEXT NOT NULL,
+          article TEXT NOT NULL CHECK(article IN ('der', 'die', 'das')),
+          plural TEXT,
+          english TEXT,
+          level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+          is_user_added BOOLEAN DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(german, article)
+        );
+      `);
+
+      await db.execAsync(`
+        INSERT INTO nouns
+        SELECT * FROM nouns_backup;
+      `);
+
+      await db.execAsync('DROP TABLE nouns_backup;');
+
+      // Recreate original indexes
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_level ON nouns(level);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_user_added ON nouns(is_user_added);',
+      );
+
+      // Drop categories table
+      await db.execAsync('DROP TABLE IF EXISTS categories;');
+    },
+  },
 ];
 
 /**

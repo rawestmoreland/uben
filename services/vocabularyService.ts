@@ -1,5 +1,6 @@
 import { getDatabase } from '@/database/db';
 import type {
+  Category,
   DueCard,
   Noun,
   UserNounInput,
@@ -42,42 +43,36 @@ export class VocabularyService {
     );
   }
 
-  /**
-   * Get random words at the given level that have never been reviewed.
-   * Useful for introducing new vocabulary into the study session.
-   */
-  async getRandomNewWords(
-    level: string,
-    count: number = 10,
-  ): Promise<Noun[]> {
-    return await this.db.getAllAsync<Noun>(
-      `
-      SELECT n.*
-      FROM nouns n
-      LEFT JOIN card_progress cp
-        ON cp.word_type = 'noun' AND cp.word_id = n.id
-      WHERE n.level = ? AND cp.id IS NULL
-      ORDER BY RANDOM()
-      LIMIT ?
-      `,
-      [level, count],
-    );
-  }
 
   /**
    * Add a user-created noun to the database.
+   * Validates that the category exists before insertion.
    * Returns success/failure with an error message for duplicates.
    */
   async addUserNoun(
     noun: UserNounInput,
   ): Promise<{ success: boolean; id?: number; error?: string }> {
+    // Validate category exists
+    const categoryExists = await this.db.getFirstAsync<{ '1': number }>(
+      'SELECT 1 FROM categories WHERE id = ?',
+      [noun.category_id],
+    );
+
+    if (!categoryExists) {
+      return {
+        success: false,
+        error: 'Invalid category selected',
+      };
+    }
+
     try {
       const result = await this.db.runAsync(
-        `INSERT INTO nouns (german, article, plural, english, is_user_added)
-         VALUES (?, ?, ?, ?, 1)`,
+        `INSERT INTO nouns (german, article, category_id, plural, english, is_user_added)
+         VALUES (?, ?, ?, ?, ?, 1)`,
         [
           noun.german,
           noun.article,
+          noun.category_id,
           noun.plural ?? null,
           noun.english ?? null,
         ],
@@ -127,17 +122,31 @@ export class VocabularyService {
   }
 
   /**
-   * Get all nouns, optionally filtered by level.
+   * Get all nouns, optionally filtered by level and/or category.
    */
-  async getNouns(level?: string): Promise<Noun[]> {
-    if (level) {
-      return await this.db.getAllAsync<Noun>(
-        'SELECT * FROM nouns WHERE level = ? ORDER BY german',
-        [level],
-      );
+  async getNouns(options?: {
+    level?: string;
+    categoryId?: number;
+  }): Promise<Noun[]> {
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+
+    if (options?.level) {
+      conditions.push('level = ?');
+      params.push(options.level);
     }
+
+    if (options?.categoryId) {
+      conditions.push('category_id = ?');
+      params.push(options.categoryId);
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
     return await this.db.getAllAsync<Noun>(
-      'SELECT * FROM nouns ORDER BY german',
+      `SELECT * FROM nouns ${whereClause} ORDER BY german`,
+      params,
     );
   }
 
@@ -149,6 +158,52 @@ export class VocabularyService {
       'SELECT COUNT(*) AS count FROM nouns',
     );
     return result?.count ?? 0;
+  }
+
+  /**
+   * Get all categories, ordered by display_order.
+   * Used for populating category selectors in UI.
+   */
+  async getCategories(): Promise<Category[]> {
+    return await this.db.getAllAsync<Category>(
+      'SELECT * FROM categories ORDER BY display_order ASC',
+    );
+  }
+
+  /**
+   * Get a single category by ID.
+   */
+  async getCategoryById(id: number): Promise<Category | null> {
+    return await this.db.getFirstAsync<Category>(
+      'SELECT * FROM categories WHERE id = ?',
+      [id],
+    );
+  }
+
+  /**
+   * Get random words filtered by level and optionally by category.
+   * Useful for focused practice sessions.
+   */
+  async getRandomNewWords(
+    level: string,
+    count: number = 10,
+    categoryId?: number,
+  ): Promise<Noun[]> {
+    const categoryFilter = categoryId ? 'AND n.category_id = ?' : '';
+    const params = categoryId ? [level, categoryId, count] : [level, count];
+
+    return await this.db.getAllAsync<Noun>(
+      `
+      SELECT n.*
+      FROM nouns n
+      LEFT JOIN card_progress cp
+        ON cp.word_type = 'noun' AND cp.word_id = n.id
+      WHERE n.level = ? ${categoryFilter} AND cp.id IS NULL
+      ORDER BY RANDOM()
+      LIMIT ?
+      `,
+      params,
+    );
   }
 }
 
