@@ -38,7 +38,7 @@ export default function HomeScreen() {
         <View style={styles.statsRow}>
           <StatCard
             value={isLoading ? "-" : String(stats.due_today)}
-            label="DUE TODAY"
+            label="TO REVIEW"
             accentColor={stats.due_today > 0
               ? AppColors.blue
               : AppColors.lightGray}
