@@ -1,9 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import AnimatedSplash from '@/components/animated-splash';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
 
@@ -14,18 +15,23 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { isReady, error } = useDatabase();
+  const [showingSplash, setShowingSplash] = useState(true);
+  const [splashAnimationDone, setSplashAnimationDone] = useState(false);
 
-  // Keep splash / loading visible until the database is ready
-  if (!isReady) {
-    if (error) {
-      console.error('[App] Database failed to initialize:', error);
+  // When splash animation finishes AND database is ready, hide splash
+  useEffect(() => {
+    if (splashAnimationDone && isReady) {
+      setShowingSplash(false);
     }
+  }, [splashAnimationDone, isReady]);
 
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+  if (error) {
+    console.error('[App] Database failed to initialize:', error);
+  }
+
+  // Always show splash screen with full animation first
+  if (showingSplash) {
+    return <AnimatedSplash onFinish={() => setSplashAnimationDone(true)} />;
   }
 
   return (
@@ -46,10 +52,3 @@ export default function RootLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
