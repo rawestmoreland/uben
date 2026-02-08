@@ -2,7 +2,7 @@
   "expo": {
     "name": "üben",
     "slug": "uben",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "germanpractice",
@@ -68,7 +68,7 @@
     },
     "owner": "rawestmoreland",
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "fingerprint"
     },
     "updates": {
       "url": "https://u.expo.dev/a1b09294-f1e5-411b-8ba0-a710103aa648"
