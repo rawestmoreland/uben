@@ -7,6 +7,9 @@ on:
       - staging
       - main
 
+permissions:
+  contents: write
+
 jobs:
   validate-pr-direction:
     name: Validate PR Direction
