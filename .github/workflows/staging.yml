@@ -1,0 +1,109 @@
+name: Staging - Preview Builds
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  bump-version:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.bump.outputs.new_version }}
+      bump_type: ${{ steps.bump.outputs.bump_type }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bump version
+        id: bump
+        run: |
+          node scripts/bump-version.js staging
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app.json package.json
+          git commit -m "chore: bump version to $(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4) [skip ci]"
+          git push
+
+  lint-and-check:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+    needs: bump-version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+  build-and-submit:
+    name: Build and Submit to TestFlight
+    runs-on: ubuntu-latest
+    needs: [bump-version, lint-and-check]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Google Service Account file
+        if: secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON != ''
+        run: |
+          echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}' > google-service-account.json
+
+      - name: Build for iOS
+        run: |
+          npx eas build --profile preview --platform ios --non-interactive --no-wait
+
+      - name: Build for Android
+        run: |
+          npx eas build --profile preview --platform android --non-interactive --no-wait
+
+      - name: Create pre-release tag
+        run: |
+          VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${VERSION}-staging" -m "Staging release v${VERSION}"
+          git push origin "v${VERSION}-staging"

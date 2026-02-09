@@ -74,6 +74,10 @@
         "appleId": "support@westmorelandcreative.com",
         "appleTeamId": "KUF6U27VW2",
         "ascAppId": "6758861410"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
       }
     },
     "production": {
@@ -81,6 +85,10 @@
         "appleId": "support@westmorelandcreative.com",
         "appleTeamId": "KUF6U27VW2",
         "ascAppId": "6758861410"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "production"
       }
     }
   }

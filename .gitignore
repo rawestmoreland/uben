@@ -36,6 +36,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Google Play service account (generated in CI)
+google-service-account.json
+
 app-example
 
 # generated native folders

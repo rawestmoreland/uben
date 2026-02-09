@@ -1,0 +1,91 @@
+name: Develop - OTA Updates
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  lint-and-check:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+  ota-or-build:
+    name: Publish OTA Update or Build
+    runs-on: ubuntu-latest
+    needs: lint-and-check
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Try OTA update
+        id: ota
+        continue-on-error: true
+        run: |
+          npx eas update --auto --branch development --non-interactive
+          echo "ota_success=true" >> $GITHUB_OUTPUT
+
+      - name: Trigger development build if OTA failed
+        if: steps.ota.outcome == 'failure'
+        run: |
+          echo "🔨 Native changes detected - triggering development build"
+          npx eas build --profile development --platform all --non-interactive --no-wait
+          echo "ota_success=false" >> $GITHUB_OUTPUT
+
+      - name: Comment on commit - OTA success
+        if: steps.ota.outputs.ota_success == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: '✅ **OTA update published successfully**\n\nDevelopment channel updated with JS-only changes.'
+            })
+
+      - name: Comment on commit - Build triggered
+        if: steps.ota.outputs.ota_success == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: '🔨 **Native changes detected - Build triggered**\n\nA development build has been queued. Check [EAS Build](https://expo.dev) for progress.'
+            })
