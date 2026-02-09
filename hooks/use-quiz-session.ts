@@ -3,6 +3,7 @@ import {
   spacedRepetitionService,
   getQualityFromResponse,
 } from '@/services/spacedRepetitionService';
+import { settingsService } from '@/services/settingsService';
 import type { DueCard, ReviewSession } from '@/types/database';
 
 // ── Types ────────────────────────────────────────────────────────────
@@ -53,8 +54,15 @@ export function useQuizSession(): QuizSessionData {
 
     async function loadSession() {
       try {
+        // Load selected categories from settings
+        const categoryIds = await settingsService.getSelectedCategories();
+
         const reviewSession =
-          await spacedRepetitionService.getDailyReviewSession();
+          await spacedRepetitionService.getDailyReviewSession(
+            20,
+            5,
+            categoryIds.length > 0 ? categoryIds : undefined,
+          );
 
         if (cancelled) return;
 

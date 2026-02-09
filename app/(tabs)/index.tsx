@@ -64,7 +64,7 @@ export default function HomeScreen() {
             styles.ctaButton,
             pressed && styles.ctaButtonPressed,
           ]}
-          onPress={() => router.push("/quiz")}
+          onPress={() => router.push("/select-categories")}
           accessibilityRole="button"
           accessibilityLabel={isFirstTime
             ? "Learn your first words"
