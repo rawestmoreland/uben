@@ -38,7 +38,7 @@ Go to: **GitHub Repository → Settings → Secrets and variables → Actions**
 
 ### Required Secrets
 
-#### 1. EXPO_TOKEN
+#### EXPO_TOKEN (Required)
 
 Get your Expo token:
 
@@ -49,18 +49,26 @@ npx eas tokens:create --name "GitHub Actions CI/CD"
 
 Copy the token and add it to GitHub secrets as `EXPO_TOKEN`.
 
-#### 2. GOOGLE_SERVICE_ACCOUNT_KEY_JSON (Optional - for Android)
+### Android Submission Setup
 
-To enable automatic Android submissions:
+Since we're using `--auto-submit`, Android submissions use credentials stored on EAS servers (not GitHub secrets).
 
-1. Go to [Google Play Console](https://play.google.com/console)
-2. Navigate to: **Setup → API access**
-3. Create a new service account or use existing
-4. Grant "Release Manager" permissions
-5. Download the JSON key
-6. Copy the entire JSON content and add to GitHub secrets as `GOOGLE_SERVICE_ACCOUNT_KEY_JSON`
+**Configure Android credentials on EAS:**
 
-**Note:** Without this secret, Android builds will be created but not automatically submitted.
+```bash
+# Upload your Google service account credentials to EAS
+eas credentials
+
+# Select Android → Google Service Account
+# Upload your service account JSON key
+```
+
+**Or let EAS prompt you during first build:**
+- When you run your first `eas build --auto-submit` for Android
+- EAS will prompt you to upload the service account key
+- It will be stored securely on EAS servers
+
+**No GitHub secret needed!** The `--auto-submit` flag uses EAS-stored credentials.
 
 ## Step 3: Configure Branch Protection
 

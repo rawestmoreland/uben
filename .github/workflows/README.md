@@ -12,7 +12,7 @@ This directory contains CI/CD workflows for the üben release train.
 
 **Steps:**
 1. Lint and TypeScript checks
-2. Attempt OTA update to development channel
+2. Attempt OTA update to `develop` channel
 3. If OTA fails (native changes), trigger development build
 4. Comment on commit with result
 
@@ -26,8 +26,8 @@ This directory contains CI/CD workflows for the üben release train.
 1. Bump version (minor increment)
 2. Commit version bump back to staging
 3. Lint and TypeScript checks
-4. Build for iOS and Android (preview profile)
-5. Submit to TestFlight and Play Console
+4. Build for iOS and Android (preview-store profile)
+5. Auto-submit to TestFlight and Play Console
 6. Create pre-release tag (e.g., v1.1.0-staging)
 
 ### 3. `production.yml` - Production App Store Release
@@ -40,7 +40,7 @@ This directory contains CI/CD workflows for the üben release train.
 1. Validate version (should match staging)
 2. Lint and TypeScript checks
 3. Build for iOS and Android (production profile)
-4. Submit to App Store and Play Store
+4. Auto-submit to App Store and Play Store
 5. Create production tag (e.g., v1.1.0)
 6. Generate changelog and create GitHub Release
 

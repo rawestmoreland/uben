@@ -8,7 +8,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "version:bump": "node scripts/bump-version.js",
+    "update:dev": "eas update --branch develop",
+    "update:staging": "eas update --branch staging",
+    "update:prod": "eas update --branch production",
+    "build:dev": "eas build --profile development --platform all",
+    "build:staging": "eas build --profile preview-store --platform all",
+    "build:prod": "eas build --profile production --platform all"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

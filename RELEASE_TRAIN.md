@@ -16,25 +16,25 @@ main (production releases)
 
 ### Automatic Behaviors
 
-| Branch | Change Type | Action | Version Bump |
-|--------|------------|--------|--------------|
-| develop | JS-only | OTA update to development channel | Patch (1.0.1 → 1.0.2) |
-| develop | Native | Build with development profile | Patch (1.0.1 → 1.0.2) |
-| staging | Any | Build → TestFlight + Play Console | Minor (1.0.2 → 1.1.0) |
-| main | Any | Build → App Store + Play Store | None (uses staging version) |
+| Branch | Change Type | Action | EAS Profile | Channel | Version Bump |
+|--------|------------|--------|-------------|---------|--------------|
+| develop | JS-only | OTA update | N/A | develop | Patch (1.0.1 → 1.0.2) |
+| develop | Native | Development build | development | develop | Patch (1.0.1 → 1.0.2) |
+| staging | Any | Store build → TestFlight | preview-store | staging | Minor (1.0.2 → 1.1.0) |
+| main | Any | Store build → App Store | production | production | None (uses staging version) |
 
 ### Commands
 
 ```bash
 # Manual OTA updates
-npm run update:dev         # Publish to development channel
-npm run update:preview     # Publish to preview channel
+npm run update:dev         # Publish to develop channel
+npm run update:staging     # Publish to staging channel
 npm run update:prod        # Publish to production channel
 
 # Manual builds
-npm run build:dev          # Development build
-npm run build:preview      # Preview build (TestFlight)
-npm run build:prod         # Production build (App Store)
+npm run build:dev          # Development build (internal)
+npm run build:staging      # Store build for TestFlight
+npm run build:prod         # Production build for App Store
 
 # Version management
 npm run version:bump       # Bump version based on current branch
@@ -186,7 +186,7 @@ See `.github/RELEASE_TRAIN_SETUP.md` for detailed troubleshooting guide.
 
 Common issues:
 - **OTA fails**: Check EXPO_TOKEN secret
-- **Android submission fails**: Verify GOOGLE_SERVICE_ACCOUNT_KEY_JSON secret
+- **Android submission fails**: Verify credentials uploaded to EAS (`eas credentials`)
 - **Version doesn't bump**: Enable GitHub Actions write permissions
 - **PR checks fail**: Check PR direction (must follow develop → staging → main)
 

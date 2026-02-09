@@ -87,18 +87,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Create Google Service Account file
-        if: secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON != ''
+      - name: Build and submit iOS
         run: |
-          echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}' > google-service-account.json
+          npx eas build --profile preview-store --platform ios --non-interactive --auto-submit --no-wait
 
-      - name: Build for iOS
+      - name: Build and submit Android
         run: |
-          npx eas build --profile preview --platform ios --non-interactive --no-wait
-
-      - name: Build for Android
-        run: |
-          npx eas build --profile preview --platform android --non-interactive --no-wait
+          npx eas build --profile preview-store --platform android --non-interactive --auto-submit --no-wait
 
       - name: Create pre-release tag
         run: |

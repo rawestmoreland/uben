@@ -56,7 +56,7 @@ jobs:
         id: ota
         continue-on-error: true
         run: |
-          npx eas update --auto --branch development --non-interactive
+          npx eas update --auto --branch develop --non-interactive
           echo "ota_success=true" >> $GITHUB_OUTPUT
 
       - name: Trigger development build if OTA failed

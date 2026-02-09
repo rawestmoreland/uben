@@ -6,7 +6,7 @@
   },
   "build": {
     "development": {
-      "channel": "development",
+      "channel": "develop",
       "distribution": "internal",
       "developmentClient": true,
       "ios": {
@@ -28,10 +28,10 @@
       "env": {
         "APP_ENV": "development"
       },
-      "channel": "development-simulator"
+      "channel": "develop-simulator"
     },
     "preview": {
-      "channel": "preview",
+      "channel": "staging",
       "distribution": "internal",
       "autoIncrement": true,
       "ios": {
@@ -46,8 +46,16 @@
       }
     },
     "preview-store": {
-      "extends": "preview",
+      "channel": "staging",
       "distribution": "store",
+      "autoIncrement": true,
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "image": "latest"
+      },
       "env": {
         "APP_ENV": "preview"
       }
@@ -69,14 +77,13 @@
     }
   },
   "submit": {
-    "preview": {
+    "preview-store": {
       "ios": {
         "appleId": "support@westmorelandcreative.com",
         "appleTeamId": "KUF6U27VW2",
         "ascAppId": "6758861410"
       },
       "android": {
-        "serviceAccountKeyPath": "./google-service-account.json",
         "track": "internal"
       }
     },
@@ -87,7 +94,6 @@
         "ascAppId": "6758861410"
       },
       "android": {
-        "serviceAccountKeyPath": "./google-service-account.json",
         "track": "production"
       }
     }
