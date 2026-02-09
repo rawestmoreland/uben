@@ -56,12 +56,12 @@ jobs:
         id: ota
         continue-on-error: true
         run: |
-          eas update --branch develop --platform ios --non-interactive
-          eas update --branch develop --platform android --non-interactive
+          eas update --auto --branch develop --non-interactive --platform ios
+          eas update --auto --branch develop --non-interactive --platform android
           echo "ota_success=true" >> $GITHUB_OUTPUT
 
       - name: Trigger development build if OTA failed
-        if: steps.ota.outcome == 'failure'
+        if: false
         run: |
           echo "🔨 Native changes detected - triggering development build"
           eas build --profile development --platform all --non-interactive --no-wait
