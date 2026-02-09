@@ -299,8 +299,7 @@ export class SpacedRepetitionService {
       reviewDate.setHours(0, 0, 0, 0);
 
       const daysDiff = Math.floor(
-        (currentDate.getTime() - reviewDate.getTime()) /
-          (1000 * 60 * 60 * 24),
+        (currentDate.getTime() - reviewDate.getTime()) / (1000 * 60 * 60 * 24),
       );
 
       if (daysDiff === expectedDaysDiff) {
