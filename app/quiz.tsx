@@ -202,7 +202,7 @@ function PlayingState({
             const isSelected = selectedArticle === article;
             const isCorrectAnswer = currentCard.article === article;
 
-            let buttonBg = AppColors.white;
+            let buttonBg: string = AppColors.white;
             if (isFeedback) {
               if (isCorrectAnswer) {
                 buttonBg = AppColors.green;

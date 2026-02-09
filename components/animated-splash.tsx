@@ -1,6 +1,6 @@
-import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, Easing, StyleSheet, View } from "react-native";
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
 
 // Keep the splash screen visible while we prepare resources
 SplashScreen.preventAutoHideAsync();
@@ -9,7 +9,7 @@ interface AnimatedSplashProps {
   onFinish: () => void;
 }
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
   // Letter animations
@@ -38,7 +38,9 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
   const squareScale = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    console.log('[AnimatedSplash] Component mounted, hiding native splash and starting animations');
+    console.log(
+      '[AnimatedSplash] Component mounted, hiding native splash and starting animations',
+    );
     // Hide the native splash screen immediately so our animated splash is visible
     SplashScreen.hideAsync();
 
@@ -59,23 +61,23 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
           }),
           rotation
             ? Animated.sequence([
-              Animated.timing(rotation, {
-                toValue: 1,
-                duration: 600,
-                easing: Easing.out(Easing.back(1.5)),
-                useNativeDriver: true,
-              }),
-              Animated.spring(rotation, {
-                toValue: 0,
-                friction: 8,
-                useNativeDriver: true,
-              }),
-            ])
+                Animated.timing(rotation, {
+                  toValue: 1,
+                  duration: 600,
+                  easing: Easing.out(Easing.back(1.5)),
+                  useNativeDriver: true,
+                }),
+                Animated.spring(rotation, {
+                  toValue: 0,
+                  friction: 8,
+                  useNativeDriver: true,
+                }),
+              ])
             : Animated.timing(new Animated.Value(0), {
-              toValue: 0,
-              duration: 0,
-              useNativeDriver: true,
-            }),
+                toValue: 0,
+                duration: 0,
+                useNativeDriver: true,
+              }),
         ]),
       ]);
     };
@@ -200,22 +202,22 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
   // Interpolations for rotation
   const rotateUInterpolate = rotateU.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+    outputRange: ['0deg', '360deg'],
   });
 
   const rotateBInterpolate = rotateB.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "-360deg"],
+    outputRange: ['0deg', '-360deg'],
   });
 
   const rotateEInterpolate = rotateE.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+    outputRange: ['0deg', '360deg'],
   });
 
   const rotateNInterpolate = rotateN.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "-360deg"],
+    outputRange: ['0deg', '-360deg'],
   });
 
   // Dot scale interpolations
@@ -251,7 +253,7 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
         style={[
           styles.decoSquare,
           {
-            transform: [{ scale: squareScale }, { rotate: "15deg" }],
+            transform: [{ scale: squareScale }, { rotate: '15deg' }],
           },
         ]}
       />
@@ -362,65 +364,65 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFE500",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#FFE500',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   logoContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 32,
   },
   letter: {
     fontSize: 100,
-    fontWeight: "900",
-    color: "#000",
-    textTransform: "uppercase",
+    fontWeight: '900',
+    color: '#000',
+    textTransform: 'uppercase',
     letterSpacing: -4,
     marginHorizontal: 2,
     // Use your custom font here when loaded
-    fontFamily: "System",
+    fontFamily: 'System',
   },
   tagline: {
     fontSize: 18,
-    fontWeight: "800",
-    color: "#000",
-    textTransform: "uppercase",
+    fontWeight: '800',
+    color: '#000',
+    textTransform: 'uppercase',
     letterSpacing: 1.5,
     marginBottom: 60,
-    textAlign: "center",
+    textAlign: 'center',
     paddingHorizontal: 20,
   },
   loadingDots: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 20,
   },
   dot: {
     width: 16,
     height: 16,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     borderWidth: 3,
-    borderColor: "#000",
+    borderColor: '#000',
   },
   decoCircle: {
-    position: "absolute",
+    position: 'absolute',
     width: 200,
     height: 200,
-    backgroundColor: "#0066FF",
+    backgroundColor: '#0066FF',
     borderRadius: 100,
     top: -100,
     right: -80,
     borderWidth: 5,
-    borderColor: "#000",
+    borderColor: '#000',
   },
   decoSquare: {
-    position: "absolute",
+    position: 'absolute',
     width: 120,
     height: 120,
-    backgroundColor: "#FF3333",
+    backgroundColor: '#FF3333',
     bottom: -60,
     left: -40,
     borderWidth: 5,
-    borderColor: "#000",
+    borderColor: '#000',
   },
 });
