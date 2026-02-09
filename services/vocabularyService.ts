@@ -189,6 +189,22 @@ export class VocabularyService {
   }
 
   /**
+   * Get all categories with their word counts.
+   * Used for category selection screen.
+   */
+  async getCategoriesWithCounts(): Promise<
+    (Category & { wordCount: number })[]
+  > {
+    return await this.db.getAllAsync<Category & { wordCount: number }>(
+      `SELECT c.*, COUNT(n.id) as wordCount
+       FROM categories c
+       LEFT JOIN nouns n ON n.category_id = c.id
+       GROUP BY c.id
+       ORDER BY c.display_order ASC`,
+    );
+  }
+
+  /**
    * Get a single category by ID.
    */
   async getCategoryById(id: number): Promise<Category | null> {

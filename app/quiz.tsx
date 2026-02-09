@@ -86,7 +86,8 @@ function EmptyState() {
       <View style={[styles.emptyCard, shadowStyle]}>
         <Text style={styles.emptyTitle}>ALL CAUGHT UP</Text>
         <Text style={styles.emptySubtext}>
-          No cards due for review right now. Come back later!
+          No cards due for review right now.{'\n\n'}
+          Try selecting different categories or come back later!
         </Text>
       </View>
       <Pressable
