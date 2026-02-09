@@ -213,9 +213,9 @@ export class SpacedRepetitionService {
          n.english
        FROM nouns n
        LEFT JOIN card_progress cp ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.id IS NULL AND n.level = 'A1'
-       ORDER BY RANDOM()
-       LIMIT ?`,
+     WHERE cp.id IS NULL AND (n.level = 'A1' OR n.is_user_added = 1)
+     ORDER BY RANDOM()
+     LIMIT ?`,
       [newCardsLimit],
     );
 
