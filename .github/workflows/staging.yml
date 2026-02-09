@@ -89,11 +89,11 @@ jobs:
 
       - name: Build and submit iOS
         run: |
-          npx eas build --profile preview-store --platform ios --non-interactive --auto-submit --no-wait
+          eas build --profile preview-store --platform ios --non-interactive --auto-submit --no-wait
 
       - name: Build and submit Android
         run: |
-          npx eas build --profile preview-store --platform android --non-interactive --auto-submit --no-wait
+          eas build --profile preview-store --platform android --non-interactive --auto-submit --no-wait
 
       - name: Create pre-release tag
         run: |

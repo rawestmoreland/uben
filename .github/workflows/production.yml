@@ -72,11 +72,11 @@ jobs:
 
       - name: Build and submit iOS
         run: |
-          npx eas build --profile production --platform ios --non-interactive --auto-submit --no-wait
+          eas build --profile production --platform ios --non-interactive --auto-submit --no-wait
 
       - name: Build and submit Android
         run: |
-          npx eas build --profile production --platform android --non-interactive --auto-submit --no-wait
+          eas build --profile production --platform android --non-interactive --auto-submit --no-wait
 
       - name: Create production release tag
         run: |

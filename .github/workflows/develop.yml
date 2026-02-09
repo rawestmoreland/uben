@@ -56,14 +56,14 @@ jobs:
         id: ota
         continue-on-error: true
         run: |
-          npx eas update --auto --branch develop --non-interactive
+          eas update --auto --branch develop --non-interactive
           echo "ota_success=true" >> $GITHUB_OUTPUT
 
       - name: Trigger development build if OTA failed
         if: steps.ota.outcome == 'failure'
         run: |
           echo "🔨 Native changes detected - triggering development build"
-          npx eas build --profile development --platform all --non-interactive --no-wait
+          eas build --profile development --platform all --non-interactive --no-wait
           echo "ota_success=false" >> $GITHUB_OUTPUT
 
       - name: Comment on commit - OTA success
