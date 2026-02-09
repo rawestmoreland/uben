@@ -101,7 +101,7 @@ export default function AddWordScreen() {
               <Text style={styles.closeButtonText}>X</Text>
             </Pressable>
             <Text style={styles.headerTitle}>ADD WORD</Text>
-            <View style={styles.closeButton} />
+            <View style={{ width: 44, height: 44 }} />
           </View>
         </View>
 
