@@ -1,13 +1,12 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AppColors,
   Layout,
   Spacing,
   Typography,
   shadowStyle,
-  shadowStyleSmall,
 } from '@/constants/design';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── About Screen ─────────────────────────────────────────────────────
 
@@ -67,7 +66,12 @@ export default function AboutScreen() {
           </Text>
 
           <View style={styles.scoreRow}>
-            <View style={[styles.scoreIndicator, { backgroundColor: AppColors.green }]} />
+            <View
+              style={[
+                styles.scoreIndicator,
+                { backgroundColor: AppColors.green },
+              ]}
+            />
             <View style={styles.scoreTextGroup}>
               <Text style={styles.scoreLabel}>FAST + CORRECT</Text>
               <Text style={styles.scoreDescription}>
@@ -77,17 +81,27 @@ export default function AboutScreen() {
           </View>
 
           <View style={styles.scoreRow}>
-            <View style={[styles.scoreIndicator, { backgroundColor: AppColors.yellow }]} />
+            <View
+              style={[
+                styles.scoreIndicator,
+                { backgroundColor: AppColors.yellow },
+              ]}
+            />
             <View style={styles.scoreTextGroup}>
               <Text style={styles.scoreLabel}>SLOW + CORRECT</Text>
               <Text style={styles.scoreDescription}>
-                You're learning it. Review comes back sooner to reinforce.
+                You&apos;re learning it. Review comes back sooner to reinforce.
               </Text>
             </View>
           </View>
 
           <View style={styles.scoreRow}>
-            <View style={[styles.scoreIndicator, { backgroundColor: AppColors.red }]} />
+            <View
+              style={[
+                styles.scoreIndicator,
+                { backgroundColor: AppColors.red },
+              ]}
+            />
             <View style={styles.scoreTextGroup}>
               <Text style={styles.scoreLabel}>WRONG ANSWER</Text>
               <Text style={styles.scoreDescription}>
@@ -106,9 +120,9 @@ export default function AboutScreen() {
           </Text>
           <Text style={styles.cardBody}>
             Developed by Dr. Piotr Wozniak in 1987, SM-2 is one of the most
-            studied and proven techniques for long-term memorization. It
-            adapts to your performance on each individual word, creating a
-            personalized review schedule.
+            studied and proven techniques for long-term memorization. It adapts
+            to your performance on each individual word, creating a personalized
+            review schedule.
           </Text>
         </View>
 
@@ -127,8 +141,8 @@ export default function AboutScreen() {
           <View style={styles.tipRow}>
             <Text style={styles.tipNumber}>2</Text>
             <Text style={styles.tipText}>
-              Take a moment to think before answering. Guessing randomly won't
-              help your memory.
+              Take a moment to think before answering. Guessing randomly
+              won&apos;t help your memory.
             </Text>
           </View>
 
