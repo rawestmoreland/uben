@@ -2,8 +2,8 @@ name: Production - App Store Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # Triggers on version tags like v1.3.0, v1.3.1, etc.
   workflow_dispatch:
     inputs:
       deploy_type:
@@ -101,13 +101,16 @@ jobs:
         run: |
           eas build --profile production --platform android --non-interactive --auto-submit --no-wait
 
-      - name: Create production release tag
+      - name: Verify tag matches version
         run: |
           VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${VERSION}" -m "Production release v${VERSION}"
-          git push origin "v${VERSION}"
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          if [ "$TAG_NAME" != "v${VERSION}" ]; then
+            echo "⚠️  Warning: Tag $TAG_NAME does not match app.json version v${VERSION}"
+            echo "This is acceptable but may indicate a mismatch in versioning"
+          else
+            echo "✅ Tag $TAG_NAME matches app.json version v${VERSION}"
+          fi
 
       - name: Generate changelog
         id: changelog
