@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // ── Home Screen ──────────────────────────────────────────────────────
 
 export default function HomeScreen() {
-  const { stats, nounCount, streak, hasReviewedToday, isLoading } = useHomeData();
+  const { stats, nounCount, userNounCount, streak, hasReviewedToday, isLoading } = useHomeData();
 
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText = stats.success_rate != null
@@ -64,7 +64,7 @@ export default function HomeScreen() {
             styles.ctaButton,
             pressed && styles.ctaButtonPressed,
           ]}
-          onPress={() => router.push("/quiz")}
+          onPress={() => router.push("/select-categories")}
           accessibilityRole="button"
           accessibilityLabel={isFirstTime
             ? "Learn your first words"
@@ -83,6 +83,38 @@ export default function HomeScreen() {
               stats.due_today === 1 ? "" : "s"
             } waiting for review`}
         </Text>
+
+        {/* ── Word Actions ─────────────────────────────────────── */}
+        <View style={styles.wordActionsRow}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.addWordButton,
+              shadowStyleSmall,
+              pressed && styles.addWordButtonPressed,
+            ]}
+            onPress={() => router.push("/add-word")}
+            accessibilityRole="button"
+            accessibilityLabel="Add a word"
+          >
+            <Text style={styles.addWordButtonText}>+ ADD WORD</Text>
+          </Pressable>
+          {!isLoading && userNounCount > 0 && (
+            <Pressable
+              style={({ pressed }) => [
+                styles.myWordsButton,
+                shadowStyleSmall,
+                pressed && styles.myWordsButtonPressed,
+              ]}
+              onPress={() => router.push("/my-words")}
+              accessibilityRole="button"
+              accessibilityLabel={`My words, ${userNounCount} added`}
+            >
+              <Text style={styles.myWordsButtonText}>
+                MY WORDS ({userNounCount})
+              </Text>
+            </Pressable>
+          )}
+        </View>
 
         {/* ── Progress Card ───────────────────────────────────── */}
         <View style={styles.progressCard}>
@@ -268,6 +300,53 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: Spacing.md,
     marginBottom: Spacing.xl,
+  },
+
+  // Word Actions
+  wordActionsRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
+  },
+  addWordButton: {
+    flex: 1,
+    backgroundColor: AppColors.white,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 52,
+  },
+  addWordButtonPressed: {
+    transform: [{ translateY: 2 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  addWordButtonText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+  },
+  myWordsButton: {
+    flex: 1,
+    backgroundColor: AppColors.white,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 52,
+  },
+  myWordsButtonPressed: {
+    transform: [{ translateY: 2 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  myWordsButtonText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
   },
 
   // Progress Card

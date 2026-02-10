@@ -6,6 +6,7 @@ import type { Setting } from '@/types/database';
 export const SETTINGS_KEYS = {
   SHOW_ENGLISH_HINT: 'show_english_hint',
   ESZETT_PREFERENCE: 'eszett_preference',
+  SELECTED_CATEGORIES: 'selected_categories',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -58,6 +59,28 @@ class SettingsService {
 
   async setEszettPreference(preference: 'eszett' | 'ss'): Promise<void> {
     await this.setSetting(SETTINGS_KEYS.ESZETT_PREFERENCE, preference);
+  }
+
+  // ── Convenience: Selected Categories ──────────────────────────────
+
+  /** Get selected category IDs for focused practice. Returns empty array for "all categories". */
+  async getSelectedCategories(): Promise<number[]> {
+    const value = await this.getSetting(SETTINGS_KEYS.SELECTED_CATEGORIES);
+    if (!value) return [];
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Save selected category IDs. Pass empty array for "all categories". */
+  async setSelectedCategories(categoryIds: number[]): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.SELECTED_CATEGORIES,
+      JSON.stringify(categoryIds),
+    );
   }
 }
 

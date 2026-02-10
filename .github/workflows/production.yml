@@ -2,12 +2,33 @@ name: Production - App Store Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # Triggers on version tags like v1.3.0, v1.3.1, etc.
+  workflow_dispatch:
+    inputs:
+      deploy_type:
+        description: 'Deploy type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - hotfix
+      hotfix_message:
+        description: 'Hotfix description (required for OTA hotfix)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
+  # ──────────────────────────────────────────────
+  # Full App Store release (push to main or manual release)
+  # ──────────────────────────────────────────────
   validate:
     name: Validate Version
+    if: github.event_name == 'push' || inputs.deploy_type == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,6 +48,7 @@ jobs:
     name: Lint and Type Check
     runs-on: ubuntu-latest
     needs: validate
+    if: github.event_name == 'push' || inputs.deploy_type == 'release'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,6 +72,7 @@ jobs:
     name: Build and Submit to App Store
     runs-on: ubuntu-latest
     needs: [validate, lint-and-check]
+    if: github.event_name == 'push' || inputs.deploy_type == 'release'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,19 +95,22 @@ jobs:
 
       - name: Build and submit iOS
         run: |
-          npx eas build --profile production --platform ios --non-interactive --auto-submit --no-wait
+          eas build --profile production --platform ios --non-interactive --auto-submit --no-wait
 
       - name: Build and submit Android
         run: |
-          npx eas build --profile production --platform android --non-interactive --auto-submit --no-wait
+          eas build --profile production --platform android --non-interactive --auto-submit --no-wait
 
-      - name: Create production release tag
+      - name: Verify tag matches version
         run: |
           VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${VERSION}" -m "Production release v${VERSION}"
-          git push origin "v${VERSION}"
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          if [ "$TAG_NAME" != "v${VERSION}" ]; then
+            echo "⚠️  Warning: Tag $TAG_NAME does not match app.json version v${VERSION}"
+            echo "This is acceptable but may indicate a mismatch in versioning"
+          else
+            echo "✅ Tag $TAG_NAME matches app.json version v${VERSION}"
+          fi
 
       - name: Generate changelog
         id: changelog
@@ -110,4 +136,126 @@ jobs:
               body: changelog,
               draft: false,
               prerelease: false
+            });
+
+  # ──────────────────────────────────────────────
+  # OTA hotfix (manual dispatch only)
+  # ──────────────────────────────────────────────
+  hotfix-validate:
+    name: Validate Hotfix
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'hotfix'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require hotfix message
+        run: |
+          if [ -z "${{ inputs.hotfix_message }}" ]; then
+            echo "❌ Hotfix message is required for OTA hotfixes"
+            exit 1
+          fi
+          echo "🩹 Production hotfix: ${{ inputs.hotfix_message }}"
+
+  hotfix-lint-and-check:
+    name: Hotfix - Lint and Type Check
+    runs-on: ubuntu-latest
+    needs: hotfix-validate
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'hotfix'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+  hotfix-deploy:
+    name: Hotfix - OTA Deploy
+    runs-on: ubuntu-latest
+    needs: [hotfix-validate, hotfix-lint-and-check]
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'hotfix'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify OTA compatibility
+        id: fingerprint
+        run: |
+          # Generate current native fingerprints
+          CURRENT_IOS=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | jq -r '.hash')
+          CURRENT_ANDROID=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | jq -r '.hash')
+          echo "Current iOS fingerprint: $CURRENT_IOS"
+          echo "Current Android fingerprint: $CURRENT_ANDROID"
+
+          # Get latest finished production build runtime versions
+          LATEST_IOS_RV=$(eas build:list --channel production --platform ios --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
+          LATEST_ANDROID_RV=$(eas build:list --channel production --platform android --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
+          echo "Latest iOS build runtime version: $LATEST_IOS_RV"
+          echo "Latest Android build runtime version: $LATEST_ANDROID_RV"
+
+          # OTA hotfix MUST match existing production builds
+          if [ -n "$LATEST_IOS_RV" ] && [ -n "$LATEST_ANDROID_RV" ] && [ "$CURRENT_IOS" = "$LATEST_IOS_RV" ] && [ "$CURRENT_ANDROID" = "$LATEST_ANDROID_RV" ]; then
+            echo "✅ Fingerprints match - OTA hotfix is safe to deploy"
+          else
+            echo "❌ ABORT: Native fingerprint has changed since the last production build."
+            echo "   This means native code was modified and an OTA update will not reach users."
+            echo "   Please do a full App Store release instead."
+            exit 1
+          fi
+
+      - name: Publish OTA hotfix
+        run: |
+          echo "🩹 Publishing production OTA hotfix..."
+          eas update --branch production --message "Hotfix: ${{ inputs.hotfix_message }}" --non-interactive --platform all
+
+      - name: Create hotfix tag
+        run: |
+          VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${VERSION}-hotfix-${TIMESTAMP}" -m "Production hotfix: ${{ inputs.hotfix_message }}"
+          git push origin "v${VERSION}-hotfix-${TIMESTAMP}"
+
+      - name: Create GitHub Release for hotfix
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = JSON.parse(require('fs').readFileSync('app.json')).expo.version;
+            const timestamp = new Date().toISOString().replace(/[:-]/g, '').slice(0, 14);
+            const tag = `v${version}-hotfix-${timestamp}`;
+
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `v${version} Hotfix`,
+              body: `## 🩹 Production OTA Hotfix\n\n**Description:** ${{ inputs.hotfix_message }}\n\nThis update was delivered via OTA (Over-The-Air) and does not require an App Store update.`,
+              draft: false,
+              prerelease: true
             });

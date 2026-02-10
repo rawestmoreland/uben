@@ -7,6 +7,10 @@ on:
       - staging
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   validate-pr-direction:
     name: Validate PR Direction

@@ -60,7 +60,9 @@ async function seedCategories(
 
 /**
  * Inserts all A1 nouns with category assignments.
- * Uses INSERT OR IGNORE so only genuinely new rows are added.
+ * Uses UPSERT so that if a user has already added a matching word,
+ * we backfill missing metadata (level, english, plural) via COALESCE
+ * without changing the row's id — preserving card_progress stats.
  * Resolves category IDs from category names using nounCategoryMap.
  */
 async function seedA1Nouns(
@@ -103,8 +105,17 @@ async function seedA1Nouns(
       }
 
       await db.runAsync(
-        `INSERT OR IGNORE INTO nouns (german, article, plural, english, level, category_id)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO nouns (german, article, plural, english, level, category_id, is_user_added)
+         VALUES (?, ?, ?, ?, ?, ?, 0)
+         ON CONFLICT(german, article) DO UPDATE SET
+           level = COALESCE(nouns.level, excluded.level),
+           english = COALESCE(nouns.english, excluded.english),
+           plural = COALESCE(nouns.plural, excluded.plural),
+           category_id = CASE
+             WHEN nouns.category_id IS NULL THEN excluded.category_id
+             ELSE nouns.category_id
+           END,
+           is_user_added = 0`,
         [
           noun.german,
           noun.article,
