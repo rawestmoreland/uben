@@ -97,7 +97,9 @@ jobs:
         run: |
           eas build --profile production --platform ios --non-interactive --auto-submit --no-wait
 
-      - name: Build and submit Android
+      - name: Build and submit Android (Skip for NOW)
+        # if: steps.fingerprint.outputs.deploy_type == 'build'
+        if: false
         run: |
           eas build --profile production --platform android --non-interactive --auto-submit --no-wait
 
