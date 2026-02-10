@@ -109,6 +109,11 @@ export interface ReviewSession {
 
 // ── Input Types ───────────────────────────────────────────────────────
 
+/** A user-added noun joined with its category display name */
+export interface UserNounWithCategory extends Noun {
+  category_display_name: string;
+}
+
 /** Shape for adding a user-created noun */
 export interface UserNounInput {
   german: string;

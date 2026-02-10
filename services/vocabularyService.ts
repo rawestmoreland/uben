@@ -4,6 +4,7 @@ import type {
   DueCard,
   Noun,
   UserNounInput,
+  UserNounWithCategory,
   UserStats,
 } from '@/types/database';
 
@@ -47,11 +48,12 @@ export class VocabularyService {
   /**
    * Add a user-created noun to the database.
    * Validates that the category exists before insertion.
-   * Returns success/failure with an error message for duplicates.
+   * If the word already exists (e.g. from seed data), returns a specific
+   * message so the UI can inform the user.
    */
   async addUserNoun(
     noun: UserNounInput,
-  ): Promise<{ success: boolean; id?: number; error?: string }> {
+  ): Promise<{ success: boolean; id?: number; error?: string; existingId?: number }> {
     // Validate category exists
     const categoryExists = await this.db.getFirstAsync<{ '1': number }>(
       'SELECT 1 FROM categories WHERE id = ?',
@@ -62,6 +64,22 @@ export class VocabularyService {
       return {
         success: false,
         error: 'Invalid category selected',
+      };
+    }
+
+    // Check if the word already exists before attempting insert
+    const existing = await this.db.getFirstAsync<{ id: number; is_user_added: number }>(
+      'SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ?',
+      [noun.german, noun.article],
+    );
+
+    if (existing) {
+      return {
+        success: false,
+        existingId: existing.id,
+        error: existing.is_user_added
+          ? 'You have already added this word'
+          : 'This word is already in your vocabulary',
       };
     }
 
@@ -84,7 +102,7 @@ export class VocabularyService {
       if (message.includes('UNIQUE constraint')) {
         return {
           success: false,
-          error: 'This word already exists in the database',
+          error: 'This word already exists in your vocabulary',
         };
       }
       throw error;
@@ -171,6 +189,22 @@ export class VocabularyService {
   }
 
   /**
+   * Get all categories with their word counts.
+   * Used for category selection screen.
+   */
+  async getCategoriesWithCounts(): Promise<
+    (Category & { wordCount: number })[]
+  > {
+    return await this.db.getAllAsync<Category & { wordCount: number }>(
+      `SELECT c.*, COUNT(n.id) as wordCount
+       FROM categories c
+       LEFT JOIN nouns n ON n.category_id = c.id
+       GROUP BY c.id
+       ORDER BY c.display_order ASC`,
+    );
+  }
+
+  /**
    * Get a single category by ID.
    */
   async getCategoryById(id: number): Promise<Category | null> {
@@ -204,6 +238,75 @@ export class VocabularyService {
       `,
       params,
     );
+  }
+
+  /**
+   * Get all user-added nouns, joined with their category display name.
+   * Ordered by most recently added first.
+   */
+  async getUserNouns(): Promise<UserNounWithCategory[]> {
+    return await this.db.getAllAsync<UserNounWithCategory>(
+      `SELECT n.*, c.display_name AS category_display_name
+       FROM nouns n
+       JOIN categories c ON n.category_id = c.id
+       WHERE n.is_user_added = 1
+       ORDER BY n.created_at DESC`,
+    );
+  }
+
+  /**
+   * Get the count of user-added nouns.
+   */
+  async getUserNounCount(): Promise<number> {
+    const result = await this.db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) AS count FROM nouns WHERE is_user_added = 1',
+    );
+    return result?.count ?? 0;
+  }
+
+  /**
+   * Delete a user-added noun and its associated card_progress / review_history.
+   * Only deletes nouns where is_user_added = 1 to prevent accidental
+   * deletion of seed data.
+   */
+  async deleteUserNoun(id: number): Promise<{ success: boolean; error?: string }> {
+    // Safety check: only allow deleting user-added nouns
+    const noun = await this.db.getFirstAsync<{ is_user_added: number }>(
+      'SELECT is_user_added FROM nouns WHERE id = ?',
+      [id],
+    );
+
+    if (!noun) {
+      return { success: false, error: 'Word not found' };
+    }
+
+    if (!noun.is_user_added) {
+      return { success: false, error: 'Cannot delete built-in vocabulary' };
+    }
+
+    await this.db.withTransactionAsync(async () => {
+      // Delete review_history entries for this word's card_progress
+      await this.db.runAsync(
+        `DELETE FROM review_history
+         WHERE card_progress_id IN (
+           SELECT id FROM card_progress
+           WHERE word_type = 'noun' AND word_id = ?
+         )`,
+        [id],
+      );
+
+      // Delete card_progress for this word
+      await this.db.runAsync(
+        `DELETE FROM card_progress
+         WHERE word_type = 'noun' AND word_id = ?`,
+        [id],
+      );
+
+      // Delete the noun itself
+      await this.db.runAsync('DELETE FROM nouns WHERE id = ?', [id]);
+    });
+
+    return { success: true };
   }
 }
 

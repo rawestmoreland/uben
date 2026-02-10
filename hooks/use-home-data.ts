@@ -7,6 +7,7 @@ import type { UserStats } from '@/types/database';
 interface HomeData {
   stats: UserStats;
   nounCount: number;
+  userNounCount: number;
   streak: number;
   hasReviewedToday: boolean;
   isLoading: boolean;
@@ -28,6 +29,7 @@ const defaultStats: UserStats = {
 export function useHomeData(): HomeData {
   const [stats, setStats] = useState<UserStats>(defaultStats);
   const [nounCount, setNounCount] = useState(0);
+  const [userNounCount, setUserNounCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [hasReviewedToday, setHasReviewedToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,17 +40,24 @@ export function useHomeData(): HomeData {
 
       async function load() {
         try {
-          const [fetchedStats, fetchedCount, fetchedStreak, fetchedHasReviewedToday] =
-            await Promise.all([
-              vocabularyService.getUserStats(),
-              vocabularyService.getNounCount(),
-              spacedRepetitionService.getStudyStreak(),
-              spacedRepetitionService.hasReviewedToday(),
-            ]);
+          const [
+            fetchedStats,
+            fetchedCount,
+            fetchedUserCount,
+            fetchedStreak,
+            fetchedHasReviewedToday,
+          ] = await Promise.all([
+            vocabularyService.getUserStats(),
+            vocabularyService.getNounCount(),
+            vocabularyService.getUserNounCount(),
+            spacedRepetitionService.getStudyStreak(),
+            spacedRepetitionService.hasReviewedToday(),
+          ]);
 
           if (!cancelled) {
             setStats(fetchedStats);
             setNounCount(fetchedCount);
+            setUserNounCount(fetchedUserCount);
             setStreak(fetchedStreak);
             setHasReviewedToday(fetchedHasReviewedToday);
           }
@@ -69,5 +78,5 @@ export function useHomeData(): HomeData {
     }, []),
   );
 
-  return { stats, nounCount, streak, hasReviewedToday, isLoading };
+  return { stats, nounCount, userNounCount, streak, hasReviewedToday, isLoading };
 }

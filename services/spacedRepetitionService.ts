@@ -178,23 +178,41 @@ export class SpacedRepetitionService {
 
   /**
    * Build a daily review session containing due cards and new cards.
+   * Optionally filter by category IDs for focused practice.
    */
   async getDailyReviewSession(
     maxCards: number = 20,
     newCardsLimit: number = 5,
+    categoryIds?: number[],
   ): Promise<ReviewSession> {
+    // Build category filter
+    const categoryFilter =
+      categoryIds && categoryIds.length > 0
+        ? `AND n.category_id IN (${categoryIds.map(() => '?').join(',')})`
+        : '';
+
     // Due cards (already in the review system)
+    const dueParams =
+      categoryIds && categoryIds.length > 0
+        ? [...categoryIds, maxCards - newCardsLimit]
+        : [maxCards - newCardsLimit];
+
     const dueCards = await this.db.getAllAsync<DueCard>(
       `SELECT cp.*, n.german AS word, n.article, n.english
        FROM card_progress cp
        JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.next_review_date <= date('now')
+       WHERE cp.next_review_date <= date('now') ${categoryFilter}
        ORDER BY cp.next_review_date ASC
        LIMIT ?`,
-      [maxCards - newCardsLimit],
+      dueParams,
     );
 
     // New cards (words not yet in card_progress)
+    const newParams =
+      categoryIds && categoryIds.length > 0
+        ? [...categoryIds, newCardsLimit]
+        : [newCardsLimit];
+
     const newCards = await this.db.getAllAsync<DueCard>(
       `SELECT
          0 AS id,
@@ -213,10 +231,10 @@ export class SpacedRepetitionService {
          n.english
        FROM nouns n
        LEFT JOIN card_progress cp ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.id IS NULL AND n.level = 'A1'
+       WHERE cp.id IS NULL AND (n.level = 'A1' OR n.is_user_added = 1) ${categoryFilter}
        ORDER BY RANDOM()
        LIMIT ?`,
-      [newCardsLimit],
+      newParams,
     );
 
     return {
