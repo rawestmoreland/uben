@@ -123,6 +123,27 @@ export interface UserNounInput {
   english?: string;
 }
 
+/** Valid category names for noun classification */
+export type CategoryName =
+  | 'people'
+  | 'animals'
+  | 'home'
+  | 'furniture'
+  | 'food'
+  | 'body'
+  | 'clothing'
+  | 'nature'
+  | 'places'
+  | 'transportation'
+  | 'time'
+  | 'weather'
+  | 'education'
+  | 'money'
+  | 'communication'
+  | 'health'
+  | 'colors'
+  | 'general';
+
 /** Shape for seed noun data */
 export interface SeedNoun {
   german: string;
@@ -130,6 +151,7 @@ export interface SeedNoun {
   plural: string | null;
   english: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  category: CategoryName;
 }
 
 /** Shape for seed category data */
