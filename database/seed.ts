@@ -1,5 +1,5 @@
-import type * as SQLite from 'expo-sqlite';
 import type { NounCorrection } from '@/types/database';
+import type * as SQLite from 'expo-sqlite';
 import { generateCategoryRemoteId, generateNounRemoteId } from './remote-id';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
@@ -981,10 +981,10 @@ async function assignRemoteIds(db: SQLite.SQLiteDatabase): Promise<void> {
   if (catsWithoutRemoteId.length > 0) {
     await db.withTransactionAsync(async () => {
       for (const cat of catsWithoutRemoteId) {
-        await db.runAsync(
-          'UPDATE categories SET remote_id = ? WHERE id = ?',
-          [generateCategoryRemoteId(cat.name), cat.id],
-        );
+        await db.runAsync('UPDATE categories SET remote_id = ? WHERE id = ?', [
+          generateCategoryRemoteId(cat.name),
+          cat.id,
+        ]);
       }
     });
     console.log(
