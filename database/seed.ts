@@ -11,6 +11,9 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // Seed categories first (required for foreign key relationships)
   await seedCategories(db, '2.0.0_categories');
 
+  // One-time repair for users affected by the seed versioning bug
+  await repairBrokenSeedVersions(db);
+
   // Bridge legacy versioning system to new versioned-file approach
   await markLegacyVersions(db);
 
@@ -59,6 +62,63 @@ async function seedCategories(
   console.log(`[DB] Seeded ${categories.length} categories`);
 }
 
+/**
+ * One-time repair: Remove incorrect version markers for users affected by the
+ * markLegacyVersions bug where v3.1.0, v3.2.0, v3.3.0 were marked as applied
+ * but data was never seeded.
+ */
+async function repairBrokenSeedVersions(
+  db: SQLite.SQLiteDatabase,
+): Promise<void> {
+  const repairVersion = '2.1.0_repair_seed_versions';
+
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [repairVersion],
+  );
+
+  if (exists) {
+    return; // Already repaired
+  }
+
+  // Check if user has the bug: legacy version exists but missing words
+  const hasLegacy = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    ['1.0.0_a1_nouns'],
+  );
+
+  if (!hasLegacy) {
+    // New user, no repair needed
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      repairVersion,
+    ]);
+    return;
+  }
+
+  const wordCount = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM nouns',
+  );
+
+  // If user has < 400 words but version markers exist, they're affected
+  if (wordCount && wordCount.count < 400) {
+    console.log('[DB] Repairing broken seed versions...');
+
+    // Remove incorrect version markers (preserve v3.0.0)
+    await db.runAsync(
+      `DELETE FROM data_versions
+       WHERE version IN ('3.1.0_a1_nouns_v2', '3.2.0_a1_nouns_v3', '3.3.0_a1_nouns_v4')`,
+    );
+
+    console.log(
+      '[DB] Removed incorrect seed version markers, seeding will now proceed',
+    );
+  }
+
+  await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+    repairVersion,
+  ]);
+}
+
 // Legacy versions from the old seeding system (all pointed at the same full noun list)
 const LEGACY_NOUN_VERSIONS = [
   '1.0.0_a1_nouns',
@@ -67,11 +127,12 @@ const LEGACY_NOUN_VERSIONS = [
 ];
 
 /**
- * Bridge the old (v1.x) and new (v3.x) versioning systems so that:
- * - Existing users (who have legacy versions): mark new v3 versions as applied
- *   since they already have all the nouns.
- * - New users (empty data_versions): mark legacy versions as applied so the
- *   old code paths are never triggered, then let seedNounVersions handle seeding.
+ * Bridge the old (v1.x) and new (v3.x) versioning systems:
+ * - Existing users (who have legacy versions): mark ONLY v3.0.0 as applied
+ *   since they already have the initial 360 words. v3.1.0+ contain NEW words
+ *   and must be seeded normally.
+ * - New users (empty data_versions): mark legacy versions as applied so old
+ *   code paths never trigger, then seedNounVersions handles all seeding.
  */
 async function markLegacyVersions(db: SQLite.SQLiteDatabase): Promise<void> {
   const hasLegacy = await db.getFirstAsync<{ '1': number }>(
@@ -80,22 +141,25 @@ async function markLegacyVersions(db: SQLite.SQLiteDatabase): Promise<void> {
   );
 
   if (hasLegacy) {
-    // Existing user: they already have all nouns from the legacy system.
-    // Mark each new versioned seed as applied so seedNounVersions skips them.
-    for (const seedVersion of nounSeedVersions) {
+    // Existing user: they already have the initial 360 words from legacy system.
+    // Only mark v3.0.0 (initial 360 words) as applied for existing users.
+    // New versions (v3.1.0+) contain additional words that must be seeded.
+    const baseVersion = nounSeedVersions[0]; // v3.0.0_a1_nouns_v1
+    if (baseVersion) {
       const alreadyMarked = await db.getFirstAsync<{ '1': number }>(
         'SELECT 1 FROM data_versions WHERE version = ?',
-        [seedVersion.version],
+        [baseVersion.version],
       );
       if (!alreadyMarked) {
         await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
-          seedVersion.version,
+          baseVersion.version,
         ]);
         console.log(
-          `[DB] Marked ${seedVersion.version} as applied (existing user, data already present)`,
+          `[DB] Marked ${baseVersion.version} as applied (existing user, legacy 360 words present)`,
         );
       }
     }
+    // v3.1.0, v3.2.0, v3.3.0 are NOT marked, so seedNounVersions() will seed them
     return;
   }
 
