@@ -24,6 +24,7 @@ import {
   shadowStyleSmall,
 } from '@/constants/design';
 import { applyGermanTextPreference } from '@/utils/germanText';
+import { getNounFontSize } from '@/utils/typography';
 
 // ── Constants ────────────────────────────────────────────────────────
 
@@ -174,11 +175,19 @@ function PlayingState({
       <View style={styles.wordSection}>
         <View style={[styles.wordCard, shadowStyle]}>
           {isFeedback ? (
-            <Text style={styles.wordText}>
+            <Text
+              style={[
+                styles.wordText,
+                { fontSize: getNounFontSize(currentCard.word) },
+              ]}
+            >
               <Text
                 style={[
                   styles.articleReveal,
-                  { color: isCorrect ? AppColors.green : AppColors.red },
+                  {
+                    color: isCorrect ? AppColors.green : AppColors.red,
+                    fontSize: getNounFontSize(currentCard.word),
+                  },
                 ]}
               >
                 {currentCard.article}{' '}
@@ -186,7 +195,12 @@ function PlayingState({
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           ) : (
-            <Text style={styles.wordText}>
+            <Text
+              style={[
+                styles.wordText,
+                { fontSize: getNounFontSize(currentCard.word) },
+              ]}
+            >
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           )}
