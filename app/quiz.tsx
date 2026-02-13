@@ -31,6 +31,19 @@ const ARTICLES = ['der', 'die', 'das'] as const;
 type Article = (typeof ARTICLES)[number];
 const FEEDBACK_DELAY_MS = 1200;
 
+// ── Helper Functions ─────────────────────────────────────────────────
+
+/**
+ * Returns appropriate font size based on word length to prevent awkward wrapping.
+ * Uses tiered sizing to maintain neo-brutalist bold, consistent aesthetic.
+ */
+function getNounFontSize(word: string): number {
+  const length = word.length;
+  if (length <= 12) return Typography.huge; // 48px - most words
+  if (length <= 18) return Typography.title; // 32px - longer words
+  return Typography.heading; // 24px - very long words
+}
+
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
@@ -174,11 +187,19 @@ function PlayingState({
       <View style={styles.wordSection}>
         <View style={[styles.wordCard, shadowStyle]}>
           {isFeedback ? (
-            <Text style={styles.wordText}>
+            <Text
+              style={[
+                styles.wordText,
+                { fontSize: getNounFontSize(currentCard.word) },
+              ]}
+            >
               <Text
                 style={[
                   styles.articleReveal,
-                  { color: isCorrect ? AppColors.green : AppColors.red },
+                  {
+                    color: isCorrect ? AppColors.green : AppColors.red,
+                    fontSize: getNounFontSize(currentCard.word),
+                  },
                 ]}
               >
                 {currentCard.article}{' '}
@@ -186,7 +207,12 @@ function PlayingState({
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           ) : (
-            <Text style={styles.wordText}>
+            <Text
+              style={[
+                styles.wordText,
+                { fontSize: getNounFontSize(currentCard.word) },
+              ]}
+            >
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           )}
