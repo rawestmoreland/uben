@@ -24,25 +24,13 @@ import {
   shadowStyleSmall,
 } from '@/constants/design';
 import { applyGermanTextPreference } from '@/utils/germanText';
+import { getNounFontSize } from '@/utils/typography';
 
 // ── Constants ────────────────────────────────────────────────────────
 
 const ARTICLES = ['der', 'die', 'das'] as const;
 type Article = (typeof ARTICLES)[number];
 const FEEDBACK_DELAY_MS = 1200;
-
-// ── Helper Functions ─────────────────────────────────────────────────
-
-/**
- * Returns appropriate font size based on word length to prevent awkward wrapping.
- * Uses tiered sizing to maintain neo-brutalist bold, consistent aesthetic.
- */
-function getNounFontSize(word: string): number {
-  const length = word.length;
-  if (length <= 12) return Typography.huge; // 48px - most words
-  if (length <= 18) return Typography.title; // 32px - longer words
-  return Typography.heading; // 24px - very long words
-}
 
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
