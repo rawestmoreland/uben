@@ -161,6 +161,27 @@ export interface SeedCategory {
   display_order: number;
 }
 
+/** A correction to an existing noun in the database */
+export interface NounCorrection {
+  /** The German word to match (part of UNIQUE key) */
+  german: string;
+  /** The current article to match (part of UNIQUE key) */
+  currentArticle: 'der' | 'die' | 'das';
+  /** Fields to overwrite — only specify fields that need correction */
+  corrections: {
+    article?: 'der' | 'die' | 'das';
+    plural?: string | null;
+    english?: string;
+    category?: CategoryName;
+  };
+}
+
+/** A versioned batch of noun corrections */
+export interface NounCorrectionVersion {
+  version: string;
+  corrections: NounCorrection[];
+}
+
 /** Migration definition */
 export interface Migration {
   version: string;

@@ -1,5 +1,7 @@
 import type * as SQLite from 'expo-sqlite';
+import type { NounCorrection } from '@/types/database';
 import { categories } from './seeds/categories';
+import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
 
 /**
@@ -25,6 +27,9 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Enforce NOT NULL constraint on category_id after all nouns have categories
   await enforceNounCategoryConstraint(db, '2.0.1_noun_category_not_null');
+
+  // Apply any data corrections (wrong articles, plurals, etc.)
+  await applyNounCorrections(db);
 }
 
 /**
@@ -248,6 +253,124 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
 
     console.log(
       `[DB] Seeded nouns (${seedVersion.version}), ${seedVersion.nouns.length} entries processed`,
+    );
+  }
+}
+
+/**
+ * Apply versioned noun corrections.
+ * Unlike seeds (which preserve existing values with COALESCE), corrections
+ * force-overwrite specific fields to fix incorrect data.
+ *
+ * The noun row is updated in-place so its `id` stays the same, preserving
+ * any card_progress and review_history that reference it.
+ */
+async function applyNounCorrections(db: SQLite.SQLiteDatabase): Promise<void> {
+  if (nounCorrectionVersions.length === 0) {
+    return;
+  }
+
+  // Pre-fetch category name→ID mappings (only if any correction needs it)
+  let categoryIdMap: Map<string, number> | null = null;
+
+  for (const batch of nounCorrectionVersions) {
+    const exists = await db.getFirstAsync<{ '1': number }>(
+      'SELECT 1 FROM data_versions WHERE version = ?',
+      [batch.version],
+    );
+
+    if (exists) {
+      continue; // Already applied
+    }
+
+    console.log(
+      `[DB] Applying noun corrections (${batch.version}), ${batch.corrections.length} entries...`,
+    );
+
+    // Lazy-load category mappings on first use
+    if (!categoryIdMap) {
+      categoryIdMap = new Map<string, number>();
+      const allCategories = await db.getAllAsync<{ id: number; name: string }>(
+        'SELECT id, name FROM categories',
+      );
+      for (const cat of allCategories) {
+        categoryIdMap.set(cat.name, cat.id);
+      }
+    }
+
+    await db.withTransactionAsync(async () => {
+      for (const correction of batch.corrections) {
+        await applyNounCorrection(db, correction, categoryIdMap!);
+      }
+
+      await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+        batch.version,
+      ]);
+    });
+
+    console.log(
+      `[DB] Applied noun corrections (${batch.version}), ${batch.corrections.length} entries processed`,
+    );
+  }
+}
+
+/**
+ * Apply a single noun correction.
+ * Builds a dynamic UPDATE statement from the provided correction fields.
+ */
+async function applyNounCorrection(
+  db: SQLite.SQLiteDatabase,
+  correction: NounCorrection,
+  categoryIdMap: Map<string, number>,
+): Promise<void> {
+  const setClauses: string[] = [];
+  const params: (string | number | null)[] = [];
+
+  if (correction.corrections.article !== undefined) {
+    setClauses.push('article = ?');
+    params.push(correction.corrections.article);
+  }
+
+  if (correction.corrections.plural !== undefined) {
+    setClauses.push('plural = ?');
+    params.push(correction.corrections.plural);
+  }
+
+  if (correction.corrections.english !== undefined) {
+    setClauses.push('english = ?');
+    params.push(correction.corrections.english);
+  }
+
+  if (correction.corrections.category !== undefined) {
+    const categoryId = categoryIdMap.get(correction.corrections.category);
+    if (!categoryId) {
+      console.warn(
+        `[DB] Unknown category "${correction.corrections.category}" in correction for "${correction.german}", skipping`,
+      );
+      return;
+    }
+    setClauses.push('category_id = ?');
+    params.push(categoryId);
+  }
+
+  if (setClauses.length === 0) {
+    console.warn(
+      `[DB] Correction for "${correction.german}" has no fields to update, skipping`,
+    );
+    return;
+  }
+
+  // WHERE clause: match on the UNIQUE key (german, article)
+  params.push(correction.german, correction.currentArticle);
+
+  const result = await db.runAsync(
+    `UPDATE nouns SET ${setClauses.join(', ')} WHERE german = ? AND article = ?`,
+    params,
+  );
+
+  if (result.changes === 0) {
+    console.warn(
+      `[DB] Correction target not found: "${correction.currentArticle} ${correction.german}"`,
     );
   }
 }
