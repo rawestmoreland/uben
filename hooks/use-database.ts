@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { initializeDatabase } from '@/database/db';
+import { syncService } from '@/services/syncService';
 
 /**
- * Hook that initializes the SQLite database on mount.
+ * Hook that initializes the SQLite database on mount and kicks off a
+ * non-blocking PocketBase sync once the local DB is ready.
  *
  * Returns `{ isReady, error }`:
  * - `isReady` is `true` once migrations and seeding have completed.
  * - `error` is set if initialization fails (or if running on web).
  *
- * Usage in root layout:
- * ```tsx
- * const { isReady } = useDatabase();
- * if (!isReady) return null; // keep splash screen visible
- * ```
+ * The sync runs in the background and never blocks `isReady`.
+ * If PocketBase is not configured (PB_URL is empty), sync is skipped.
  */
 export function useDatabase() {
   const [isReady, setIsReady] = useState(false);
@@ -47,6 +46,24 @@ export function useDatabase() {
       cancelled = true;
     };
   }, []);
+
+  // Non-blocking sync: fire after DB is ready, don't await
+  useEffect(() => {
+    if (!isReady) return;
+
+    syncService.syncIfOnline().then((result) => {
+      if (result.status === 'synced') {
+        const { categoriesSynced = 0, nounsSynced = 0 } = result;
+        if (categoriesSynced > 0 || nounsSynced > 0) {
+          console.log(
+            `[App] Background sync: ${categoriesSynced} categories, ${nounsSynced} nouns`,
+          );
+        }
+      } else if (result.status === 'error') {
+        console.warn('[App] Background sync error:', result.error);
+      }
+    });
+  }, [isReady]);
 
   return { isReady, error };
 }
