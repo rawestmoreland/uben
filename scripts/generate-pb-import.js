@@ -82,6 +82,11 @@ const pbCategories = categories.map((cat) => ({
   display_order: cat.display_order,
 }));
 
+// Build name → PB id lookup so nouns can reference category by ID
+const categoryIdByName = new Map(
+  pbCategories.map((cat) => [cat.name, cat.id]),
+);
+
 // ── Nouns (all seed files, deduplicated) ─────────────────────────────
 
 const nounsDir = path.join(seedDir, 'nouns');
@@ -102,15 +107,21 @@ for (const noun of allNouns) {
   nounMap.set(`${noun.german}:${noun.article}`, noun);
 }
 
-const pbNouns = [...nounMap.values()].map((noun) => ({
-  id: generateNounRemoteId(noun.german, noun.article),
-  german: noun.german,
-  article: noun.article,
-  plural: noun.plural || '',
-  english: noun.english || '',
-  level: noun.level,
-  category: noun.category,
-}));
+const pbNouns = [...nounMap.values()].map((noun) => {
+  const catId = categoryIdByName.get(noun.category);
+  if (!catId) {
+    console.warn(`  Warning: unknown category "${noun.category}" for noun "${noun.german}"`);
+  }
+  return {
+    id: generateNounRemoteId(noun.german, noun.article),
+    german: noun.german,
+    article: noun.article,
+    plural: noun.plural || '',
+    english: noun.english || '',
+    level: noun.level,
+    category: catId || '',
+  };
+});
 
 // ── Write output ─────────────────────────────────────────────────────
 
@@ -128,6 +139,4 @@ console.log('Generated PocketBase import files:');
 console.log(`  pb-import-categories.json  (${pbCategories.length} categories)`);
 console.log(`  pb-import-nouns.json       (${pbNouns.length} nouns)`);
 console.log('');
-console.log(
-  'Open the PocketBase admin UI → Collection → Import records → paste the JSON.',
-);
+console.log('Import order: categories FIRST, then nouns (nouns reference category IDs).');
