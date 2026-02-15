@@ -7,8 +7,8 @@
  * The API key is passed as a query parameter and checked via a PocketBase
  * collection rule:  @request.query.key = "your-secret"
  */
-export const PB_URL = '';
-export const PB_API_KEY = '';
+export const PB_URL = process.env.EXPO_PUBLIC_PB_URL || 'http://localhost:8080';
+export const PB_API_KEY = process.env.EXPO_PUBLIC_PB_API_KEY;
 
 export const SYNC_CONFIG = {
   /** Max records per page when fetching from PocketBase */

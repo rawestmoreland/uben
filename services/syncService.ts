@@ -57,7 +57,7 @@ class SyncService {
    * - Safe to call on every app launch (non-blocking, idempotent).
    */
   async syncIfOnline(): Promise<SyncResult> {
-    if (!PB_URL) {
+    if (!PB_URL || !PB_API_KEY) {
       return { status: 'skipped' };
     }
 
@@ -71,8 +71,7 @@ class SyncService {
         'categories',
         lastSync,
       );
-      const categoriesSynced =
-        await this.upsertCategories(remoteCategories);
+      const categoriesSynced = await this.upsertCategories(remoteCategories);
 
       // Pull nouns
       const remoteNouns = await this.fetchRecords<PBNoun>('nouns', lastSync);
@@ -92,8 +91,7 @@ class SyncService {
 
       return { status: 'synced', categoriesSynced, nounsSynced };
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : String(error);
+      const message = error instanceof Error ? error.message : String(error);
       console.warn('[Sync] Failed:', message);
       return { status: 'error', error: message };
     }
@@ -117,7 +115,7 @@ class SyncService {
       const params = new URLSearchParams({
         page: String(page),
         perPage: String(SYNC_CONFIG.PAGE_SIZE),
-        key: PB_API_KEY,
+        key: PB_API_KEY!,
       });
 
       if (since) {
@@ -149,9 +147,7 @@ class SyncService {
    * Matches on remote_id to preserve local integer IDs.
    * Falls back to matching on `name` if remote_id isn't found.
    */
-  private async upsertCategories(
-    categories: PBCategory[],
-  ): Promise<number> {
+  private async upsertCategories(categories: PBCategory[]): Promise<number> {
     if (categories.length === 0) return 0;
 
     let synced = 0;

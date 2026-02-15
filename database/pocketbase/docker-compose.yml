@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  pocketbase:
+    image: pocketbase:latest
+    container_name: uben_pocketbase_backend
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - "./base/pb_data:/pb/pb_data" # Attaches pb_data to a volume named 'pocketbase-data' on your current directory
