@@ -1,6 +1,18 @@
 import { getDatabase } from '@/database/db';
 import type { CardReview, DueCard, ReviewSession } from '@/types/database';
 
+// ── Helpers ──────────────────────────────────────────────────────────
+
+/** Fisher-Yates shuffle — returns a new array in random order. */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // ── SM-2 Core Algorithm ───────────────────────────────────────────────
 
 /**
@@ -238,7 +250,7 @@ export class SpacedRepetitionService {
     );
 
     return {
-      cards: [...dueCards, ...newCards],
+      cards: shuffleArray([...dueCards, ...newCards]),
       dueCount: dueCards.length,
       newCount: newCards.length,
     };
