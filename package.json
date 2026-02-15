@@ -10,6 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "seed:csv": "node scripts/csv-to-seed.js",
+    "pb:import": "node scripts/generate-pb-import.js",
     "version:bump": "node scripts/bump-version.js",
     "update:dev": "eas update --branch develop",
     "update:staging": "eas update --branch staging",
