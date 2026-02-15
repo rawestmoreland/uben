@@ -31,9 +31,11 @@ function hashToId(input) {
     h2 = ((h2 << 5) + h2 + c) & 0xffffffff;
   }
 
+  // Each 32-bit hash → 7 base36 chars.  XOR the two to derive a 15th char.
   const p1 = (h1 >>> 0).toString(36).padStart(7, '0');
   const p2 = (h2 >>> 0).toString(36).padStart(7, '0');
-  return (p1 + p2).slice(0, 15);
+  const p3 = ((h1 ^ h2) >>> 0).toString(36).padStart(7, '0');
+  return (p1 + p2 + p3).slice(0, 15);
 }
 
 function generateNounRemoteId(german, article) {

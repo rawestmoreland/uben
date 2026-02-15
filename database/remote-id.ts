@@ -25,10 +25,13 @@ function hashToId(input: string): string {
     h2 = ((h2 << 5) + h2 + c) & 0xffffffff;
   }
 
+  // Each 32-bit hash → 7 base36 chars.  XOR the two hashes to derive a
+  // 15th character so the total length matches PocketBase's ID format.
   const p1 = (h1 >>> 0).toString(36).padStart(7, '0');
   const p2 = (h2 >>> 0).toString(36).padStart(7, '0');
+  const p3 = ((h1 ^ h2) >>> 0).toString(36).padStart(7, '0');
 
-  return (p1 + p2).slice(0, 15);
+  return (p1 + p2 + p3).slice(0, 15);
 }
 
 /** Generate a deterministic remote ID for a noun based on its natural key. */
