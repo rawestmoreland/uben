@@ -1,5 +1,6 @@
 import type * as SQLite from 'expo-sqlite';
 import type { NounCorrection } from '@/types/database';
+import { generateCategoryRemoteId, generateNounRemoteId } from './remote-id';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
@@ -30,6 +31,10 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Apply any data corrections (wrong articles, plurals, etc.)
   await applyNounCorrections(db);
+
+  // Assign deterministic remote_ids to any rows that don't have one yet.
+  // Runs every launch but is a no-op when all rows already have remote_ids.
+  await assignRemoteIds(db);
 }
 
 /**
@@ -946,4 +951,67 @@ async function enforceNounCategoryConstraint(
   });
 
   console.log('[DB] NOT NULL constraint enforced on nouns.category_id');
+}
+
+/**
+ * Assign deterministic remote_ids to categories and non-user-added nouns
+ * that don't have one yet.
+ *
+ * Runs every launch but short-circuits when nothing needs updating.
+ * This covers:
+ * - Existing users upgrading (migration 003 added the column as NULL)
+ * - Nouns added by future seed versions after the initial backfill
+ */
+async function assignRemoteIds(db: SQLite.SQLiteDatabase): Promise<void> {
+  // Check if the remote_id column exists (migration 003 may not have run yet
+  // on the very first initialization — but it should since migrations run before seeds)
+  try {
+    await db.getFirstAsync('SELECT remote_id FROM nouns LIMIT 1');
+  } catch {
+    // Column doesn't exist yet — skip silently
+    return;
+  }
+
+  // ── Categories ─────────────────────────────────────────────────────
+  const catsWithoutRemoteId = await db.getAllAsync<{
+    id: number;
+    name: string;
+  }>('SELECT id, name FROM categories WHERE remote_id IS NULL');
+
+  if (catsWithoutRemoteId.length > 0) {
+    await db.withTransactionAsync(async () => {
+      for (const cat of catsWithoutRemoteId) {
+        await db.runAsync(
+          'UPDATE categories SET remote_id = ? WHERE id = ?',
+          [generateCategoryRemoteId(cat.name), cat.id],
+        );
+      }
+    });
+    console.log(
+      `[DB] Assigned remote_ids to ${catsWithoutRemoteId.length} categories`,
+    );
+  }
+
+  // ── Nouns (non-user-added only) ────────────────────────────────────
+  const nounsWithoutRemoteId = await db.getAllAsync<{
+    id: number;
+    german: string;
+    article: string;
+  }>(
+    'SELECT id, german, article FROM nouns WHERE remote_id IS NULL AND is_user_added = 0',
+  );
+
+  if (nounsWithoutRemoteId.length > 0) {
+    await db.withTransactionAsync(async () => {
+      for (const noun of nounsWithoutRemoteId) {
+        await db.runAsync('UPDATE nouns SET remote_id = ? WHERE id = ?', [
+          generateNounRemoteId(noun.german, noun.article),
+          noun.id,
+        ]);
+      }
+    });
+    console.log(
+      `[DB] Assigned remote_ids to ${nounsWithoutRemoteId.length} nouns`,
+    );
+  }
 }

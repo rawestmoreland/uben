@@ -10,6 +10,7 @@ export interface Noun {
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
   category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
+  remote_id: string | null; // PocketBase record ID (null for user-added nouns)
   created_at: string;
 }
 
@@ -19,6 +20,7 @@ export interface Category {
   name: string;
   display_name: string;
   display_order: number;
+  remote_id: string | null; // PocketBase record ID
   created_at: string;
 }
 
