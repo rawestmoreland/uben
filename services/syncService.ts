@@ -1,4 +1,9 @@
-import { PB_API_KEY, PB_URL, SYNC_CONFIG } from '@/constants/pocketbase';
+import {
+  PB_API_KEY,
+  PB_URL,
+  SYNC_CONFIG,
+  formatPocketBaseTimestamp,
+} from '@/constants/pocketbase';
 import { getDatabase } from '@/database/db';
 import { settingsService } from './settingsService';
 
@@ -111,6 +116,8 @@ class SyncService {
     let page = 1;
     let totalPages = 1;
 
+    console.log('since', since);
+
     while (page <= totalPages) {
       const params = new URLSearchParams({
         page: String(page),
@@ -119,10 +126,12 @@ class SyncService {
       });
 
       if (since) {
-        params.set('filter', `updated > "${since}"`);
+        const pbTimestamp = formatPocketBaseTimestamp(since);
+        params.set('filter', `(updated > '${pbTimestamp}')`);
       }
 
       const url = `${PB_URL}/api/collections/${collection}/records?${params}`;
+      console.log('fetching', url);
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -132,6 +141,7 @@ class SyncService {
       }
 
       const data: PBListResponse<T> = await response.json();
+      console.log('data', data);
       allItems.push(...data.items);
       totalPages = data.totalPages;
       page++;

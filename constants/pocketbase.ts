@@ -16,3 +16,21 @@ export const SYNC_CONFIG = {
   /** Settings key for tracking last successful sync timestamp */
   LAST_SYNC_KEY: 'last_pocketbase_sync',
 } as const;
+
+/**
+ * Format an ISO 8601 timestamp for use in PocketBase filter queries.
+ *
+ * PocketBase expects timestamps with a space separator instead of 'T':
+ * - ✅ '2026-02-16 16:45:04.164Z'
+ * - ❌ '2026-02-16T16:45:04.164Z'
+ *
+ * @param isoTimestamp - ISO 8601 formatted timestamp (e.g., from Date.toISOString())
+ * @returns PocketBase-compatible timestamp string
+ *
+ * @example
+ * const lastSync = new Date().toISOString(); // '2026-02-16T16:45:04.164Z'
+ * const filter = `updated > '${formatPocketBaseTimestamp(lastSync)}'`; // "updated > '2026-02-16 16:45:04.164Z'"
+ */
+export function formatPocketBaseTimestamp(isoTimestamp: string): string {
+  return isoTimestamp.replace('T', ' ');
+}
