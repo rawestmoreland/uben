@@ -301,22 +301,49 @@ class SyncService {
             // Handle UNIQUE(german, article) constraint violation
             const message = error instanceof Error ? error.message : String(error);
             if (message.includes('UNIQUE constraint')) {
-              // Word exists with same german+article but different/no remote_id
-              const result = await this.db.runAsync(
-                `UPDATE nouns
-                 SET plural = ?, english = ?, level = ?, category_id = ?, remote_id = ?
-                 WHERE german = ? AND article = ?`,
-                [
-                  noun.plural || null,
-                  noun.english || null,
-                  noun.level,
-                  categoryId,
-                  noun.id,
-                  noun.german,
-                  noun.article,
-                ],
+              // Word exists with same german+article but different/no remote_id.
+              // Check if it's a user-added word — if so, only assign remote_id
+              // without overwriting user's custom data.
+              const existingWord = await this.db.getFirstAsync<{
+                id: number;
+                is_user_added: number;
+              }>(
+                'SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ?',
+                [noun.german, noun.article],
               );
-              if (result.changes > 0) synced++;
+
+              if (existingWord?.is_user_added) {
+                // User-added word exists — only assign remote_id, preserve user data
+                const result = await this.db.runAsync(
+                  `UPDATE nouns
+                   SET remote_id = ?
+                   WHERE german = ? AND article = ?`,
+                  [noun.id, noun.german, noun.article],
+                );
+                if (result.changes > 0) {
+                  console.log(
+                    `[Sync] Linked user word "${noun.german}" to PocketBase (preserved user data)`,
+                  );
+                  synced++;
+                }
+              } else {
+                // Pre-seeded word without remote_id — safe to update with PocketBase data
+                const result = await this.db.runAsync(
+                  `UPDATE nouns
+                   SET plural = ?, english = ?, level = ?, category_id = ?, remote_id = ?
+                   WHERE german = ? AND article = ?`,
+                  [
+                    noun.plural || null,
+                    noun.english || null,
+                    noun.level,
+                    categoryId,
+                    noun.id,
+                    noun.german,
+                    noun.article,
+                  ],
+                );
+                if (result.changes > 0) synced++;
+              }
             } else {
               console.warn(`[Sync] Failed to insert noun "${noun.german}":`, message);
             }
