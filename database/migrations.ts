@@ -209,29 +209,31 @@ export const migrations: Migration[] = [
 
       // Add remote_id column to categories
       try {
-        await db.execAsync(
-          'ALTER TABLE categories ADD COLUMN remote_id TEXT;',
-        );
+        await db.execAsync('ALTER TABLE categories ADD COLUMN remote_id TEXT;');
         await db.execAsync(
           'CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_remote_id ON categories(remote_id) WHERE remote_id IS NOT NULL;',
         );
         console.log('[Migration 003] Added remote_id to categories');
       } catch (error) {
-        console.error('[Migration 003] Failed to add remote_id to categories:', error);
+        console.error(
+          '[Migration 003] Failed to add remote_id to categories:',
+          error,
+        );
         throw error;
       }
 
       // Add remote_id column to nouns
       try {
-        await db.execAsync(
-          'ALTER TABLE nouns ADD COLUMN remote_id TEXT;',
-        );
+        await db.execAsync('ALTER TABLE nouns ADD COLUMN remote_id TEXT;');
         await db.execAsync(
           'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id) WHERE remote_id IS NOT NULL;',
         );
         console.log('[Migration 003] Added remote_id to nouns');
       } catch (error) {
-        console.error('[Migration 003] Failed to add remote_id to nouns:', error);
+        console.error(
+          '[Migration 003] Failed to add remote_id to nouns:',
+          error,
+        );
         throw error;
       }
 
