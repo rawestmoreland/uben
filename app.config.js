@@ -21,7 +21,7 @@ export default {
     slug: 'uben',
     version: '1.2.0',
     orientation: 'portrait',
-    icon: './assets/images/icon.png',
+    icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: 'germanpractice',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
@@ -34,7 +34,7 @@ export default {
     },
     android: {
       package: `com.westmorelandcreative.uben${getBundleSuffix()}`,
-      icon: './assets/images/icon.png',
+      icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
     },
