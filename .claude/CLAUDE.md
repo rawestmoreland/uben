@@ -38,7 +38,8 @@ The app uses a tab-based navigation structure and supports iOS, Android, and web
 ### Design Philosophy
 
 - **Neo-brutalist UI**: Bold colors, thick borders, high contrast, geometric shapes
-- **Local-first**: All data stored on-device with SQLite, no backend (v1)
+- **Offline-first**: All data stored on-device with SQLite, works without network
+- **Optional cloud sync**: PocketBase backend for vocabulary updates (categories, nouns)
 - **Fast & Simple**: Ship quickly, iterate based on feedback
 - **Mobile-first**: Optimized for iOS/Android, web is secondary
 
@@ -64,7 +65,19 @@ npm run lint              # Run ESLint with Expo config
 
 ```bash
 npm run reset-project     # Move starter code to app-example/ and create blank app/
+npm run pb:import         # Generate PocketBase import JSON from seed data
 ```
+
+### PocketBase Backend (Optional)
+
+```bash
+cd database/pocketbase
+make run                  # Start PocketBase locally (http://localhost:8080)
+# Admin UI: http://localhost:8080/_/
+# API: http://localhost:8080/api/
+```
+
+**See**: `.claude/rules/backend/pocketbase.md` for full documentation.
 
 ## Architecture
 
@@ -96,6 +109,35 @@ The app uses expo-sqlite for local data persistence:
 - Use prepared statements (parameterized queries) to prevent SQL injection
 - UNIQUE constraint on (german, article) prevents duplicates
 - `is_user_added` flag distinguishes user content from pre-loaded vocabulary
+- `remote_id` column stores deterministic PocketBase IDs for sync matching
+
+### PocketBase Backend (Optional)
+
+**Location**: `/database/pocketbase/`
+
+Optional Go backend for vocabulary sync. The app works fully offline without it.
+
+#### Collections
+
+- **categories** - Vocabulary categories (people, animals, home, etc.)
+- **nouns** - German nouns with articles, plurals, translations
+- **users** (built-in) - For future user accounts (Phase 2+)
+
+#### What Syncs
+
+- ✅ Categories (read-only from PocketBase → SQLite)
+- ✅ Nouns (read-only from PocketBase → SQLite)
+- ❌ User progress (stays local for now)
+- ❌ User-added words (stays local for now)
+
+#### Key Features
+
+- Deterministic IDs match local `remote_id` values
+- Public read access (anyone can fetch vocabulary)
+- Admin-only writes (controlled vocabulary)
+- Deployed to Fly.io with auto-scaling (scale to zero when idle)
+
+**See**: `.claude/rules/backend/pocketbase.md` for full setup, deployment, and API docs.
 
 ### Service Layer
 
@@ -103,11 +145,24 @@ The app uses expo-sqlite for local data persistence:
 
 Business logic abstracted from UI components:
 
-- **vocabularyService.ts** - CRUD operations for nouns/verbs
+- **vocabularyService.ts** - CRUD operations for nouns/verbs (SQLite)
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
 - **statisticsService.ts** - User progress, streaks, forecasting
+- **syncService.ts** - Optional PocketBase vocabulary sync
 
 Services use the database singleton and provide clean APIs to components.
+
+#### Sync Service
+
+`services/syncService.ts` handles optional vocabulary sync from PocketBase:
+
+- Fetches categories and nouns from PocketBase API
+- Upserts into local SQLite by matching `remote_id`
+- Gracefully handles network errors (app continues offline)
+- Tracks last sync timestamp in settings
+- Skips sync entirely if `PB_URL` is not configured
+
+**Important**: Sync is one-way (PocketBase → SQLite) for vocabulary only. User progress stays local.
 
 ### File-Based Routing (Expo Router)
 

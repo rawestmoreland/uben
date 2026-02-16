@@ -2,42 +2,89 @@
 
 ## Context
 
-**This app has NO backend API.** Everything is local-first with SQLite.
+**This app is offline-first with optional cloud sync.** All core functionality works with SQLite only. PocketBase provides optional vocabulary sync but is NOT required for the app to function.
 
-This file exists to document the pattern IF we add a backend later (e.g., for cloud sync, user accounts, or shared word lists).
+## Current State
 
-## Current State (v1)
+### Offline-First Architecture
 
-### No API Calls
+- ✅ All data stored locally in SQLite (primary source of truth)
+- ✅ App works fully offline (no network required)
+- ✅ Optional PocketBase sync for vocabulary updates (categories, nouns)
+- ❌ No user authentication yet (Phase 2)
+- ❌ No user progress sync yet (Phase 2)
 
-- All data stored locally in SQLite
-- No network requests for vocabulary data
-- No user authentication
-- No cloud sync
+### External APIs
 
-### Only External APIs
-
+- **PocketBase** (optional): Vocabulary sync for categories and nouns
 - **AdMob**: For ad monetization
 - **Expo Updates** (optional): For OTA updates
 
-## Future API Design (If Needed)
+### PocketBase Integration (Current)
 
-### When to Add a Backend
+**Status**: Implemented but optional. If `PB_URL` is not set, the app works entirely offline.
 
-Consider adding an API when:
+**What syncs**:
+- Categories (read-only from PocketBase)
+- Nouns (read-only from PocketBase)
 
-- Users request cloud sync across devices
-- You want to share community-created word lists
-- You need user accounts and profiles
-- You want to track aggregated learning analytics
-- You want premium features (subscriptions)
+**What doesn't sync** (stays local):
+- User-added words (`is_user_added = 1`)
+- Card progress (`card_progress` table)
+- Review history (`review_history` table)
+- Settings
 
-### Recommended Stack (Future)
+**See**: `.claude/rules/backend/pocketbase.md` for full PocketBase documentation.
 
-- **Supabase**: Easy setup, PostgreSQL, auth, real-time
-- **PocketBase**: Simple Go backend, built-in auth
-- **Firebase**: If you need real-time sync
-- **Custom Express/Fastify API**: For full control
+## PocketBase Sync Service
+
+### Current Implementation
+
+**Service**: `services/syncService.ts`
+
+```typescript
+import { PB_URL, SYNC_CONFIG } from '@/constants/pocketbase';
+
+export async function syncVocabularyFromPocketBase() {
+  if (!PB_URL) {
+    console.log('PocketBase URL not set, skipping sync');
+    return { success: false, reason: 'not_configured' };
+  }
+
+  try {
+    // Fetch categories and nouns from PocketBase
+    // Upsert into local SQLite by matching remote_id
+    // Update last_sync timestamp in settings
+  } catch (error) {
+    // Handle network errors gracefully
+    // App continues working offline
+  }
+}
+```
+
+**Key features**:
+- Graceful degradation (no network = no problem)
+- Matches records by `remote_id` to preserve local references
+- Paginated fetching (200 records per page)
+- Tracks last sync timestamp
+
+**See**: `services/syncService.ts` for implementation.
+
+## Future Enhancements
+
+### Phase 2: User Accounts & Progress Sync
+
+When to add:
+- Users request cloud backup of progress
+- Multi-device sync becomes a priority
+- Community features need user identity
+
+### What to sync (Phase 2+)
+
+- User accounts (PocketBase built-in auth)
+- Card progress (`card_progress` → PocketBase collection)
+- Review history (`review_history` → PocketBase collection)
+- User-added words (optional, privacy considerations)
 
 ### API Design Principles (Future)
 
@@ -268,46 +315,48 @@ export async function deleteAccount(): Promise<void> {
 }
 ```
 
-## Current Implementation
+## Current Service Layer
 
-### No API Service Needed
+### Implemented Services
 
 ```typescript
-// ❌ Don't create these yet
-// services/api.ts - NOT NEEDED
-// services/auth.ts - NOT NEEDED
-// services/sync.ts - NOT NEEDED
+// ✅ Core services
+services/vocabularyService.ts      // SQLite CRUD for nouns/verbs
+services/spacedRepetitionService.ts // SM-2 algorithm
+services/statisticsService.ts       // User progress stats
+services/syncService.ts            // PocketBase vocabulary sync (optional)
 ```
 
-### Focus on Local Services
+### Not Yet Implemented
 
 ```typescript
-// ✅ These are what we need now
-// services/vocabularyService.ts
-// services/spacedRepetitionService.ts
-// services/statisticsService.ts
+// ❌ Phase 2+ services
+services/authService.ts            // User authentication
+services/progressSyncService.ts    // Sync card_progress to cloud
+services/userWordsService.ts       // Cloud backup of user-added words
 ```
 
 ## Rules Summary
 
-### Current (v1) Rules
+### Current Rules (Offline-First + Optional Sync)
 
-- ✅ All data stays local (SQLite)
-- ✅ No authentication required
-- ✅ No network requests for vocabulary
-- ✅ AdMob is the only external API
-- ✅ Offline-first by default
+- ✅ SQLite is the source of truth (local-first)
+- ✅ App works fully offline (no network required)
+- ✅ PocketBase sync is optional (graceful degradation)
+- ✅ Sync uses `remote_id` to match records (preserves local references)
+- ✅ User data (progress, history) stays local for now
+- ✅ No authentication required yet
+- ✅ Handle network errors gracefully (don't block UI)
 
-### Future API Rules (When Added)
+### Future Rules (Phase 2+)
 
-- ✅ Use JWT for authentication
-- ✅ Implement offline-first sync with queue
-- ✅ Handle network errors gracefully
-- ✅ Rate limit API requests client-side
-- ✅ Use HTTPS only
-- ✅ Respect user privacy (GDPR)
+- ✅ Use PocketBase auth for user accounts
+- ✅ Implement bidirectional sync with conflict resolution
+- ✅ Sync queue for offline changes
 - ✅ Background sync for seamless experience
-- ✅ Conflict resolution: last-write-wins
+- ✅ Use HTTPS only in production
+- ✅ Respect user privacy (GDPR-compliant)
+- ✅ Rate limit API requests client-side
 
 ### Don'ts
 
