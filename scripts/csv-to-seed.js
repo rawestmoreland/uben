@@ -72,15 +72,29 @@ function toCamelCase(filename) {
 function parseCSV(content) {
   const lines = content.trim().split(/\r?\n/);
   if (lines.length < 2) {
-    throw new Error('CSV file must have at least a header row and one data row');
+    throw new Error(
+      'CSV file must have at least a header row and one data row',
+    );
   }
 
   const header = lines[0].split(',').map((h) => h.trim());
-  const expectedHeader = ['german', 'article', 'plural', 'english', 'level', 'category'];
+  const expectedHeader = [
+    'german',
+    'article',
+    'plural',
+    'english',
+    'level',
+    'category',
+  ];
 
   // Validate header
-  if (header.length !== expectedHeader.length || !header.every((h, i) => h === expectedHeader[i])) {
-    throw new Error(`Invalid CSV header. Expected: ${expectedHeader.join(',')}`);
+  if (
+    header.length !== expectedHeader.length ||
+    !header.every((h, i) => h === expectedHeader[i])
+  ) {
+    throw new Error(
+      `Invalid CSV header. Expected: ${expectedHeader.join(',')}`,
+    );
   }
 
   const rows = [];
@@ -90,7 +104,9 @@ function parseCSV(content) {
 
     const values = line.split(',').map((v) => v.trim());
     if (values.length !== header.length) {
-      throw new Error(`Line ${i + 1}: Expected ${header.length} columns, got ${values.length}`);
+      throw new Error(
+        `Line ${i + 1}: Expected ${header.length} columns, got ${values.length}`,
+      );
     }
 
     const row = {};
@@ -111,7 +127,9 @@ function loadExistingSeeds() {
   const existing = new Map();
 
   // Find all .ts files in the seeds directory
-  const files = fs.readdirSync(SEEDS_DIR).filter((f) => f.endsWith('.ts') && f !== 'index.ts');
+  const files = fs
+    .readdirSync(SEEDS_DIR)
+    .filter((f) => f.endsWith('.ts') && f !== 'index.ts');
 
   for (const file of files) {
     const filePath = path.join(SEEDS_DIR, file);
@@ -119,7 +137,9 @@ function loadExistingSeeds() {
 
     // Extract noun entries using regex (simple approach)
     // Match patterns like: german: 'Hund', article: 'der',
-    const matches = content.matchAll(/german:\s*'([^']+)'[^}]*article:\s*'(der|die|das)'/g);
+    const matches = content.matchAll(
+      /german:\s*'([^']+)'[^}]*article:\s*'(der|die|das)'/g,
+    );
 
     for (const match of matches) {
       const german = match[1];
@@ -150,26 +170,36 @@ function validateRow(row, lineNumber, existingSeeds) {
 
   // Article validation
   if (!VALID_ARTICLES.includes(article)) {
-    errors.push(`Line ${lineNumber}: article must be one of: ${VALID_ARTICLES.join(', ')} (found: "${article}")`);
+    errors.push(
+      `Line ${lineNumber}: article must be one of: ${VALID_ARTICLES.join(', ')} (found: "${article}")`,
+    );
   }
 
   // Level validation
   if (!VALID_LEVELS.includes(level)) {
-    errors.push(`Line ${lineNumber}: level must be one of: ${VALID_LEVELS.join(', ')} (found: "${level}")`);
+    errors.push(
+      `Line ${lineNumber}: level must be one of: ${VALID_LEVELS.join(', ')} (found: "${level}")`,
+    );
   }
 
   // Category validation
   if (!VALID_CATEGORIES.includes(category)) {
-    const suggestion = VALID_CATEGORIES.find((c) => c.includes(category.toLowerCase()));
+    const suggestion = VALID_CATEGORIES.find((c) =>
+      c.includes(category.toLowerCase()),
+    );
     const hint = suggestion ? ` (did you mean "${suggestion}"?)` : '';
-    errors.push(`Line ${lineNumber}: invalid category "${category}"${hint}. Valid categories: ${VALID_CATEGORIES.join(', ')}`);
+    errors.push(
+      `Line ${lineNumber}: invalid category "${category}"${hint}. Valid categories: ${VALID_CATEGORIES.join(', ')}`,
+    );
   }
 
   // Duplicate check
   if (german && article && VALID_ARTICLES.includes(article)) {
     const key = `${german}|${article}`;
     if (existingSeeds.has(key)) {
-      errors.push(`Line ${lineNumber}: duplicate noun "${german}" with article "${article}" (already exists in ${existingSeeds.get(key)})`);
+      errors.push(
+        `Line ${lineNumber}: duplicate noun "${german}" with article "${article}" (already exists in ${existingSeeds.get(key)})`,
+      );
     }
   }
 
@@ -223,7 +253,9 @@ function printSuccess(outputPath, exportName, count, skippedCount) {
   console.log(`1. Review the generated file:`);
   console.log(`   ${outputPath}\n`);
   console.log(`2. Add import to database/seeds/nouns/index.ts:`);
-  console.log(`   import { ${exportName} } from './${path.basename(outputPath, '.ts')}';\n`);
+  console.log(
+    `   import { ${exportName} } from './${path.basename(outputPath, '.ts')}';\n`,
+  );
   console.log(`3. Add version entry to nounSeedVersions array:`);
   console.log(`   { version: 'X.X.X_description', nouns: ${exportName} },\n`);
   console.log(`4. Test the app to verify seeding works correctly.\n`);
@@ -307,8 +339,8 @@ async function main() {
         validRows.push(row);
       } else {
         // Separate duplicates from other errors
-        const hasDuplicate = errors.some(e => e.includes('duplicate noun'));
-        const otherErrors = errors.filter(e => !e.includes('duplicate noun'));
+        const hasDuplicate = errors.some((e) => e.includes('duplicate noun'));
+        const otherErrors = errors.filter((e) => !e.includes('duplicate noun'));
 
         if (hasDuplicate && otherErrors.length === 0) {
           // Only duplicate error - skip this row with a warning
@@ -338,7 +370,9 @@ async function main() {
     }
 
     if (validRows.length === 0) {
-      console.error('❌ No valid entries to process after removing duplicates.\n');
+      console.error(
+        '❌ No valid entries to process after removing duplicates.\n',
+      );
       process.exit(1);
     }
 
