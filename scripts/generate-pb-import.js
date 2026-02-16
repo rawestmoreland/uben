@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-undef */
 
 /**
  * Generate PocketBase import JSON from local seed data.
@@ -83,9 +84,7 @@ const pbCategories = categories.map((cat) => ({
 }));
 
 // Build name → PB id lookup so nouns can reference category by ID
-const categoryIdByName = new Map(
-  pbCategories.map((cat) => [cat.name, cat.id]),
-);
+const categoryIdByName = new Map(pbCategories.map((cat) => [cat.name, cat.id]));
 
 // ── Nouns (all seed files, deduplicated) ─────────────────────────────
 
@@ -110,7 +109,9 @@ for (const noun of allNouns) {
 const pbNouns = [...nounMap.values()].map((noun) => {
   const catId = categoryIdByName.get(noun.category);
   if (!catId) {
-    console.warn(`  Warning: unknown category "${noun.category}" for noun "${noun.german}"`);
+    console.warn(
+      `  Warning: unknown category "${noun.category}" for noun "${noun.german}"`,
+    );
   }
   return {
     id: generateNounRemoteId(noun.german, noun.article),
@@ -139,4 +140,6 @@ console.log('Generated PocketBase import files:');
 console.log(`  pb-import-categories.json  (${pbCategories.length} categories)`);
 console.log(`  pb-import-nouns.json       (${pbNouns.length} nouns)`);
 console.log('');
-console.log('Import order: categories FIRST, then nouns (nouns reference category IDs).');
+console.log(
+  'Import order: categories FIRST, then nouns (nouns reference category IDs).',
+);

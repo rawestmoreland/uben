@@ -205,31 +205,42 @@ export const migrations: Migration[] = [
     version: '003',
     name: 'add_remote_id',
     up: async (db: SQLite.SQLiteDatabase) => {
-      // Add remote_id column to nouns (nullable — user-added nouns won't have one)
-      await db.execAsync(
-        'ALTER TABLE nouns ADD COLUMN remote_id TEXT;',
-      );
-      await db.execAsync(
-        'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id);',
-      );
+      console.log('[Migration 003] Adding remote_id columns...');
 
       // Add remote_id column to categories
-      await db.execAsync(
-        'ALTER TABLE categories ADD COLUMN remote_id TEXT;',
-      );
-      await db.execAsync(
-        'CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_remote_id ON categories(remote_id);',
-      );
+      try {
+        await db.execAsync(
+          'ALTER TABLE categories ADD COLUMN remote_id TEXT;',
+        );
+        await db.execAsync(
+          'CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_remote_id ON categories(remote_id) WHERE remote_id IS NOT NULL;',
+        );
+        console.log('[Migration 003] Added remote_id to categories');
+      } catch (error) {
+        console.error('[Migration 003] Failed to add remote_id to categories:', error);
+        throw error;
+      }
+
+      // Add remote_id column to nouns
+      try {
+        await db.execAsync(
+          'ALTER TABLE nouns ADD COLUMN remote_id TEXT;',
+        );
+        await db.execAsync(
+          'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id) WHERE remote_id IS NOT NULL;',
+        );
+        console.log('[Migration 003] Added remote_id to nouns');
+      } catch (error) {
+        console.error('[Migration 003] Failed to add remote_id to nouns:', error);
+        throw error;
+      }
+
+      console.log('[Migration 003] Complete');
     },
     down: async (db: SQLite.SQLiteDatabase) => {
-      // SQLite doesn't support DROP COLUMN before 3.35.0, so recreate tables.
-      // In practice we never run down migrations on mobile, but included for completeness.
-      await db.execAsync(
-        'DROP INDEX IF EXISTS idx_nouns_remote_id;',
-      );
-      await db.execAsync(
-        'DROP INDEX IF EXISTS idx_categories_remote_id;',
-      );
+      // SQLite doesn't support DROP COLUMN before 3.35.0, so just drop indexes
+      await db.execAsync('DROP INDEX IF EXISTS idx_nouns_remote_id;');
+      await db.execAsync('DROP INDEX IF EXISTS idx_categories_remote_id;');
     },
   },
 ];

@@ -27,6 +27,7 @@ const VALID_CATEGORIES = [
   'general',
 ];
 
+// eslint-disable-next-line no-undef
 const SEEDS_DIR = path.join(__dirname, '../database/seeds/nouns');
 
 // ── Helper Functions ──────────────────────────────────────────────────────
