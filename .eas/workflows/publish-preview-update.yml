@@ -5,8 +5,16 @@ on:
     branches: ['*']
 
 jobs:
-  publish_preview_update:
+  publish_preview_update-ios:
     name: Publish preview update
     type: update
     params:
       branch: ${{ github.ref_name || 'test' }}
+      platform: ios
+
+  publish_preview_update-android:
+    name: Publish preview update
+    type: update
+    params:
+      branch: ${{ github.ref_name || 'test' }}
+      platform: android
