@@ -19,7 +19,7 @@ describe('germanText utilities', () => {
     });
 
     it('handles multiple eszett characters', () => {
-      expect(convertEszettToSS('Straßenbaß')).toBe('Strassenb ass');
+      expect(convertEszettToSS('Straßenbaß')).toBe('Strassenbass');
     });
   });
 

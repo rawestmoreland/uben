@@ -1,6 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 // Keep the splash screen visible while we prepare resources
 SplashScreen.preventAutoHideAsync();
@@ -8,8 +8,6 @@ SplashScreen.preventAutoHideAsync();
 interface AnimatedSplashProps {
   onFinish: () => void;
 }
-
-const { width, height } = Dimensions.get('window');
 
 export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
   // Letter animations
@@ -197,6 +195,7 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
       clearTimeout(timer);
       dotAnimations.forEach((anim) => anim.stop());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Interpolations for rotation
