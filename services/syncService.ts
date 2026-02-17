@@ -124,8 +124,6 @@ class SyncService {
     let page = 1;
     let totalPages = 1;
 
-    console.log('since', since);
-
     while (page <= totalPages) {
       const params = new URLSearchParams({
         page: String(page),
@@ -143,7 +141,7 @@ class SyncService {
       }
 
       const url = `${PB_URL}/api/collections/${collection}/records?${params}`;
-      console.log('fetching', url);
+
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -153,7 +151,6 @@ class SyncService {
       }
 
       const data: PBListResponse<T> = await response.json();
-      console.log('data', data);
       allItems.push(...data.items);
       totalPages = data.totalPages;
       page++;
@@ -299,7 +296,8 @@ class SyncService {
             if (result.changes > 0) synced++;
           } catch (error) {
             // Handle UNIQUE(german, article) constraint violation
-            const message = error instanceof Error ? error.message : String(error);
+            const message =
+              error instanceof Error ? error.message : String(error);
             if (message.includes('UNIQUE constraint')) {
               // Word exists with same german+article but different/no remote_id.
               // Check if it's a user-added word — if so, only assign remote_id
@@ -345,7 +343,10 @@ class SyncService {
                 if (result.changes > 0) synced++;
               }
             } else {
-              console.warn(`[Sync] Failed to insert noun "${noun.german}":`, message);
+              console.warn(
+                `[Sync] Failed to insert noun "${noun.german}":`,
+                message,
+              );
             }
           }
         }
