@@ -65,6 +65,15 @@ jobs:
           exit $exit_code
         continue-on-error: true
 
+      - name: Run Jest
+        id: jest
+        run: |
+          npm run test 2>&1 | tee jest-output.txt
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          exit $exit_code
+        continue-on-error: true
+
       - name: Run TypeScript check
         id: tsc
         run: |
@@ -81,9 +90,11 @@ jobs:
             const fs = require('fs');
             const lintOutput = fs.existsSync('lint-output.txt') ? fs.readFileSync('lint-output.txt', 'utf8') : '';
             const tscOutput = fs.existsSync('tsc-output.txt') ? fs.readFileSync('tsc-output.txt', 'utf8') : '';
+            const jestOutput = fs.existsSync('jest-output.txt') ? fs.readFileSync('jest-output.txt', 'utf8') : '';
 
             const lintSuccess = '${{ steps.lint.outputs.exit_code }}' === '0';
             const tscSuccess = '${{ steps.tsc.outputs.exit_code }}' === '0';
+            const jestSuccess = '${{ steps.jest.outputs.exit_code }}' === '0';
 
             let body = '## Code Quality Checks\n\n';
 
@@ -97,7 +108,12 @@ jobs:
               body += '```\n' + tscOutput.slice(0, 2000) + '\n```\n\n';
             }
 
-            if (lintSuccess && tscSuccess) {
+            body += `### Jest ${jestSuccess ? '✅' : '❌'}\n`;
+            if (!jestSuccess && jestOutput) {
+              body += '```\n' + jestOutput.slice(0, 2000) + '\n```\n\n';
+            }
+
+            if (lintSuccess && tscSuccess && jestSuccess) {
               body += '\n✅ All checks passed!';
             }
 
@@ -108,6 +124,6 @@ jobs:
               body: body
             });
 
-            if (!lintSuccess || !tscSuccess) {
+            if (!lintSuccess || !tscSuccess || !jestSuccess) {
               core.setFailed('Code quality checks failed');
             }
