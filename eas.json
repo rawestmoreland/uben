@@ -47,6 +47,7 @@
     "preview-store": {
       "channel": "staging",
       "distribution": "store",
+      "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium"
       },

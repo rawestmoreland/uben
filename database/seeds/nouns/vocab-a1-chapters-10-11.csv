@@ -1,0 +1,58 @@
+german,article,plural,english,level,category
+Club,der,Clubs,club,A1,general
+Notfallstation,die,Notfallstationen,emergency room,A1,health
+Tablette,die,Tabletten,tablet,A1,health
+Auge,das,Augen,eye,A1,body
+Unfall,der,Unfälle,accident,A1,health
+Doktor,der,Doktoren,doctor,A1,health
+Schmerz,der,Schmerzen,pain,A1,health
+Idee,die,Ideen,idea,A1,general
+Bein,das,Beine,leg,A1,body
+Haar,das,Haare,hair,A1,body
+Ohr,das,Ohren,ear,A1,body
+Arm,der,Arme,arm,A1,body
+Bauch,der,Bäuche,stomach,A1,body
+Finger,der,Finger,finger,A1,body
+Fuss,der,Füsse,foot,A1,body
+Hals,der,Hälse,neck,A1,body
+Kopf,der,Köpfe,head,A1,body
+Rücken,der,Rücken,back,A1,body
+Brust,die,Brüste,chest,A1,body
+Hand,die,Hände,hand,A1,body
+Nase,die,Nasen,nose,A1,body
+Mund,der,Münder,mouth,A1,body
+Zahn,der,Zähne,tooth,A1,body
+Nachricht,die,Nachrichten,message,A1,communication
+Kuss,der,Küsse,kiss,A1,communication
+Bekannte,der,Bekannten,acquaintance,A1,people
+Schritt,der,Schritte,step,A1,general
+Medikament,das,Medikamente,medication,A1,health
+Apotheke,die,Apotheken,pharmacy,A1,health
+Fieber,das,,fever,A1,health
+Husten,der,,cough,A1,health
+Salbe,die,Salben,ointment,A1,health
+Gesundheit,die,,health,A1,health
+Schnupfen,der,,cold,A1,health
+Absender,der,Absender,sender,A1,communication
+Empfänger,der,Empfänger,recipient,A1,communication
+Anrede,die,Anreden,salutation,A1,communication
+Datum,das,Daten,date,A1,time
+Unterschrift,die,Unterschriften,signature,A1,communication
+Sprechstunde,die,Sprechstunden,office hours,A1,time
+Minute,die,Minuten,minute,A1,time
+Krankenkassenkarte,die,Krankenkassenkarten,health insurance card,A1,health
+Boden,der,Böden,floor,A1,home
+Notfallarzt,der,Notfallärzte,emergency doctor,A1,health
+Notfall,der,Notfälle,emergency,A1,health
+Hilfe,die,,help,A1,general
+Sanität,die,Sanitäten,ambulance service,A1,health
+Notarzt,der,Notärzte,emergency doctor,A1,health
+Motorrad,das,Motorräder,motorcycle,A1,transportation
+Verletzung,die,Verletzungen,injury,A1,health
+Autogarage,die,Autogaragen,car garage,A1,places
+Schlüssel,der,Schlüssel,key,A1,furniture
+Autobahn,die,Autobahnen,highway,A1,transportation
+Brücke,die,Brücken,bridge,A1,places
+Weg,der,Wege,way,A1,general
+Bahnhof,der,Bahnhöfe,train station,A1,transportation
+Metzgerei,die,Metzgereien,butcher shop,A1,places

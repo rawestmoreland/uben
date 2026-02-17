@@ -10,6 +10,7 @@ export interface Noun {
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
   category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
+  remote_id: string | null; // PocketBase record ID (null for user-added nouns)
   created_at: string;
 }
 
@@ -19,6 +20,7 @@ export interface Category {
   name: string;
   display_name: string;
   display_order: number;
+  remote_id: string | null; // PocketBase record ID
   created_at: string;
 }
 
@@ -123,6 +125,27 @@ export interface UserNounInput {
   english?: string;
 }
 
+/** Valid category names for noun classification */
+export type CategoryName =
+  | 'people'
+  | 'animals'
+  | 'home'
+  | 'furniture'
+  | 'food'
+  | 'body'
+  | 'clothing'
+  | 'nature'
+  | 'places'
+  | 'transportation'
+  | 'time'
+  | 'weather'
+  | 'education'
+  | 'money'
+  | 'communication'
+  | 'health'
+  | 'colors'
+  | 'general';
+
 /** Shape for seed noun data */
 export interface SeedNoun {
   german: string;
@@ -130,6 +153,7 @@ export interface SeedNoun {
   plural: string | null;
   english: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  category: CategoryName;
 }
 
 /** Shape for seed category data */
@@ -137,6 +161,27 @@ export interface SeedCategory {
   name: string;
   display_name: string;
   display_order: number;
+}
+
+/** A correction to an existing noun in the database */
+export interface NounCorrection {
+  /** The German word to match (part of UNIQUE key) */
+  german: string;
+  /** The current article to match (part of UNIQUE key) */
+  currentArticle: 'der' | 'die' | 'das';
+  /** Fields to overwrite — only specify fields that need correction */
+  corrections: {
+    article?: 'der' | 'die' | 'das';
+    plural?: string | null;
+    english?: string;
+    category?: CategoryName;
+  };
+}
+
+/** A versioned batch of noun corrections */
+export interface NounCorrectionVersion {
+  version: string;
+  corrections: NounCorrection[];
 }
 
 /** Migration definition */
