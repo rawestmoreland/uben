@@ -6,14 +6,14 @@ on:
 
 jobs:
   publish_preview_update-ios:
-    name: Publish preview update
+    name: Publish preview update (iOS)
     type: update
     params:
       branch: ${{ github.ref_name || 'test' }}
       platform: ios
 
   publish_preview_update-android:
-    name: Publish preview update
+    name: Publish preview update (Android)
     type: update
     params:
       branch: ${{ github.ref_name || 'test' }}
