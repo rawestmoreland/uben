@@ -124,8 +124,6 @@ class SyncService {
     let page = 1;
     let totalPages = 1;
 
-    console.log('since', since);
-
     while (page <= totalPages) {
       const params = new URLSearchParams({
         page: String(page),
@@ -153,7 +151,6 @@ class SyncService {
       }
 
       const data: PBListResponse<T> = await response.json();
-      console.log('data', data);
       allItems.push(...data.items);
       totalPages = data.totalPages;
       page++;
