@@ -878,6 +878,17 @@ async function enforceNounCategoryConstraint(
     return; // Already applied
   }
 
+  // If migration 004 has run, it already handled the canonical table recreation
+  // (including remote_id) and pre-inserted this version into data_versions.
+  // This check is a safety net in case the data_versions insert was missed.
+  const migration004Applied = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM migrations WHERE version = ?',
+    ['004'],
+  );
+  if (migration004Applied) {
+    return;
+  }
+
   console.log('[DB] Enforcing NOT NULL constraint on nouns.category_id...');
 
   await db.withTransactionAsync(async () => {
@@ -904,7 +915,9 @@ async function enforceNounCategoryConstraint(
       }
     }
 
-    // Recreate nouns table with NOT NULL constraint and foreign key
+    // Recreate nouns table with NOT NULL constraint, foreign key, and remote_id.
+    // remote_id must be included here to preserve it for any install that
+    // had migration 003 applied before this seed step runs.
     await db.execAsync(`
       CREATE TABLE nouns_new (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -914,6 +927,7 @@ async function enforceNounCategoryConstraint(
         english TEXT,
         level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
         category_id INTEGER NOT NULL,
+        remote_id TEXT,
         is_user_added BOOLEAN DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(german, article),
@@ -922,10 +936,11 @@ async function enforceNounCategoryConstraint(
     `);
 
     // Copy data with explicit column mapping (column order differs between
-    // the ALTERed table and the new definition)
+    // the ALTERed table and the new definition).
+    // remote_id is included so it is preserved across the table swap.
     await db.execAsync(`
-      INSERT INTO nouns_new (id, german, article, plural, english, level, category_id, is_user_added, created_at)
-      SELECT id, german, article, plural, english, level, category_id, is_user_added, created_at
+      INSERT INTO nouns_new (id, german, article, plural, english, level, category_id, remote_id, is_user_added, created_at)
+      SELECT id, german, article, plural, english, level, category_id, remote_id, is_user_added, created_at
       FROM nouns;
     `);
 
@@ -942,6 +957,9 @@ async function enforceNounCategoryConstraint(
     );
     await db.execAsync(
       'CREATE INDEX IF NOT EXISTS idx_nouns_category ON nouns(category_id);',
+    );
+    await db.execAsync(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id) WHERE remote_id IS NOT NULL;',
     );
 
     // Mark as applied

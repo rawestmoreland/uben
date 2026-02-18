@@ -245,6 +245,89 @@ export const migrations: Migration[] = [
       await db.execAsync('DROP INDEX IF EXISTS idx_categories_remote_id;');
     },
   },
+  {
+    version: '004',
+    name: 'canonical_nouns_schema',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log('[Migration 004] Rebuilding nouns table with canonical schema...');
+
+      // Fix any null category_ids before enforcing NOT NULL
+      const generalCat = await db.getFirstAsync<{ id: number }>(
+        'SELECT id FROM categories WHERE name = ?',
+        ['general'],
+      );
+      if (generalCat) {
+        await db.runAsync(
+          'UPDATE nouns SET category_id = ? WHERE category_id IS NULL',
+          [generalCat.id],
+        );
+      }
+
+      // Create the authoritative nouns table with all columns defined
+      await db.execAsync(`
+        CREATE TABLE nouns_v4 (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          german TEXT NOT NULL,
+          article TEXT NOT NULL CHECK(article IN ('der', 'die', 'das')),
+          plural TEXT,
+          english TEXT,
+          level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+          category_id INTEGER NOT NULL,
+          remote_id TEXT,
+          is_user_added BOOLEAN DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(german, article),
+          FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+        );
+      `);
+
+      // Copy data — try including remote_id first; fall back if column doesn't exist
+      // (handles the edge case where migration 003 ran but then seed dropped the column)
+      try {
+        await db.execAsync(`
+          INSERT INTO nouns_v4 (id, german, article, plural, english, level, category_id, remote_id, is_user_added, created_at)
+          SELECT id, german, article, plural, english, level, category_id, remote_id, is_user_added, created_at
+          FROM nouns;
+        `);
+      } catch {
+        // remote_id column doesn't exist in source table — copy without it
+        await db.execAsync(`
+          INSERT INTO nouns_v4 (id, german, article, plural, english, level, category_id, is_user_added, created_at)
+          SELECT id, german, article, plural, english, level, category_id, is_user_added, created_at
+          FROM nouns;
+        `);
+      }
+
+      // Swap tables
+      await db.execAsync('DROP TABLE nouns;');
+      await db.execAsync('ALTER TABLE nouns_v4 RENAME TO nouns;');
+
+      // Recreate all indexes
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_level ON nouns(level);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_user_added ON nouns(is_user_added);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_category ON nouns(category_id);',
+      );
+      await db.execAsync(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id) WHERE remote_id IS NOT NULL;',
+      );
+
+      // Pre-mark the seeding step so enforceNounCategoryConstraint is a no-op
+      await db.runAsync(
+        'INSERT OR IGNORE INTO data_versions (version) VALUES (?)',
+        ['2.0.1_noun_category_not_null'],
+      );
+
+      console.log('[Migration 004] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      await db.execAsync('DROP INDEX IF EXISTS idx_nouns_remote_id;');
+    },
+  },
 ];
 
 /**
