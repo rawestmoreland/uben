@@ -1,4 +1,13 @@
 import {
+  AppColors,
+  Layout,
+  Spacing,
+  Typography,
+  shadowStyle,
+} from '@/constants/design';
+import { useSettings } from '@/hooks/use-settings';
+import { useTranslation } from 'react-i18next';
+import {
   Pressable,
   ScrollView,
   StyleSheet,
@@ -7,18 +16,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  AppColors,
-  Layout,
-  Spacing,
-  Typography,
-  shadowStyle,
-} from '@/constants/design';
-import { useSettings } from '@/hooks/use-settings';
 
 // ── Settings Screen ──────────────────────────────────────────────────
 
 export default function SettingsScreen() {
+  const { t } = useTranslation('app');
   const {
     showEnglishHint,
     setShowEnglishHint,
@@ -36,21 +38,26 @@ export default function SettingsScreen() {
       >
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>SETTINGS</Text>
-          <Text style={styles.headerSubtitle}>CUSTOMIZE YOUR EXPERIENCE</Text>
+          <Text style={styles.headerTitle}>
+            {t('settings.title').toUpperCase()}
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {t('settings.customize_your_experience').toUpperCase()}
+          </Text>
         </View>
 
         {/* ── Quiz Settings Card ──────────────────────────────── */}
         <View style={[styles.card, shadowStyle]}>
-          <Text style={styles.cardTitle}>QUIZ</Text>
+          <Text style={styles.cardTitle}>{t('quiz').toUpperCase()}</Text>
 
           {/* Show English Hint Toggle */}
           <View style={styles.settingRow}>
             <View style={styles.settingTextGroup}>
-              <Text style={styles.settingLabel}>SHOW ENGLISH HINT</Text>
+              <Text style={styles.settingLabel}>
+                {t('settings.show_english_hint').toUpperCase()}
+              </Text>
               <Text style={styles.settingDescription}>
-                Display the English translation beneath the German noun during
-                practice.
+                {t('settings.display_english_translation')}
               </Text>
             </View>
             <Switch
@@ -69,9 +76,11 @@ export default function SettingsScreen() {
           {/* German Spelling Preference */}
           <View style={styles.settingRow}>
             <View style={styles.settingTextGroup}>
-              <Text style={styles.settingLabel}>GERMAN SPELLING</Text>
+              <Text style={styles.settingLabel}>
+                {t('settings.german_spelling').toUpperCase()}
+              </Text>
               <Text style={styles.settingDescription}>
-                Choose between Standard German (ß) and Swiss German (ss).
+                {t('settings.choose_between_standard_german_and_swiss_german')}
               </Text>
             </View>
             <View style={styles.segmentedControl}>
@@ -85,7 +94,9 @@ export default function SettingsScreen() {
                 onPress={() => setEszettPreference('eszett')}
                 disabled={isLoading}
                 accessibilityRole="button"
-                accessibilityLabel="Use standard German spelling with eszett"
+                accessibilityLabel={t(
+                  'settings.use_standard_german_with_eszett',
+                )}
               >
                 <Text
                   style={[
@@ -107,13 +118,12 @@ export default function SettingsScreen() {
                 onPress={() => setEszettPreference('ss')}
                 disabled={isLoading}
                 accessibilityRole="button"
-                accessibilityLabel="Use Swiss German spelling with ss"
+                accessibilityLabel={t('settings.use_swiss_german_with_ss')}
               >
                 <Text
                   style={[
                     styles.segmentButtonText,
-                    eszettPreference === 'ss' &&
-                      styles.segmentButtonTextActive,
+                    eszettPreference === 'ss' && styles.segmentButtonTextActive,
                   ]}
                 >
                   SS

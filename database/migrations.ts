@@ -249,7 +249,9 @@ export const migrations: Migration[] = [
     version: '004',
     name: 'canonical_nouns_schema',
     up: async (db: SQLite.SQLiteDatabase) => {
-      console.log('[Migration 004] Rebuilding nouns table with canonical schema...');
+      console.log(
+        '[Migration 004] Rebuilding nouns table with canonical schema...',
+      );
 
       // Fix any null category_ids before enforcing NOT NULL
       const generalCat = await db.getFirstAsync<{ id: number }>(

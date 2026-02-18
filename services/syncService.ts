@@ -32,6 +32,7 @@ interface PBNoun {
   article: 'der' | 'die' | 'das';
   plural: string;
   english: string;
+  translation_key: string;
   level: string;
   category: string; // PocketBase category ID (relation)
   expand?: {
@@ -264,13 +265,14 @@ class SyncService {
           // Update existing noun
           const result = await this.db.runAsync(
             `UPDATE nouns
-             SET german = ?, article = ?, plural = ?, english = ?, level = ?, category_id = ?
+             SET german = ?, article = ?, plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?
              WHERE remote_id = ?`,
             [
               noun.german,
               noun.article,
               noun.plural || null,
               noun.english || null,
+              noun.translation_key || null,
               noun.level,
               categoryId,
               noun.id,
@@ -281,13 +283,14 @@ class SyncService {
           // Insert new noun
           try {
             const result = await this.db.runAsync(
-              `INSERT INTO nouns (german, article, plural, english, level, category_id, remote_id, is_user_added)
-               VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
+              `INSERT INTO nouns (german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
               [
                 noun.german,
                 noun.article,
                 noun.plural || null,
                 noun.english || null,
+                noun.translation_key || null,
                 noun.level,
                 categoryId,
                 noun.id,
@@ -328,11 +331,12 @@ class SyncService {
                 // Pre-seeded word without remote_id — safe to update with PocketBase data
                 const result = await this.db.runAsync(
                   `UPDATE nouns
-                   SET plural = ?, english = ?, level = ?, category_id = ?, remote_id = ?
+                   SET plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?, remote_id = ?
                    WHERE german = ? AND article = ?`,
                   [
                     noun.plural || null,
                     noun.english || null,
+                    noun.translation_key || null,
                     noun.level,
                     categoryId,
                     noun.id,

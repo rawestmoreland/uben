@@ -15,6 +15,7 @@
  *   pb-import-categories.json
  *   pb-import-nouns.json
  */
+const { convertToTranslationKey } = require('../utils/helpers.ts');
 
 const fs = require('fs');
 const path = require('path');
@@ -113,12 +114,16 @@ const pbNouns = [...nounMap.values()].map((noun) => {
       `  Warning: unknown category "${noun.category}" for noun "${noun.german}"`,
     );
   }
+  const translationKey = noun.english
+    ? convertToTranslationKey(noun.english)
+    : '';
   return {
     id: generateNounRemoteId(noun.german, noun.article),
     german: noun.german,
     article: noun.article,
     plural: noun.plural || '',
     english: noun.english || '',
+    translation_key: translationKey,
     level: noun.level,
     category: catId || '',
   };

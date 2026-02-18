@@ -1,4 +1,4 @@
-import { runMigrations, migrations } from '../migrations';
+import { migrations, runMigrations } from '../migrations';
 
 // ── Mock db factory ───────────────────────────────────────────────────────────
 
@@ -6,6 +6,7 @@ function makeMockDb() {
   return {
     execAsync: jest.fn().mockResolvedValue(undefined),
     getFirstAsync: jest.fn().mockResolvedValue(null), // default: migration not yet applied
+    getAllAsync: jest.fn().mockResolvedValue([]), // default: no rows (e.g. PRAGMA table_info)
     runAsync: jest.fn().mockResolvedValue({ changes: 1 }),
   };
 }
@@ -28,8 +29,9 @@ describe('runMigrations()', () => {
   it('creates the migrations tracking table on first call', async () => {
     await runMigrations(mockDb as any);
 
-    const createTableCall = mockDb.execAsync.mock.calls.find(([sql]: [string]) =>
-      sql.includes('CREATE TABLE IF NOT EXISTS migrations'),
+    const createTableCall = mockDb.execAsync.mock.calls.find(
+      ([sql]: [string]) =>
+        sql.includes('CREATE TABLE IF NOT EXISTS migrations'),
     );
     expect(createTableCall).toBeDefined();
   });

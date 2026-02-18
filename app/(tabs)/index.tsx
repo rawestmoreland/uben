@@ -5,24 +5,32 @@ import {
   shadowStyleSmall,
   Spacing,
   Typography,
-} from "@/constants/design";
-import { useHomeData } from "@/hooks/use-home-data";
-import { router } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+} from '@/constants/design';
+import { useHomeData } from '@/hooks/use-home-data';
+import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Home Screen ──────────────────────────────────────────────────────
 
 export default function HomeScreen() {
-  const { stats, nounCount, userNounCount, streak, hasReviewedToday, isLoading } = useHomeData();
+  const { t } = useTranslation('app');
+  const {
+    stats,
+    nounCount,
+    userNounCount,
+    streak,
+    hasReviewedToday,
+    isLoading,
+  } = useHomeData();
 
   const isFirstTime = stats.total_reviews === 0;
-  const accuracyText = stats.success_rate != null
-    ? `${Math.round(stats.success_rate)}%`
-    : "--";
+  const accuracyText =
+    stats.success_rate != null ? `${Math.round(stats.success_rate)}%` : '--';
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -31,30 +39,32 @@ export default function HomeScreen() {
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Üben</Text>
-          <Text style={styles.headerSubtitle}>GERMAN ARTICLE PRACTICE</Text>
+          <Text style={styles.headerSubtitle}>
+            {t('article_practice_title')}
+          </Text>
         </View>
 
         {/* ── Stats Row ───────────────────────────────────────── */}
         <View style={styles.statsRow}>
           <StatCard
-            value={isLoading ? "-" : String(stats.due_today)}
-            label="TO REVIEW"
-            accentColor={stats.due_today > 0
-              ? AppColors.blue
-              : AppColors.lightGray}
+            value={isLoading ? '-' : String(stats.due_today)}
+            label={t('to_review').toUpperCase()}
+            accentColor={
+              stats.due_today > 0 ? AppColors.blue : AppColors.lightGray
+            }
           />
           <StatCard
-            value={isLoading ? "-" : String(streak)}
-            label="STREAK"
+            value={isLoading ? '-' : String(streak)}
+            label={t('streak').toUpperCase()}
             accentColor={streak > 0 ? AppColors.yellow : AppColors.lightGray}
             showIndicator={!isLoading && streak > 0 && !hasReviewedToday}
           />
           <StatCard
-            value={isLoading ? "-" : accuracyText}
-            label="ACCURACY"
-            accentColor={stats.success_rate != null
-              ? AppColors.green
-              : AppColors.lightGray}
+            value={isLoading ? '-' : accuracyText}
+            label={t('accuracy').toUpperCase()}
+            accentColor={
+              stats.success_rate != null ? AppColors.green : AppColors.lightGray
+            }
           />
         </View>
 
@@ -64,24 +74,26 @@ export default function HomeScreen() {
             styles.ctaButton,
             pressed && styles.ctaButtonPressed,
           ]}
-          onPress={() => router.push("/select-categories")}
+          onPress={() => router.push('/select-categories')}
           accessibilityRole="button"
-          accessibilityLabel={isFirstTime
-            ? "Learn your first words"
-            : "Start practice"}
+          accessibilityLabel={
+            isFirstTime ? t('learn_your_first_words') : t('start_practice')
+          }
         >
           <Text style={styles.ctaText}>
-            {isFirstTime ? "LEARN YOUR FIRST WORDS" : "START PRACTICE"}
+            {isFirstTime
+              ? t('learn_your_first_words').toUpperCase()
+              : t('start_practice').toUpperCase()}
           </Text>
         </Pressable>
         <Text style={styles.ctaSubtext}>
           {isLoading
-            ? " "
+            ? ' '
             : isFirstTime
-            ? `${nounCount} nouns ready to learn`
-            : `${stats.due_today} card${
-              stats.due_today === 1 ? "" : "s"
-            } waiting for review`}
+              ? t('nouns_ready', { count: nounCount })
+              : t('cards_waiting_for_review', {
+                  count: stats.due_today,
+                })}
         </Text>
 
         {/* ── Word Actions ─────────────────────────────────────── */}
@@ -92,11 +104,13 @@ export default function HomeScreen() {
               shadowStyleSmall,
               pressed && styles.addWordButtonPressed,
             ]}
-            onPress={() => router.push("/add-word")}
+            onPress={() => router.push('/add-word')}
             accessibilityRole="button"
-            accessibilityLabel="Add a word"
+            accessibilityLabel={t('add_word')}
           >
-            <Text style={styles.addWordButtonText}>+ ADD WORD</Text>
+            <Text style={styles.addWordButtonText}>
+              + {t('add_word').toUpperCase()}
+            </Text>
           </Pressable>
           {!isLoading && userNounCount > 0 && (
             <Pressable
@@ -105,12 +119,12 @@ export default function HomeScreen() {
                 shadowStyleSmall,
                 pressed && styles.myWordsButtonPressed,
               ]}
-              onPress={() => router.push("/my-words")}
+              onPress={() => router.push('/my-words')}
               accessibilityRole="button"
-              accessibilityLabel={`My words, ${userNounCount} added`}
+              accessibilityLabel={t('my_words_added', { count: userNounCount })}
             >
               <Text style={styles.myWordsButtonText}>
-                MY WORDS ({userNounCount})
+                {t('my_words_count', { count: userNounCount })}
               </Text>
             </Pressable>
           )}
@@ -121,7 +135,10 @@ export default function HomeScreen() {
           <View style={styles.progressHeader}>
             <Text style={styles.progressTitle}>PROGRESS</Text>
             <Text style={styles.progressCount}>
-              {stats.total_cards} of {nounCount} words
+              {t('progress', {
+                total_cards: stats.total_cards,
+                total_words: nounCount,
+              })}
             </Text>
           </View>
           <View style={styles.progressBarOuter}>
@@ -129,17 +146,20 @@ export default function HomeScreen() {
               style={[
                 styles.progressBarFill,
                 {
-                  width: nounCount > 0
-                    ? `${Math.round((stats.total_cards / nounCount) * 100)}%`
-                    : "0%",
+                  width:
+                    nounCount > 0
+                      ? `${Math.round((stats.total_cards / nounCount) * 100)}%`
+                      : '0%',
                 },
               ]}
             />
           </View>
           <Text style={styles.progressSubtext}>
             {isFirstTime
-              ? "Start practicing to track your progress"
-              : `${stats.total_reviews} total reviews completed`}
+              ? t('start_practicing')
+              : t('total_reviews', {
+                  count: stats.total_reviews,
+                })}
           </Text>
         </View>
       </ScrollView>
@@ -211,7 +231,7 @@ const styles = StyleSheet.create({
 
   // Stats Row
   statsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
   },
@@ -222,28 +242,28 @@ const styles = StyleSheet.create({
     borderColor: AppColors.black,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   statAccent: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     height: 6,
   },
   statValueContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: Spacing.xs,
   },
   statValue: {
     fontSize: Typography.heading,
     fontWeight: Typography.bold,
     color: AppColors.black,
-    textAlign: "center",
+    textAlign: 'center',
   },
   indicator: {
     backgroundColor: AppColors.red,
@@ -252,8 +272,8 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: Spacing.xs,
   },
   indicatorText: {
@@ -266,7 +286,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.tiny,
     fontWeight: Typography.semibold,
     color: AppColors.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
     letterSpacing: 1,
     marginTop: Spacing.xs,
   },
@@ -278,8 +298,8 @@ const styles = StyleSheet.create({
     borderColor: AppColors.black,
     paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 72,
     ...shadowStyle,
   },
@@ -297,14 +317,14 @@ const styles = StyleSheet.create({
     fontSize: Typography.small,
     fontWeight: Typography.regular,
     color: AppColors.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: Spacing.md,
     marginBottom: Spacing.xl,
   },
 
   // Word Actions
   wordActionsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
   },
@@ -314,8 +334,8 @@ const styles = StyleSheet.create({
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
     paddingVertical: Spacing.md,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 52,
   },
   addWordButtonPressed: {
@@ -334,8 +354,8 @@ const styles = StyleSheet.create({
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
     paddingVertical: Spacing.md,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 52,
   },
   myWordsButtonPressed: {
@@ -358,9 +378,9 @@ const styles = StyleSheet.create({
     ...shadowStyle,
   },
   progressHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
     marginBottom: Spacing.md,
   },
   progressTitle: {
@@ -379,10 +399,10 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.lightGray,
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   progressBarFill: {
-    height: "100%",
+    height: '100%',
     backgroundColor: AppColors.green,
     borderRightWidth: Layout.borderWidth,
     borderRightColor: AppColors.black,

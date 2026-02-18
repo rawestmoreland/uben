@@ -228,12 +228,23 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
           continue;
         }
 
+        const translationKey = noun.english
+          ? noun.english
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '') // strip diacritics (é → e)
+              .replace(/[^a-z]/g, '_') // non-letters → underscore
+              .replace(/_+/g, '_') // collapse runs
+              .replace(/^_|_$/g, '') // trim edges
+          : null;
+
         await db.runAsync(
-          `INSERT INTO nouns (german, article, plural, english, level, category_id, is_user_added)
-           VALUES (?, ?, ?, ?, ?, ?, 0)
+          `INSERT INTO nouns (german, article, plural, english, translation_key, level, category_id, is_user_added)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 0)
            ON CONFLICT(german, article) DO UPDATE SET
              level = COALESCE(nouns.level, excluded.level),
              english = COALESCE(nouns.english, excluded.english),
+             translation_key = excluded.translation_key,
              plural = COALESCE(nouns.plural, excluded.plural),
              category_id = CASE
                WHEN nouns.category_id IS NULL THEN excluded.category_id
@@ -245,6 +256,7 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
             noun.article,
             noun.plural,
             noun.english,
+            translationKey,
             noun.level,
             categoryId,
           ],
@@ -925,10 +937,12 @@ async function enforceNounCategoryConstraint(
         article TEXT NOT NULL CHECK(article IN ('der', 'die', 'das')),
         plural TEXT,
         english TEXT,
+        translation_key TEXT,
         level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
         category_id INTEGER NOT NULL,
         remote_id TEXT,
         is_user_added BOOLEAN DEFAULT 0,
+        remote_id TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(german, article),
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
@@ -948,7 +962,7 @@ async function enforceNounCategoryConstraint(
     await db.execAsync('DROP TABLE nouns;');
     await db.execAsync('ALTER TABLE nouns_new RENAME TO nouns;');
 
-    // Recreate indexes
+    // Recreate all indexes (including those added by later migrations)
     await db.execAsync(
       'CREATE INDEX IF NOT EXISTS idx_nouns_level ON nouns(level);',
     );

@@ -7,6 +7,7 @@ export interface Noun {
   article: 'der' | 'die' | 'das';
   plural: string | null;
   english: string | null;
+  translation_key: string | null; // Derived from english field, used for i18n lookups
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
   category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
@@ -91,6 +92,7 @@ export interface DueCard extends CardProgress {
   word: string;
   article: string | null;
   english: string | null;
+  translation_key: string | null;
 }
 
 /** Aggregated user statistics */

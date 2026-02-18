@@ -25,6 +25,7 @@ import {
 } from '@/constants/design';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize } from '@/utils/typography';
+import { useNounTranslation } from '@/hooks/use-noun-translation';
 
 // ── Constants ────────────────────────────────────────────────────────
 
@@ -120,6 +121,10 @@ function PlayingState({
   eszettPreference,
 }: PlayingStateProps) {
   const { currentCard, phase, selectedArticle, isCorrect, progress } = quiz;
+  const translation = useNounTranslation(
+    currentCard?.translation_key ?? null,
+    currentCard?.english ?? null,
+  );
 
   const isFeedback = phase === 'feedback';
 
@@ -204,8 +209,8 @@ function PlayingState({
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           )}
-          {showEnglishHint && currentCard.english && (
-            <Text style={styles.englishHint}>{currentCard.english}</Text>
+          {showEnglishHint && translation && (
+            <Text style={styles.englishHint}>{translation}</Text>
           )}
         </View>
       </View>
