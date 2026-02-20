@@ -13,7 +13,7 @@ export function useSettings() {
   const [eszettPreference, setEszettPreferenceState] = useState<
     'eszett' | 'ss'
   >('eszett');
-  const [appLanguage, setAppLanguageState] = useState<'en' | 'it'>('en');
+  const [appLanguage, setAppLanguageState] = useState<'en' | 'it' | 'pl'>('en');
   const [isLoading, setIsLoading] = useState(true);
 
   // ── Load on mount ──────────────────────────────────────────────────
@@ -74,17 +74,21 @@ export function useSettings() {
     [],
   );
 
-  const setAppLanguage = useCallback(async (language: 'en' | 'it') => {
-    setAppLanguageState(language);
-    try {
-      await settingsService.setAppLanguage(language);
-      await i18n.changeLanguage(language);
-    } catch (error) {
-      console.error('[Settings] Failed to save app language:', error);
-      // Revert optimistic update on failure
-      setAppLanguageState(language === 'en' ? 'it' : 'en');
-    }
-  }, []);
+  const setAppLanguage = useCallback(
+    async (language: 'en' | 'it' | 'pl') => {
+      const previous = appLanguage;
+      setAppLanguageState(language);
+      try {
+        await settingsService.setAppLanguage(language);
+        await i18n.changeLanguage(language);
+      } catch (error) {
+        console.error('[Settings] Failed to save app language:', error);
+        // Revert optimistic update on failure
+        setAppLanguageState(previous);
+      }
+    },
+    [appLanguage],
+  );
 
   return {
     showEnglishHint,

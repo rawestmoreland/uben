@@ -54,19 +54,18 @@ export default function SettingsScreen() {
             {t('settings.language').toUpperCase()}
           </Text>
 
-          <View style={styles.settingRow}>
-            <View style={styles.settingTextGroup}>
-              <Text style={styles.settingLabel}>
-                {t('settings.language').toUpperCase()}
-              </Text>
-              <Text style={styles.settingDescription}>
-                {t('settings.choose_app_language')}
-              </Text>
-            </View>
-            <View style={styles.segmentedControl}>
+          <View style={styles.settingRowStacked}>
+            <Text style={styles.settingLabel}>
+              {t('settings.language').toUpperCase()}
+            </Text>
+            <Text style={styles.settingDescription}>
+              {t('settings.choose_app_language')}
+            </Text>
+            <View style={styles.segmentedControlFull}>
               <Pressable
                 style={({ pressed }) => [
                   styles.segmentButton,
+                  styles.segmentButtonFlex,
                   styles.segmentButtonLeft,
                   appLanguage === 'en' && styles.segmentButtonActive,
                   pressed && styles.segmentButtonPressed,
@@ -88,7 +87,8 @@ export default function SettingsScreen() {
               <Pressable
                 style={({ pressed }) => [
                   styles.segmentButton,
-                  styles.segmentButtonRight,
+                  styles.segmentButtonFlex,
+                  styles.segmentButtonMiddle,
                   appLanguage === 'it' && styles.segmentButtonActive,
                   pressed && styles.segmentButtonPressed,
                 ]}
@@ -104,6 +104,28 @@ export default function SettingsScreen() {
                   ]}
                 >
                   IT
+                </Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.segmentButton,
+                  styles.segmentButtonFlex,
+                  styles.segmentButtonRight,
+                  appLanguage === 'pl' && styles.segmentButtonActive,
+                  pressed && styles.segmentButtonPressed,
+                ]}
+                onPress={() => setAppLanguage('pl')}
+                disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="Polski"
+              >
+                <Text
+                  style={[
+                    styles.segmentButtonText,
+                    appLanguage === 'pl' && styles.segmentButtonTextActive,
+                  ]}
+                >
+                  PL
                 </Text>
               </Pressable>
             </View>
@@ -261,6 +283,11 @@ const styles = StyleSheet.create({
     borderTopColor: AppColors.lightGray,
     paddingVertical: Spacing.md,
   },
+  settingRowStacked: {
+    borderTopWidth: Layout.borderWidthThin,
+    borderTopColor: AppColors.lightGray,
+    paddingVertical: Spacing.md,
+  },
   settingTextGroup: {
     flex: 1,
     marginRight: Spacing.md,
@@ -291,6 +318,13 @@ const styles = StyleSheet.create({
     borderColor: AppColors.black,
     overflow: 'hidden',
   },
+  segmentedControlFull: {
+    flexDirection: 'row',
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    overflow: 'hidden',
+    marginTop: Spacing.md,
+  },
   segmentButton: {
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
@@ -299,7 +333,15 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.white,
     minWidth: 56,
   },
+  segmentButtonFlex: {
+    flex: 1,
+    minWidth: 0,
+  },
   segmentButtonLeft: {
+    borderRightWidth: Layout.borderWidthThin,
+    borderRightColor: AppColors.black,
+  },
+  segmentButtonMiddle: {
     borderRightWidth: Layout.borderWidthThin,
     borderRightColor: AppColors.black,
   },

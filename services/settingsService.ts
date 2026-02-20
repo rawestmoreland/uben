@@ -87,12 +87,13 @@ class SettingsService {
   // ── Convenience: App Language ──────────────────────────────────────
 
   /** App display language. Default: 'en'. */
-  async getAppLanguage(): Promise<'en' | 'it'> {
+  async getAppLanguage(): Promise<'en' | 'it' | 'pl'> {
     const value = await this.getSetting(SETTINGS_KEYS.APP_LANGUAGE);
-    return value === 'it' ? 'it' : 'en';
+    if (value === 'it' || value === 'pl') return value;
+    return 'en';
   }
 
-  async setAppLanguage(language: 'en' | 'it'): Promise<void> {
+  async setAppLanguage(language: 'en' | 'it' | 'pl'): Promise<void> {
     await this.setSetting(SETTINGS_KEYS.APP_LANGUAGE, language);
   }
 }
