@@ -1,7 +1,9 @@
+import i18n from '@/constants/i18n';
+import { initializeDatabase } from '@/database/db';
+import { settingsService } from '@/services/settingsService';
+import { syncService } from '@/services/syncService';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { initializeDatabase } from '@/database/db';
-import { syncService } from '@/services/syncService';
 
 /**
  * Hook that initializes the SQLite database on mount and kicks off a
@@ -29,15 +31,15 @@ export function useDatabase() {
     (async () => {
       try {
         await initializeDatabase();
+        const savedLanguage = await settingsService.getAppLanguage();
+        await i18n.changeLanguage(savedLanguage);
         if (!cancelled) {
           setIsReady(true);
         }
       } catch (err) {
         console.error('[DB] Initialization failed:', err);
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err : new Error(String(err)),
-          );
+          setError(err instanceof Error ? err : new Error(String(err)));
         }
       }
     })();

@@ -249,7 +249,9 @@ export const migrations: Migration[] = [
     version: '004',
     name: 'canonical_nouns_schema',
     up: async (db: SQLite.SQLiteDatabase) => {
-      console.log('[Migration 004] Rebuilding nouns table with canonical schema...');
+      console.log(
+        '[Migration 004] Rebuilding nouns table with canonical schema...',
+      );
 
       // Fix any null category_ids before enforcing NOT NULL
       const generalCat = await db.getFirstAsync<{ id: number }>(
@@ -271,6 +273,7 @@ export const migrations: Migration[] = [
           article TEXT NOT NULL CHECK(article IN ('der', 'die', 'das')),
           plural TEXT,
           english TEXT,
+          translation_key TEXT,
           level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
           category_id INTEGER NOT NULL,
           remote_id TEXT,
@@ -326,6 +329,47 @@ export const migrations: Migration[] = [
     },
     down: async (db: SQLite.SQLiteDatabase) => {
       await db.execAsync('DROP INDEX IF EXISTS idx_nouns_remote_id;');
+    },
+  },
+  {
+    version: '005',
+    name: 'add_translation_key',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      // For users who already have migration 004 applied (which created nouns_v4
+      // without translation_key), we need to add the column via ALTER TABLE.
+      // New installs already have it from nouns_v4, so the ALTER is a no-op for them.
+      try {
+        await db.execAsync(
+          'ALTER TABLE nouns ADD COLUMN translation_key TEXT;',
+        );
+      } catch {
+        // Column already exists (fresh install: nouns_v4 in migration 004 includes it)
+      }
+    },
+    down: async (_db: SQLite.SQLiteDatabase) => {
+      // SQLite cannot drop columns without a full table rebuild; seeds repopulate
+      // this column so leaving it in place on rollback is acceptable.
+    },
+  },
+  {
+    version: '006',
+    name: 'add_noun_translations_table',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS noun_translations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          remote_id TEXT NOT NULL,
+          noun_id TEXT NOT NULL,
+          locale TEXT NOT NULL,
+          translation TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(noun_id, locale)
+        );
+      `);
+    },
+    down: async (_db: SQLite.SQLiteDatabase) => {
+      await _db.execAsync('DROP TABLE IF EXISTS noun_translations;');
     },
   },
 ];

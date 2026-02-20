@@ -1,4 +1,21 @@
+import {
+  AppColors,
+  Layout,
+  Spacing,
+  Typography,
+  shadowStyle,
+  shadowStyleSmall,
+} from '@/constants/design';
+import { useNounTranslation } from '@/hooks/use-noun-translation';
+import { useQuizSession, type QuizResult } from '@/hooks/use-quiz-session';
+import { useSettings } from '@/hooks/use-settings';
+import { applyGermanTextPreference } from '@/utils/germanText';
+import { getNounFontSize } from '@/utils/typography';
+import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
+import { TFunction } from 'i18next';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Pressable,
@@ -8,23 +25,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import {
-  useQuizSession,
-  type QuizResult,
-} from '@/hooks/use-quiz-session';
-import { useSettings } from '@/hooks/use-settings';
-import {
-  AppColors,
-  Layout,
-  Spacing,
-  Typography,
-  shadowStyle,
-  shadowStyleSmall,
-} from '@/constants/design';
-import { applyGermanTextPreference } from '@/utils/germanText';
-import { getNounFontSize } from '@/utils/typography';
 
 // ── Constants ────────────────────────────────────────────────────────
 
@@ -35,6 +35,7 @@ const FEEDBACK_DELAY_MS = 1200;
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
+  const { t } = useTranslation('app');
   const quiz = useQuizSession();
   const { phase, nextCard, results } = quiz;
   const { showEnglishHint, eszettPreference } = useSettings();
@@ -52,8 +53,8 @@ export default function QuizScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {phase === 'loading' && <LoadingState />}
-      {phase === 'empty' && <EmptyState />}
+      {phase === 'loading' && <LoadingState t={t} />}
+      {phase === 'empty' && <EmptyState t={t} />}
       {(phase === 'playing' || phase === 'feedback') && (
         <PlayingState
           quiz={quiz}
@@ -70,25 +71,26 @@ export default function QuizScreen() {
 
 // ── Loading State ────────────────────────────────────────────────────
 
-function LoadingState() {
+function LoadingState({ t }: { t: TFunction }) {
   return (
     <View style={styles.centeredContainer}>
       <ActivityIndicator size="large" color={AppColors.black} />
-      <Text style={styles.loadingText}>Loading cards...</Text>
+      <Text style={styles.loadingText}>{t('quiz_mode.loading_cards')}</Text>
     </View>
   );
 }
 
 // ── Empty State ──────────────────────────────────────────────────────
 
-function EmptyState() {
+function EmptyState({ t }: { t: TFunction }) {
   return (
     <View style={styles.centeredContainer}>
       <View style={[styles.emptyCard, shadowStyle]}>
-        <Text style={styles.emptyTitle}>ALL CAUGHT UP</Text>
+        <Text style={styles.emptyTitle}>
+          {t('quiz_mode.all_caught_up').toUpperCase()}
+        </Text>
         <Text style={styles.emptySubtext}>
-          No cards due for review right now.{'\n\n'}
-          Try selecting different categories or come back later!
+          {t('quiz_mode.no_cards_due_for_review')}
         </Text>
       </View>
       <Pressable
@@ -98,9 +100,11 @@ function EmptyState() {
         ]}
         onPress={() => router.back()}
         accessibilityRole="button"
-        accessibilityLabel="Back to home"
+        accessibilityLabel={t('back_to_home')}
       >
-        <Text style={styles.backButtonText}>BACK TO HOME</Text>
+        <Text style={styles.backButtonText}>
+          {t('back_to_home').toUpperCase()}
+        </Text>
       </Pressable>
     </View>
   );
@@ -119,7 +123,12 @@ function PlayingState({
   showEnglishHint,
   eszettPreference,
 }: PlayingStateProps) {
+  const { t } = useTranslation('app');
   const { currentCard, phase, selectedArticle, isCorrect, progress } = quiz;
+  const translation = useNounTranslation(
+    currentCard?.remote_id ?? null,
+    currentCard?.english ?? null,
+  );
 
   const isFeedback = phase === 'feedback';
 
@@ -148,7 +157,7 @@ function PlayingState({
         style={styles.closeButton}
         onPress={() => router.back()}
         accessibilityRole="button"
-        accessibilityLabel="Exit quiz"
+        accessibilityLabel={t('quiz_mode.exit_quiz')}
         hitSlop={12}
       >
         <Text style={styles.closeButtonText}>X</Text>
@@ -157,7 +166,10 @@ function PlayingState({
       {/* ── Progress ────────────────────────────────────────── */}
       <View style={styles.progressSection}>
         <Text style={styles.progressText}>
-          {progress.current} of {progress.total}
+          {t('quiz_mode.quiz_progress', {
+            current: progress.current,
+            total: progress.total,
+          })}
         </Text>
         <View style={styles.progressBarOuter}>
           <View
@@ -204,8 +216,8 @@ function PlayingState({
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           )}
-          {showEnglishHint && currentCard.english && (
-            <Text style={styles.englishHint}>{currentCard.english}</Text>
+          {showEnglishHint && translation && (
+            <Text style={styles.englishHint}>{translation}</Text>
           )}
         </View>
       </View>
@@ -268,6 +280,7 @@ interface CompleteStateProps {
 }
 
 function CompleteState({ results, eszettPreference }: CompleteStateProps) {
+  const { t } = useTranslation('app');
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const accuracy =
@@ -281,20 +294,28 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
         showsVerticalScrollIndicator={false}
       >
         {/* ── Summary header ──────────────────────────────────── */}
-        <Text style={styles.completeTitle}>SESSION COMPLETE</Text>
+        <Text style={styles.completeTitle}>
+          {t('quiz_mode.session_complete').toUpperCase()}
+        </Text>
 
         <View style={styles.summaryRow}>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{totalCount}</Text>
-            <Text style={styles.summaryLabel}>REVIEWED</Text>
+            <Text style={styles.summaryLabel}>
+              {t('quiz_mode.reviewed').toUpperCase()}
+            </Text>
           </View>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{correctCount}</Text>
-            <Text style={styles.summaryLabel}>CORRECT</Text>
+            <Text style={styles.summaryLabel}>
+              {t('quiz_mode.correct').toUpperCase()}
+            </Text>
           </View>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{accuracy}%</Text>
-            <Text style={styles.summaryLabel}>ACCURACY</Text>
+            <Text style={styles.summaryLabel}>
+              {t('quiz_mode.accuracy').toUpperCase()}
+            </Text>
           </View>
         </View>
 
@@ -320,7 +341,9 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
               </Text>
               {!result.isCorrect && (
                 <Text style={styles.resultYourAnswer}>
-                  you said: {result.selectedArticle}
+                  {t('quiz_mode.you_said', {
+                    article: result.selectedArticle,
+                  })}
                 </Text>
               )}
             </View>
@@ -337,9 +360,11 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
           ]}
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Back to home"
+          accessibilityLabel={t('back_to_home')}
         >
-          <Text style={styles.backButtonText}>BACK TO HOME</Text>
+          <Text style={styles.backButtonText}>
+            {t('back_to_home').toUpperCase()}
+          </Text>
         </Pressable>
       </View>
     </View>

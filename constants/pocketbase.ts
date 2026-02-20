@@ -13,8 +13,17 @@ export const PB_API_KEY = process.env.EXPO_PUBLIC_PB_API_KEY;
 export const SYNC_CONFIG = {
   /** Max records per page when fetching from PocketBase */
   PAGE_SIZE: 200,
-  /** Settings key for tracking last successful sync timestamp */
-  LAST_SYNC_KEY: 'last_pocketbase_sync',
+  /**
+   * Per-collection settings keys for tracking last successful sync timestamps.
+   * Using separate keys means a newly-added collection starts with no lastSync
+   * and always does a full fetch on first sync, even if other collections have
+   * already been synced before.
+   */
+  LAST_SYNC_KEYS: {
+    categories: 'last_sync_categories',
+    nouns: 'last_sync_nouns',
+    noun_translations: 'last_sync_noun_translations',
+  },
 } as const;
 
 /**

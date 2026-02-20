@@ -1,15 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import * as Haptics from 'expo-haptics';
 import {
   AppColors,
   Layout,
@@ -20,10 +8,24 @@ import {
 import { settingsService } from '@/services/settingsService';
 import { vocabularyService } from '@/services/vocabularyService';
 import type { Category } from '@/types/database';
+import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type CategoryWithCount = Category & { wordCount: number };
 
 export default function SelectCategoriesScreen() {
+  const { t } = useTranslation('app');
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,6 +49,12 @@ export default function SelectCategoriesScreen() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (selectedIds.length === 0) {
+      setIsAllWords(true);
+    }
+  }, [selectedIds]);
 
   const handleAllWords = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -91,11 +99,10 @@ export default function SelectCategoriesScreen() {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>CHOOSE YOUR FOCUS</Text>
-          <Text style={styles.headerSubtitle}>
-            Select categories to practice or tap &quot;All Words&quot; for
-            everything
+          <Text style={styles.headerTitle}>
+            {t('categories.title').toUpperCase()}
           </Text>
+          <Text style={styles.headerSubtitle}>{t('categories.subtitle')}</Text>
         </View>
 
         {/* All Words Button */}
@@ -116,7 +123,7 @@ export default function SelectCategoriesScreen() {
               isAllWords && styles.allWordsTextSelected,
             ]}
           >
-            ALL WORDS
+            {t('categories.all_words').toUpperCase()}
           </Text>
         </Pressable>
 
@@ -153,7 +160,7 @@ export default function SelectCategoriesScreen() {
                       isSelected && styles.categoryCountSelected,
                     ]}
                   >
-                    {item.wordCount} word{item.wordCount !== 1 ? 's' : ''}
+                    {t('words_count', { count: item.wordCount })}
                   </Text>
                 </View>
                 {isSelected && <View style={styles.checkmark} />}
@@ -178,10 +185,11 @@ export default function SelectCategoriesScreen() {
             accessibilityLabel="Start practice"
           >
             <Text style={styles.startButtonText}>
-              START{' '}
-              {!isAllWords &&
-                selectedIds.length > 0 &&
-                `(${selectedIds.length} ${selectedIds.length === 1 ? 'CATEGORY' : 'CATEGORIES'})`}
+              {isAllWords
+                ? t('categories.start')
+                : t('categories.start_categories', {
+                    count: selectedIds.length,
+                  })}
             </Text>
           </Pressable>
         </View>

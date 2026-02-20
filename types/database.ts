@@ -7,11 +7,22 @@ export interface Noun {
   article: 'der' | 'die' | 'das';
   plural: string | null;
   english: string | null;
+  translation_key: string | null; // Derived from english field, used for i18n lookups
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
   category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
   remote_id: string | null; // PocketBase record ID (null for user-added nouns)
   created_at: string;
+}
+
+export interface NounTranslation {
+  id: number;
+  remote_id: string;
+  noun_id: string;
+  locale: 'en' | 'it' | 'pl';
+  translation: string;
+  created_at: string;
+  updated_at: string;
 }
 
 /** A category for organizing vocabulary */
@@ -91,6 +102,8 @@ export interface DueCard extends CardProgress {
   word: string;
   article: string | null;
   english: string | null;
+  translation_key: string | null;
+  remote_id: string | null;
 }
 
 /** Aggregated user statistics */
