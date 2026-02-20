@@ -26,6 +26,8 @@ export default function SettingsScreen() {
     setShowEnglishHint,
     eszettPreference,
     setEszettPreference,
+    appLanguage,
+    setAppLanguage,
     isLoading,
   } = useSettings();
 
@@ -44,6 +46,68 @@ export default function SettingsScreen() {
           <Text style={styles.headerSubtitle}>
             {t('settings.customize_your_experience').toUpperCase()}
           </Text>
+        </View>
+
+        {/* ── Language Card ───────────────────────────────────── */}
+        <View style={[styles.card, shadowStyle]}>
+          <Text style={styles.cardTitle}>
+            {t('settings.language').toUpperCase()}
+          </Text>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingTextGroup}>
+              <Text style={styles.settingLabel}>
+                {t('settings.language').toUpperCase()}
+              </Text>
+              <Text style={styles.settingDescription}>
+                {t('settings.choose_app_language')}
+              </Text>
+            </View>
+            <View style={styles.segmentedControl}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.segmentButton,
+                  styles.segmentButtonLeft,
+                  appLanguage === 'en' && styles.segmentButtonActive,
+                  pressed && styles.segmentButtonPressed,
+                ]}
+                onPress={() => setAppLanguage('en')}
+                disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="English"
+              >
+                <Text
+                  style={[
+                    styles.segmentButtonText,
+                    appLanguage === 'en' && styles.segmentButtonTextActive,
+                  ]}
+                >
+                  EN
+                </Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.segmentButton,
+                  styles.segmentButtonRight,
+                  appLanguage === 'it' && styles.segmentButtonActive,
+                  pressed && styles.segmentButtonPressed,
+                ]}
+                onPress={() => setAppLanguage('it')}
+                disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="Italiano"
+              >
+                <Text
+                  style={[
+                    styles.segmentButtonText,
+                    appLanguage === 'it' && styles.segmentButtonTextActive,
+                  ]}
+                >
+                  IT
+                </Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
 
         {/* ── Quiz Settings Card ──────────────────────────────── */}

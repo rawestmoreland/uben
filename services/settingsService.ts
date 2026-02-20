@@ -7,6 +7,7 @@ export const SETTINGS_KEYS = {
   SHOW_ENGLISH_HINT: 'show_english_hint',
   ESZETT_PREFERENCE: 'eszett_preference',
   SELECTED_CATEGORIES: 'selected_categories',
+  APP_LANGUAGE: 'app_language',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -81,6 +82,18 @@ class SettingsService {
       SETTINGS_KEYS.SELECTED_CATEGORIES,
       JSON.stringify(categoryIds),
     );
+  }
+
+  // ── Convenience: App Language ──────────────────────────────────────
+
+  /** App display language. Default: 'en'. */
+  async getAppLanguage(): Promise<'en' | 'it'> {
+    const value = await this.getSetting(SETTINGS_KEYS.APP_LANGUAGE);
+    return value === 'it' ? 'it' : 'en';
+  }
+
+  async setAppLanguage(language: 'en' | 'it'): Promise<void> {
+    await this.setSetting(SETTINGS_KEYS.APP_LANGUAGE, language);
   }
 }
 

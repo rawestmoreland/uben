@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "Üben",
+    "article_practice_title": "PRATICA ARTICOLI TEDESCHI",
+    "description": "Impara i sostantivi e gli articoli tedeschi con la ripetizione spaziata.",
+    "start_practicing": "Inizia a praticare per monitorare i tuoi progressi",
+    "start_practice": "Inizia a praticare",
+    "total_reviews_one": "{{count}} ripetizione totale completata",
+    "total_reviews_other": "{{count}} ripetizioni totali completate",
+    "about": "Informazioni",
+    "home": "Home",
+    "settings_title": "Impostazioni",
+    "practice": "Pratica",
+    "progress": "{{total_cards}} di {{total_words}} parole",
+    "add_word": "Aggiungi una parola",
+    "my_words_added": "Le mie parole, {{count}} aggiunte",
+    "my_words_count": "LE MIE PAROLE ({{count}})",
+    "nouns_ready": "{{count}} sostantivi pronti da imparare",
+    "cards_waiting_for_review_one": "{{count}} scheda in attesa di ripetizione",
+    "cards_waiting_for_review_other": "{{count}} schede in attesa di ripetizione",
+    "learn_your_first_words": "Impara le tue prime parole",
+    "to_review": "da ripassare",
+    "streak": "serie",
+    "accuracy": "precisione",
+    "quiz": "Quiz",
+    "settings": {
+      "title": "Impostazioni",
+      "customize_your_experience": "Personalizza la tua esperienza",
+      "show_english_hint": "Mostra suggerimento in italiano",
+      "display_english_translation": "Mostra la traduzione italiana del sostantivo tedesco durante la pratica.",
+      "german_spelling": "Ortografia tedesca",
+      "choose_between_standard_german_and_swiss_german": "Scegli tra il tedesco standard (ß) e il tedesco svizzero (ss).",
+      "use_standard_german_with_eszett": "Usa l'ortografia tedesca standard con eszett",
+      "use_swiss_german_with_ss": "Usa l'ortografia del tedesco svizzero con ss",
+      "language": "Lingua",
+      "choose_app_language": "Scegli la lingua dell'app."
+    }
+  }
+}

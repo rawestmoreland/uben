@@ -42,6 +42,15 @@ interface PBNoun {
   updated: string;
 }
 
+interface PBNounTranslation {
+  id: string;
+  noun_id: string;
+  locale: 'en' | 'it' | 'pl';
+  translation: string;
+  created: string;
+  updated: string;
+}
+
 // ── Sync result ──────────────────────────────────────────────────────
 
 export interface SyncResult {
@@ -89,6 +98,16 @@ class SyncService {
         'category',
       );
       const nounsSynced = await this.upsertNouns(remoteNouns);
+
+      // Pull noun translations
+      const remoteNounTranslations = await this.fetchRecords<PBNounTranslation>(
+        'noun_translations',
+        lastSync,
+        'noun_id',
+      );
+      const nounTranslationsSynced = await this.upsertNounTranslations(
+        remoteNounTranslations,
+      );
 
       // Persist the sync timestamp so next launch only fetches the delta
       await settingsService.setSetting(
@@ -353,6 +372,52 @@ class SyncService {
               );
             }
           }
+        }
+      }
+    });
+
+    return synced;
+  }
+  // ── Noun translations upsert ─────────────────────────────────────
+
+  /**
+   * Upsert noun translations from PocketBase into local SQLite.
+   * Matches on noun_id (the PocketBase remote noun ID stored as TEXT) since
+   * the local table has no FK to the integer nouns.id — the remote ID is the
+   * stable join key.
+   */
+  private async upsertNounTranslations(
+    translations: PBNounTranslation[],
+  ): Promise<number> {
+    if (translations.length === 0) return 0;
+
+    let synced = 0;
+
+    await this.db.withTransactionAsync(async () => {
+      for (const translation of translations) {
+        try {
+          const result = await this.db.runAsync(
+            `INSERT INTO noun_translations (remote_id, noun_id, locale, translation)
+             VALUES (?, ?, ?, ?)
+             ON CONFLICT(noun_id, locale) DO UPDATE SET
+               remote_id = excluded.remote_id,
+               translation = excluded.translation,
+               updated_at = CURRENT_TIMESTAMP`,
+            [
+              translation.id,
+              translation.noun_id,
+              translation.locale,
+              translation.translation,
+            ],
+          );
+          if (result.changes > 0) synced++;
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          console.warn(
+            `[Sync] Failed to upsert noun translation for noun "${translation.noun_id}":`,
+            message,
+          );
         }
       }
     });

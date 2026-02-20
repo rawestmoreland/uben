@@ -15,6 +15,16 @@ export interface Noun {
   created_at: string;
 }
 
+export interface NounTranslation {
+  id: number;
+  remote_id: string;
+  noun_id: string;
+  locale: 'en' | 'it' | 'pl';
+  translation: string;
+  created_at: string;
+  updated_at: string;
+}
+
 /** A category for organizing vocabulary */
 export interface Category {
   id: number;
@@ -93,6 +103,7 @@ export interface DueCard extends CardProgress {
   article: string | null;
   english: string | null;
   translation_key: string | null;
+  remote_id: string | null;
 }
 
 /** Aggregated user statistics */

@@ -122,7 +122,7 @@ function PlayingState({
 }: PlayingStateProps) {
   const { currentCard, phase, selectedArticle, isCorrect, progress } = quiz;
   const translation = useNounTranslation(
-    currentCard?.translation_key ?? null,
+    currentCard?.remote_id ?? null,
     currentCard?.english ?? null,
   );
 

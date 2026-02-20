@@ -90,12 +90,14 @@ describe('runMigrations()', () => {
   });
 
   it('applies only unapplied migrations in a partial state', async () => {
-    // Migration 001 already applied; 002, 003, and 004 not yet applied
+    // Migration 001 already applied; 002, 003, 004, 005, and 006 not yet applied
     mockDb.getFirstAsync
       .mockResolvedValueOnce({ '1': 1 }) // 001 → applied
       .mockResolvedValueOnce(null) // 002 → unapplied
       .mockResolvedValueOnce(null) // 003 → unapplied
-      .mockResolvedValueOnce(null); // 004 → unapplied
+      .mockResolvedValueOnce(null) // 004 → unapplied
+      .mockResolvedValueOnce(null) // 005 → unapplied
+      .mockResolvedValueOnce(null); // 006 → unapplied
 
     await runMigrations(mockDb as any);
 
@@ -104,10 +106,12 @@ describe('runMigrations()', () => {
         sql === 'INSERT INTO migrations (version) VALUES (?)',
     );
 
-    expect(insertCalls).toHaveLength(3);
+    expect(insertCalls).toHaveLength(5);
     expect(insertCalls[0][1]).toEqual(['002']);
     expect(insertCalls[1][1]).toEqual(['003']);
     expect(insertCalls[2][1]).toEqual(['004']);
+    expect(insertCalls[3][1]).toEqual(['005']);
+    expect(insertCalls[4][1]).toEqual(['006']);
   });
 
   it('calls each migration up() with the db object', async () => {
