@@ -80,39 +80,55 @@ class SyncService {
     }
 
     try {
-      const lastSync = await settingsService.getSetting(
-        SYNC_CONFIG.LAST_SYNC_KEY,
-      );
+      // Read per-collection timestamps so that newly-added collections (which
+      // have no stored timestamp yet) always do a full fetch, even when other
+      // collections have already been synced before.
+      const [lastSyncCategories, lastSyncNouns, lastSyncTranslations] =
+        await Promise.all([
+          settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.categories),
+          settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.nouns),
+          settingsService.getSetting(
+            SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
+          ),
+        ]);
+
+      const syncedAt = new Date().toISOString();
 
       // Pull categories first — nouns reference them via category name
       const remoteCategories = await this.fetchRecords<PBCategory>(
         'categories',
-        lastSync,
+        lastSyncCategories,
       );
       const categoriesSynced = await this.upsertCategories(remoteCategories);
+      await settingsService.setSetting(
+        SYNC_CONFIG.LAST_SYNC_KEYS.categories,
+        syncedAt,
+      );
 
       // Pull nouns WITH expanded category relation
       const remoteNouns = await this.fetchRecords<PBNoun>(
         'nouns',
-        lastSync,
+        lastSyncNouns,
         'category',
       );
       const nounsSynced = await this.upsertNouns(remoteNouns);
+      await settingsService.setSetting(
+        SYNC_CONFIG.LAST_SYNC_KEYS.nouns,
+        syncedAt,
+      );
 
       // Pull noun translations
       const remoteNounTranslations = await this.fetchRecords<PBNounTranslation>(
         'noun_translations',
-        lastSync,
+        lastSyncTranslations,
         'noun_id',
       );
       const nounTranslationsSynced = await this.upsertNounTranslations(
         remoteNounTranslations,
       );
-
-      // Persist the sync timestamp so next launch only fetches the delta
       await settingsService.setSetting(
-        SYNC_CONFIG.LAST_SYNC_KEY,
-        new Date().toISOString(),
+        SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
+        syncedAt,
       );
 
       if (categoriesSynced > 0 || nounsSynced > 0) {

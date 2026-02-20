@@ -48,7 +48,11 @@ jest.mock('@/constants/pocketbase', () => ({
   },
   SYNC_CONFIG: {
     PAGE_SIZE: 200,
-    LAST_SYNC_KEY: 'last_pocketbase_sync',
+    LAST_SYNC_KEYS: {
+      categories: 'last_sync_categories',
+      nouns: 'last_sync_nouns',
+      noun_translations: 'last_sync_noun_translations',
+    },
   },
   formatPocketBaseTimestamp: (ts: string) => ts.replace('T', ' '),
 }));
@@ -187,19 +191,33 @@ describe('syncService.syncIfOnline()', () => {
       expect(calls[1][0]).toContain('/api/collections/nouns/records');
     });
 
-    it('calls getSetting with LAST_SYNC_KEY at start', async () => {
+    it('calls getSetting with per-collection keys at start', async () => {
       await syncService.syncIfOnline();
 
       expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
-        'last_pocketbase_sync',
+        'last_sync_categories',
+      );
+      expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
+        'last_sync_nouns',
+      );
+      expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
+        'last_sync_noun_translations',
       );
     });
 
-    it('calls setSetting with LAST_SYNC_KEY after successful sync', async () => {
+    it('calls setSetting with per-collection keys after successful sync', async () => {
       await syncService.syncIfOnline();
 
       expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
-        'last_pocketbase_sync',
+        'last_sync_categories',
+        expect.any(String),
+      );
+      expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
+        'last_sync_nouns',
+        expect.any(String),
+      );
+      expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
+        'last_sync_noun_translations',
         expect.any(String),
       );
     });
