@@ -7,8 +7,8 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
 
 const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
-const LANGUAGE = 'Italian';
-const LOCALE = 'it';
+const LANGUAGE = 'Polish';
+const LOCALE = 'pl';
 
 const TranslationResponseSchema = z.array(
   z.object({
@@ -158,8 +158,11 @@ async function upsertNounTranslation(nounId, locale, translation) {
   let shouldUpdate = false;
   let existingTranslationId = null;
   try {
+    const filter = encodeURIComponent(
+      `noun_id='${nounId}'&&locale='${locale}'`,
+    );
     const existingTranslation = await fetch(
-      `${PB_URL}/noun_translations/records?filter=noun_id='${nounId}'&&locale='${locale}'`,
+      `${PB_URL}/noun_translations/records?filter=${filter}`,
       {
         method: 'GET',
         headers: {
