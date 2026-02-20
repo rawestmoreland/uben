@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Üben — Ad Creatives</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #CECECE;
+      padding: 60px 48px;
+      font-family: 'Barlow', 'Arial Black', Arial, sans-serif;
+    }
+
+    .page-title {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 56px;
+    }
+
+    .ad-row {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: 72px;
+    }
+
+    .ad-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ad-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    /* ================================================
+       AD 1 — PAIN POINT  (600 × 600, yellow)
+    ================================================ */
+    .ad-pain {
+      width: 600px;
+      height: 600px;
+      background: #FFE500;
+      border: 4px solid #000;
+      box-shadow: 8px 8px 0 #000;
+      padding: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .ad-pain .eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #000;
+    }
+
+    .ad-pain .headline {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 104px;
+      font-weight: 900;
+      line-height: 0.88;
+      color: #000;
+      text-transform: uppercase;
+    }
+
+    .ad-pain .article-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .art-btn {
+      flex: 1;
+      height: 76px;
+      border: 3px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      position: relative;
+    }
+
+    .art-btn.wrong   { background: #FF3333; color: #fff; }
+    .art-btn.correct { background: #00CC66; color: #000; }
+
+    .art-btn .badge {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .art-btn.wrong   .badge { background: #FF3333; color: #fff; }
+    .art-btn.correct .badge { background: #00CC66; color: #000; }
+
+    .ad-pain .sub {
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+      letter-spacing: -0.3px;
+    }
+
+    .ad-pain .bottom-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .ad-pain .app-name {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 52px;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+      border-bottom: 4px solid #000;
+    }
+
+    .btn-cta-dark {
+      background: #000;
+      color: #FFE500;
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 13px 22px;
+      border: 3px solid #000;
+    }
+
+    /* ================================================
+       AD 2 — NO FLUFF  (600 × 600, white)
+    ================================================ */
+    .ad-nofluff {
+      width: 600px;
+      height: 600px;
+      background: #fff;
+      border: 4px solid #000;
+      box-shadow: 8px 8px 0 #000;
+      padding: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .ad-nofluff .eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    .ad-nofluff .big-text {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 78px;
+      font-weight: 900;
+      line-height: 0.92;
+      color: #000;
+      text-transform: uppercase;
+    }
+
+    .ad-nofluff .big-text .hl {
+      background: #FFE500;
+      display: inline;
+      padding: 0 4px;
+    }
+
+    .feat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .feat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .feat-dot {
+      width: 9px;
+      height: 9px;
+      background: #000;
+      flex-shrink: 0;
+    }
+
+    .ad-nofluff .bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-top: 3px solid #000;
+      padding-top: 20px;
+    }
+
+    .ad-nofluff .app-name {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    .pill-blue {
+      background: #0066FF;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border: 3px solid #000;
+    }
+
+    /* ================================================
+       AD 3 — SCIENCE  (600 × 600, blue)
+    ================================================ */
+    .ad-science {
+      width: 600px;
+      height: 600px;
+      background: #0066FF;
+      border: 4px solid #000;
+      box-shadow: 8px 8px 0 #000;
+      padding: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .ad-science .eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #FFE500;
+    }
+
+    .ad-science .headline {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 88px;
+      font-weight: 900;
+      line-height: 0.9;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .ad-science .headline .yel { color: #FFE500; }
+
+    .srm-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .srm-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .srm-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      width: 54px;
+      flex-shrink: 0;
+    }
+
+    .srm-track {
+      flex: 1;
+      height: 26px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.25);
+    }
+
+    .srm-fill {
+      height: 100%;
+      background: #FFE500;
+    }
+
+    .srm-tag {
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.5px;
+      width: 68px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .ad-science .sub {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.45;
+    }
+
+    .ad-science .bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ad-science .app-name {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .btn-cta-yel {
+      background: #FFE500;
+      color: #000;
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 13px 22px;
+      border: 3px solid #000;
+    }
+
+    /* ================================================
+       AD 4 — WIDE BANNER  (800 × 418, cream)
+    ================================================ */
+    .ad-wide {
+      width: 800px;
+      height: 418px;
+      background: #FFF8E1;
+      border: 4px solid #000;
+      box-shadow: 8px 8px 0 #000;
+      display: flex;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .wide-left {
+      flex: 1;
+      padding: 36px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 4px solid #000;
+    }
+
+    .wide-left .app-name {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 60px;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+      border-bottom: 4px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      display: inline-block;
+    }
+
+    .wide-left .tagline {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: #000;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .wide-feat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .wide-feat-item {
+      font-size: 13px;
+      font-weight: 700;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chk {
+      width: 18px;
+      height: 18px;
+      background: #00CC66;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .wide-right {
+      width: 300px;
+      background: #FFE500;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .quiz-card {
+      background: #fff;
+      border: 3px solid #000;
+      padding: 18px;
+      box-shadow: 5px 5px 0 #000;
+    }
+
+    .quiz-prompt {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 6px;
+    }
+
+    .quiz-word {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .quiz-translation {
+      font-size: 13px;
+      font-weight: 600;
+      color: #777;
+      margin-bottom: 16px;
+    }
+
+    .quiz-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .qb {
+      flex: 1;
+      height: 42px;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .qb.correct { background: #00CC66; }
+    .qb.neutral { background: #fff; }
+
+    .wide-cta {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #000;
+      border-top: 3px solid #000;
+      padding-top: 14px;
+    }
+
+    /* ================================================
+       AD 5 — LOCALIZED  (600 × 600, cream/black)
+       Targets multilingual angle
+    ================================================ */
+    .ad-multilang {
+      width: 600px;
+      height: 600px;
+      background: #000;
+      border: 4px solid #000;
+      box-shadow: 8px 8px 0 #555;
+      padding: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .ad-multilang .eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #FFE500;
+    }
+
+    .ad-multilang .headline {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 0.92;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .lang-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lang-pill {
+      background: #FFE500;
+      border: 2px solid #FFE500;
+      color: #000;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-pill.secondary {
+      background: transparent;
+      border-color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.6);
+    }
+
+    .lang-flag {
+      font-size: 18px;
+    }
+
+    .ad-multilang .sub {
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.45;
+    }
+
+    .ad-multilang .bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .ad-multilang .app-name {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 52px;
+      font-weight: 900;
+      color: #FFE500;
+    }
+
+    .btn-cta-white {
+      background: #fff;
+      color: #000;
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 13px 22px;
+      border: 3px solid #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-title">Üben — Ad Creatives / Screenshot each panel</div>
+
+  <!-- Row 1: Pain Point + No Fluff -->
+  <div class="ad-row">
+
+    <div class="ad-wrap">
+      <div class="ad-label">01 — Pain Point · Square 1:1 · Instagram / Reddit</div>
+      <div class="ad-pain">
+        <div class="eyebrow">German Article Practice</div>
+
+        <div class="headline">Der?<br>Die?<br>Das?</div>
+
+        <div class="article-row">
+          <div class="art-btn wrong">DER<div class="badge">✕</div></div>
+          <div class="art-btn wrong">DIE<div class="badge">✕</div></div>
+          <div class="art-btn correct">DAS<div class="badge">✓</div></div>
+        </div>
+
+        <div class="sub">Stop guessing. Start knowing.</div>
+
+        <div class="bottom-row">
+          <div class="app-name">ÜBEN</div>
+          <div class="btn-cta-dark">Free Download</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-wrap">
+      <div class="ad-label">02 — No Fluff · Square 1:1 · Instagram / Reddit</div>
+      <div class="ad-nofluff">
+        <div class="eyebrow">German Language Learning</div>
+
+        <div class="big-text">
+          One app.<br>
+          <span class="hl">One job.</span><br>
+          Master<br>
+          articles.
+        </div>
+
+        <div class="feat-list">
+          <div class="feat-item"><div class="feat-dot"></div>Laser-focused on der / die / das</div>
+          <div class="feat-item"><div class="feat-dot"></div>SM-2 spaced repetition algorithm</div>
+          <div class="feat-item"><div class="feat-dot"></div>Offline-first — no login required</div>
+        </div>
+
+        <div class="bottom">
+          <div class="app-name">ÜBEN</div>
+          <div class="pill-blue">Free on iOS</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 2: Science + Multilingual -->
+  <div class="ad-row">
+
+    <div class="ad-wrap">
+      <div class="ad-label">03 — Science · Square 1:1 · Instagram / Reddit</div>
+      <div class="ad-science">
+        <div class="eyebrow">Built on cognitive science</div>
+
+        <div class="headline">
+          Remember<br>
+          <span class="yel">more.</span><br>
+          Study<br>
+          less.
+        </div>
+
+        <div class="srm-chart">
+          <div class="srm-row">
+            <div class="srm-lbl">Day 1</div>
+            <div class="srm-track"><div class="srm-fill" style="width:12%"></div></div>
+            <div class="srm-tag">New</div>
+          </div>
+          <div class="srm-row">
+            <div class="srm-lbl">Day 6</div>
+            <div class="srm-track"><div class="srm-fill" style="width:32%"></div></div>
+            <div class="srm-tag">Learning</div>
+          </div>
+          <div class="srm-row">
+            <div class="srm-lbl">Day 21</div>
+            <div class="srm-track"><div class="srm-fill" style="width:62%"></div></div>
+            <div class="srm-tag">Familiar</div>
+          </div>
+          <div class="srm-row">
+            <div class="srm-lbl">Day 60+</div>
+            <div class="srm-track"><div class="srm-fill" style="width:95%"></div></div>
+            <div class="srm-tag">Mastered</div>
+          </div>
+        </div>
+
+        <div class="sub">
+          Üben reviews each word at the exact moment<br>
+          you're about to forget it. That's how memory works.
+        </div>
+
+        <div class="bottom">
+          <div class="app-name">ÜBEN</div>
+          <div class="btn-cta-yel">Free Download</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-wrap">
+      <div class="ad-label">04 — Multilingual · Square 1:1 · Targeted Ads</div>
+      <div class="ad-multilang">
+        <div class="eyebrow">Available in your language</div>
+
+        <div class="headline">
+          Learning<br>
+          German<br>
+          your way.
+        </div>
+
+        <div class="lang-pills">
+          <div class="lang-pill"><span class="lang-flag">🇬🇧</span>English</div>
+          <div class="lang-pill"><span class="lang-flag">🇮🇹</span>Italiano</div>
+          <div class="lang-pill"><span class="lang-flag">🇵🇱</span>Polski</div>
+        </div>
+
+        <div class="sub">
+          Üben's interface speaks your native language<br>
+          so you can focus entirely on mastering German.
+        </div>
+
+        <div class="bottom">
+          <div class="app-name">ÜBEN</div>
+          <div class="btn-cta-white">Free Download</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 3: Wide Banner -->
+  <div class="ad-row">
+
+    <div class="ad-wrap">
+      <div class="ad-label">05 — App Showcase · Wide 1.91:1 · Reddit / Facebook Banner</div>
+      <div class="ad-wide">
+
+        <div class="wide-left">
+          <div>
+            <div class="app-name">ÜBEN</div>
+            <div class="tagline">The only app built<br>to fix your German articles.</div>
+          </div>
+          <div class="wide-feat-list">
+            <div class="wide-feat-item"><div class="chk">✓</div>Focused exclusively on der / die / das</div>
+            <div class="wide-feat-item"><div class="chk">✓</div>SM-2 spaced repetition — proven by science</div>
+            <div class="wide-feat-item"><div class="chk">✓</div>Offline-first — works without internet</div>
+            <div class="wide-feat-item"><div class="chk">✓</div>English, Italian &amp; Polish UI supported</div>
+          </div>
+        </div>
+
+        <div class="wide-right">
+          <div class="quiz-card">
+            <div class="quiz-prompt">Choose the correct article</div>
+            <div class="quiz-word">Hund</div>
+            <div class="quiz-translation">dog</div>
+            <div class="quiz-btns">
+              <div class="qb correct">DER</div>
+              <div class="qb neutral">DIE</div>
+              <div class="qb neutral">DAS</div>
+            </div>
+          </div>
+          <div class="wide-cta">Free on iOS &amp; Android →</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
