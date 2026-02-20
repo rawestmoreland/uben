@@ -133,7 +133,9 @@ export default function HomeScreen() {
         {/* ── Progress Card ───────────────────────────────────── */}
         <View style={styles.progressCard}>
           <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>PROGRESS</Text>
+            <Text style={styles.progressTitle}>
+              {t('progress_title').toUpperCase()}
+            </Text>
             <Text style={styles.progressCount}>
               {t('progress', {
                 total_cards: stats.total_cards,

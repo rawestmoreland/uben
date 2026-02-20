@@ -12,6 +12,7 @@
     "settings_title": "Impostazioni",
     "practice": "Pratica",
     "progress": "{{total_cards}} di {{total_words}} parole",
+    "progress_title": "PROGRESSO",
     "add_word": "Aggiungi una parola",
     "my_words_added": "Le mie parole, {{count}} aggiunte",
     "my_words_count": "LE MIE PAROLE ({{count}})",
@@ -23,6 +24,21 @@
     "streak": "serie",
     "accuracy": "precisione",
     "quiz": "Quiz",
+    "back_to_home": "Torna alla home",
+    "words_count_one": "{{count}} parola",
+    "words_count_other": "{{count}} parole",
+    "quiz_mode": {
+      "loading_cards": "Caricamento schede...",
+      "all_caught_up": "Sei in pari",
+      "no_cards_due_for_review": "Nessuna scheda da ripassare al momento.\n\nProva a selezionare categorie diverse o torna più tardi!",
+      "exit_quiz": "Esci dal quiz",
+      "quiz_progress": "{{current}} di {{total}}",
+      "session_complete": "Sessione completata",
+      "reviewed": "Ripetute",
+      "correct": "Corrette",
+      "accuracy": "Precisione",
+      "you_said": "Hai detto: {{article}}"
+    },
     "settings": {
       "title": "Impostazioni",
       "customize_your_experience": "Personalizza la tua esperienza",
@@ -34,6 +50,40 @@
       "use_swiss_german_with_ss": "Usa l'ortografia del tedesco svizzero con ss",
       "language": "Lingua",
       "choose_app_language": "Scegli la lingua dell'app."
+    },
+    "categories": {
+      "title": "Scegli il tuo focus",
+      "subtitle": "Seleziona categorie per praticare o tocca &quot;Tutte le parole&quot; per tutto",
+      "all_words": "Tutte le parole",
+      "start": "INIZIA",
+      "start_categories_one": "$t(categories.start) {{count}} categoria",
+      "start_categories_other": "$t(categories.start) {{count}} categorie"
+    },
+    "how_it_works": {
+      "title": "Come Funziona",
+      "subtitle": "Apprendimento basato sulla scienza",
+      "what_is_spaced_repetition": "Cos'è la ripetizione spaziata?",
+      "how_we_score_your_answers": "Come Valutiamo le Tue Risposte",
+      "the_sm_2_algorithm": "L'Algoritmo SM-2",
+      "sm_2_definition": "Questa app utilizza l'algoritmo SM-2, lo stesso metodo alla base di popolari strumenti di flashcard come Anki, usato da milioni di studenti in tutto il mondo.\n\nSviluppato dal Dr. Piotr Wozniak nel 1987, SM-2 è una delle tecniche più studiate e comprovate per la memorizzazione a lungo termine. Si adatta alle tue prestazioni su ogni singola parola, creando un programma di ripasso personalizzato.",
+      "tips_for_best_results": "Consigli per i Migliori Risultati",
+      "tip_1": "Pratica ogni giorno, anche solo 5 minuti. Sessioni brevi e costanti superano quelle lunghe e irregolari.",
+      "tip_2": "Prenditi un momento per pensare prima di rispondere. Indovinare a caso non aiuterà la tua memoria.",
+      "tip_3": "Anche le risposte sbagliate aiutano. Reimpostano il programma così vedi di nuovo la parola prima.",
+      "tip_4": "La costanza supera l'intensità. Dieci minuti al giorno sono meglio di un'ora una volta alla settimana.",
+      "sr_definition": "Invece di studiare tutto in una volta, rivedi ogni parola proprio prima di dimenticarla. Ogni volta che rispondi correttamente, l'intervallo fino alla prossima revisione si allunga.\n\nQuesto significa che dedichi più tempo alle parole che trovi difficili e meno tempo a quelle che già conosci.",
+      "1d": "1g",
+      "6d": "6g",
+      "15d": "15g",
+      "35d": "35g",
+      "intervals_grow": "Gli intervalli crescono ad ogni risposta corretta",
+      "we_measure_both": "Misuriamo sia la correttezza che il tempo di risposta per ottimizzare il tuo programma di apprendimento.",
+      "fast_correct": "Veloce + Corretto",
+      "fast_correct_description": "Conosci bene questa parola. Il prossimo ripasso è posticipato di molto.",
+      "slow_correct": "Lento + Corretto",
+      "slow_correct_description": "Stai imparando. Il ripasso torna prima per rinforzare.",
+      "wrong_answer": "Risposta Sbagliata",
+      "wrong_answer_description": "Nessun problema. La parola si azzera così la vedi di nuovo presto."
     }
   }
 }

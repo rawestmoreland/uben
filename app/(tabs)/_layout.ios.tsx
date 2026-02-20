@@ -1,18 +1,20 @@
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useTranslation } from 'react-i18next';
 
 export default function TabLayout() {
+  const { t } = useTranslation('app');
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Label>Practice</Label>
+        <Label>{t('practice')}</Label>
         <Icon sf={{ default: 'book', selected: 'book.fill' }} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="explore">
-        <Label>About</Label>
+        <Label>{t('about')}</Label>
         <Icon sf={{ default: 'info.circle', selected: 'info.circle.fill' }} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Label>Settings</Label>
+        <Label>{t('settings_title')}</Label>
         <Icon sf={{ default: 'gearshape', selected: 'gearshape.fill' }} />
       </NativeTabs.Trigger>
     </NativeTabs>

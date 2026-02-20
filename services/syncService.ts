@@ -117,7 +117,7 @@ class SyncService {
 
       if (categoriesSynced > 0 || nounsSynced > 0) {
         console.log(
-          `[Sync] Complete: ${categoriesSynced} categories, ${nounsSynced} nouns`,
+          `[Sync] Complete: ${categoriesSynced} categories, ${nounsSynced} nouns, ${nounTranslationsSynced} noun translations`,
         );
       }
 

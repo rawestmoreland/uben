@@ -12,6 +12,7 @@
     "settings_title": "Settings",
     "practice": "Practice",
     "progress": "{{total_cards}} of {{total_words}} words",
+    "progress_title": "PROGRESS",
     "add_word": "Add a word",
     "my_words_added": "My words, {{count}} added",
     "my_words_count": "MY WORDS ({{count}})",
@@ -23,6 +24,21 @@
     "streak": "streak",
     "accuracy": "accuracy",
     "quiz": "Quiz",
+    "back_to_home": "Back to home",
+    "words_count_one": "{{count}} word",
+    "words_count_other": "{{count}} words",
+    "quiz_mode": {
+      "loading_cards": "Loading cards...",
+      "all_caught_up": "All caught up",
+      "no_cards_due_for_review": "No cards due for review right now.\n\nTry selecting different categories or come back later!",
+      "exit_quiz": "Exit quiz",
+      "quiz_progress": "{{current}} of {{total}}",
+      "session_complete": "Session complete",
+      "reviewed": "Reviewed",
+      "correct": "Correct",
+      "accuracy": "Accuracy",
+      "you_said": "You said: {{article}}"
+    },
     "settings": {
       "title": "Settings",
       "customize_your_experience": "Customize your experience",
@@ -34,6 +50,40 @@
       "use_swiss_german_with_ss": "Use Swiss German spelling with ss",
       "language": "Language",
       "choose_app_language": "Choose the app display language."
+    },
+    "categories": {
+      "title": "Choose your focus",
+      "subtitle": "Select categories to practice or tap &quot;All Words&quot; for everything",
+      "all_words": "All Words",
+      "start": "START",
+      "start_categories_one": "$t(categories.start) {{count}} category",
+      "start_categories_other": "$t(categories.start) {{count}} categories"
+    },
+    "how_it_works": {
+      "title": "How It Works",
+      "subtitle": "Science-backed learning",
+      "what_is_spaced_repetition": "What is spaced repetition?",
+      "how_we_score_your_answers": "How We Score Your Answers",
+      "the_sm_2_algorithm": "The SM-2 Algorithm",
+      "sm_2_definition": "This app uses the SM-2 algorithm, the same method behind popular flashcard tools like Anki used by millions of learners worldwide.\n\nDeveloped by Dr. Piotr Wozniak in 1987, SM-2 is one of the most studied and proven techniques for long-term memorization. It adapts to your performance on each individual word, creating a personalized review schedule.",
+      "tips_for_best_results": "Tips for Best Results",
+      "tip_1": "Practice daily, even just 5 minutes. Short consistent sessions beat long irregular ones.",
+      "tip_2": "Take a moment to think before answering. Guessing randomly won't help your memory.",
+      "tip_3": "Wrong answers help too. They reset the schedule so you see the word again sooner.",
+      "tip_4": "Consistency beats intensity. Ten minutes a day is better than an hour once a week.",
+      "sr_definition": "Instead of cramming all at once, you review each word right before you would forget it. Every time you answer correctly, the gap until the next review gets longer.\n\nThis means you spend more time on words you find difficult and less time on words you already know.",
+      "1d": "1d",
+      "6d": "6d",
+      "15d": "15d",
+      "35d": "35d",
+      "intervals_grow": "Intervals grow with each correct answer",
+      "we_measure_both": "We measure both correctness and response time to fine-tune your learning schedule.",
+      "fast_correct": "Fast + Correct",
+      "fast_correct_description": "You know this word well. Next review pushed far out.",
+      "slow_correct": "Slow + Correct",
+      "slow_correct_description": "You're learning it. Review comes back sooner to reinforce.",
+      "wrong_answer": "Wrong Answer",
+      "wrong_answer_description": "No problem. The word resets so you see it again soon."
     }
   }
 }
