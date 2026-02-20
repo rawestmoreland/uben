@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
+const { convertToTranslationKey } = require('../utils/helpers');
 
 const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const main = async () => {
@@ -55,14 +56,17 @@ const main = async () => {
     });
 };
 
-const insertNoun = async (paylod) => {
+const insertNoun = async (payload) => {
   try {
+    const translationKey = payload.english
+      ? convertToTranslationKey(payload.english)
+      : '';
     const response = await fetch(`${PB_URL}/nouns/records`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(paylod),
+      body: JSON.stringify({ ...payload, translation_key: translationKey }),
     });
 
     if (!response.ok) {
@@ -98,14 +102,17 @@ const getNoun = async (german, article) => {
   }
 };
 
-const updateNoun = async (id, paylod) => {
+const updateNoun = async (id, payload) => {
   try {
+    const translationKey = payload.english
+      ? convertToTranslationKey(payload.english)
+      : '';
     const response = await fetch(`${PB_URL}/nouns/records/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(paylod),
+      body: JSON.stringify({ ...payload, translation_key: translationKey }),
     });
     if (!response.ok) {
       throw new Error(`Failed to update noun: ${response.statusText}`);

@@ -48,7 +48,11 @@ jest.mock('@/constants/pocketbase', () => ({
   },
   SYNC_CONFIG: {
     PAGE_SIZE: 200,
-    LAST_SYNC_KEY: 'last_pocketbase_sync',
+    LAST_SYNC_KEYS: {
+      categories: 'last_sync_categories',
+      nouns: 'last_sync_nouns',
+      noun_translations: 'last_sync_noun_translations',
+    },
   },
   formatPocketBaseTimestamp: (ts: string) => ts.replace('T', ' '),
 }));
@@ -132,11 +136,12 @@ describe('syncService.syncIfOnline()', () => {
     mockSettingsService.getSetting.mockResolvedValue(null);
     mockSettingsService.setSetting.mockResolvedValue(undefined);
 
-    // Default fetch: both collections return empty lists
+    // Default fetch: all three collections return empty lists
     global.fetch = jest
       .fn()
-      .mockResolvedValueOnce(makeFetchOk(emptyListResponse))
-      .mockResolvedValueOnce(makeFetchOk(emptyListResponse));
+      .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // categories
+      .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // nouns
+      .mockResolvedValueOnce(makeFetchOk(emptyListResponse)); // noun_translations
   });
 
   afterEach(() => {
@@ -186,19 +191,33 @@ describe('syncService.syncIfOnline()', () => {
       expect(calls[1][0]).toContain('/api/collections/nouns/records');
     });
 
-    it('calls getSetting with LAST_SYNC_KEY at start', async () => {
+    it('calls getSetting with per-collection keys at start', async () => {
       await syncService.syncIfOnline();
 
       expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
-        'last_pocketbase_sync',
+        'last_sync_categories',
+      );
+      expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
+        'last_sync_nouns',
+      );
+      expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
+        'last_sync_noun_translations',
       );
     });
 
-    it('calls setSetting with LAST_SYNC_KEY after successful sync', async () => {
+    it('calls setSetting with per-collection keys after successful sync', async () => {
       await syncService.syncIfOnline();
 
       expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
-        'last_pocketbase_sync',
+        'last_sync_categories',
+        expect.any(String),
+      );
+      expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
+        'last_sync_nouns',
+        expect.any(String),
+      );
+      expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
+        'last_sync_noun_translations',
         expect.any(String),
       );
     });
@@ -267,11 +286,12 @@ describe('syncService.syncIfOnline()', () => {
 
   describe('upsertCategories pathways', () => {
     beforeEach(() => {
-      // Override fetch: categories has one record, nouns is empty
+      // Override fetch: categories has one record, nouns and noun_translations are empty
       (global.fetch as jest.Mock)
         .mockReset()
         .mockResolvedValueOnce(makeFetchOk(makeListResponse([sampleCategory])))
-        .mockResolvedValueOnce(makeFetchOk(emptyListResponse));
+        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // nouns
+        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)); // noun_translations
     });
 
     it('runs INSERT … ON CONFLICT DO UPDATE for each category (primary path)', async () => {
@@ -341,7 +361,8 @@ describe('syncService.syncIfOnline()', () => {
     function setNounsFetch(nouns: unknown[]) {
       (global.fetch as jest.Mock)
         .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // categories
-        .mockResolvedValueOnce(makeFetchOk(makeListResponse(nouns))); // nouns
+        .mockResolvedValueOnce(makeFetchOk(makeListResponse(nouns))) // nouns
+        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)); // noun_translations
     }
 
     it('updates an existing noun via UPDATE WHERE remote_id when found', async () => {

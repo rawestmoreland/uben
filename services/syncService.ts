@@ -32,11 +32,21 @@ interface PBNoun {
   article: 'der' | 'die' | 'das';
   plural: string;
   english: string;
+  translation_key: string;
   level: string;
   category: string; // PocketBase category ID (relation)
   expand?: {
     category?: PBCategory;
   };
+  created: string;
+  updated: string;
+}
+
+interface PBNounTranslation {
+  id: string;
+  noun_id: string;
+  locale: 'en' | 'it' | 'pl';
+  translation: string;
   created: string;
   updated: string;
 }
@@ -70,34 +80,60 @@ class SyncService {
     }
 
     try {
-      const lastSync = await settingsService.getSetting(
-        SYNC_CONFIG.LAST_SYNC_KEY,
-      );
+      // Read per-collection timestamps so that newly-added collections (which
+      // have no stored timestamp yet) always do a full fetch, even when other
+      // collections have already been synced before.
+      const [lastSyncCategories, lastSyncNouns, lastSyncTranslations] =
+        await Promise.all([
+          settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.categories),
+          settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.nouns),
+          settingsService.getSetting(
+            SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
+          ),
+        ]);
+
+      const syncedAt = new Date().toISOString();
 
       // Pull categories first — nouns reference them via category name
       const remoteCategories = await this.fetchRecords<PBCategory>(
         'categories',
-        lastSync,
+        lastSyncCategories,
       );
       const categoriesSynced = await this.upsertCategories(remoteCategories);
+      await settingsService.setSetting(
+        SYNC_CONFIG.LAST_SYNC_KEYS.categories,
+        syncedAt,
+      );
 
       // Pull nouns WITH expanded category relation
       const remoteNouns = await this.fetchRecords<PBNoun>(
         'nouns',
-        lastSync,
+        lastSyncNouns,
         'category',
       );
       const nounsSynced = await this.upsertNouns(remoteNouns);
-
-      // Persist the sync timestamp so next launch only fetches the delta
       await settingsService.setSetting(
-        SYNC_CONFIG.LAST_SYNC_KEY,
-        new Date().toISOString(),
+        SYNC_CONFIG.LAST_SYNC_KEYS.nouns,
+        syncedAt,
+      );
+
+      // Pull noun translations
+      const remoteNounTranslations = await this.fetchRecords<PBNounTranslation>(
+        'noun_translations',
+        lastSyncTranslations,
+        'noun_id',
+      );
+      const nounTranslationsSynced = await this.upsertNounTranslations(
+        remoteNounTranslations,
+      );
+      await settingsService.setSetting(
+        SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
+        syncedAt,
       );
 
       if (categoriesSynced > 0 || nounsSynced > 0) {
         console.log(
-          `[Sync] Complete: ${categoriesSynced} categories, ${nounsSynced} nouns`,
+          `[Sync] Complete: ${categoriesSynced} categories, ${nounsSynced} nouns, ${nounTranslationsSynced} noun translations`,
         );
       }
 
@@ -264,13 +300,14 @@ class SyncService {
           // Update existing noun
           const result = await this.db.runAsync(
             `UPDATE nouns
-             SET german = ?, article = ?, plural = ?, english = ?, level = ?, category_id = ?
+             SET german = ?, article = ?, plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?
              WHERE remote_id = ?`,
             [
               noun.german,
               noun.article,
               noun.plural || null,
               noun.english || null,
+              noun.translation_key || null,
               noun.level,
               categoryId,
               noun.id,
@@ -281,13 +318,14 @@ class SyncService {
           // Insert new noun
           try {
             const result = await this.db.runAsync(
-              `INSERT INTO nouns (german, article, plural, english, level, category_id, remote_id, is_user_added)
-               VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
+              `INSERT INTO nouns (german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
               [
                 noun.german,
                 noun.article,
                 noun.plural || null,
                 noun.english || null,
+                noun.translation_key || null,
                 noun.level,
                 categoryId,
                 noun.id,
@@ -328,11 +366,12 @@ class SyncService {
                 // Pre-seeded word without remote_id — safe to update with PocketBase data
                 const result = await this.db.runAsync(
                   `UPDATE nouns
-                   SET plural = ?, english = ?, level = ?, category_id = ?, remote_id = ?
+                   SET plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?, remote_id = ?
                    WHERE german = ? AND article = ?`,
                   [
                     noun.plural || null,
                     noun.english || null,
+                    noun.translation_key || null,
                     noun.level,
                     categoryId,
                     noun.id,
@@ -349,6 +388,52 @@ class SyncService {
               );
             }
           }
+        }
+      }
+    });
+
+    return synced;
+  }
+  // ── Noun translations upsert ─────────────────────────────────────
+
+  /**
+   * Upsert noun translations from PocketBase into local SQLite.
+   * Matches on noun_id (the PocketBase remote noun ID stored as TEXT) since
+   * the local table has no FK to the integer nouns.id — the remote ID is the
+   * stable join key.
+   */
+  private async upsertNounTranslations(
+    translations: PBNounTranslation[],
+  ): Promise<number> {
+    if (translations.length === 0) return 0;
+
+    let synced = 0;
+
+    await this.db.withTransactionAsync(async () => {
+      for (const translation of translations) {
+        try {
+          const result = await this.db.runAsync(
+            `INSERT INTO noun_translations (remote_id, noun_id, locale, translation)
+             VALUES (?, ?, ?, ?)
+             ON CONFLICT(noun_id, locale) DO UPDATE SET
+               remote_id = excluded.remote_id,
+               translation = excluded.translation,
+               updated_at = CURRENT_TIMESTAMP`,
+            [
+              translation.id,
+              translation.noun_id,
+              translation.locale,
+              translation.translation,
+            ],
+          );
+          if (result.changes > 0) synced++;
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          console.warn(
+            `[Sync] Failed to upsert noun translation for noun "${translation.noun_id}":`,
+            message,
+          );
         }
       }
     });

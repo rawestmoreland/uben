@@ -210,7 +210,7 @@ export class SpacedRepetitionService {
         : [maxCards - newCardsLimit];
 
     const dueCards = await this.db.getAllAsync<DueCard>(
-      `SELECT cp.*, n.german AS word, n.article, n.english
+      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.remote_id
        FROM card_progress cp
        JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
        WHERE cp.next_review_date <= date('now') ${categoryFilter}
@@ -240,7 +240,9 @@ export class SpacedRepetitionService {
          n.created_at,
          n.german AS word,
          n.article,
-         n.english
+         n.english,
+         n.translation_key,
+         n.remote_id
        FROM nouns n
        LEFT JOIN card_progress cp ON cp.word_type = 'noun' AND cp.word_id = n.id
        WHERE cp.id IS NULL AND (n.level = 'A1' OR n.is_user_added = 1) ${categoryFilter}

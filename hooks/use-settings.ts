@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { settingsService } from '@/services/settingsService';
+import i18n from '@/constants/i18n';
 
 /**
  * Hook to read and toggle the "Show English Hint" setting.
@@ -12,6 +13,7 @@ export function useSettings() {
   const [eszettPreference, setEszettPreferenceState] = useState<
     'eszett' | 'ss'
   >('eszett');
+  const [appLanguage, setAppLanguageState] = useState<'en' | 'it' | 'pl'>('en');
   const [isLoading, setIsLoading] = useState(true);
 
   // ── Load on mount ──────────────────────────────────────────────────
@@ -21,13 +23,15 @@ export function useSettings() {
 
     (async () => {
       try {
-        const [englishHint, eszett] = await Promise.all([
+        const [englishHint, eszett, language] = await Promise.all([
           settingsService.getShowEnglishHint(),
           settingsService.getEszettPreference(),
+          settingsService.getAppLanguage(),
         ]);
         if (!cancelled) {
           setShowEnglishHintState(englishHint);
           setEszettPreferenceState(eszett);
+          setAppLanguageState(language);
         }
       } catch (error) {
         console.error('[Settings] Failed to load settings:', error);
@@ -70,11 +74,29 @@ export function useSettings() {
     [],
   );
 
+  const setAppLanguage = useCallback(
+    async (language: 'en' | 'it' | 'pl') => {
+      const previous = appLanguage;
+      setAppLanguageState(language);
+      try {
+        await settingsService.setAppLanguage(language);
+        await i18n.changeLanguage(language);
+      } catch (error) {
+        console.error('[Settings] Failed to save app language:', error);
+        // Revert optimistic update on failure
+        setAppLanguageState(previous);
+      }
+    },
+    [appLanguage],
+  );
+
   return {
     showEnglishHint,
     setShowEnglishHint,
     eszettPreference,
     setEszettPreference,
+    appLanguage,
+    setAppLanguage,
     isLoading,
   };
 }
