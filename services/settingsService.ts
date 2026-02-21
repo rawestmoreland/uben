@@ -8,6 +8,8 @@ export const SETTINGS_KEYS = {
   ESZETT_PREFERENCE: 'eszett_preference',
   SELECTED_CATEGORIES: 'selected_categories',
   APP_LANGUAGE: 'app_language',
+  QUIZ_SESSIONS_COMPLETED: 'quiz_sessions_completed',
+  LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
