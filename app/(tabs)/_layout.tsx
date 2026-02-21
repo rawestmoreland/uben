@@ -35,6 +35,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="progress"
+        options={{
+          title: t('progress_screen.tab_label').toUpperCase(),
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconContainer}>
+              <IconSymbol size={26} name="chart.bar.fill" color={color} />
+              {focused && <View style={styles.activeIndicator} />}
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="explore"
         options={{
           title: t('about').toUpperCase(),

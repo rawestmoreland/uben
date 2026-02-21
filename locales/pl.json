@@ -67,6 +67,26 @@
       "start_categories_many": "$t(categories.start) {{count}} kategorii",
       "start_categories_other": "$t(categories.start) {{count}} kategorii"
     },
+    "progress_screen": {
+      "tab_label": "Postęp",
+      "title": "Postęp",
+      "subtitle": "Twoja droga nauki",
+      "total_reviews": "Łączne powtórzenia",
+      "accuracy": "Dokładność",
+      "words_started": "Słowa rozpoczęte",
+      "current_streak": "Seria",
+      "longest_streak": "Najlepsza seria",
+      "mastered": "Opanowane",
+      "activity_title": "Aktywność",
+      "activity_subtitle": "Ostatnie 13 tygodni",
+      "legend_less": "Mniej",
+      "legend_more": "Więcej",
+      "hardest_words_title": "Trudne słowa",
+      "hardest_words_subtitle": "Słowa, które mylisz najczęściej",
+      "hardest_words_empty": "Ćwicz słowo co najmniej 3 razy, aby zobaczyć tu najtrudniejsze.",
+      "success_rate": "{{rate}}% poprawnie ({{count}} powtórzeń)",
+      "no_data": "Ukończ pierwszą sesję ćwiczeń, aby zobaczyć tu swoje statystyki."
+    },
     "how_it_works": {
       "title": "Jak to działa",
       "subtitle": "Nauka oparta na nauce",

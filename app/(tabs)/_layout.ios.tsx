@@ -9,6 +9,10 @@ export default function TabLayout() {
         <Label>{t('practice')}</Label>
         <Icon sf={{ default: 'book', selected: 'book.fill' }} />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="progress">
+        <Label>{t('progress_screen.tab_label')}</Label>
+        <Icon sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }} />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="explore">
         <Label>{t('about')}</Label>
         <Icon sf={{ default: 'info.circle', selected: 'info.circle.fill' }} />
