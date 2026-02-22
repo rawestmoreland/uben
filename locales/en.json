@@ -59,6 +59,26 @@
       "start_categories_one": "$t(categories.start) {{count}} category",
       "start_categories_other": "$t(categories.start) {{count}} categories"
     },
+    "progress_screen": {
+      "tab_label": "Progress",
+      "title": "Progress",
+      "subtitle": "Your learning journey",
+      "total_reviews": "Total Reviews",
+      "accuracy": "Accuracy",
+      "words_started": "Words Started",
+      "current_streak": "Streak",
+      "longest_streak": "Best Streak",
+      "mastered": "Mastered",
+      "activity_title": "Activity",
+      "activity_subtitle": "Last 13 weeks",
+      "legend_less": "Less",
+      "legend_more": "More",
+      "hardest_words_title": "Hardest Words",
+      "hardest_words_subtitle": "Words you miss most often",
+      "hardest_words_empty": "Practice a word at least 3 times to see your toughest ones here.",
+      "success_rate": "{{rate}}% correct ({{count}} reviews)",
+      "no_data": "Complete your first practice session to see your stats here."
+    },
     "how_it_works": {
       "title": "How It Works",
       "subtitle": "Science-backed learning",

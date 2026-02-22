@@ -59,6 +59,26 @@
       "start_categories_one": "$t(categories.start) {{count}} categoria",
       "start_categories_other": "$t(categories.start) {{count}} categorie"
     },
+    "progress_screen": {
+      "tab_label": "Progressi",
+      "title": "Progressi",
+      "subtitle": "Il tuo percorso di apprendimento",
+      "total_reviews": "Ripetizioni totali",
+      "accuracy": "Precisione",
+      "words_started": "Parole iniziate",
+      "current_streak": "Serie",
+      "longest_streak": "Serie record",
+      "mastered": "Padroneggiato",
+      "activity_title": "Attività",
+      "activity_subtitle": "Ultime 13 settimane",
+      "legend_less": "Meno",
+      "legend_more": "Di più",
+      "hardest_words_title": "Parole difficili",
+      "hardest_words_subtitle": "Parole che sbagli più spesso",
+      "hardest_words_empty": "Esercitati su una parola almeno 3 volte per vedere quelle più difficili qui.",
+      "success_rate": "{{rate}}% corretto ({{count}} ripetizioni)",
+      "no_data": "Completa la tua prima sessione di pratica per vedere le tue statistiche qui."
+    },
     "how_it_works": {
       "title": "Come Funziona",
       "subtitle": "Apprendimento basato sulla scienza",
