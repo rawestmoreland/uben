@@ -5,9 +5,13 @@ import {
   Typography,
   shadowStyle,
 } from '@/constants/design';
+import { getMigrationDiagnostics } from '@/database/db';
 import { useSettings } from '@/hooks/use-settings';
+import type { MigrationDiagnostics } from '@/types/database';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -30,6 +34,17 @@ export default function SettingsScreen() {
     setAppLanguage,
     isLoading,
   } = useSettings();
+
+  const [diagnostics, setDiagnostics] = useState<MigrationDiagnostics | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    getMigrationDiagnostics()
+      .then(setDiagnostics)
+      .catch(() => {}); // silently ignore — diagnostics are best-effort
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -218,6 +233,84 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
+        {/* ── Database Diagnostics Card ───────────────────────── */}
+        {diagnostics !== null && (
+          <View style={[styles.card, shadowStyle]}>
+            <View style={styles.diagHeader}>
+              <Text style={styles.cardTitle}>DATABASE</Text>
+              <View
+                style={[
+                  styles.healthBadge,
+                  diagnostics.isHealthy
+                    ? styles.healthBadgeOk
+                    : styles.healthBadgeError,
+                ]}
+              >
+                <Text style={styles.healthBadgeText}>
+                  {diagnostics.isHealthy ? 'OK' : 'ERROR'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.settingRowStacked}>
+              <Text style={styles.settingLabel}>SCHEMA</Text>
+              <Text style={styles.diagValue}>
+                {diagnostics.appliedCount} / {diagnostics.expectedCount}{' '}
+                migrations applied
+              </Text>
+            </View>
+
+            {diagnostics.failures.length > 0 && (
+              <View style={[styles.settingRowStacked, styles.diagFailureBlock]}>
+                <Text style={[styles.settingLabel, styles.diagFailureLabel]}>
+                  FAILED MIGRATIONS
+                </Text>
+                {diagnostics.failures.map((entry) => (
+                  <View key={entry.id} style={styles.diagFailureRow}>
+                    <Text style={styles.diagFailureVersion}>
+                      v{entry.migration_version}
+                    </Text>
+                    <Text style={styles.diagFailureMessage} numberOfLines={3}>
+                      {entry.error_message ?? 'Unknown error'}
+                    </Text>
+                    <Text style={styles.diagTimestamp}>{entry.logged_at}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {diagnostics.log.length > 0 && (
+              <View style={styles.settingRowStacked}>
+                <Text style={styles.settingLabel}>RECENT EVENTS</Text>
+                {diagnostics.log.slice(0, 8).map((entry) => (
+                  <View key={entry.id} style={styles.diagLogRow}>
+                    <Text
+                      style={[
+                        styles.diagLogEvent,
+                        entry.event === 'failed' && styles.diagLogEventFailed,
+                        entry.event === 'completed' &&
+                          styles.diagLogEventCompleted,
+                      ]}
+                    >
+                      {entry.event.toUpperCase()}
+                    </Text>
+                    <Text style={styles.diagLogVersion}>
+                      v{entry.migration_version}
+                    </Text>
+                    {entry.duration_ms !== null && (
+                      <Text style={styles.diagLogDuration}>
+                        {entry.duration_ms}ms
+                      </Text>
+                    )}
+                    <Text style={styles.diagTimestamp} numberOfLines={1}>
+                      {entry.logged_at}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -362,5 +455,97 @@ const styles = StyleSheet.create({
   },
   segmentButtonTextActive: {
     color: AppColors.white,
+  },
+
+  // Database diagnostics
+  diagHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.md,
+  },
+  healthBadge: {
+    paddingVertical: 2,
+    paddingHorizontal: Spacing.sm,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+  },
+  healthBadgeOk: {
+    backgroundColor: AppColors.green,
+  },
+  healthBadgeError: {
+    backgroundColor: AppColors.red,
+  },
+  healthBadgeText: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+  },
+  diagValue: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    marginTop: Spacing.xs,
+  },
+  diagFailureBlock: {
+    backgroundColor: '#FFF0F0',
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.red,
+    padding: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  diagFailureLabel: {
+    color: AppColors.red,
+  },
+  diagFailureRow: {
+    marginTop: Spacing.sm,
+  },
+  diagFailureVersion: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.red,
+  },
+  diagFailureMessage: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    fontFamily: 'monospace' as const,
+    marginTop: 2,
+  },
+  diagLogRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+    flexWrap: 'wrap',
+  },
+  diagLogEvent: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    minWidth: 72,
+  },
+  diagLogEventFailed: {
+    color: AppColors.red,
+  },
+  diagLogEventCompleted: {
+    color: AppColors.green,
+  },
+  diagLogVersion: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.black,
+  },
+  diagLogDuration: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+  },
+  diagTimestamp: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    flex: 1,
   },
 });
