@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { vocabularyService } from '@/services/vocabularyService';
 import { spacedRepetitionService } from '@/services/spacedRepetitionService';
+import { statisticsService } from '@/services/statisticsService';
 import type { UserStats } from '@/types/database';
 
 interface HomeData {
@@ -10,6 +11,7 @@ interface HomeData {
   userNounCount: number;
   streak: number;
   hasReviewedToday: boolean;
+  strugglingCount: number;
   isLoading: boolean;
 }
 
@@ -32,6 +34,7 @@ export function useHomeData(): HomeData {
   const [userNounCount, setUserNounCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [hasReviewedToday, setHasReviewedToday] = useState(false);
+  const [strugglingCount, setStrugglingCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
@@ -46,12 +49,14 @@ export function useHomeData(): HomeData {
             fetchedUserCount,
             fetchedStreak,
             fetchedHasReviewedToday,
+            fetchedStrugglingCount,
           ] = await Promise.all([
             vocabularyService.getUserStats(),
             vocabularyService.getNounCount(),
             vocabularyService.getUserNounCount(),
             spacedRepetitionService.getStudyStreak(),
             spacedRepetitionService.hasReviewedToday(),
+            statisticsService.getStrugglingWordsCount(),
           ]);
 
           if (!cancelled) {
@@ -60,6 +65,7 @@ export function useHomeData(): HomeData {
             setUserNounCount(fetchedUserCount);
             setStreak(fetchedStreak);
             setHasReviewedToday(fetchedHasReviewedToday);
+            setStrugglingCount(fetchedStrugglingCount);
           }
         } catch (error) {
           console.error('[HomeData] Failed to load:', error);
@@ -78,5 +84,5 @@ export function useHomeData(): HomeData {
     }, []),
   );
 
-  return { stats, nounCount, userNounCount, streak, hasReviewedToday, isLoading };
+  return { stats, nounCount, userNounCount, streak, hasReviewedToday, strugglingCount, isLoading };
 }

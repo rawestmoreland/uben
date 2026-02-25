@@ -21,6 +21,7 @@ export interface QuizResult {
 }
 
 export interface QuizSessionData {
+  mode: QuizMode;
   phase: QuizPhase;
   currentCard: DueCard | null;
   selectedArticle: Article | null;
@@ -33,11 +34,16 @@ export interface QuizSessionData {
 
 // ── Hook ─────────────────────────────────────────────────────────────
 
+export type QuizMode = 'daily' | 'struggling';
+
 /**
  * Manages the full quiz lifecycle: loading a session, presenting cards,
  * recording answers with SM-2 scoring, and tracking results.
+ *
+ * @param mode - 'daily' uses the normal SRS schedule; 'struggling' drills
+ *               the words the user misses most (ignores next_review_date).
  */
-export function useQuizSession(): QuizSessionData {
+export function useQuizSession(mode: QuizMode = 'daily'): QuizSessionData {
   const [phase, setPhase] = useState<QuizPhase>('loading');
   const [session, setSession] = useState<ReviewSession | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -54,15 +60,20 @@ export function useQuizSession(): QuizSessionData {
 
     async function loadSession() {
       try {
-        // Load selected categories from settings
-        const categoryIds = await settingsService.getSelectedCategories();
+        let reviewSession;
 
-        const reviewSession =
-          await spacedRepetitionService.getDailyReviewSession(
+        if (mode === 'struggling') {
+          reviewSession =
+            await spacedRepetitionService.getStrugglingWordsSession(15);
+        } else {
+          // Load selected categories from settings
+          const categoryIds = await settingsService.getSelectedCategories();
+          reviewSession = await spacedRepetitionService.getDailyReviewSession(
             20,
             5,
             categoryIds.length > 0 ? categoryIds : undefined,
           );
+        }
 
         if (cancelled) return;
 
@@ -162,6 +173,7 @@ export function useQuizSession(): QuizSessionData {
   // ── Return ───────────────────────────────────────────────────────
 
   return {
+    mode,
     phase,
     currentCard,
     selectedArticle,
