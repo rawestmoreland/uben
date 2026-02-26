@@ -259,6 +259,31 @@ export class SpacedRepetitionService {
   }
 
   /**
+   * Build a focused session of the words the user struggles with most.
+   * Selects cards with ≥5 reviews and a success rate below 60%, sorted worst-first.
+   * Ignores next_review_date so struggling words are always drillable on demand.
+   */
+  async getStrugglingWordsSession(limit: number = 15): Promise<ReviewSession> {
+    const cards = await this.db.getAllAsync<DueCard>(
+      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.remote_id
+       FROM card_progress cp
+       JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
+       WHERE cp.total_reviews >= 5
+         AND CAST(cp.correct_reviews AS REAL) / cp.total_reviews < 0.6
+       ORDER BY CAST(cp.correct_reviews AS REAL) / cp.total_reviews ASC,
+                cp.total_reviews DESC
+       LIMIT ?`,
+      [limit],
+    );
+
+    return {
+      cards: shuffleArray(cards),
+      dueCount: cards.length,
+      newCount: 0,
+    };
+  }
+
+  /**
    * Check if the user has completed at least one review today.
    */
   async hasReviewedToday(): Promise<boolean> {

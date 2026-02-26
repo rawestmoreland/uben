@@ -25,6 +25,9 @@
     "accuracy": "precisione",
     "quiz": "Quiz",
     "back_to_home": "Torna alla home",
+    "struggling_words_button_one": "RIPASSA {{count}} PAROLA DIFFICILE",
+    "struggling_words_button_other": "RIPASSA {{count}} PAROLE DIFFICILI",
+    "struggling_words_label": "parole che continui a sbagliare",
     "words_count_one": "{{count}} parola",
     "words_count_other": "{{count}} parole",
     "quiz_mode": {
@@ -37,7 +40,10 @@
       "reviewed": "Ripetute",
       "correct": "Corrette",
       "accuracy": "Precisione",
-      "you_said": "Hai detto: {{article}}"
+      "you_said": "Hai detto: {{article}}",
+      "hard_words_drill": "Ripasso parole difficili",
+      "no_struggling_words": "Ottimo lavoro!",
+      "no_struggling_words_desc": "Non hai ancora parole con precisione inferiore al 60%.\n\nContinua a praticare e le parole più difficili appariranno qui."
     },
     "settings": {
       "title": "Impostazioni",

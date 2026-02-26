@@ -29,6 +29,11 @@
     "accuracy": "dokładność",
     "quiz": "Quiz",
     "back_to_home": "Wróć do strony głównej",
+    "struggling_words_button_one": "ĆWICZ {{count}} TRUDNE SŁOWO",
+    "struggling_words_button_few": "ĆWICZ {{count}} TRUDNE SŁOWA",
+    "struggling_words_button_many": "ĆWICZ {{count}} TRUDNYCH SŁÓW",
+    "struggling_words_button_other": "ĆWICZ {{count}} TRUDNYCH SŁÓW",
+    "struggling_words_label": "słowa, które ciągle mylisz",
     "words_count_one": "{{count}} słowo",
     "words_count_few": "{{count}} słowa",
     "words_count_many": "{{count}} słów",
@@ -43,7 +48,10 @@
       "reviewed": "Powtórzone",
       "correct": "Poprawne",
       "accuracy": "Dokładność",
-      "you_said": "Twoja odpowiedź: {{article}}"
+      "you_said": "Twoja odpowiedź: {{article}}",
+      "hard_words_drill": "Trudne słowa",
+      "no_struggling_words": "Świetnie!",
+      "no_struggling_words_desc": "Nie masz jeszcze słów poniżej 60% trafności.\n\nĆwicz dalej, a najtrudniejsze słowa pojawią się tutaj."
     },
     "settings": {
       "title": "Ustawienia",
