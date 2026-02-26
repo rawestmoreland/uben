@@ -25,6 +25,9 @@
     "accuracy": "accuracy",
     "quiz": "Quiz",
     "back_to_home": "Back to home",
+    "struggling_words_button_one": "DRILL {{count}} HARD WORD",
+    "struggling_words_button_other": "DRILL {{count}} HARD WORDS",
+    "struggling_words_label": "words you keep missing",
     "words_count_one": "{{count}} word",
     "words_count_other": "{{count}} words",
     "quiz_mode": {
@@ -37,7 +40,10 @@
       "reviewed": "Reviewed",
       "correct": "Correct",
       "accuracy": "Accuracy",
-      "you_said": "You said: {{article}}"
+      "you_said": "You said: {{article}}",
+      "hard_words_drill": "Hard Words Drill",
+      "no_struggling_words": "Looking good!",
+      "no_struggling_words_desc": "You have no words below 60% accuracy yet.\n\nKeep practicing and your toughest words will appear here."
     },
     "settings": {
       "title": "Settings",

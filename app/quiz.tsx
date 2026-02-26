@@ -7,12 +7,16 @@ import {
   shadowStyleSmall,
 } from '@/constants/design';
 import { useNounTranslation } from '@/hooks/use-noun-translation';
-import { useQuizSession, type QuizResult } from '@/hooks/use-quiz-session';
+import {
+  useQuizSession,
+  type QuizMode,
+  type QuizResult,
+} from '@/hooks/use-quiz-session';
 import { useSettings } from '@/hooks/use-settings';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize } from '@/utils/typography';
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +40,8 @@ const FEEDBACK_DELAY_MS = 1200;
 
 export default function QuizScreen() {
   const { t } = useTranslation('app');
-  const quiz = useQuizSession();
+  const { mode } = useLocalSearchParams<{ mode?: QuizMode }>();
+  const quiz = useQuizSession(mode ?? 'daily');
   const { phase, nextCard, results } = quiz;
   const { showEnglishHint, eszettPreference } = useSettings();
 
@@ -54,7 +59,7 @@ export default function QuizScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       {phase === 'loading' && <LoadingState t={t} />}
-      {phase === 'empty' && <EmptyState t={t} />}
+      {phase === 'empty' && <EmptyState t={t} mode={quiz.mode} />}
       {(phase === 'playing' || phase === 'feedback') && (
         <PlayingState
           quiz={quiz}
@@ -82,15 +87,20 @@ function LoadingState({ t }: { t: TFunction }) {
 
 // ── Empty State ──────────────────────────────────────────────────────
 
-function EmptyState({ t }: { t: TFunction }) {
+function EmptyState({ t, mode }: { t: TFunction; mode: QuizMode }) {
+  const isStruggling = mode === 'struggling';
   return (
     <View style={styles.centeredContainer}>
       <View style={[styles.emptyCard, shadowStyle]}>
         <Text style={styles.emptyTitle}>
-          {t('quiz_mode.all_caught_up').toUpperCase()}
+          {isStruggling
+            ? t('quiz_mode.no_struggling_words').toUpperCase()
+            : t('quiz_mode.all_caught_up').toUpperCase()}
         </Text>
         <Text style={styles.emptySubtext}>
-          {t('quiz_mode.no_cards_due_for_review')}
+          {isStruggling
+            ? t('quiz_mode.no_struggling_words_desc')
+            : t('quiz_mode.no_cards_due_for_review')}
         </Text>
       </View>
       <Pressable
@@ -124,7 +134,7 @@ function PlayingState({
   eszettPreference,
 }: PlayingStateProps) {
   const { t } = useTranslation('app');
-  const { currentCard, phase, selectedArticle, isCorrect, progress } = quiz;
+  const { currentCard, phase, selectedArticle, isCorrect, progress, mode } = quiz;
   const translation = useNounTranslation(
     currentCard?.remote_id ?? null,
     currentCard?.english ?? null,
@@ -152,16 +162,25 @@ function PlayingState({
 
   return (
     <View style={styles.playingContainer}>
-      {/* ── Close button ────────────────────────────────────── */}
-      <Pressable
-        style={styles.closeButton}
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel={t('quiz_mode.exit_quiz')}
-        hitSlop={12}
-      >
-        <Text style={styles.closeButtonText}>X</Text>
-      </Pressable>
+      {/* ── Top row: close + mode badge ─────────────────────── */}
+      <View style={styles.topRow}>
+        {mode === 'struggling' && (
+          <View style={styles.modeBadge}>
+            <Text style={styles.modeBadgeText}>
+              {t('quiz_mode.hard_words_drill').toUpperCase()}
+            </Text>
+          </View>
+        )}
+        <Pressable
+          style={styles.closeButton}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('quiz_mode.exit_quiz')}
+          hitSlop={12}
+        >
+          <Text style={styles.closeButtonText}>X</Text>
+        </Pressable>
+      </View>
 
       {/* ── Progress ────────────────────────────────────────── */}
       <View style={styles.progressSection}>
@@ -422,9 +441,28 @@ const styles = StyleSheet.create({
     padding: Layout.screenPadding,
   },
 
+  // Top row (close + mode badge)
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modeBadge: {
+    backgroundColor: AppColors.red,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+  },
+  modeBadgeText: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+  },
+
   // Close button
   closeButton: {
-    alignSelf: 'flex-end',
     width: 44,
     height: 44,
     borderWidth: Layout.borderWidthThin,

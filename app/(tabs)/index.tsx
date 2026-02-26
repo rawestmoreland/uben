@@ -22,6 +22,7 @@ export default function HomeScreen() {
     userNounCount,
     streak,
     hasReviewedToday,
+    strugglingCount,
     isLoading,
   } = useHomeData();
 
@@ -129,6 +130,31 @@ export default function HomeScreen() {
             </Pressable>
           )}
         </View>
+
+        {/* ── Struggling Words ─────────────────────────────────── */}
+        {!isLoading && strugglingCount > 0 && (
+          <Pressable
+            style={({ pressed }) => [
+              styles.strugglingButton,
+              shadowStyleSmall,
+              pressed && styles.strugglingButtonPressed,
+            ]}
+            onPress={() => router.push('/quiz?mode=struggling')}
+            accessibilityRole="button"
+            accessibilityLabel={t('struggling_words_button', {
+              count: strugglingCount,
+            })}
+          >
+            <View style={styles.strugglingButtonInner}>
+              <Text style={styles.strugglingButtonText}>
+                {t('struggling_words_button', { count: strugglingCount }).toUpperCase()}
+              </Text>
+              <Text style={styles.strugglingButtonSub}>
+                {t('struggling_words_label')}
+              </Text>
+            </View>
+          </Pressable>
+        )}
 
         {/* ── Progress Card ───────────────────────────────────── */}
         <View style={styles.progressCard}>
@@ -369,6 +395,39 @@ const styles = StyleSheet.create({
     fontWeight: Typography.bold,
     color: AppColors.black,
     letterSpacing: 1,
+  },
+
+  // Struggling Words Button
+  strugglingButton: {
+    backgroundColor: AppColors.red,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  strugglingButtonPressed: {
+    transform: [{ translateY: 2 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  strugglingButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  strugglingButtonText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+    flex: 1,
+  },
+  strugglingButtonSub: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.white,
+    opacity: 0.85,
+    letterSpacing: 0.5,
   },
 
   // Progress Card
