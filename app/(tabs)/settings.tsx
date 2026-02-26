@@ -8,7 +8,7 @@ import {
 import { getMigrationDiagnostics } from '@/database/db';
 import { useSettings } from '@/hooks/use-settings';
 import type { MigrationDiagnostics } from '@/types/database';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Platform,
@@ -22,6 +22,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Settings Screen ──────────────────────────────────────────────────
+
+const UNLOCK_TAPS = 7;
 
 export default function SettingsScreen() {
   const { t } = useTranslation('app');
@@ -38,12 +40,30 @@ export default function SettingsScreen() {
   const [diagnostics, setDiagnostics] = useState<MigrationDiagnostics | null>(
     null,
   );
+  const [tapCount, setTapCount] = useState(0);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (Platform.OS === 'web') return;
-    getMigrationDiagnostics()
-      .then(setDiagnostics)
-      .catch(() => {}); // silently ignore — diagnostics are best-effort
+  const handleHeaderTap = () => {
+    if (showDiagnostics) return;
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+
+    const newCount = tapCount + 1;
+    if (newCount >= UNLOCK_TAPS) {
+      setTapCount(0);
+      setShowDiagnostics(true);
+      if (Platform.OS !== 'web') {
+        getMigrationDiagnostics().then(setDiagnostics).catch(() => {});
+      }
+    } else {
+      setTapCount(newCount);
+      tapTimerRef.current = setTimeout(() => setTapCount(0), 2000);
+    }
+  };
+
+  // Clean up the reset timer on unmount
+  useEffect(() => () => {
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
   }, []);
 
   return (
@@ -54,14 +74,25 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* ── Header ──────────────────────────────────────────── */}
-        <View style={styles.header}>
+        {/* Tap 7 times to reveal database diagnostics */}
+        <Pressable style={styles.header} onPress={handleHeaderTap}>
           <Text style={styles.headerTitle}>
             {t('settings.title').toUpperCase()}
           </Text>
           <Text style={styles.headerSubtitle}>
             {t('settings.customize_your_experience').toUpperCase()}
           </Text>
-        </View>
+          {tapCount > 0 && !showDiagnostics && (
+            <View style={styles.tapProgress}>
+              {Array.from({ length: UNLOCK_TAPS }).map((_, i) => (
+                <View
+                  key={i}
+                  style={[styles.tapDot, i < tapCount && styles.tapDotActive]}
+                />
+              ))}
+            </View>
+          )}
+        </Pressable>
 
         {/* ── Language Card ───────────────────────────────────── */}
         <View style={[styles.card, shadowStyle]}>
@@ -233,8 +264,8 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
-        {/* ── Database Diagnostics Card ───────────────────────── */}
-        {diagnostics !== null && (
+        {/* ── Database Diagnostics Card (unlocked by tapping header 7×) ── */}
+        {showDiagnostics && (
           <View style={[styles.card, shadowStyle]}>
             <View style={styles.diagHeader}>
               <Text style={styles.cardTitle}>DATABASE</Text>
@@ -455,6 +486,25 @@ const styles = StyleSheet.create({
   },
   segmentButtonTextActive: {
     color: AppColors.white,
+  },
+
+  // Easter-egg tap progress
+  tapProgress: {
+    flexDirection: 'row',
+    gap: 4,
+    marginTop: Spacing.sm,
+  },
+  tapDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: AppColors.lightGray,
+    borderWidth: 1,
+    borderColor: AppColors.textSecondary,
+  },
+  tapDotActive: {
+    backgroundColor: AppColors.black,
+    borderColor: AppColors.black,
   },
 
   // Database diagnostics
