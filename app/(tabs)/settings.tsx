@@ -53,7 +53,9 @@ export default function SettingsScreen() {
       setTapCount(0);
       setShowDiagnostics(true);
       if (Platform.OS !== 'web') {
-        getMigrationDiagnostics().then(setDiagnostics).catch(() => {});
+        getMigrationDiagnostics()
+          .then(setDiagnostics)
+          .catch(() => {});
       }
     } else {
       setTapCount(newCount);
@@ -62,9 +64,12 @@ export default function SettingsScreen() {
   };
 
   // Clean up the reset timer on unmount
-  useEffect(() => () => {
-    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    },
+    [],
+  );
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -272,13 +277,13 @@ export default function SettingsScreen() {
               <View
                 style={[
                   styles.healthBadge,
-                  diagnostics.isHealthy
+                  diagnostics?.isHealthy
                     ? styles.healthBadgeOk
                     : styles.healthBadgeError,
                 ]}
               >
                 <Text style={styles.healthBadgeText}>
-                  {diagnostics.isHealthy ? 'OK' : 'ERROR'}
+                  {diagnostics?.isHealthy ? 'OK' : 'ERROR'}
                 </Text>
               </View>
             </View>
@@ -286,31 +291,37 @@ export default function SettingsScreen() {
             <View style={styles.settingRowStacked}>
               <Text style={styles.settingLabel}>SCHEMA</Text>
               <Text style={styles.diagValue}>
-                {diagnostics.appliedCount} / {diagnostics.expectedCount}{' '}
+                {diagnostics?.appliedCount} / {diagnostics?.expectedCount}{' '}
                 migrations applied
               </Text>
             </View>
 
-            {diagnostics.failures.length > 0 && (
-              <View style={[styles.settingRowStacked, styles.diagFailureBlock]}>
-                <Text style={[styles.settingLabel, styles.diagFailureLabel]}>
-                  FAILED MIGRATIONS
-                </Text>
-                {diagnostics.failures.map((entry) => (
-                  <View key={entry.id} style={styles.diagFailureRow}>
-                    <Text style={styles.diagFailureVersion}>
-                      v{entry.migration_version}
-                    </Text>
-                    <Text style={styles.diagFailureMessage} numberOfLines={3}>
-                      {entry.error_message ?? 'Unknown error'}
-                    </Text>
-                    <Text style={styles.diagTimestamp}>{entry.logged_at}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
+            {diagnostics &&
+              diagnostics.failures &&
+              diagnostics.failures.length > 0 && (
+                <View
+                  style={[styles.settingRowStacked, styles.diagFailureBlock]}
+                >
+                  <Text style={[styles.settingLabel, styles.diagFailureLabel]}>
+                    FAILED MIGRATIONS
+                  </Text>
+                  {diagnostics?.failures.map((entry) => (
+                    <View key={entry.id} style={styles.diagFailureRow}>
+                      <Text style={styles.diagFailureVersion}>
+                        v{entry.migration_version}
+                      </Text>
+                      <Text style={styles.diagFailureMessage} numberOfLines={3}>
+                        {entry.error_message ?? 'Unknown error'}
+                      </Text>
+                      <Text style={styles.diagTimestamp}>
+                        {entry.logged_at}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
 
-            {diagnostics.log.length > 0 && (
+            {diagnostics && diagnostics.log && diagnostics.log.length > 0 && (
               <View style={styles.settingRowStacked}>
                 <Text style={styles.settingLabel}>RECENT EVENTS</Text>
                 {diagnostics.log.slice(0, 8).map((entry) => (
