@@ -46,3 +46,6 @@ app-example
 pb-import-*.json
 
 pb_data/
+
+# iOS build files
+*.ipa
