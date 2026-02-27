@@ -376,14 +376,34 @@ export const migrations: Migration[] = [
 
 /**
  * Run all pending migrations in order.
- * Creates the `migrations` tracking table if it doesn't exist.
+ * Creates the `migrations` and `migration_log` tracking tables if they don't exist.
+ *
+ * Every migration attempt is written to `migration_log` with its outcome and
+ * duration. This gives a persistent, on-device record of exactly what happened
+ * during initialization — survives app restarts and can be queried at any time
+ * to diagnose issues on a specific device.
  */
 export async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
-  // Ensure the migrations tracking table exists
+  // ── Bootstrap tracking tables ────────────────────────────────────────────
+  // These must exist before any migration runs (including migration 001),
+  // so they are created here rather than inside a numbered migration.
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS migrations (
       version TEXT PRIMARY KEY,
       applied_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Persistent event log: one row per migration attempt.
+  // Unlike console.log, this survives app restarts and is queryable.
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS migration_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      migration_version TEXT NOT NULL,
+      event TEXT NOT NULL CHECK(event IN ('started', 'completed', 'failed')),
+      error_message TEXT,
+      duration_ms INTEGER,
+      logged_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
@@ -393,15 +413,47 @@ export async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
       [migration.version],
     );
 
-    if (!exists) {
+    if (exists) {
+      continue; // already applied — no log noise on every app start
+    }
+
+    // Log the attempt before running so a crash mid-migration is still visible
+    await db.runAsync(
+      'INSERT INTO migration_log (migration_version, event) VALUES (?, ?)',
+      [migration.version, 'started'],
+    );
+
+    const startTime = Date.now();
+    try {
       console.log(
         `[DB] Running migration ${migration.version}: ${migration.name}`,
       );
       await migration.up(db);
+      const duration = Date.now() - startTime;
+
       await db.runAsync('INSERT INTO migrations (version) VALUES (?)', [
         migration.version,
       ]);
-      console.log(`[DB] Migration ${migration.version} applied successfully`);
+      await db.runAsync(
+        'INSERT INTO migration_log (migration_version, event, duration_ms) VALUES (?, ?, ?)',
+        [migration.version, 'completed', duration],
+      );
+      console.log(
+        `[DB] Migration ${migration.version} applied successfully (${duration}ms)`,
+      );
+    } catch (err) {
+      const duration = Date.now() - startTime;
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      try {
+        await db.runAsync(
+          'INSERT INTO migration_log (migration_version, event, error_message, duration_ms) VALUES (?, ?, ?, ?)',
+          [migration.version, 'failed', errorMessage, duration],
+        );
+      } catch {
+        // If we can't write the failure log, don't mask the original error
+      }
+      console.error(`[DB] Migration ${migration.version} failed:`, err);
+      throw err;
     }
   }
 }

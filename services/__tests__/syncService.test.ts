@@ -136,12 +136,14 @@ describe('syncService.syncIfOnline()', () => {
     mockSettingsService.getSetting.mockResolvedValue(null);
     mockSettingsService.setSetting.mockResolvedValue(undefined);
 
-    // Default fetch: all three collections return empty lists
+    // Default fetch: all three collections return empty lists + count checks
     global.fetch = jest
       .fn()
       .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // categories
       .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // nouns
-      .mockResolvedValueOnce(makeFetchOk(emptyListResponse)); // noun_translations
+      .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // noun_translations
+      .mockResolvedValueOnce(makeFetchOk({ ...emptyListResponse, totalItems: 0 })) // patchSync: nouns count
+      .mockResolvedValueOnce(makeFetchOk({ ...emptyListResponse, totalItems: 0 })); // patchSync: translations count
   });
 
   afterEach(() => {
@@ -176,7 +178,7 @@ describe('syncService.syncIfOnline()', () => {
     it('returns synced status with zero counts when no data to sync', async () => {
       const result = await syncService.syncIfOnline();
 
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         status: 'synced',
         categoriesSynced: 0,
         nounsSynced: 0,
@@ -291,7 +293,9 @@ describe('syncService.syncIfOnline()', () => {
         .mockReset()
         .mockResolvedValueOnce(makeFetchOk(makeListResponse([sampleCategory])))
         .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // nouns
-        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)); // noun_translations
+        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // noun_translations
+        .mockResolvedValueOnce(makeFetchOk({ ...emptyListResponse, totalItems: 0 })) // patchSync: nouns count
+        .mockResolvedValueOnce(makeFetchOk({ ...emptyListResponse, totalItems: 0 })); // patchSync: translations count
     });
 
     it('runs INSERT … ON CONFLICT DO UPDATE for each category (primary path)', async () => {
@@ -362,7 +366,9 @@ describe('syncService.syncIfOnline()', () => {
       (global.fetch as jest.Mock)
         .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // categories
         .mockResolvedValueOnce(makeFetchOk(makeListResponse(nouns))) // nouns
-        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)); // noun_translations
+        .mockResolvedValueOnce(makeFetchOk(emptyListResponse)) // noun_translations
+        .mockResolvedValueOnce(makeFetchOk({ ...emptyListResponse, totalItems: 0 })) // patchSync: nouns count
+        .mockResolvedValueOnce(makeFetchOk({ ...emptyListResponse, totalItems: 0 })); // patchSync: translations count
     }
 
     it('updates an existing noun via UPDATE WHERE remote_id when found', async () => {
