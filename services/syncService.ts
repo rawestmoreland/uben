@@ -57,6 +57,8 @@ export interface SyncResult {
   status: 'synced' | 'skipped' | 'error';
   categoriesSynced?: number;
   nounsSynced?: number;
+  /** Collections that had a count mismatch and required a full re-fetch. */
+  patchedCollections?: string[];
   error?: string;
 }
 
@@ -137,7 +139,12 @@ class SyncService {
         );
       }
 
-      return { status: 'synced', categoriesSynced, nounsSynced };
+      // Integrity check: if local counts don't match remote after incremental
+      // sync, some records were silently missed (e.g. network dropped mid-page).
+      // Re-fetch the entire collection without a timestamp filter to patch gaps.
+      const patchedCollections = await this.patchSyncIfCountMismatch();
+
+      return { status: 'synced', categoriesSynced, nounsSynced, patchedCollections };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.warn('[Sync] Failed:', message);
@@ -394,6 +401,106 @@ class SyncService {
 
     return synced;
   }
+  // ── Count integrity / patch sync ─────────────────────────────────
+
+  /**
+   * After an incremental sync, compare remote `totalItems` with local counts.
+   * If they disagree, do a full (no-filter) re-fetch for that collection so
+   * any records that slipped through a previous partial failure are recovered.
+   *
+   * Returns the list of collections that were patched.
+   */
+  private async patchSyncIfCountMismatch(): Promise<string[]> {
+    const patched: string[] = [];
+
+    // ── Nouns ──────────────────────────────────────────────────────
+    const [remoteNounCount, localNounCount] = await Promise.all([
+      this.fetchRemoteCount('nouns'),
+      this.db
+        .getFirstAsync<{ count: number }>(
+          'SELECT COUNT(*) as count FROM nouns WHERE is_user_added = 0',
+        )
+        .then((r) => r?.count ?? 0),
+    ]);
+
+    if (remoteNounCount !== localNounCount) {
+      console.log(
+        `[Sync] Noun count mismatch (remote=${remoteNounCount}, local=${localNounCount}). Running patch sync…`,
+      );
+      const allNouns = await this.fetchRecords<PBNoun>('nouns', null, 'category');
+      await this.upsertNouns(allNouns);
+      // Prune nouns deleted from PocketBase (local > remote case)
+      if (allNouns.length > 0) {
+        const remoteIds = allNouns.map((n) => n.id);
+        const placeholders = remoteIds.map(() => '?').join(',');
+        await this.db.runAsync(
+          `DELETE FROM nouns WHERE is_user_added = 0 AND remote_id NOT IN (${placeholders})`,
+          remoteIds,
+        );
+      }
+      await settingsService.setSetting(
+        SYNC_CONFIG.LAST_SYNC_KEYS.nouns,
+        new Date().toISOString(),
+      );
+      patched.push('nouns');
+    }
+
+    // ── Noun translations ──────────────────────────────────────────
+    const [remoteTranslationCount, localTranslationCount] = await Promise.all([
+      this.fetchRemoteCount('noun_translations'),
+      this.db
+        .getFirstAsync<{ count: number }>(
+          'SELECT COUNT(*) as count FROM noun_translations',
+        )
+        .then((r) => r?.count ?? 0),
+    ]);
+
+    if (remoteTranslationCount !== localTranslationCount) {
+      console.log(
+        `[Sync] Noun translation count mismatch (remote=${remoteTranslationCount}, local=${localTranslationCount}). Running patch sync…`,
+      );
+      const allTranslations = await this.fetchRecords<PBNounTranslation>(
+        'noun_translations',
+        null,
+        'noun_id',
+      );
+      await this.upsertNounTranslations(allTranslations);
+      // Prune translations deleted from PocketBase (local > remote case)
+      if (allTranslations.length > 0) {
+        const remoteIds = allTranslations.map((t) => t.id);
+        const placeholders = remoteIds.map(() => '?').join(',');
+        await this.db.runAsync(
+          `DELETE FROM noun_translations WHERE remote_id NOT IN (${placeholders})`,
+          remoteIds,
+        );
+      }
+      await settingsService.setSetting(
+        SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
+        new Date().toISOString(),
+      );
+      patched.push('noun_translations');
+    }
+
+    return patched;
+  }
+
+  /**
+   * Fetch only the first page (perPage=1) from a PocketBase collection
+   * to cheaply read the `totalItems` count.
+   */
+  private async fetchRemoteCount(collection: string): Promise<number> {
+    const params = new URLSearchParams({ perPage: '1', key: PB_API_KEY! });
+    const url = `${PB_URL}/api/collections/${collection}/records?${params}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `PocketBase ${collection} count check failed: ${response.status}`,
+      );
+    }
+    const data: PBListResponse<unknown> = await response.json();
+    return data.totalItems;
+  }
+
   // ── Noun translations upsert ─────────────────────────────────────
 
   /**
