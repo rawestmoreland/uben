@@ -13,6 +13,7 @@ import {
   type QuizResult,
 } from '@/hooks/use-quiz-session';
 import { useSettings } from '@/hooks/use-settings';
+import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize } from '@/utils/typography';
 import * as Haptics from 'expo-haptics';
@@ -300,6 +301,13 @@ interface CompleteStateProps {
 
 function CompleteState({ results, eszettPreference }: CompleteStateProps) {
   const { t } = useTranslation('app');
+  const { handleSessionComplete } = useStoreReview();
+
+  // Request a review once per completed session, when conditions are met
+  useEffect(() => {
+    handleSessionComplete();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const accuracy =
