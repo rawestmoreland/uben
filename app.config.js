@@ -41,6 +41,12 @@ export default {
     plugins: [
       'expo-router',
       [
+        'react-native-google-mobile-ads',
+        {
+          iosAppId: 'ca-app-pub-3399938065938082~7320604001',
+        },
+      ],
+      [
         'expo-splash-screen',
         {
           image: './assets/images/splash-icon.png',
