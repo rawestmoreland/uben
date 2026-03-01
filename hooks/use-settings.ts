@@ -2,6 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { settingsService } from '@/services/settingsService';
 import i18n from '@/constants/i18n';
 
+// Promo codes that disable ads, stored as a comma-separated env var.
+// e.g. EXPO_PUBLIC_PROMO_CODES=UBEN2024,PARTNER01
+const PROMO_CODES: string[] = (process.env.EXPO_PUBLIC_PROMO_CODES ?? '')
+  .split(',')
+  .map((c) => c.trim().toUpperCase())
+  .filter(Boolean);
+
 /**
  * Hook to read and toggle the "Show English Hint" setting.
  *
@@ -14,6 +21,7 @@ export function useSettings() {
     'eszett' | 'ss'
   >('eszett');
   const [appLanguage, setAppLanguageState] = useState<'en' | 'it' | 'pl'>('en');
+  const [adsDisabled, setAdsDisabledState] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // ── Load on mount ──────────────────────────────────────────────────
@@ -23,15 +31,17 @@ export function useSettings() {
 
     (async () => {
       try {
-        const [englishHint, eszett, language] = await Promise.all([
+        const [englishHint, eszett, language, adsOff] = await Promise.all([
           settingsService.getShowEnglishHint(),
           settingsService.getEszettPreference(),
           settingsService.getAppLanguage(),
+          settingsService.getAdsDisabled(),
         ]);
         if (!cancelled) {
           setShowEnglishHintState(englishHint);
           setEszettPreferenceState(eszett);
           setAppLanguageState(language);
+          setAdsDisabledState(adsOff);
         }
       } catch (error) {
         console.error('[Settings] Failed to load settings:', error);
@@ -90,6 +100,25 @@ export function useSettings() {
     [appLanguage],
   );
 
+  /** Attempt to redeem a promo code. Returns 'success' or 'invalid'. */
+  const redeemPromoCode = useCallback(
+    async (code: string): Promise<'success' | 'invalid'> => {
+      if (PROMO_CODES.includes(code.trim().toUpperCase())) {
+        setAdsDisabledState(true);
+        try {
+          await settingsService.setAdsDisabled(true);
+        } catch (error) {
+          console.error('[Settings] Failed to save ads_disabled:', error);
+          setAdsDisabledState(false);
+          return 'invalid';
+        }
+        return 'success';
+      }
+      return 'invalid';
+    },
+    [],
+  );
+
   return {
     showEnglishHint,
     setShowEnglishHint,
@@ -97,6 +126,8 @@ export function useSettings() {
     setEszettPreference,
     appLanguage,
     setAppLanguage,
+    adsDisabled,
+    redeemPromoCode,
     isLoading,
   };
 }

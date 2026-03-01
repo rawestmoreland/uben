@@ -55,7 +55,7 @@ export default function QuizScreen() {
   const { mode } = useLocalSearchParams<{ mode?: QuizMode }>();
   const quiz = useQuizSession(mode ?? 'daily');
   const { phase, nextCard, results, progress } = quiz;
-  const { showEnglishHint, eszettPreference } = useSettings();
+  const { showEnglishHint, eszettPreference, adsDisabled, isLoading: settingsLoading } = useSettings();
 
   // ── Interstitial ad ──────────────────────────────────────────────
   const { isLoaded, isClosed, load, show } = useInterstitialAd(INTERSTITIAL_AD_UNIT_ID);
@@ -64,10 +64,10 @@ export default function QuizScreen() {
   // Guards the isClosed effect so it only fires after we explicitly showed an ad
   const adIsShowingRef = useRef(false);
 
-  // Preload the first ad when the screen mounts
+  // Preload the first ad once settings have loaded and ads are not disabled
   useEffect(() => {
-    if (IS_NATIVE) load();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!settingsLoading && IS_NATIVE && !adsDisabled) load();
+  }, [settingsLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When the ad closes, advance to the next card and preload the next ad.
   // The card timer (cardStartTime in the hook) is set inside nextCard(), so it
@@ -76,8 +76,8 @@ export default function QuizScreen() {
     if (!isClosed || !adIsShowingRef.current) return;
     adIsShowingRef.current = false;
     nextCard();
-    if (IS_NATIVE) load();
-  }, [isClosed, nextCard, load]);
+    if (IS_NATIVE && !adsDisabled) load();
+  }, [isClosed, nextCard, load, adsDisabled]);
 
   // Called after the feedback delay. Shows an interstitial every AD_FREQUENCY
   // cards (skipped on the last card so we don't delay the results screen).
@@ -86,14 +86,14 @@ export default function QuizScreen() {
 
     if (!isLastCard) cardCountRef.current += 1;
 
-    if (!isLastCard && IS_NATIVE && isLoaded && cardCountRef.current >= AD_FREQUENCY) {
+    if (!isLastCard && IS_NATIVE && !adsDisabled && isLoaded && cardCountRef.current >= AD_FREQUENCY) {
       cardCountRef.current = 0;
       adIsShowingRef.current = true;
       show();
     } else {
       nextCard();
     }
-  }, [isLoaded, show, nextCard, progress]);
+  }, [isLoaded, show, nextCard, progress, adsDisabled]);
 
   // Auto-advance after feedback
   useEffect(() => {
