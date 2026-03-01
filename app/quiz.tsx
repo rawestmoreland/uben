@@ -19,16 +19,18 @@ import { getNounFontSize } from '@/utils/typography';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { TFunction } from 'i18next';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { TestIds, useInterstitialAd } from 'react-native-google-mobile-ads';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Constants ────────────────────────────────────────────────────────
@@ -37,25 +39,70 @@ const ARTICLES = ['der', 'die', 'das'] as const;
 type Article = (typeof ARTICLES)[number];
 const FEEDBACK_DELAY_MS = 1200;
 
+const INTERSTITIAL_AD_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : 'ca-app-pub-3399938065938082/1137175310';
+
+// Show an interstitial ad every N answered cards
+const AD_FREQUENCY = 5;
+
+const IS_NATIVE = Platform.OS !== 'web';
+
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
   const { t } = useTranslation('app');
   const { mode } = useLocalSearchParams<{ mode?: QuizMode }>();
   const quiz = useQuizSession(mode ?? 'daily');
-  const { phase, nextCard, results } = quiz;
+  const { phase, nextCard, results, progress } = quiz;
   const { showEnglishHint, eszettPreference } = useSettings();
+
+  // ── Interstitial ad ──────────────────────────────────────────────
+  const { isLoaded, isClosed, load, show } = useInterstitialAd(INTERSTITIAL_AD_UNIT_ID);
+  // Count of cards answered since the last ad was shown
+  const cardCountRef = useRef(0);
+  // Guards the isClosed effect so it only fires after we explicitly showed an ad
+  const adIsShowingRef = useRef(false);
+
+  // Preload the first ad when the screen mounts
+  useEffect(() => {
+    if (IS_NATIVE) load();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When the ad closes, advance to the next card and preload the next ad.
+  // The card timer (cardStartTime in the hook) is set inside nextCard(), so it
+  // only starts after the ad is dismissed — the ad never counts against the user's time.
+  useEffect(() => {
+    if (!isClosed || !adIsShowingRef.current) return;
+    adIsShowingRef.current = false;
+    nextCard();
+    if (IS_NATIVE) load();
+  }, [isClosed, nextCard, load]);
+
+  // Called after the feedback delay. Shows an interstitial every AD_FREQUENCY
+  // cards (skipped on the last card so we don't delay the results screen).
+  const nextCardOrShowAd = useCallback(() => {
+    const isLastCard = progress.current === progress.total;
+
+    if (!isLastCard) cardCountRef.current += 1;
+
+    if (!isLastCard && IS_NATIVE && isLoaded && cardCountRef.current >= AD_FREQUENCY) {
+      cardCountRef.current = 0;
+      adIsShowingRef.current = true;
+      show();
+    } else {
+      nextCard();
+    }
+  }, [isLoaded, show, nextCard, progress]);
 
   // Auto-advance after feedback
   useEffect(() => {
     if (phase !== 'feedback') return;
 
-    const timer = setTimeout(() => {
-      nextCard();
-    }, FEEDBACK_DELAY_MS);
+    const timer = setTimeout(nextCardOrShowAd, FEEDBACK_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [phase, nextCard]);
+  }, [phase, nextCardOrShowAd]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
