@@ -1,4 +1,4 @@
-import { settingsService, SETTINGS_KEYS } from '@/services/settingsService';
+import { SETTINGS_KEYS, settingsService } from '@/services/settingsService';
 import * as StoreReview from 'expo-store-review';
 import { useCallback } from 'react';
 

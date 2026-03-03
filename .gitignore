@@ -49,3 +49,6 @@ pb_data/
 
 # iOS build files
 *.ipa
+
+# Release notes (local only)
+release-notes/
