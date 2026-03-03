@@ -116,7 +116,9 @@
       "wing": "ala",
       "piano": "pianoforte",
       "mother": "madre",
-      "nut": "dado"
+      "nut": "dado",
+      "leader": "capo",
+      "ladder": "scalino"
     },
     "how_it_works": {
       "title": "Come Funziona",

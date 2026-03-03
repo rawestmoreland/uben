@@ -116,7 +116,9 @@
       "wing": "wing",
       "piano": "piano",
       "mother": "mother",
-      "nut": "nut"
+      "nut": "nut",
+      "leader": "leader",
+      "ladder": "ladder"
     },
     "how_it_works": {
       "title": "How It Works",

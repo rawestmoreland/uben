@@ -126,7 +126,9 @@
       "wing": "skrzydło",
       "piano": "fortepian",
       "mother": "matka",
-      "nut": "nakrętka"
+      "nut": "nakrętka",
+      "leader": "lider",
+      "ladder": "drabina"
     },
     "how_it_works": {
       "title": "Jak to działa",
