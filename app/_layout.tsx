@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import mobileAds from 'react-native-google-mobile-ads';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import 'react-native-reanimated';
 
 import '@/constants/i18n'; // Initialize i18next before any component renders
@@ -44,6 +45,7 @@ export default function RootLayout() {
   }
 
   return (
+    <KeyboardProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -80,6 +82,7 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
+    </KeyboardProvider>
   );
 }
 

@@ -98,6 +98,9 @@ export default function QuizScreen() {
   // Auto-advance after feedback
   useEffect(() => {
     if (phase !== 'feedback') return;
+    // Don't restart the timer if an ad is already on screen — the isClosed
+    // effect will call nextCard() once the user dismisses the ad.
+    if (adIsShowingRef.current) return;
 
     const timer = setTimeout(nextCardOrShowAd, FEEDBACK_DELAY_MS);
 
