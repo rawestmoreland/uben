@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import { settingsService } from '@/services/settingsService';
 import i18n from '@/constants/i18n';
+import { settingsService } from '@/services/settingsService';
+import { useCallback, useEffect, useState } from 'react';
 
 // Promo codes that disable ads, stored as a comma-separated env var.
 // e.g. EXPO_PUBLIC_PROMO_CODES=UBEN2024,PARTNER01
 const PROMO_CODES: string[] = (process.env.EXPO_PUBLIC_PROMO_CODES ?? '')
   .split(',')
-  .map((c) => c.trim().toUpperCase())
+  .map((c: string) => c.trim().toUpperCase())
   .filter(Boolean);
 
 /**
