@@ -53,6 +53,16 @@ git commit -m "chore: bump version to 1.3.0"
 git push origin staging
 ```
 
+### 4. Backfill develop
+
+After bumping the version, make sure develop matches
+
+```bash
+git checkout develop
+git merge --no-ff staging
+git push origin develop
+```
+
 **Files to update:**
 
 | File            | Field                 | Notes                                  |
