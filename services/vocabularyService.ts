@@ -32,7 +32,19 @@ export class VocabularyService {
         END AS word,
         CASE
           WHEN cp.word_type = 'noun' THEN n.article
-        END AS article
+        END AS article,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.english
+        END AS english,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.translation_key
+        END AS translation_key,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.sense
+        END AS sense,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.remote_id
+        END AS remote_id
       FROM card_progress cp
       LEFT JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
       LEFT JOIN verbs v ON cp.word_type = 'verb' AND cp.word_id = v.id

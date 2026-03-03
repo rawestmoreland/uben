@@ -8,6 +8,7 @@ export interface Noun {
   plural: string | null;
   english: string | null;
   translation_key: string | null; // Derived from english field, used for i18n lookups
+  sense: string | null; // Disambiguation hint for homographs (e.g. "lake" vs "sea" for "See")
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
   category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
@@ -103,6 +104,7 @@ export interface DueCard extends CardProgress {
   article: string | null;
   english: string | null;
   translation_key: string | null;
+  sense: string | null; // Disambiguation hint for homographs, null for most words
   remote_id: string | null;
 }
 
@@ -165,6 +167,7 @@ export interface SeedNoun {
   article: 'der' | 'die' | 'das';
   plural: string | null;
   english: string;
+  sense?: string | null; // Disambiguation hint for homographs (optional)
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   category: CategoryName;
 }
@@ -220,7 +223,7 @@ export interface MigrationDiagnostics {
   /** All log entries, newest first */
   log: MigrationLogEntry[];
   /** Migrations recorded in the migrations table */
-  applied: Array<{ version: string; applied_at: string }>;
+  applied: { version: string; applied_at: string }[];
   /** Failed migration entries from the log */
   failures: MigrationLogEntry[];
   /** Number of migrations defined in code */

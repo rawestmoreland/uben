@@ -238,14 +238,17 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
               .replace(/^_|_$/g, '') // trim edges
           : null;
 
+        const sense = noun.sense ?? null;
+
         await db.runAsync(
-          `INSERT INTO nouns (german, article, plural, english, translation_key, level, category_id, is_user_added)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-           ON CONFLICT(german, article) DO UPDATE SET
+          `INSERT INTO nouns (german, article, plural, english, translation_key, sense, level, category_id, is_user_added)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+           ON CONFLICT DO UPDATE SET
              level = COALESCE(nouns.level, excluded.level),
              english = COALESCE(nouns.english, excluded.english),
              translation_key = excluded.translation_key,
              plural = COALESCE(nouns.plural, excluded.plural),
+             sense = COALESCE(nouns.sense, excluded.sense),
              category_id = CASE
                WHEN nouns.category_id IS NULL THEN excluded.category_id
                ELSE nouns.category_id
@@ -257,6 +260,7 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
             noun.plural,
             noun.english,
             translationKey,
+            sense,
             noun.level,
             categoryId,
           ],

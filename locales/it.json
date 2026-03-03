@@ -106,6 +106,18 @@
       "success_rate": "{{rate}}% corretto ({{count}} ripetizioni)",
       "no_data": "Completa la tua prima sessione di pratica per vedere le tue statistiche qui."
     },
+    "senses": {
+      "lake": "lago",
+      "sea": "mare",
+      "bench": "panchina",
+      "bank": "banca",
+      "lock": "serratura",
+      "castle": "castello",
+      "wing": "ala",
+      "piano": "pianoforte",
+      "mother": "madre",
+      "nut": "dado"
+    },
     "how_it_works": {
       "title": "Come Funziona",
       "subtitle": "Apprendimento basato sulla scienza",

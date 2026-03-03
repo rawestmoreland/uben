@@ -250,6 +250,11 @@ function PlayingState({
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           )}
+          {currentCard.sense && (
+            <Text style={styles.senseHint}>
+              ({t(`senses.${currentCard.sense}`, { defaultValue: currentCard.sense })})
+            </Text>
+          )}
           {showEnglishHint && translation && (
             <Text style={styles.englishHint}>{translation}</Text>
           )}
@@ -538,6 +543,13 @@ const styles = StyleSheet.create({
   articleReveal: {
     fontSize: Typography.huge,
     fontWeight: Typography.bold,
+  },
+  senseHint: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    marginTop: Spacing.xs,
+    fontStyle: 'italic',
   },
   englishHint: {
     fontSize: Typography.body,

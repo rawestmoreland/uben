@@ -106,6 +106,18 @@
       "success_rate": "{{rate}}% correct ({{count}} reviews)",
       "no_data": "Complete your first practice session to see your stats here."
     },
+    "senses": {
+      "lake": "lake",
+      "sea": "sea",
+      "bench": "bench",
+      "bank": "bank",
+      "lock": "lock",
+      "castle": "castle",
+      "wing": "wing",
+      "piano": "piano",
+      "mother": "mother",
+      "nut": "nut"
+    },
     "how_it_works": {
       "title": "How It Works",
       "subtitle": "Science-backed learning",

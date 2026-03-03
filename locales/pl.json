@@ -116,6 +116,18 @@
       "success_rate": "{{rate}}% poprawnie ({{count}} powtórzeń)",
       "no_data": "Ukończ pierwszą sesję ćwiczeń, aby zobaczyć tu swoje statystyki."
     },
+    "senses": {
+      "lake": "jezioro",
+      "sea": "morze",
+      "bench": "ławka",
+      "bank": "bank",
+      "lock": "zamek",
+      "castle": "zamek",
+      "wing": "skrzydło",
+      "piano": "fortepian",
+      "mother": "matka",
+      "nut": "nakrętka"
+    },
     "how_it_works": {
       "title": "Jak to działa",
       "subtitle": "Nauka oparta na nauce",
