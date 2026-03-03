@@ -44,7 +44,7 @@ const INTERSTITIAL_AD_UNIT_ID = __DEV__
   : 'ca-app-pub-3399938065938082/1137175310';
 
 // Show an interstitial ad every N answered cards
-const AD_FREQUENCY = 5;
+const AD_FREQUENCY = 10;
 
 const IS_NATIVE = Platform.OS !== 'web';
 
@@ -55,10 +55,17 @@ export default function QuizScreen() {
   const { mode } = useLocalSearchParams<{ mode?: QuizMode }>();
   const quiz = useQuizSession(mode ?? 'daily');
   const { phase, nextCard, results, progress } = quiz;
-  const { showEnglishHint, eszettPreference, adsDisabled, isLoading: settingsLoading } = useSettings();
+  const {
+    showEnglishHint,
+    eszettPreference,
+    adsDisabled,
+    isLoading: settingsLoading,
+  } = useSettings();
 
   // ── Interstitial ad ──────────────────────────────────────────────
-  const { isLoaded, isClosed, load, show } = useInterstitialAd(INTERSTITIAL_AD_UNIT_ID);
+  const { isLoaded, isClosed, load, show } = useInterstitialAd(
+    INTERSTITIAL_AD_UNIT_ID,
+  );
   // Count of cards answered since the last ad was shown
   const cardCountRef = useRef(0);
   // Guards the isClosed effect so it only fires after we explicitly showed an ad
@@ -86,7 +93,13 @@ export default function QuizScreen() {
 
     if (!isLastCard) cardCountRef.current += 1;
 
-    if (!isLastCard && IS_NATIVE && !adsDisabled && isLoaded && cardCountRef.current >= AD_FREQUENCY) {
+    if (
+      !isLastCard &&
+      IS_NATIVE &&
+      !adsDisabled &&
+      isLoaded &&
+      cardCountRef.current >= AD_FREQUENCY
+    ) {
       cardCountRef.current = 0;
       adIsShowingRef.current = true;
       show();
@@ -185,7 +198,8 @@ function PlayingState({
   eszettPreference,
 }: PlayingStateProps) {
   const { t } = useTranslation('app');
-  const { currentCard, phase, selectedArticle, isCorrect, progress, mode } = quiz;
+  const { currentCard, phase, selectedArticle, isCorrect, progress, mode } =
+    quiz;
   const translation = useNounTranslation(
     currentCard?.remote_id ?? null,
     currentCard?.english ?? null,
