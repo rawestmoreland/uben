@@ -13,12 +13,13 @@ import { useTranslation } from 'react-i18next';
 import {
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Settings Screen ──────────────────────────────────────────────────
@@ -34,8 +35,27 @@ export default function SettingsScreen() {
     setEszettPreference,
     appLanguage,
     setAppLanguage,
+    adsDisabled,
+    redeemPromoCode,
     isLoading,
   } = useSettings();
+
+  const [promoCode, setPromoCode] = useState('');
+  const [promoStatus, setPromoStatus] = useState<'idle' | 'loading' | 'invalid'>('idle');
+
+  const handleRedeemCode = async () => {
+    const trimmed = promoCode.trim();
+    if (!trimmed) return;
+    setPromoStatus('loading');
+    const result = await redeemPromoCode(trimmed);
+    if (result === 'success') {
+      setPromoCode('');
+      setPromoStatus('idle');
+    } else {
+      setPromoStatus('invalid');
+      setTimeout(() => setPromoStatus('idle'), 2000);
+    }
+  };
 
   const [diagnostics, setDiagnostics] = useState<MigrationDiagnostics | null>(
     null,
@@ -73,7 +93,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView
+      <KeyboardAwareScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -269,6 +289,64 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
+        {/* ── Promo Code Card ─────────────────────────────────────── */}
+        <View style={[styles.card, shadowStyle]}>
+          <Text style={styles.cardTitle}>PROMO CODE</Text>
+
+          {adsDisabled ? (
+            <View style={styles.settingRow}>
+              <View style={styles.settingTextGroup}>
+                <Text style={styles.settingLabel}>AD-FREE</Text>
+                <Text style={styles.settingDescription}>
+                  Ads have been disabled with a promo code.
+                </Text>
+              </View>
+              <View style={styles.promoSuccessBadge}>
+                <Text style={styles.promoSuccessBadgeText}>ACTIVE</Text>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.settingRowStacked}>
+              <Text style={styles.settingDescription}>
+                Have a promo code? Enter it below to disable ads.
+              </Text>
+              <View style={styles.promoInputRow}>
+                <TextInput
+                  style={[
+                    styles.promoInput,
+                    promoStatus === 'invalid' && styles.promoInputInvalid,
+                  ]}
+                  value={promoCode}
+                  onChangeText={setPromoCode}
+                  placeholder="ENTER CODE"
+                  placeholderTextColor={AppColors.textSecondary}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  returnKeyType="done"
+                  onSubmitEditing={handleRedeemCode}
+                  editable={promoStatus !== 'loading'}
+                />
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.promoButton,
+                    promoStatus === 'loading' && styles.promoButtonDisabled,
+                    pressed && styles.segmentButtonPressed,
+                  ]}
+                  onPress={handleRedeemCode}
+                  disabled={promoStatus === 'loading' || !promoCode.trim()}
+                >
+                  <Text style={styles.promoButtonText}>
+                    {promoStatus === 'loading' ? '...' : 'REDEEM'}
+                  </Text>
+                </Pressable>
+              </View>
+              {promoStatus === 'invalid' && (
+                <Text style={styles.promoError}>Invalid promo code.</Text>
+              )}
+            </View>
+          )}
+        </View>
+
         {/* ── Database Diagnostics Card (unlocked by tapping header 7×) ── */}
         {showDiagnostics && (
           <View style={[styles.card, shadowStyle]}>
@@ -353,7 +431,7 @@ export default function SettingsScreen() {
             )}
           </View>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
@@ -497,6 +575,63 @@ const styles = StyleSheet.create({
   },
   segmentButtonTextActive: {
     color: AppColors.white,
+  },
+
+  // Promo code
+  promoInputRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+  },
+  promoInput: {
+    flex: 1,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+  },
+  promoInputInvalid: {
+    borderColor: AppColors.red,
+  },
+  promoButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingHorizontal: Spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  promoButtonDisabled: {
+    opacity: 0.5,
+  },
+  promoButtonText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 0.5,
+  },
+  promoError: {
+    marginTop: Spacing.sm,
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.red,
+  },
+  promoSuccessBadge: {
+    backgroundColor: AppColors.green,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    paddingVertical: 2,
+    paddingHorizontal: Spacing.sm,
+  },
+  promoSuccessBadgeText: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
   },
 
   // Easter-egg tap progress

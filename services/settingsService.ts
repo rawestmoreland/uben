@@ -10,6 +10,7 @@ export const SETTINGS_KEYS = {
   APP_LANGUAGE: 'app_language',
   QUIZ_SESSIONS_COMPLETED: 'quiz_sessions_completed',
   LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
+  ADS_DISABLED: 'ads_disabled',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -97,6 +98,21 @@ class SettingsService {
 
   async setAppLanguage(language: 'en' | 'it' | 'pl'): Promise<void> {
     await this.setSetting(SETTINGS_KEYS.APP_LANGUAGE, language);
+  }
+
+  // ── Convenience: Ads Disabled ──────────────────────────────────────
+
+  /** Whether ads have been disabled via a promo code. Default: false. */
+  async getAdsDisabled(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.ADS_DISABLED);
+    return value === 'true';
+  }
+
+  async setAdsDisabled(disabled: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.ADS_DISABLED,
+      disabled ? 'true' : 'false',
+    );
   }
 }
 
