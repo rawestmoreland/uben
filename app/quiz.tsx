@@ -48,6 +48,20 @@ const AD_FREQUENCY = 10;
 
 const IS_NATIVE = Platform.OS !== 'web';
 
+// Maps each article to its learning color:
+// der (masculine) → blue, die (feminine) → pink, das (neuter) → green
+function getArticleColor(article: Article): string {
+  switch (article) {
+    case 'der':
+      return AppColors.blue;
+    case 'die':
+      return AppColors.pink;
+    case 'das':
+      return AppColors.green;
+  }
+}
+
+
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
@@ -281,7 +295,7 @@ function PlayingState({
                 style={[
                   styles.articleReveal,
                   {
-                    color: isCorrect ? AppColors.green : AppColors.red,
+                    color: getArticleColor(currentCard.article as Article),
                     fontSize: getNounFontSize(currentCard.word),
                   },
                 ]}
@@ -314,12 +328,8 @@ function PlayingState({
             const isCorrectAnswer = currentCard.article === article;
 
             let buttonBg: string = AppColors.white;
-            if (isFeedback) {
-              if (isCorrectAnswer) {
-                buttonBg = AppColors.green;
-              } else if (isSelected && !isCorrect) {
-                buttonBg = AppColors.red;
-              }
+            if (isFeedback && isCorrectAnswer) {
+              buttonBg = getArticleColor(article);
             }
 
             return (
@@ -339,10 +349,7 @@ function PlayingState({
                 <Text
                   style={[
                     styles.articleButtonText,
-                    isFeedback &&
-                      (isCorrectAnswer || isSelected) && {
-                        color: AppColors.white,
-                      },
+                    isFeedback && isCorrectAnswer && { color: AppColors.white },
                   ]}
                 >
                   {article}
@@ -418,9 +425,7 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
                 style={[
                   styles.resultIndicator,
                   {
-                    backgroundColor: result.isCorrect
-                      ? AppColors.green
-                      : AppColors.red,
+                    backgroundColor: getArticleColor(result.correctArticle),
                   },
                 ]}
               />
@@ -722,7 +727,7 @@ const styles = StyleSheet.create({
   resultYourAnswer: {
     fontSize: Typography.small,
     fontWeight: Typography.regular,
-    color: AppColors.red,
+    color: AppColors.textSecondary,
   },
 
   // Back button (shared)
