@@ -13,21 +13,24 @@ import {
   type QuizResult,
 } from '@/hooks/use-quiz-session';
 import { useSettings } from '@/hooks/use-settings';
+import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize } from '@/utils/typography';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { TFunction } from 'i18next';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { TestIds, useInterstitialAd } from 'react-native-google-mobile-ads';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Constants ────────────────────────────────────────────────────────
@@ -36,25 +39,100 @@ const ARTICLES = ['der', 'die', 'das'] as const;
 type Article = (typeof ARTICLES)[number];
 const FEEDBACK_DELAY_MS = 1200;
 
+const INTERSTITIAL_AD_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : 'ca-app-pub-3399938065938082/1137175310';
+
+// Show an interstitial ad every N answered cards
+const AD_FREQUENCY = 10;
+
+const IS_NATIVE = Platform.OS !== 'web';
+
+// Maps each article to its learning color:
+// der (masculine) → blue, die (feminine) → pink, das (neuter) → green
+function getArticleColor(article: Article): string {
+  switch (article) {
+    case 'der':
+      return AppColors.blue;
+    case 'die':
+      return AppColors.pink;
+    case 'das':
+      return AppColors.green;
+  }
+}
+
+
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
   const { t } = useTranslation('app');
   const { mode } = useLocalSearchParams<{ mode?: QuizMode }>();
   const quiz = useQuizSession(mode ?? 'daily');
-  const { phase, nextCard, results } = quiz;
-  const { showEnglishHint, eszettPreference } = useSettings();
+  const { phase, nextCard, results, progress } = quiz;
+  const {
+    showEnglishHint,
+    eszettPreference,
+    adsDisabled,
+    isLoading: settingsLoading,
+  } = useSettings();
+
+  // ── Interstitial ad ──────────────────────────────────────────────
+  const { isLoaded, isClosed, load, show } = useInterstitialAd(
+    INTERSTITIAL_AD_UNIT_ID,
+  );
+  // Count of cards answered since the last ad was shown
+  const cardCountRef = useRef(0);
+  // Guards the isClosed effect so it only fires after we explicitly showed an ad
+  const adIsShowingRef = useRef(false);
+
+  // Preload the first ad once settings have loaded and ads are not disabled
+  useEffect(() => {
+    if (!settingsLoading && IS_NATIVE && !adsDisabled) load();
+  }, [settingsLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When the ad closes, advance to the next card and preload the next ad.
+  // The card timer (cardStartTime in the hook) is set inside nextCard(), so it
+  // only starts after the ad is dismissed — the ad never counts against the user's time.
+  useEffect(() => {
+    if (!isClosed || !adIsShowingRef.current) return;
+    adIsShowingRef.current = false;
+    nextCard();
+    if (IS_NATIVE && !adsDisabled) load();
+  }, [isClosed, nextCard, load, adsDisabled]);
+
+  // Called after the feedback delay. Shows an interstitial every AD_FREQUENCY
+  // cards (skipped on the last card so we don't delay the results screen).
+  const nextCardOrShowAd = useCallback(() => {
+    const isLastCard = progress.current === progress.total;
+
+    if (!isLastCard) cardCountRef.current += 1;
+
+    if (
+      !isLastCard &&
+      IS_NATIVE &&
+      !adsDisabled &&
+      isLoaded &&
+      cardCountRef.current >= AD_FREQUENCY
+    ) {
+      cardCountRef.current = 0;
+      adIsShowingRef.current = true;
+      show();
+    } else {
+      nextCard();
+    }
+  }, [isLoaded, show, nextCard, progress, adsDisabled]);
 
   // Auto-advance after feedback
   useEffect(() => {
     if (phase !== 'feedback') return;
+    // Don't restart the timer if an ad is already on screen — the isClosed
+    // effect will call nextCard() once the user dismisses the ad.
+    if (adIsShowingRef.current) return;
 
-    const timer = setTimeout(() => {
-      nextCard();
-    }, FEEDBACK_DELAY_MS);
+    const timer = setTimeout(nextCardOrShowAd, FEEDBACK_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [phase, nextCard]);
+  }, [phase, nextCardOrShowAd]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -134,7 +212,8 @@ function PlayingState({
   eszettPreference,
 }: PlayingStateProps) {
   const { t } = useTranslation('app');
-  const { currentCard, phase, selectedArticle, isCorrect, progress, mode } = quiz;
+  const { currentCard, phase, selectedArticle, isCorrect, progress, mode } =
+    quiz;
   const translation = useNounTranslation(
     currentCard?.remote_id ?? null,
     currentCard?.english ?? null,
@@ -216,7 +295,7 @@ function PlayingState({
                 style={[
                   styles.articleReveal,
                   {
-                    color: isCorrect ? AppColors.green : AppColors.red,
+                    color: getArticleColor(currentCard.article as Article),
                     fontSize: getNounFontSize(currentCard.word),
                   },
                 ]}
@@ -249,12 +328,8 @@ function PlayingState({
             const isCorrectAnswer = currentCard.article === article;
 
             let buttonBg: string = AppColors.white;
-            if (isFeedback) {
-              if (isCorrectAnswer) {
-                buttonBg = AppColors.green;
-              } else if (isSelected && !isCorrect) {
-                buttonBg = AppColors.red;
-              }
+            if (isFeedback && isCorrectAnswer) {
+              buttonBg = getArticleColor(article);
             }
 
             return (
@@ -274,10 +349,7 @@ function PlayingState({
                 <Text
                   style={[
                     styles.articleButtonText,
-                    isFeedback &&
-                      (isCorrectAnswer || isSelected) && {
-                        color: AppColors.white,
-                      },
+                    isFeedback && isCorrectAnswer && { color: AppColors.white },
                   ]}
                 >
                   {article}
@@ -300,6 +372,13 @@ interface CompleteStateProps {
 
 function CompleteState({ results, eszettPreference }: CompleteStateProps) {
   const { t } = useTranslation('app');
+  const { handleSessionComplete } = useStoreReview();
+
+  // Request a review once per completed session, when conditions are met
+  useEffect(() => {
+    handleSessionComplete();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const accuracy =
@@ -346,9 +425,7 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
                 style={[
                   styles.resultIndicator,
                   {
-                    backgroundColor: result.isCorrect
-                      ? AppColors.green
-                      : AppColors.red,
+                    backgroundColor: getArticleColor(result.correctArticle),
                   },
                 ]}
               />
@@ -650,7 +727,7 @@ const styles = StyleSheet.create({
   resultYourAnswer: {
     fontSize: Typography.small,
     fontWeight: Typography.regular,
-    color: AppColors.red,
+    color: AppColors.textSecondary,
   },
 
   // Back button (shared)

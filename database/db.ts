@@ -1,6 +1,7 @@
+import type { MigrationDiagnostics, MigrationLogEntry } from '@/types/database';
 import * as SQLite from 'expo-sqlite';
 import { Platform } from 'react-native';
-import { runMigrations } from './migrations';
+import { migrations, runMigrations } from './migrations';
 import { seedVocabulary } from './seed';
 
 let db: SQLite.SQLiteDatabase | null = null;
@@ -55,10 +56,12 @@ export async function resetDatabase(): Promise<void> {
     DROP TABLE IF EXISTS review_history;
     DROP TABLE IF EXISTS card_progress;
     DROP TABLE IF EXISTS verbs;
+    DROP TABLE IF EXISTS noun_translations;
     DROP TABLE IF EXISTS nouns;
     DROP TABLE IF EXISTS categories;
     DROP TABLE IF EXISTS settings;
     DROP TABLE IF EXISTS data_versions;
+    DROP TABLE IF EXISTS migration_log;
     DROP TABLE IF EXISTS migrations;
   `);
 
@@ -68,4 +71,34 @@ export async function resetDatabase(): Promise<void> {
   await seedVocabulary(database);
 
   console.log('[DB] Database reset complete');
+}
+
+/**
+ * Return a snapshot of migration health for the current device.
+ * Reads the persistent `migration_log` and `migrations` tables so this
+ * reflects what actually happened — including failures from previous launches.
+ *
+ * Returns null on web (SQLite not supported).
+ */
+export async function getMigrationDiagnostics(): Promise<MigrationDiagnostics | null> {
+  if (Platform.OS === 'web') return null;
+
+  const database = getDatabase();
+
+  const log = await database.getAllAsync<MigrationLogEntry>(
+    'SELECT * FROM migration_log ORDER BY logged_at DESC',
+  );
+
+  const applied = await database.getAllAsync<{
+    version: string;
+    applied_at: string;
+  }>('SELECT version, applied_at FROM migrations ORDER BY version ASC');
+
+  const failures = log.filter((entry) => entry.event === 'failed');
+
+  const expectedCount = migrations.length;
+  const appliedCount = applied.length;
+  const isHealthy = appliedCount === expectedCount && failures.length === 0;
+
+  return { log, applied, failures, expectedCount, appliedCount, isHealthy };
 }

@@ -23,12 +23,15 @@ export default function HomeScreen() {
     streak,
     hasReviewedToday,
     strugglingCount,
+    masteredCount,
     isLoading,
   } = useHomeData();
 
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText =
     stats.success_rate != null ? `${Math.round(stats.success_rate)}%` : '--';
+  const newCount = Math.max(0, nounCount - stats.total_cards);
+  const learningCount = Math.max(0, stats.total_cards - masteredCount);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -156,39 +159,53 @@ export default function HomeScreen() {
           </Pressable>
         )}
 
-        {/* ── Progress Card ───────────────────────────────────── */}
-        <View style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>
-              {t('progress_title').toUpperCase()}
+        {/* ── Mastery Card ─────────────────────────────────────── */}
+        <View style={styles.masteryCard}>
+          <View style={styles.masteryHeader}>
+            <Text style={styles.masteryTitle}>
+              {t('mastery_title')}
             </Text>
-            <Text style={styles.progressCount}>
-              {t('progress', {
-                total_cards: stats.total_cards,
-                total_words: nounCount,
+            <Text style={styles.masteryCount}>
+              {t('mastery_summary', {
+                mastered: isLoading ? '-' : masteredCount,
+                total: isLoading ? '-' : nounCount,
               })}
             </Text>
           </View>
-          <View style={styles.progressBarOuter}>
-            <View
-              style={[
-                styles.progressBarFill,
-                {
-                  width:
-                    nounCount > 0
-                      ? `${Math.round((stats.total_cards / nounCount) * 100)}%`
-                      : '0%',
-                },
-              ]}
+          <View style={styles.masteryBar}>
+            {nounCount === 0 ? (
+              <View style={[styles.masterySegment, styles.masterySegmentNew, { flex: 1 }]} />
+            ) : (
+              <>
+                {newCount > 0 && (
+                  <View style={[styles.masterySegment, styles.masterySegmentNew, { flex: newCount }]} />
+                )}
+                {learningCount > 0 && (
+                  <View style={[styles.masterySegment, styles.masterySegmentLearning, { flex: learningCount }]} />
+                )}
+                {masteredCount > 0 && (
+                  <View style={[styles.masterySegment, styles.masterySegmentMastered, { flex: masteredCount }]} />
+                )}
+              </>
+            )}
+          </View>
+          <View style={styles.masteryLegend}>
+            <MasteryLegendItem
+              color={AppColors.lightGray}
+              label={t('mastery_new')}
+              count={isLoading ? '-' : String(newCount)}
+            />
+            <MasteryLegendItem
+              color={AppColors.blue}
+              label={t('mastery_learning')}
+              count={isLoading ? '-' : String(learningCount)}
+            />
+            <MasteryLegendItem
+              color={AppColors.green}
+              label={t('mastery_mastered')}
+              count={isLoading ? '-' : String(masteredCount)}
             />
           </View>
-          <Text style={styles.progressSubtext}>
-            {isFirstTime
-              ? t('start_practicing')
-              : t('total_reviews', {
-                  count: stats.total_reviews,
-                })}
-          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -217,6 +234,24 @@ function StatCard({ value, label, accentColor, showIndicator }: StatCardProps) {
         )}
       </View>
       <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
+// ── Mastery Legend Item Component ────────────────────────────────────
+
+interface MasteryLegendItemProps {
+  color: string;
+  label: string;
+  count: string;
+}
+
+function MasteryLegendItem({ color, label, count }: MasteryLegendItemProps) {
+  return (
+    <View style={styles.masteryLegendItem}>
+      <View style={[styles.masteryLegendDot, { backgroundColor: color }]} />
+      <Text style={styles.masteryLegendCount}>{count}</Text>
+      <Text style={styles.masteryLegendLabel}>{label.toUpperCase()}</Text>
     </View>
   );
 }
@@ -430,49 +465,75 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // Progress Card
-  progressCard: {
+  // Mastery Card
+  masteryCard: {
     backgroundColor: AppColors.white,
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
     padding: Layout.cardPadding,
     ...shadowStyle,
   },
-  progressHeader: {
+  masteryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginBottom: Spacing.md,
   },
-  progressTitle: {
+  masteryTitle: {
     fontSize: Typography.small,
     fontWeight: Typography.bold,
     color: AppColors.black,
     letterSpacing: 1.5,
   },
-  progressCount: {
+  masteryCount: {
     fontSize: Typography.small,
     fontWeight: Typography.semibold,
     color: AppColors.textSecondary,
   },
-  progressBarOuter: {
+  masteryBar: {
     height: 24,
-    backgroundColor: AppColors.lightGray,
+    flexDirection: 'row',
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
     overflow: 'hidden',
   },
-  progressBarFill: {
+  masterySegment: {
     height: '100%',
-    backgroundColor: AppColors.green,
-    borderRightWidth: Layout.borderWidth,
-    borderRightColor: AppColors.black,
-    minWidth: 0,
   },
-  progressSubtext: {
+  masterySegmentNew: {
+    backgroundColor: AppColors.lightGray,
+  },
+  masterySegmentLearning: {
+    backgroundColor: AppColors.blue,
+  },
+  masterySegmentMastered: {
+    backgroundColor: AppColors.green,
+  },
+  masteryLegend: {
+    flexDirection: 'row',
+    marginTop: Spacing.md,
+  },
+  masteryLegendItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  masteryLegendDot: {
+    width: 12,
+    height: 12,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    marginBottom: Spacing.xs,
+  },
+  masteryLegendCount: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+  },
+  masteryLegendLabel: {
     fontSize: Typography.tiny,
-    fontWeight: Typography.regular,
+    fontWeight: Typography.semibold,
     color: AppColors.textSecondary,
-    marginTop: Spacing.sm,
+    letterSpacing: 1,
+    marginTop: 2,
   },
 });

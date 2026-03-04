@@ -2,6 +2,9 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import mobileAds from 'react-native-google-mobile-ads';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import 'react-native-reanimated';
 
 import '@/constants/i18n'; // Initialize i18next before any component renders
@@ -18,6 +21,12 @@ export default function RootLayout() {
   const { isReady, error } = useDatabase();
   const [showingSplash, setShowingSplash] = useState(true);
   const [splashAnimationDone, setSplashAnimationDone] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      mobileAds().initialize().catch(console.error);
+    }
+  }, []);
 
   // When splash animation finishes AND database is ready, hide splash
   useEffect(() => {
@@ -36,6 +45,7 @@ export default function RootLayout() {
   }
 
   return (
+    <KeyboardProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -72,6 +82,7 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
+    </KeyboardProvider>
   );
 }
 

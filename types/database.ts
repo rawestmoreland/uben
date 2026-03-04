@@ -204,3 +204,29 @@ export interface Migration {
   up: (db: import('expo-sqlite').SQLiteDatabase) => Promise<void>;
   down?: (db: import('expo-sqlite').SQLiteDatabase) => Promise<void>;
 }
+
+/** A single entry in the persistent migration event log */
+export interface MigrationLogEntry {
+  id: number;
+  migration_version: string;
+  event: 'started' | 'completed' | 'failed';
+  error_message: string | null;
+  duration_ms: number | null;
+  logged_at: string;
+}
+
+/** Aggregated migration health report, readable from the migration_log table */
+export interface MigrationDiagnostics {
+  /** All log entries, newest first */
+  log: MigrationLogEntry[];
+  /** Migrations recorded in the migrations table */
+  applied: Array<{ version: string; applied_at: string }>;
+  /** Failed migration entries from the log */
+  failures: MigrationLogEntry[];
+  /** Number of migrations defined in code */
+  expectedCount: number;
+  /** Number of migrations recorded as applied */
+  appliedCount: number;
+  /** True if all expected migrations are applied and no failures are recorded */
+  isHealthy: boolean;
+}
