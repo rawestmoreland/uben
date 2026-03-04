@@ -9,10 +9,11 @@ export const AppColors = {
 
   // Accent colors (bright, saturated)
   yellow: '#FFE500', // Primary accent
-  blue: '#0066FF', // Secondary accent
+  blue: '#0066FF', // Secondary accent / masculine (der)
   red: '#FF3333', // Error/wrong answer
-  green: '#00CC66', // Success/correct answer
+  green: '#00CC66', // Success/correct answer / neuter (das)
   purple: '#9933FF', // Tertiary accent
+  pink: '#FF4D9E', // Feminine (die)
 
   // Backgrounds
   cream: '#FFF8E1', // Warm off-white
