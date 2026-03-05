@@ -3,6 +3,8 @@ const path = require('path');
 const csv = require('csv-parser');
 const { convertToTranslationKey } = require('../utils/helpers');
 
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
 const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const main = async () => {
   const categories = await getCategories();
@@ -38,9 +40,14 @@ const main = async () => {
           '0gskxzb0mphm3f0';
         const existingNoun = await getNoun(noun.german, noun.article);
         if (existingNoun) {
+          // Preserve the lowest (earliest) level — don't overwrite 'A1' with 'A2'
+          const keepLevel =
+            LEVELS.indexOf(existingNoun.level) <= LEVELS.indexOf(level)
+              ? existingNoun.level
+              : level;
           await updateNoun(existingNoun.id, {
             ...existingNoun,
-            level,
+            level: keepLevel,
             sources,
             category: categoryId,
           });

@@ -1,6 +1,27 @@
 import { getDatabase } from '@/database/db';
 import type { CardReview, DueCard, ReviewSession } from '@/types/database';
 
+// CEFR levels in ascending order — used to build cumulative level filters.
+// Selecting 'A2' means "show me everything up to and including A2", i.e.
+// words first introduced at A1 OR A2 (matching how Goethe wordbooks stack).
+const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+
+/**
+ * Expand a set of selected levels to include all levels at or below the
+ * highest selected level.  Examples:
+ *   ['A2']       → ['A1', 'A2']
+ *   ['A1', 'B1'] → ['A1', 'A2', 'B1']
+ *   ['A1']       → ['A1']
+ */
+function expandLevelsCumulative(selected: string[]): string[] {
+  const indices = selected
+    .map((l) => CEFR_LEVELS.indexOf(l as (typeof CEFR_LEVELS)[number]))
+    .filter((i) => i !== -1);
+  if (indices.length === 0) return selected;
+  const max = Math.max(...indices);
+  return CEFR_LEVELS.slice(0, max + 1);
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────
 
 /** Fisher-Yates shuffle — returns a new array in random order. */
@@ -202,7 +223,10 @@ export class SpacedRepetitionService {
     levels?: string[],
   ): Promise<ReviewSession> {
     const hasCategoryFilter = categoryIds && categoryIds.length > 0;
-    const hasLevelFilter = levels && levels.length > 0;
+    // Expand selected levels cumulatively: selecting A2 also includes A1 words
+    const effectiveLevels =
+      levels && levels.length > 0 ? expandLevelsCumulative(levels) : undefined;
+    const hasLevelFilter = effectiveLevels && effectiveLevels.length > 0;
 
     // Build SQL fragment for category filter
     const categoryFilter = hasCategoryFilter
@@ -211,13 +235,13 @@ export class SpacedRepetitionService {
 
     // Build SQL fragment for level filter (always include user-added words)
     const levelFilter = hasLevelFilter
-      ? `AND (n.level IN (${levels.map(() => '?').join(',')}) OR n.is_user_added = 1)`
+      ? `AND (n.level IN (${effectiveLevels.map(() => '?').join(',')}) OR n.is_user_added = 1)`
       : '';
 
     // Due cards (already in the review system)
     const dueParams: (string | number)[] = [
       ...(hasCategoryFilter ? categoryIds : []),
-      ...(hasLevelFilter ? levels : []),
+      ...(hasLevelFilter ? effectiveLevels : []),
       maxCards - newCardsLimit,
     ];
 
@@ -234,7 +258,7 @@ export class SpacedRepetitionService {
     // New cards (words not yet in card_progress)
     const newParams: (string | number)[] = [
       ...(hasCategoryFilter ? categoryIds : []),
-      ...(hasLevelFilter ? levels : []),
+      ...(hasLevelFilter ? effectiveLevels : []),
       newCardsLimit,
     ];
 
