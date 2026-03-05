@@ -45,10 +45,14 @@ const main = async () => {
             LEVELS.indexOf(existingNoun.level) <= LEVELS.indexOf(level)
               ? existingNoun.level
               : level;
+          // Merge sources rather than overwrite — a word can come from multiple lists
+          const mergedSources = [
+            ...new Set([...(existingNoun.sources ?? []), ...sources]),
+          ];
           await updateNoun(existingNoun.id, {
             ...existingNoun,
             level: keepLevel,
-            sources,
+            sources: mergedSources,
             category: categoryId,
           });
           updated++;
