@@ -73,7 +73,7 @@
     },
     "categories": {
       "title": "Scegli il tuo focus",
-      "subtitle": "Seleziona categorie per praticare o tocca &quot;Tutte le parole&quot; per tutto",
+      "subtitle": "Seleziona categorie per praticare o tocca <<Tutte le parole>> per tutto",
       "all_words": "Tutte le parole",
       "start": "INIZIA",
       "start_categories_one": "$t(categories.start) {{count}} categoria",

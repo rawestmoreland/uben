@@ -73,7 +73,7 @@
     },
     "categories": {
       "title": "Choose your focus",
-      "subtitle": "Select categories to practice or tap &quot;All Words&quot; for everything",
+      "subtitle": "Select categories to practice or tap 'All Words' for everything",
       "all_words": "All Words",
       "start": "START",
       "start_categories_one": "$t(categories.start) {{count}} category",

@@ -81,7 +81,7 @@
     },
     "categories": {
       "title": "Wybierz swój obszar",
-      "subtitle": "Wybierz kategorie do ćwiczenia lub dotknij &quot;Wszystkie słowa&quot;, aby ćwiczyć wszystko",
+      "subtitle": "Wybierz kategorie do ćwiczenia lub dotknij <<Wszystkie słowa>>, aby ćwiczyć wszystko",
       "all_words": "Wszystkie słowa",
       "start": "START",
       "start_categories_one": "$t(categories.start) {{count}} kategorię",
