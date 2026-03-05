@@ -190,40 +190,59 @@ export class SpacedRepetitionService {
 
   /**
    * Build a daily review session containing due cards and new cards.
-   * Optionally filter by category IDs for focused practice.
+   * Optionally filter by category IDs and/or CEFR levels for focused practice.
+   *
+   * @param categoryIds - Limit to specific categories (empty = all categories)
+   * @param levels      - Limit to specific CEFR levels (empty = all levels)
    */
   async getDailyReviewSession(
     maxCards: number = 20,
     newCardsLimit: number = 5,
     categoryIds?: number[],
+    levels?: string[],
   ): Promise<ReviewSession> {
-    // Build category filter
-    const categoryFilter =
-      categoryIds && categoryIds.length > 0
-        ? `AND n.category_id IN (${categoryIds.map(() => '?').join(',')})`
-        : '';
+    const hasCategoryFilter = categoryIds && categoryIds.length > 0;
+    const hasLevelFilter = levels && levels.length > 0;
+
+    // Build SQL fragment for category filter
+    const categoryFilter = hasCategoryFilter
+      ? `AND n.category_id IN (${categoryIds.map(() => '?').join(',')})`
+      : '';
+
+    // Build SQL fragment for level filter (always include user-added words)
+    const levelFilter = hasLevelFilter
+      ? `AND (n.level IN (${levels.map(() => '?').join(',')}) OR n.is_user_added = 1)`
+      : '';
 
     // Due cards (already in the review system)
-    const dueParams =
-      categoryIds && categoryIds.length > 0
-        ? [...categoryIds, maxCards - newCardsLimit]
-        : [maxCards - newCardsLimit];
+    const dueParams: (string | number)[] = [
+      ...(hasCategoryFilter ? categoryIds : []),
+      ...(hasLevelFilter ? levels : []),
+      maxCards - newCardsLimit,
+    ];
 
     const dueCards = await this.db.getAllAsync<DueCard>(
       `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.remote_id
        FROM card_progress cp
        JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.next_review_date <= date('now') ${categoryFilter}
+       WHERE cp.next_review_date <= date('now') ${categoryFilter} ${levelFilter}
        ORDER BY cp.next_review_date ASC
        LIMIT ?`,
       dueParams,
     );
 
     // New cards (words not yet in card_progress)
-    const newParams =
-      categoryIds && categoryIds.length > 0
-        ? [...categoryIds, newCardsLimit]
-        : [newCardsLimit];
+    const newParams: (string | number)[] = [
+      ...(hasCategoryFilter ? categoryIds : []),
+      ...(hasLevelFilter ? levels : []),
+      newCardsLimit,
+    ];
+
+    // When no level filter is set, default to showing only A1 new words
+    // (prevents flooding the session with higher-level words unexpectedly)
+    const newCardLevelClause = hasLevelFilter
+      ? levelFilter
+      : `AND (n.level = 'A1' OR n.is_user_added = 1)`;
 
     const newCards = await this.db.getAllAsync<DueCard>(
       `SELECT
@@ -245,7 +264,7 @@ export class SpacedRepetitionService {
          n.remote_id
        FROM nouns n
        LEFT JOIN card_progress cp ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.id IS NULL AND (n.level = 'A1' OR n.is_user_added = 1) ${categoryFilter}
+       WHERE cp.id IS NULL ${categoryFilter} ${newCardLevelClause}
        ORDER BY RANDOM()
        LIMIT ?`,
       newParams,

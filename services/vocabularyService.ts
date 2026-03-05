@@ -233,6 +233,20 @@ export class VocabularyService {
   }
 
   /**
+   * Get distinct CEFR levels that have at least one noun, with word counts.
+   * Used for the level selector UI on the home screen.
+   */
+  async getLevelsWithCounts(): Promise<{ level: string; wordCount: number }[]> {
+    return await this.db.getAllAsync<{ level: string; wordCount: number }>(
+      `SELECT level, COUNT(*) AS wordCount
+       FROM nouns
+       WHERE level IS NOT NULL AND is_user_added = 0
+       GROUP BY level
+       ORDER BY level ASC`,
+    );
+  }
+
+  /**
    * Get random words filtered by level and optionally by category.
    * Useful for focused practice sessions.
    */
