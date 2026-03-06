@@ -52,3 +52,5 @@ pb_data/
 
 # Release notes (local only)
 release-notes/
+
+*.http
