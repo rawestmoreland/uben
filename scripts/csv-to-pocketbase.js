@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
-const { convertToTranslationKey } = require('../utils/helpers');
+const { convertToTranslationKey } = require('../utils/helpers.ts');
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -18,13 +18,13 @@ const main = async () => {
     'database',
     'seeds',
     'nouns',
-    'goethe-a1.csv',
+    'goethe-a2.csv',
   );
   fs.createReadStream(csvFilePath)
     .pipe(csv())
     .on('data', (data) => nounJson.push(data))
     .on('end', async () => {
-      const level = 'A1';
+      const level = 'A2';
       const sources = ['Goethe'];
 
       const total = nounJson.length;

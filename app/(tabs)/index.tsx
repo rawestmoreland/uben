@@ -35,17 +35,15 @@ export default function HomeScreen() {
   const handleLevelToggle = useCallback(
     async (level: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const isSelected = selectedLevels.includes(level);
-      if (isSelected && selectedLevels.length === 1) {
-        // Don't allow deselecting the last level
-        return;
-      }
-      const next = isSelected
-        ? selectedLevels.filter((l) => l !== level)
-        : [...selectedLevels, level];
+      const levelOrder = availableLevels.map((l) => l.level);
+      const tappedIndex = levelOrder.indexOf(level);
+      if (tappedIndex < 0) return;
+      // Cumulative selection: select all levels up to and including the tapped one.
+      // Tapping A1 when A1 is already the only selection is a no-op (can't go lower).
+      const next = levelOrder.slice(0, tappedIndex + 1);
       await setSelectedLevels(next);
     },
-    [selectedLevels, setSelectedLevels],
+    [availableLevels, setSelectedLevels],
   );
 
   const isFirstTime = stats.total_reviews === 0;
