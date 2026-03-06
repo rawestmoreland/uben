@@ -9,8 +9,6 @@ const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const main = async () => {
   const categories = await getCategories();
 
-  console.log(categories);
-
   const nounJson = [];
 
   const csvFilePath = path.join(
