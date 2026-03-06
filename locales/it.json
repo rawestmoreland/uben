@@ -62,9 +62,18 @@
       "language": "Lingua",
       "choose_app_language": "Scegli la lingua dell'app."
     },
+    "level_filter": {
+      "label": "LIVELLO DI STUDIO",
+      "chip_a1": "A1",
+      "chip_a2": "A2",
+      "chip_b1": "B1",
+      "chip_b2": "B2",
+      "chip_c1": "C1",
+      "chip_c2": "C2"
+    },
     "categories": {
       "title": "Scegli il tuo focus",
-      "subtitle": "Seleziona categorie per praticare o tocca &quot;Tutte le parole&quot; per tutto",
+      "subtitle": "Seleziona categorie per praticare o tocca <<Tutte le parole>> per tutto",
       "all_words": "Tutte le parole",
       "start": "INIZIA",
       "start_categories_one": "$t(categories.start) {{count}} categoria",

@@ -70,9 +70,18 @@
       "language": "Język",
       "choose_app_language": "Wybierz język aplikacji."
     },
+    "level_filter": {
+      "label": "POZIOM NAUKI",
+      "chip_a1": "A1",
+      "chip_a2": "A2",
+      "chip_b1": "B1",
+      "chip_b2": "B2",
+      "chip_c1": "C1",
+      "chip_c2": "C2"
+    },
     "categories": {
       "title": "Wybierz swój obszar",
-      "subtitle": "Wybierz kategorie do ćwiczenia lub dotknij &quot;Wszystkie słowa&quot;, aby ćwiczyć wszystko",
+      "subtitle": "Wybierz kategorie do ćwiczenia lub dotknij <<Wszystkie słowa>>, aby ćwiczyć wszystko",
       "all_words": "Wszystkie słowa",
       "start": "START",
       "start_categories_one": "$t(categories.start) {{count}} kategorię",

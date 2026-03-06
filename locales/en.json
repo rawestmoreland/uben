@@ -62,9 +62,18 @@
       "language": "Language",
       "choose_app_language": "Choose the app display language."
     },
+    "level_filter": {
+      "label": "STUDY LEVEL",
+      "chip_a1": "A1",
+      "chip_a2": "A2",
+      "chip_b1": "B1",
+      "chip_b2": "B2",
+      "chip_c1": "C1",
+      "chip_c2": "C2"
+    },
     "categories": {
       "title": "Choose your focus",
-      "subtitle": "Select categories to practice or tap &quot;All Words&quot; for everything",
+      "subtitle": "Select categories to practice or tap 'All Words' for everything",
       "all_words": "All Words",
       "start": "START",
       "start_categories_one": "$t(categories.start) {{count}} category",

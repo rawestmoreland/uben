@@ -6,8 +6,10 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
-import { useHomeData } from '@/hooks/use-home-data';
+import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,8 +26,25 @@ export default function HomeScreen() {
     hasReviewedToday,
     strugglingCount,
     masteredCount,
+    availableLevels,
+    selectedLevels,
+    setSelectedLevels,
     isLoading,
   } = useHomeData();
+
+  const handleLevelToggle = useCallback(
+    async (level: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const levelOrder = availableLevels.map((l) => l.level);
+      const tappedIndex = levelOrder.indexOf(level);
+      if (tappedIndex < 0) return;
+      // Cumulative selection: select all levels up to and including the tapped one.
+      // Tapping A1 when A1 is already the only selection is a no-op (can't go lower).
+      const next = levelOrder.slice(0, tappedIndex + 1);
+      await setSelectedLevels(next);
+    },
+    [availableLevels, setSelectedLevels],
+  );
 
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText =
@@ -71,6 +90,16 @@ export default function HomeScreen() {
             }
           />
         </View>
+
+        {/* ── Level Filter ─────────────────────────────────────── */}
+        {!isLoading && availableLevels.length > 1 && (
+          <LevelSelector
+            availableLevels={availableLevels}
+            selectedLevels={selectedLevels}
+            onToggle={handleLevelToggle}
+            label={t('level_filter.label')}
+          />
+        )}
 
         {/* ── CTA Button ──────────────────────────────────────── */}
         <Pressable
@@ -209,6 +238,42 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+// ── Level Selector Component ─────────────────────────────────────────
+
+interface LevelSelectorProps {
+  availableLevels: LevelOption[];
+  selectedLevels: string[];
+  onToggle: (level: string) => void;
+  label: string;
+}
+
+function LevelSelector({ availableLevels, selectedLevels, onToggle, label }: LevelSelectorProps) {
+  return (
+    <View style={styles.levelSelector}>
+      <Text style={styles.levelSelectorLabel}>{label}</Text>
+      <View style={styles.levelChips}>
+        {availableLevels.map(({ level }) => {
+          const isSelected = selectedLevels.includes(level);
+          return (
+            <Pressable
+              key={level}
+              style={[styles.levelChip, isSelected && styles.levelChipSelected]}
+              onPress={() => onToggle(level)}
+              accessibilityRole="button"
+              accessibilityLabel={`${level} level`}
+              accessibilityState={{ selected: isSelected }}
+            >
+              <Text style={[styles.levelChipText, isSelected && styles.levelChipTextSelected]}>
+                {level}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
   );
 }
 
@@ -352,6 +417,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 1,
     marginTop: Spacing.xs,
+  },
+
+  // Level Selector
+  levelSelector: {
+    marginBottom: Spacing.lg,
+  },
+  levelSelectorLabel: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 1.5,
+    marginBottom: Spacing.sm,
+  },
+  levelChips: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  levelChip: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.white,
+    minWidth: 52,
+    alignItems: 'center',
+  },
+  levelChipSelected: {
+    backgroundColor: AppColors.yellow,
+  },
+  levelChipText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 0.5,
+  },
+  levelChipTextSelected: {
+    color: AppColors.black,
   },
 
   // CTA Button
