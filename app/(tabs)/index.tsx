@@ -50,7 +50,10 @@ export default function HomeScreen() {
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText =
     stats.success_rate != null ? `${Math.round(stats.success_rate)}%` : '--';
-  const newCount = Math.max(0, nounCount - stats.total_cards);
+  const selectedLevelNounCount = availableLevels
+    .filter((l) => selectedLevels.includes(l.level))
+    .reduce((sum, l) => sum + l.wordCount, 0);
+  const newCount = Math.max(0, selectedLevelNounCount - stats.total_cards);
   const learningCount = Math.max(0, stats.total_cards - masteredCount);
 
   return (
@@ -207,12 +210,12 @@ export default function HomeScreen() {
             <Text style={styles.masteryCount}>
               {t('mastery_summary', {
                 mastered: isLoading ? '-' : masteredCount,
-                total: isLoading ? '-' : nounCount,
+                total: isLoading ? '-' : selectedLevelNounCount,
               })}
             </Text>
           </View>
           <View style={styles.masteryBar}>
-            {nounCount === 0 ? (
+            {selectedLevelNounCount === 0 ? (
               <View style={[styles.masterySegment, styles.masterySegmentNew, { flex: 1 }]} />
             ) : (
               <>
