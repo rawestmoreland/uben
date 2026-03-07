@@ -77,7 +77,14 @@
       "chip_b1": "B1",
       "chip_b2": "B2",
       "chip_c1": "C1",
-      "chip_c2": "C2"
+      "chip_c2": "C2",
+      "coming_soon": "WKRÓTCE",
+      "tooltip_title": "UCZ SIĘ NA SWOIM POZIOMIE",
+      "tooltip_intro": "Badania nad przyswajaniem języków obcych pokazują, że nauka słownictwa na odpowiednim poziomie trudności prowadzi do szybszego i trwalszego zapamiętywania.",
+      "tooltip_cite_krashen": "Hipoteza inputu mówi, że nauka języka przebiega najefektywniej, gdy materiał jest nieco powyżej aktualnego poziomu — nie za łatwy, ale i nie przytłaczający. (Krashen, 1982)",
+      "tooltip_cite_nation": "Aby uczyć się nowych słów z kontekstu, musisz rozumieć 95–98% otaczających słów. Nauka poziom po poziomie tworzy ten fundament. (Nation, 2001)",
+      "tooltip_cite_webb": "Uczący się, którzy skupiają się na słownictwie odpowiednim do swojego poziomu, przyswajają nowe słowa znacznie szybciej niż ci, którzy używają list o różnych poziomach. (Webb & Nation, 2017)",
+      "tooltip_close": "ROZUMIEM"
     },
     "categories": {
       "title": "Wybierz swój obszar",
