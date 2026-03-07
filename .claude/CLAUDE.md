@@ -366,6 +366,10 @@ eas submit --platform ios
 - Streak competitions
 - Premium features (ad-free, unlimited vocab)
 
+## Pull Requests
+
+Always use the PR template at `.github/PULL_REQUEST_TEMPLATE.md` when creating pull requests. Fill in every section — remove or mark N/A only what genuinely does not apply (e.g. no screenshots for a non-UI change).
+
 ## Important Notes for Claude Code
 
 ### Database Operations
