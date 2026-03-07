@@ -46,6 +46,24 @@ export class VocabularyService {
 
 
   /**
+   * Check if a noun with the given German word and article already exists.
+   * Used for real-time duplicate validation in the add word form.
+   */
+  async checkNounExists(
+    german: string,
+    article: string,
+  ): Promise<{ exists: boolean; isUserAdded?: boolean }> {
+    const existing = await this.db.getFirstAsync<{ is_user_added: number }>(
+      'SELECT is_user_added FROM nouns WHERE german = ? AND article = ?',
+      [german, article],
+    );
+    if (existing) {
+      return { exists: true, isUserAdded: !!existing.is_user_added };
+    }
+    return { exists: false };
+  }
+
+  /**
    * Add a user-created noun to the database.
    * Validates that the category exists before insertion.
    * If the word already exists (e.g. from seed data), returns a specific
@@ -211,6 +229,20 @@ export class VocabularyService {
     return await this.db.getFirstAsync<Category>(
       'SELECT * FROM categories WHERE id = ?',
       [id],
+    );
+  }
+
+  /**
+   * Get distinct CEFR levels that have at least one noun, with word counts.
+   * Used for the level selector UI on the home screen.
+   */
+  async getLevelsWithCounts(): Promise<{ level: string; wordCount: number }[]> {
+    return await this.db.getAllAsync<{ level: string; wordCount: number }>(
+      `SELECT level, COUNT(*) AS wordCount
+       FROM nouns
+       WHERE level IS NOT NULL AND is_user_added = 0
+       GROUP BY level
+       ORDER BY level ASC`,
     );
   }
 

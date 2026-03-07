@@ -10,8 +10,9 @@ import { vocabularyService } from '@/services/vocabularyService';
 import type { Category } from '@/types/database';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -42,22 +43,57 @@ export default function AddWordScreen() {
   // UI state
   const [categories, setCategories] = useState<Category[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
+  const duplicateCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load categories on mount
   useEffect(() => {
     vocabularyService.getCategories().then(setCategories);
   }, []);
 
+  // Real-time duplicate check when german word and article are both present
+  useEffect(() => {
+    if (duplicateCheckTimer.current) {
+      clearTimeout(duplicateCheckTimer.current);
+    }
+
+    const trimmed = german.trim();
+    if (!trimmed || !article) {
+      setDuplicateError(null);
+      return;
+    }
+
+    duplicateCheckTimer.current = setTimeout(async () => {
+      const result = await vocabularyService.checkNounExists(trimmed, article);
+      if (result.exists) {
+        setDuplicateError(
+          result.isUserAdded
+            ? 'You have already added this word'
+            : 'This word is already in your vocabulary',
+        );
+      } else {
+        setDuplicateError(null);
+      }
+    }, 400);
+
+    return () => {
+      if (duplicateCheckTimer.current) {
+        clearTimeout(duplicateCheckTimer.current);
+      }
+    };
+  }, [german, article]);
+
   const isValid =
-    german.trim().length > 0 && article !== null && categoryId !== null;
+    german.trim().length > 0 &&
+    article !== null &&
+    categoryId !== null &&
+    !duplicateError;
 
   const handleSave = useCallback(async () => {
     if (!isValid || !article || !categoryId) return;
 
     Keyboard.dismiss();
     setIsSubmitting(true);
-    setError(null);
 
     try {
       const result = await vocabularyService.addUserNoun({
@@ -73,10 +109,14 @@ export default function AddWordScreen() {
         router.back();
       } else {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        setError(result.error ?? 'Failed to add word');
+        Alert.alert('Cannot Add Word', result.error ?? 'Failed to add word', [
+          { text: 'OK' },
+        ]);
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      Alert.alert('Error', 'Something went wrong. Please try again.', [
+        { text: 'OK' },
+      ]);
     } finally {
       setIsSubmitting(false);
     }
@@ -111,29 +151,22 @@ export default function AddWordScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* ── Error Banner ──────────────────────────────────── */}
-          {error && (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          )}
-
           {/* ── German Word ───────────────────────────────────── */}
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>GERMAN NOUN *</Text>
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, duplicateError ? styles.textInputError : null]}
               value={german}
-              onChangeText={(text) => {
-                setGerman(text);
-                setError(null);
-              }}
+              onChangeText={setGerman}
               placeholder="e.g. Hund"
               placeholderTextColor={AppColors.textSecondary}
               autoCapitalize="words"
               autoCorrect={false}
               returnKeyType="next"
             />
+            {duplicateError && (
+              <Text style={styles.fieldErrorText}>{duplicateError}</Text>
+            )}
           </View>
 
           {/* ── Article Selector ──────────────────────────────── */}
@@ -152,7 +185,6 @@ export default function AddWordScreen() {
                     ]}
                     onPress={() => {
                       setArticle(a);
-                      setError(null);
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                     accessibilityRole="button"
@@ -192,7 +224,6 @@ export default function AddWordScreen() {
                     ]}
                     onPress={() => {
                       setCategoryId(cat.id);
-                      setError(null);
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                     accessibilityRole="button"
@@ -326,21 +357,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxl,
   },
 
-  // Error
-  errorBanner: {
-    backgroundColor: AppColors.red,
-    borderWidth: Layout.borderWidth,
-    borderColor: AppColors.black,
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
-  },
-  errorText: {
-    fontSize: Typography.small,
-    fontWeight: Typography.semibold,
-    color: AppColors.white,
-    textAlign: 'center',
-  },
-
   // Field group
   fieldGroup: {
     marginBottom: Spacing.lg,
@@ -363,6 +379,15 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.regular,
     color: AppColors.black,
+  },
+  textInputError: {
+    borderColor: AppColors.red,
+  },
+  fieldErrorText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.red,
+    marginTop: Spacing.xs,
   },
 
   // Article selector

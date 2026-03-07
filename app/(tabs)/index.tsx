@@ -6,10 +6,13 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
-import { useHomeData } from '@/hooks/use-home-data';
+import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Home Screen ──────────────────────────────────────────────────────
@@ -24,8 +27,25 @@ export default function HomeScreen() {
     hasReviewedToday,
     strugglingCount,
     masteredCount,
+    availableLevels,
+    selectedLevels,
+    setSelectedLevels,
     isLoading,
   } = useHomeData();
+
+  const handleLevelToggle = useCallback(
+    async (level: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const levelOrder = availableLevels.map((l) => l.level);
+      const tappedIndex = levelOrder.indexOf(level);
+      if (tappedIndex < 0) return;
+      // Cumulative selection: select all levels up to and including the tapped one.
+      // Tapping A1 when A1 is already the only selection is a no-op (can't go lower).
+      const next = levelOrder.slice(0, tappedIndex + 1);
+      await setSelectedLevels(next);
+    },
+    [availableLevels, setSelectedLevels],
+  );
 
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText =
@@ -71,6 +91,25 @@ export default function HomeScreen() {
             }
           />
         </View>
+
+        {/* ── Level Filter ─────────────────────────────────────── */}
+        {!isLoading && availableLevels.length > 0 && (
+          <LevelSelector
+            availableLevels={availableLevels}
+            selectedLevels={selectedLevels}
+            onToggle={handleLevelToggle}
+            label={t('level_filter.label')}
+            comingSoonLabel={t('level_filter.coming_soon')}
+            tooltip={{
+              title: t('level_filter.tooltip_title'),
+              intro: t('level_filter.tooltip_intro'),
+              citeKrashen: t('level_filter.tooltip_cite_krashen'),
+              citeNation: t('level_filter.tooltip_cite_nation'),
+              citeWebb: t('level_filter.tooltip_cite_webb'),
+              close: t('level_filter.tooltip_close'),
+            }}
+          />
+        )}
 
         {/* ── CTA Button ──────────────────────────────────────── */}
         <Pressable
@@ -209,6 +248,108 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+// ── Level Selector Component ─────────────────────────────────────────
+
+interface LevelSelectorProps {
+  availableLevels: LevelOption[];
+  selectedLevels: string[];
+  onToggle: (level: string) => void;
+  label: string;
+  comingSoonLabel: string;
+  tooltip: {
+    title: string;
+    intro: string;
+    citeKrashen: string;
+    citeNation: string;
+    citeWebb: string;
+    close: string;
+  };
+}
+
+function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comingSoonLabel, tooltip }: LevelSelectorProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <View style={styles.levelSelector}>
+      <View style={styles.levelSelectorHeader}>
+        <Text style={styles.levelSelectorLabel}>{label}</Text>
+        <Pressable
+          onPress={() => setModalVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel={tooltip.title}
+          hitSlop={8}
+        >
+          <IconSymbol name="info.circle.fill" size={16} color={AppColors.textSecondary} />
+        </Pressable>
+      </View>
+
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setModalVisible(false)}>
+          <Pressable style={styles.modalCard} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{tooltip.title}</Text>
+            <Text style={styles.modalIntro}>{tooltip.intro}</Text>
+            <View style={styles.modalCiteBlock}>
+              <Text style={styles.modalCiteText}>{tooltip.citeKrashen}</Text>
+            </View>
+            <View style={styles.modalCiteBlock}>
+              <Text style={styles.modalCiteText}>{tooltip.citeNation}</Text>
+            </View>
+            <View style={styles.modalCiteBlock}>
+              <Text style={styles.modalCiteText}>{tooltip.citeWebb}</Text>
+            </View>
+            <Pressable
+              style={({ pressed }) => [styles.modalCloseButton, pressed && styles.modalCloseButtonPressed]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalCloseText}>{tooltip.close}</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.levelChips}
+      >
+        {availableLevels.map(({ level, comingSoon }) => {
+          const isSelected = selectedLevels.includes(level);
+          if (comingSoon) {
+            return (
+              <View
+                key={level}
+                style={styles.levelChipComingSoon}
+                accessibilityLabel={`${level} level, coming soon`}
+              >
+                <Text style={styles.levelChipTextComingSoon}>{level}</Text>
+                <Text style={styles.levelChipComingSoonBadge}>{comingSoonLabel}</Text>
+              </View>
+            );
+          }
+          return (
+            <Pressable
+              key={level}
+              style={[styles.levelChip, isSelected && styles.levelChipSelected]}
+              onPress={() => onToggle(level)}
+              accessibilityRole="button"
+              accessibilityLabel={`${level} level`}
+              accessibilityState={{ selected: isSelected }}
+            >
+              <Text style={[styles.levelChipText, isSelected && styles.levelChipTextSelected]}>
+                {level}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -352,6 +493,74 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 1,
     marginTop: Spacing.xs,
+  },
+
+  // Level Selector
+  levelSelector: {
+    marginBottom: Spacing.lg,
+  },
+  levelSelectorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  levelSelectorLabel: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 1.5,
+  },
+  levelChips: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  levelChip: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 72,
+  },
+  levelChipSelected: {
+    backgroundColor: AppColors.yellow,
+  },
+  levelChipText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 0.5,
+  },
+  levelChipTextSelected: {
+    color: AppColors.black,
+  },
+  levelChipComingSoon: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.textSecondary,
+    borderStyle: 'dashed',
+    backgroundColor: AppColors.lightGray,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 72,
+    opacity: 0.6,
+  },
+  levelChipTextComingSoon: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 0.5,
+  },
+  levelChipComingSoonBadge: {
+    fontSize: 8,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 0.5,
+    marginTop: 2,
   },
 
   // CTA Button
@@ -535,5 +744,68 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     letterSpacing: 1,
     marginTop: 2,
+  },
+
+  // Level Info Modal
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
+  },
+  modalCard: {
+    backgroundColor: AppColors.cream,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    padding: Spacing.xl,
+    width: '100%',
+    ...shadowStyle,
+  },
+  modalTitle: {
+    fontSize: Typography.heading,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+    marginBottom: Spacing.md,
+  },
+  modalIntro: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.black,
+    lineHeight: 20,
+    marginBottom: Spacing.lg,
+  },
+  modalCiteBlock: {
+    borderLeftWidth: Layout.borderWidthThin,
+    borderLeftColor: AppColors.black,
+    paddingLeft: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  modalCiteText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    lineHeight: 19,
+    fontStyle: 'italic',
+  },
+  modalCloseButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+    ...shadowStyle,
+  },
+  modalCloseButtonPressed: {
+    transform: [{ translateY: 4 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  modalCloseText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
   },
 });

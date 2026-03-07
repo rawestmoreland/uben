@@ -3,7 +3,16 @@ import { useFocusEffect } from '@react-navigation/native';
 import { vocabularyService } from '@/services/vocabularyService';
 import { spacedRepetitionService } from '@/services/spacedRepetitionService';
 import { statisticsService } from '@/services/statisticsService';
+import { settingsService } from '@/services/settingsService';
 import type { UserStats } from '@/types/database';
+
+export interface LevelOption {
+  level: string;
+  wordCount: number;
+  comingSoon: boolean;
+}
+
+const ALL_CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 interface HomeData {
   stats: UserStats;
@@ -13,6 +22,9 @@ interface HomeData {
   hasReviewedToday: boolean;
   strugglingCount: number;
   masteredCount: number;
+  availableLevels: LevelOption[];
+  selectedLevels: string[];
+  setSelectedLevels: (levels: string[]) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -37,6 +49,8 @@ export function useHomeData(): HomeData {
   const [hasReviewedToday, setHasReviewedToday] = useState(false);
   const [strugglingCount, setStrugglingCount] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
+  const [availableLevels, setAvailableLevels] = useState<LevelOption[]>([]);
+  const [selectedLevels, setSelectedLevelsState] = useState<string[]>(['A1']);
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
@@ -53,6 +67,8 @@ export function useHomeData(): HomeData {
             fetchedHasReviewedToday,
             fetchedStrugglingCount,
             fetchedMasteredCount,
+            fetchedLevels,
+            fetchedSelectedLevels,
           ] = await Promise.all([
             vocabularyService.getUserStats(),
             vocabularyService.getNounCount(),
@@ -61,6 +77,8 @@ export function useHomeData(): HomeData {
             spacedRepetitionService.hasReviewedToday(),
             statisticsService.getStrugglingWordsCount(),
             statisticsService.getMasteredCount(),
+            vocabularyService.getLevelsWithCounts(),
+            settingsService.getSelectedLevels(),
           ]);
 
           if (!cancelled) {
@@ -71,6 +89,14 @@ export function useHomeData(): HomeData {
             setHasReviewedToday(fetchedHasReviewedToday);
             setStrugglingCount(fetchedStrugglingCount);
             setMasteredCount(fetchedMasteredCount);
+            const mergedLevels: LevelOption[] = ALL_CEFR_LEVELS.map((level) => {
+              const found = fetchedLevels.find((l) => l.level === level);
+              return found
+                ? { ...found, comingSoon: false }
+                : { level, wordCount: 0, comingSoon: true };
+            });
+            setAvailableLevels(mergedLevels);
+            setSelectedLevelsState(fetchedSelectedLevels);
           }
         } catch (error) {
           console.error('[HomeData] Failed to load:', error);
@@ -89,5 +115,22 @@ export function useHomeData(): HomeData {
     }, []),
   );
 
-  return { stats, nounCount, userNounCount, streak, hasReviewedToday, strugglingCount, masteredCount, isLoading };
+  const setSelectedLevels = useCallback(async (levels: string[]) => {
+    setSelectedLevelsState(levels);
+    await settingsService.setSelectedLevels(levels);
+  }, []);
+
+  return {
+    stats,
+    nounCount,
+    userNounCount,
+    streak,
+    hasReviewedToday,
+    strugglingCount,
+    masteredCount,
+    availableLevels,
+    selectedLevels,
+    setSelectedLevels,
+    isLoading,
+  };
 }
