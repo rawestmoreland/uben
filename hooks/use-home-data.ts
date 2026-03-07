@@ -9,7 +9,10 @@ import type { UserStats } from '@/types/database';
 export interface LevelOption {
   level: string;
   wordCount: number;
+  comingSoon: boolean;
 }
+
+const ALL_CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 interface HomeData {
   stats: UserStats;
@@ -86,7 +89,13 @@ export function useHomeData(): HomeData {
             setHasReviewedToday(fetchedHasReviewedToday);
             setStrugglingCount(fetchedStrugglingCount);
             setMasteredCount(fetchedMasteredCount);
-            setAvailableLevels(fetchedLevels);
+            const mergedLevels: LevelOption[] = ALL_CEFR_LEVELS.map((level) => {
+              const found = fetchedLevels.find((l) => l.level === level);
+              return found
+                ? { ...found, comingSoon: false }
+                : { level, wordCount: 0, comingSoon: true };
+            });
+            setAvailableLevels(mergedLevels);
             setSelectedLevelsState(fetchedSelectedLevels);
           }
         } catch (error) {

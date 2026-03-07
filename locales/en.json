@@ -69,7 +69,14 @@
       "chip_b1": "B1",
       "chip_b2": "B2",
       "chip_c1": "C1",
-      "chip_c2": "C2"
+      "chip_c2": "C2",
+      "coming_soon": "SOON",
+      "tooltip_title": "STUDY AT YOUR LEVEL",
+      "tooltip_intro": "Research in second language acquisition consistently shows that studying vocabulary at the right difficulty level leads to faster, longer-lasting retention.",
+      "tooltip_cite_krashen": "The Input Hypothesis argues that language acquisition is most effective when material is just slightly above your current level — not too easy, not overwhelming. (Krashen, 1982)",
+      "tooltip_cite_nation": "To learn new words from context, you need to understand 95–98% of the surrounding words. Building level-by-level creates that foundation. (Nation, 2001)",
+      "tooltip_cite_webb": "Learners who study level-appropriate vocabulary acquire new words significantly faster than those working from mixed-level lists. (Webb & Nation, 2017)",
+      "tooltip_close": "GOT IT"
     },
     "categories": {
       "title": "Choose your focus",
