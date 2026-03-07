@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
-const { convertToTranslationKey } = require('../utils/helpers');
+const { convertToTranslationKey } = require('../utils/helpers.ts');
+
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const main = async () => {
   const categories = await getCategories();
-
-  console.log(categories);
 
   const nounJson = [];
 
@@ -18,13 +18,13 @@ const main = async () => {
     'database',
     'seeds',
     'nouns',
-    'goethe-a1.csv',
+    'goethe-a2.csv',
   );
   fs.createReadStream(csvFilePath)
     .pipe(csv())
     .on('data', (data) => nounJson.push(data))
     .on('end', async () => {
-      const level = 'A1';
+      const level = 'A2';
       const sources = ['Goethe'];
 
       const total = nounJson.length;
@@ -38,10 +38,19 @@ const main = async () => {
           '0gskxzb0mphm3f0';
         const existingNoun = await getNoun(noun.german, noun.article);
         if (existingNoun) {
+          // Preserve the lowest (earliest) level — don't overwrite 'A1' with 'A2'
+          const keepLevel =
+            LEVELS.indexOf(existingNoun.level) <= LEVELS.indexOf(level)
+              ? existingNoun.level
+              : level;
+          // Merge sources rather than overwrite — a word can come from multiple lists
+          const mergedSources = [
+            ...new Set([...(existingNoun.sources ?? []), ...sources]),
+          ];
           await updateNoun(existingNoun.id, {
             ...existingNoun,
-            level,
-            sources,
+            level: keepLevel,
+            sources: mergedSources,
             category: categoryId,
           });
           updated++;

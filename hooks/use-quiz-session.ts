@@ -66,12 +66,16 @@ export function useQuizSession(mode: QuizMode = 'daily'): QuizSessionData {
           reviewSession =
             await spacedRepetitionService.getStrugglingWordsSession(15);
         } else {
-          // Load selected categories from settings
-          const categoryIds = await settingsService.getSelectedCategories();
+          // Load selected categories and levels from settings
+          const [categoryIds, levels] = await Promise.all([
+            settingsService.getSelectedCategories(),
+            settingsService.getSelectedLevels(),
+          ]);
           reviewSession = await spacedRepetitionService.getDailyReviewSession(
             20,
             5,
             categoryIds.length > 0 ? categoryIds : undefined,
+            levels.length > 0 ? levels : undefined,
           );
         }
 

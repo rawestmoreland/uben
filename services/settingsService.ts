@@ -7,6 +7,7 @@ export const SETTINGS_KEYS = {
   SHOW_ENGLISH_HINT: 'show_english_hint',
   ESZETT_PREFERENCE: 'eszett_preference',
   SELECTED_CATEGORIES: 'selected_categories',
+  SELECTED_LEVELS: 'selected_levels',
   APP_LANGUAGE: 'app_language',
   QUIZ_SESSIONS_COMPLETED: 'quiz_sessions_completed',
   LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
@@ -83,6 +84,28 @@ class SettingsService {
     await this.setSetting(
       SETTINGS_KEYS.SELECTED_CATEGORIES,
       JSON.stringify(categoryIds),
+    );
+  }
+
+  // ── Convenience: Selected Levels ──────────────────────────────────
+
+  /** Get selected CEFR levels for focused practice. Returns ['A1'] if never set. */
+  async getSelectedLevels(): Promise<string[]> {
+    const value = await this.getSetting(SETTINGS_KEYS.SELECTED_LEVELS);
+    if (!value) return ['A1'];
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : ['A1'];
+    } catch {
+      return ['A1'];
+    }
+  }
+
+  /** Save selected CEFR levels. Pass empty array for "all levels". */
+  async setSelectedLevels(levels: string[]): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.SELECTED_LEVELS,
+      JSON.stringify(levels),
     );
   }
 

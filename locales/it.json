@@ -62,9 +62,25 @@
       "language": "Lingua",
       "choose_app_language": "Scegli la lingua dell'app."
     },
+    "level_filter": {
+      "label": "LIVELLO DI STUDIO",
+      "chip_a1": "A1",
+      "chip_a2": "A2",
+      "chip_b1": "B1",
+      "chip_b2": "B2",
+      "chip_c1": "C1",
+      "chip_c2": "C2",
+      "coming_soon": "PRESTO",
+      "tooltip_title": "STUDIA AL TUO LIVELLO",
+      "tooltip_intro": "Le ricerche sull'acquisizione delle lingue mostrano che studiare il vocabolario al giusto livello di difficoltà porta a una memorizzazione più rapida e duratura.",
+      "tooltip_cite_krashen": "L'ipotesi dell'input sostiene che l'acquisizione del linguaggio è più efficace quando il materiale è leggermente superiore al livello attuale — non troppo facile, non troppo difficile. (Krashen, 1982)",
+      "tooltip_cite_nation": "Per imparare nuove parole dal contesto, devi capire il 95–98% delle parole circostanti. Costruire livello per livello crea questa base. (Nation, 2001)",
+      "tooltip_cite_webb": "Gli studenti che studiano vocaboli adeguati al loro livello acquisiscono nuove parole significativamente più velocemente rispetto a chi usa liste di livello misto. (Webb & Nation, 2017)",
+      "tooltip_close": "OK"
+    },
     "categories": {
       "title": "Scegli il tuo focus",
-      "subtitle": "Seleziona categorie per praticare o tocca &quot;Tutte le parole&quot; per tutto",
+      "subtitle": "Seleziona categorie per praticare o tocca <<Tutte le parole>> per tutto",
       "all_words": "Tutte le parole",
       "start": "INIZIA",
       "start_categories_one": "$t(categories.start) {{count}} categoria",
