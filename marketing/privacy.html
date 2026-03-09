@@ -29,7 +29,7 @@
       <a href="index.html" class="back-link">&larr; Back to Home</a>
 
       <h1>Privacy Policy for Üben</h1>
-      <p class="policy-date"><strong>Last Updated:</strong> February 6, 2026</p>
+      <p class="policy-date"><strong>Last Updated:</strong> March 9, 2026</p>
 
       <!-- ── Introduction ──────────────────────────────────────── -->
       <h2>Introduction</h2>
@@ -40,8 +40,9 @@
       </p>
       <div class="policy-callout">
         <p>
-          <strong>The short version:</strong> We don't collect, store, or transmit
-          any of your personal data. Everything stays on your device.
+          <strong>The short version:</strong> Your personal learning data stays
+          on your device. We also collect anonymous quiz analytics — no account,
+          no name, no location attached.
         </p>
       </div>
 
@@ -50,34 +51,92 @@
 
       <h3>What We DON'T Collect</h3>
       <p>
-        Üben is designed with privacy as a core principle. We do not collect,
-        store, transmit, or process any of your personal information or app
-        usage data. Specifically, we do NOT collect:
+        Üben is designed with privacy as a core principle. We do not collect:
       </p>
       <ul>
         <li>Personal identification information (name, email, phone number, etc.)</li>
         <li>Device identifiers or advertising IDs</li>
         <li>Location data</li>
-        <li>Usage statistics or analytics</li>
-        <li>Vocabulary or learning progress data</li>
-        <li>Any other personal information</li>
+        <li>Your individual learning progress or review history</li>
+        <li>Any information that can be used to identify you personally</li>
       </ul>
 
       <h3>What Stays on Your Device</h3>
-      <p>All of your data is stored locally on your device using SQLite:</p>
+      <p>All of your personal learning data is stored locally on your device using SQLite:</p>
       <ul>
         <li><strong>Vocabulary data:</strong> All German nouns, verbs, and vocabulary you add</li>
         <li><strong>Learning progress:</strong> Your review history, spaced repetition intervals, and statistics</li>
         <li><strong>Settings:</strong> Your app preferences and configurations</li>
         <li><strong>User-added content:</strong> Any custom words you create</li>
       </ul>
+      <p>This data never leaves your device.</p>
+
+      <h3>Anonymous Quiz Analytics</h3>
       <p>
-        This data never leaves your device and is not backed up to our servers
-        (because we don't have any servers).
+        When you answer a quiz question on a pre-loaded vocabulary word, we send
+        the following to our servers:
+      </p>
+      <table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+        <thead>
+          <tr style="border-bottom: 3px solid #000;">
+            <th style="text-align:left; padding: 8px 12px;">Data point</th>
+            <th style="text-align:left; padding: 8px 12px;">Example</th>
+            <th style="text-align:left; padding: 8px 12px;">Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #ccc;">
+            <td style="padding: 8px 12px;">Noun identifier</td>
+            <td style="padding: 8px 12px;">Internal ID of "der Hund"</td>
+            <td style="padding: 8px 12px;">To count results per word</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ccc;">
+            <td style="padding: 8px 12px;">Correct or incorrect</td>
+            <td style="padding: 8px 12px;">true / false</td>
+            <td style="padding: 8px 12px;">To measure difficulty</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ccc;">
+            <td style="padding: 8px 12px;">Quality score (0–5)</td>
+            <td style="padding: 8px 12px;">4</td>
+            <td style="padding: 8px 12px;">Richer difficulty signal</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 12px;">Response time</td>
+            <td style="padding: 8px 12px;">1 342 ms</td>
+            <td style="padding: 8px 12px;">To distinguish confident vs. hesitant answers</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>What we do NOT send or store:</strong></p>
+      <ul>
+        <li>Your name, email, or any identifier</li>
+        <li>Your device ID or installation ID</li>
+        <li>Your location</li>
+        <li>Your personal review history or streak</li>
+        <li>Words you have added yourself (user-added words are never sent)</li>
+      </ul>
+      <p>
+        This data cannot be linked back to you. We use it in aggregate — for
+        example, to identify which words learners find hardest or to publish
+        anonymised statistics in blog posts.
       </p>
 
       <!-- ── Third-Party Services ─────────────────────────────── -->
       <h2>Third-Party Services</h2>
+
+      <h3>Our Analytics Backend</h3>
+      <p>
+        Anonymous quiz results are stored on our own server (PocketBase, hosted
+        on Fly.io in the United States). Records contain only the data listed
+        above. Raw records are accessible to administrators only; only aggregated
+        summaries are ever shared publicly.
+      </p>
+      <p>
+        Like any HTTP request, your device's IP address appears in our server's
+        access log. It is not stored in the quiz result record and is not
+        associated with your answers. Access logs are retained for 30 days and
+        then deleted automatically.
+      </p>
 
       <h3>Advertising (AdMob)</h3>
       <p>
@@ -117,40 +176,47 @@
 
       <!-- ── Data Storage ─────────────────────────────────────── -->
       <h2>Data Storage and Security</h2>
-      <p>Since all data is stored locally on your device:</p>
       <ul>
-        <li><strong>Your responsibility:</strong> You control your data through your device's storage and backup settings</li>
-        <li><strong>Device backups:</strong> Your data may be included in device backups (iCloud, iTunes, etc.) per your device settings</li>
-        <li><strong>App deletion:</strong> Deleting the App will permanently remove all data from your device</li>
-        <li><strong>No cloud sync:</strong> We do not provide cloud synchronization or backups (this feature may be added in the future with explicit user consent)</li>
+        <li><strong>On-device data:</strong> Controlled entirely by you. Deleting the App removes all local data permanently.</li>
+        <li><strong>Device backups:</strong> Your local data may be included in device backups (iCloud, iTunes, etc.) per your device settings.</li>
+        <li><strong>Analytics server:</strong> Anonymous quiz records are stored on Fly.io servers in the United States. Records contain no personal data.</li>
+        <li><strong>Server access logs:</strong> Retained for 30 days, then deleted. Not linked to quiz result records.</li>
       </ul>
 
       <!-- ── Children's Privacy ───────────────────────────────── -->
       <h2>Children's Privacy</h2>
       <p>
-        Our App does not knowingly collect any information from anyone, including
-        children under 13. The App is designed to be used by language learners of
-        all ages without requiring any personal information.
+        Our App does not knowingly collect any personal information from anyone,
+        including children under 13. The anonymous quiz analytics we collect
+        contain no personally identifiable information. The App is designed to be
+        used by language learners of all ages.
       </p>
 
       <!-- ── Data Sharing ─────────────────────────────────────── -->
       <h2>Data Sharing</h2>
       <p>
-        We do not share any data because we don't collect any data. Your learning
-        progress and vocabulary remain private and local to your device.
+        We do not sell or share personal data because we do not collect personal
+        data. Aggregated, anonymised quiz statistics (e.g., "the ten hardest
+        nouns for learners") may be published in blog posts or shown inside the App.
       </p>
 
       <!-- ── Your Rights ──────────────────────────────────────── -->
       <h2>Your Rights</h2>
       <p>
-        Since we don't collect your data, there's nothing for us to access,
-        modify, or delete. You have complete control over all app data through:
+        Since we do not collect personal data linked to you, there is generally
+        nothing to access, modify, or delete. You have complete control over your
+        on-device data through:
       </p>
       <ul>
-        <li>Deleting the App (removes all data)</li>
+        <li>Deleting the App (removes all local data)</li>
         <li>Managing your device's storage</li>
         <li>Controlling your device's backup settings</li>
       </ul>
+      <p>
+        EU residents may contact us at
+        <a href="mailto:richard@westmorelandcreative.com">richard@westmorelandcreative.com</a>
+        with any GDPR-related questions.
+      </p>
 
       <!-- ── Changes ──────────────────────────────────────────── -->
       <h2>Changes to This Privacy Policy</h2>
@@ -168,45 +234,49 @@
       <!-- ── International Users ──────────────────────────────── -->
       <h2>International Users</h2>
       <p>
-        Our App can be used anywhere in the world. Since all data is stored
-        locally on your device and we don't collect any information, there are no
-        international data transfers.
+        The App can be used anywhere in the world. Your personal learning data is
+        stored locally on your device. Anonymous quiz analytics are transmitted to
+        and stored on servers located in the United States (Fly.io). No personal
+        data is included in these transfers.
       </p>
 
       <!-- ── CCPA ─────────────────────────────────────────────── -->
       <h2>California Privacy Rights (CCPA)</h2>
       <p>
         Under the California Consumer Privacy Act (CCPA), California residents
-        have certain rights regarding their personal information. However, since
-        we do not collect, store, or process any personal information, these
-        rights are not applicable to our App.
+        have certain rights regarding their personal information. Since we do not
+        collect personal information that is linked or linkable to you, CCPA does
+        not materially apply to our App.
       </p>
 
       <!-- ── GDPR ─────────────────────────────────────────────── -->
       <h2>European Union Users (GDPR)</h2>
       <p>
         Under the General Data Protection Regulation (GDPR), EU residents have
-        certain rights regarding their personal data. However, since we do not
-        collect, store, or process any personal information, these rights are not
-        applicable to our App.
+        certain rights regarding their personal data.
       </p>
       <p>
-        The only exception is advertising data collected by Google AdMob, which
-        is governed by Google's GDPR-compliant privacy practices.
+        <strong>Anonymous quiz result records:</strong> The records stored on our
+        server (noun ID, correct/incorrect, quality score, response time) contain
+        no personal data as defined by GDPR Article 4(1). GDPR does not apply to
+        these records.
       </p>
-
-      <!-- ── Future Features ──────────────────────────────────── -->
-      <h2>Future Features</h2>
       <p>
-        If we introduce features that involve data collection (such as cloud
-        sync, user accounts, or analytics), we will:
+        <strong>Server access logs:</strong> Our server's HTTP access logs contain
+        IP addresses, which are personal data under GDPR. We process these on the
+        basis of <strong>legitimate interest</strong> (Article 6(1)(f)) for server
+        security, abuse detection, and technical debugging. Logs are retained for
+        30 days. This processing is necessary and proportionate to our operational
+        needs.
       </p>
-      <ol>
-        <li>Update this Privacy Policy</li>
-        <li>Notify users in the App</li>
-        <li>Obtain explicit consent before collecting any data</li>
-        <li>Provide opt-in/opt-out controls</li>
-      </ol>
+      <p>
+        <strong>Advertising:</strong> AdMob's GDPR compliance is governed by
+        Google's privacy practices.
+      </p>
+      <p>
+        For any GDPR enquiries, contact us at
+        <a href="mailto:richard@westmorelandcreative.com">richard@westmorelandcreative.com</a>.
+      </p>
 
       <!-- ── Contact ──────────────────────────────────────────── -->
       <h2>Contact Us</h2>
@@ -239,13 +309,14 @@
       <div class="policy-summary">
         <p><strong>In plain English:</strong></p>
         <ul>
-          <li>All your data stays on your device</li>
-          <li>We can't see what words you're practicing</li>
-          <li>We can't see your progress or statistics</li>
-          <li>No account required, no login, no tracking</li>
+          <li>Your learning progress and vocabulary stay on your device</li>
+          <li>We can't see what words you're practicing or your personal statistics</li>
+          <li>No account required, no login</li>
+          <li>Anonymous quiz results (no name, no location, no device ID) are sent to our server to identify hard words</li>
+          <li>Words you add yourself are never sent to our server</li>
           <li>Ads are shown through Google AdMob (they may collect device/ad data)</li>
-          <li>Delete the app = delete all your data permanently</li>
-          <li>Works completely offline</li>
+          <li>Delete the app = delete all your on-device data permanently</li>
+          <li>Works completely offline (analytics are sent when online, silently skipped when offline)</li>
         </ul>
       </div>
 
@@ -253,7 +324,7 @@
 
       <hr style="border: none; border-top: var(--border-width) solid var(--black); margin: var(--sp-xl) 0;" />
 
-      <p><strong>Effective Date:</strong> This Privacy Policy is effective as of February 6, 2026.</p>
+      <p><strong>Effective Date:</strong> This Privacy Policy is effective as of March 9, 2026.</p>
       <p><strong>Questions?</strong> Email us at <a href="mailto:richard@westmorelandcreative.com">richard@westmorelandcreative.com</a></p>
 
     </div>
