@@ -106,6 +106,15 @@ export interface DueCard extends CardProgress {
   translation_key: string | null;
   sense: string | null; // Disambiguation hint for homographs, null for most words
   remote_id: string | null;
+  /** 1 if other nouns with the same German spelling exist; 0 otherwise */
+  has_homograph_siblings: number;
+  /**
+   * Comma-separated list of distinct articles belonging to sibling nouns
+   * (nouns with the same German spelling but a different id).
+   * Null when there are no siblings.
+   * Example: "die" for "der See" when "die See" also exists.
+   */
+  sibling_articles: string | null;
 }
 
 /** Aggregated user statistics */
@@ -185,12 +194,20 @@ export interface NounCorrection {
   german: string;
   /** The current article to match (part of UNIQUE key) */
   currentArticle: 'der' | 'die' | 'das';
+  /**
+   * Optionally narrow the target row by its current sense value.
+   * - `null`  → target rows where sense IS NULL
+   * - `string` → target rows where sense = that value
+   * - omitted  → target any row with matching (german, article)
+   */
+  currentSense?: string | null;
   /** Fields to overwrite — only specify fields that need correction */
   corrections: {
     article?: 'der' | 'die' | 'das';
     plural?: string | null;
     english?: string;
     category?: CategoryName;
+    sense?: string | null;
   };
 }
 
