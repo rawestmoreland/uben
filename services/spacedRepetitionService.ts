@@ -246,7 +246,9 @@ export class SpacedRepetitionService {
     ];
 
     const dueCards = await this.db.getAllAsync<DueCard>(
-      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id
+      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id,
+              (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS has_homograph_siblings,
+              (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM card_progress cp
        JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
        WHERE cp.next_review_date <= date('now') ${categoryFilter} ${levelFilter}
@@ -286,7 +288,9 @@ export class SpacedRepetitionService {
          n.english,
          n.translation_key,
          n.sense,
-         n.remote_id
+         n.remote_id,
+         (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS has_homograph_siblings,
+         (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM nouns n
        LEFT JOIN card_progress cp ON cp.word_type = 'noun' AND cp.word_id = n.id
        WHERE cp.id IS NULL ${categoryFilter} ${newCardLevelClause}
@@ -309,7 +313,9 @@ export class SpacedRepetitionService {
    */
   async getStrugglingWordsSession(limit: number = 15): Promise<ReviewSession> {
     const cards = await this.db.getAllAsync<DueCard>(
-      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id
+      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id,
+              (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS has_homograph_siblings,
+              (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM card_progress cp
        JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
        WHERE cp.total_reviews >= 5

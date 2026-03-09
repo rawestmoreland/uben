@@ -56,7 +56,8 @@
       "you_said": "Twoja odpowiedź: {{article}}",
       "hard_words_drill": "Trudne słowa",
       "no_struggling_words": "Świetnie!",
-      "no_struggling_words_desc": "Nie masz jeszcze słów poniżej 60% trafności.\n\nĆwicz dalej, a najtrudniejsze słowa pojawią się tutaj."
+      "no_struggling_words_desc": "Nie masz jeszcze słów poniżej 60% trafności.\n\nĆwicz dalej, a najtrudniejsze słowa pojawią się tutaj.",
+      "also_valid_for_sibling": "Także: {{article}} {{word}} (inne znaczenie)"
     },
     "settings": {
       "title": "Ustawienia",

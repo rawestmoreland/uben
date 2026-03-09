@@ -48,7 +48,8 @@
       "you_said": "You said: {{article}}",
       "hard_words_drill": "Hard Words Drill",
       "no_struggling_words": "Looking good!",
-      "no_struggling_words_desc": "You have no words below 60% accuracy yet.\n\nKeep practicing and your toughest words will appear here."
+      "no_struggling_words_desc": "You have no words below 60% accuracy yet.\n\nKeep practicing and your toughest words will appear here.",
+      "also_valid_for_sibling": "Also: {{article}} {{word}} (different meaning)"
     },
     "settings": {
       "title": "Settings",

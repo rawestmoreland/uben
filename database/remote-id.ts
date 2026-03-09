@@ -34,9 +34,21 @@ function hashToId(input: string): string {
   return (p1 + p2 + p3).slice(0, 15);
 }
 
-/** Generate a deterministic remote ID for a noun based on its natural key. */
-export function generateNounRemoteId(german: string, article: string): string {
-  return hashToId(`noun:${german}:${article}`);
+/**
+ * Generate a deterministic remote ID for a noun based on its natural key.
+ * When a sense is provided (homograph disambiguation), it is included in the
+ * hash so that same-article homographs (e.g. "die Mutter (mother)" vs
+ * "die Mutter (nut)") receive distinct remote IDs.
+ */
+export function generateNounRemoteId(
+  german: string,
+  article: string,
+  sense?: string | null,
+): string {
+  const key = sense
+    ? `noun:${german}:${article}:${sense}`
+    : `noun:${german}:${article}`;
+  return hashToId(key);
 }
 
 /** Generate a deterministic remote ID for a category based on its name. */

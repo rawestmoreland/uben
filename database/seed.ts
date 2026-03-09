@@ -374,6 +374,11 @@ async function applyNounCorrection(
     params.push(categoryId);
   }
 
+  if (correction.corrections.sense !== undefined) {
+    setClauses.push('sense = ?');
+    params.push(correction.corrections.sense);
+  }
+
   if (setClauses.length === 0) {
     console.warn(
       `[DB] Correction for "${correction.german}" has no fields to update, skipping`,
@@ -381,11 +386,21 @@ async function applyNounCorrection(
     return;
   }
 
-  // WHERE clause: match on the UNIQUE key (german, article)
+  // WHERE clause: match on (german, article) and optionally on sense
+  const whereClauses = ['german = ?', 'article = ?'];
   params.push(correction.german, correction.currentArticle);
 
+  if (correction.currentSense !== undefined) {
+    if (correction.currentSense === null) {
+      whereClauses.push('sense IS NULL');
+    } else {
+      whereClauses.push('sense = ?');
+      params.push(correction.currentSense);
+    }
+  }
+
   const result = await db.runAsync(
-    `UPDATE nouns SET ${setClauses.join(', ')} WHERE german = ? AND article = ?`,
+    `UPDATE nouns SET ${setClauses.join(', ')} WHERE ${whereClauses.join(' AND ')}`,
     params,
   );
 
@@ -1029,19 +1044,21 @@ async function assignRemoteIds(db: SQLite.SQLiteDatabase): Promise<void> {
   }
 
   // ── Nouns (non-user-added only) ────────────────────────────────────
+  // Include `sense` so that same-article homographs get distinct remote IDs.
   const nounsWithoutRemoteId = await db.getAllAsync<{
     id: number;
     german: string;
     article: string;
+    sense: string | null;
   }>(
-    'SELECT id, german, article FROM nouns WHERE remote_id IS NULL AND is_user_added = 0',
+    'SELECT id, german, article, sense FROM nouns WHERE remote_id IS NULL AND is_user_added = 0',
   );
 
   if (nounsWithoutRemoteId.length > 0) {
     await db.withTransactionAsync(async () => {
       for (const noun of nounsWithoutRemoteId) {
         await db.runAsync('UPDATE nouns SET remote_id = ? WHERE id = ?', [
-          generateNounRemoteId(noun.german, noun.article),
+          generateNounRemoteId(noun.german, noun.article, noun.sense),
           noun.id,
         ]);
       }

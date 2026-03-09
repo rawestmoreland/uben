@@ -1,4 +1,5 @@
 import type { SeedNoun } from '@/types/database';
+import { homographNouns } from './homographs';
 import { v1InitialNouns } from './v1-initial';
 import { vocabA110 } from './vocab-a1-10';
 import { vocabA18 } from './vocab-a1-8';
@@ -19,5 +20,5 @@ export const nounSeedVersions: NounSeedVersion[] = [
   { version: '3.1.0_a1_nouns_v2', nouns: vocabA18 },
   { version: '3.2.0_a1_nouns_v3', nouns: vocabA19 },
   { version: '3.3.0_a1_nouns_v4', nouns: vocabA110 },
-  // Future: { version: '3.2.0_a1_nouns_v2', nouns: v2Nouns },
+  { version: '3.4.0_homographs_v1', nouns: homographNouns },
 ];
