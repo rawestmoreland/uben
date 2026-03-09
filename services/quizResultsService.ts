@@ -33,16 +33,19 @@ export function submitQuizResult(
 ): void {
   if (!PB_URL) return;
 
-  fetch(`${PB_URL}/api/collections/quiz_results/records`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      noun_id: nounRemoteId,
-      is_correct: isCorrect,
-      quality,
-      time_taken_ms: timeTakenMs,
-    }),
-  }).catch(() => {
+  fetch(
+    `${PB_URL}/api/collections/quiz_results/records?key=${process.env.EXPO_PUBLIC_PB_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        noun_id: nounRemoteId,
+        is_correct: isCorrect,
+        quality,
+        time_taken_ms: timeTakenMs,
+      }),
+    },
+  ).catch(() => {
     // Analytics submissions are best-effort — never surface errors to the user.
   });
 }
