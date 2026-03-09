@@ -4,6 +4,7 @@ import {
   getQualityFromResponse,
 } from '@/services/spacedRepetitionService';
 import { settingsService } from '@/services/settingsService';
+import { submitQuizResult } from '@/services/quizResultsService';
 import type { DueCard, ReviewSession } from '@/types/database';
 
 // ── Types ────────────────────────────────────────────────────────────
@@ -149,6 +150,12 @@ export function useQuizSession(mode: QuizMode = 'daily'): QuizSessionData {
           quality,
           timeTakenMs,
         );
+
+        // Send anonymous result to PocketBase for aggregate analytics.
+        // Only pre-loaded words have a remote_id; user-added words are skipped.
+        if (currentCard.remote_id) {
+          submitQuizResult(currentCard.remote_id, correct, quality, timeTakenMs);
+        }
       } catch (error) {
         console.error('[Quiz] Failed to record review:', error);
       }
