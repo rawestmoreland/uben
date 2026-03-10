@@ -372,6 +372,108 @@ export const migrations: Migration[] = [
       await _db.execAsync('DROP TABLE IF EXISTS noun_translations;');
     },
   },
+  {
+    version: '007',
+    name: 'add_sense_field',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log('[Migration 007] Adding sense field to nouns table...');
+
+      // Rebuild nouns table to add sense column and replace the old
+      // UNIQUE(german, article) constraint with an expression index that
+      // treats NULL sense as '' — allowing same-article homographs to coexist.
+      await db.execAsync(`
+        CREATE TABLE nouns_v7 (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          german TEXT NOT NULL,
+          article TEXT NOT NULL CHECK(article IN ('der', 'die', 'das')),
+          plural TEXT,
+          english TEXT,
+          translation_key TEXT,
+          sense TEXT,
+          level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+          category_id INTEGER NOT NULL,
+          remote_id TEXT,
+          is_user_added BOOLEAN DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+        );
+      `);
+
+      // Copy all existing rows — sense defaults to NULL
+      await db.execAsync(`
+        INSERT INTO nouns_v7 (id, german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added, created_at)
+        SELECT id, german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added, created_at
+        FROM nouns;
+      `);
+
+      await db.execAsync('DROP TABLE nouns;');
+      await db.execAsync('ALTER TABLE nouns_v7 RENAME TO nouns;');
+
+      // Recreate all indexes
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_level ON nouns(level);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_user_added ON nouns(is_user_added);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_category ON nouns(category_id);',
+      );
+      await db.execAsync(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id) WHERE remote_id IS NOT NULL;',
+      );
+      // Expression index: treats NULL sense as '' so (german, article) with no
+      // sense still blocks duplicates, while two rows with different senses coexist.
+      await db.execAsync(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_german_article_sense ON nouns(german, article, COALESCE(sense, ''));",
+      );
+
+      console.log('[Migration 007] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove sense column and restore original UNIQUE(german, article) constraint
+      await db.execAsync(`
+        CREATE TABLE nouns_rollback (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          german TEXT NOT NULL,
+          article TEXT NOT NULL CHECK(article IN ('der', 'die', 'das')),
+          plural TEXT,
+          english TEXT,
+          translation_key TEXT,
+          level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+          category_id INTEGER NOT NULL,
+          remote_id TEXT,
+          is_user_added BOOLEAN DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(german, article),
+          FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+        );
+      `);
+
+      // Only copy one row per (german, article) pair — drop any new homographs added
+      await db.execAsync(`
+        INSERT OR IGNORE INTO nouns_rollback (id, german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added, created_at)
+        SELECT id, german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added, created_at
+        FROM nouns;
+      `);
+
+      await db.execAsync('DROP TABLE nouns;');
+      await db.execAsync('ALTER TABLE nouns_rollback RENAME TO nouns;');
+
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_level ON nouns(level);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_user_added ON nouns(is_user_added);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_nouns_category ON nouns(category_id);',
+      );
+      await db.execAsync(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_nouns_remote_id ON nouns(remote_id) WHERE remote_id IS NOT NULL;',
+      );
+    },
+  },
 ];
 
 /**

@@ -156,6 +156,17 @@ function PlayingState({
   );
 
   const isFeedback = phase === 'feedback';
+  const isHomograph = currentCard ? currentCard.has_homograph_siblings === 1 : false;
+
+  // Check if the user's wrong answer happens to be valid for a sibling noun.
+  // Only meaningful for improper homographs (different articles).
+  const siblingArticleSelected =
+    isFeedback &&
+    !isCorrect &&
+    selectedArticle !== null &&
+    currentCard !== null &&
+    currentCard.sibling_articles !== null &&
+    currentCard.sibling_articles.split(',').includes(selectedArticle);
 
   // Fire haptic on feedback (must be before any early return)
   useEffect(() => {
@@ -250,8 +261,25 @@ function PlayingState({
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
           )}
-          {showEnglishHint && translation && (
+          {currentCard.sense && (
+            <Text style={styles.senseHint}>
+              ({t(`senses.${currentCard.sense}`, { defaultValue: currentCard.sense })})
+            </Text>
+          )}
+          {/* Always show English for homographs so the learner knows which
+              sense is being tested, even when the hint setting is off. */}
+          {(showEnglishHint || isHomograph) && translation && (
             <Text style={styles.englishHint}>{translation}</Text>
+          )}
+          {/* Improper-homograph note: user picked the right article for the
+              sibling word (different article, different meaning). */}
+          {siblingArticleSelected && (
+            <Text style={styles.siblingNote}>
+              {t('quiz_mode.also_valid_for_sibling', {
+                article: selectedArticle,
+                word: currentCard.word,
+              })}
+            </Text>
           )}
         </View>
       </View>
@@ -539,11 +567,25 @@ const styles = StyleSheet.create({
     fontSize: Typography.huge,
     fontWeight: Typography.bold,
   },
+  senseHint: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    marginTop: Spacing.xs,
+    fontStyle: 'italic',
+  },
   englishHint: {
     fontSize: Typography.body,
     fontWeight: Typography.regular,
     color: AppColors.textSecondary,
     marginTop: Spacing.sm,
+  },
+  siblingNote: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.blue,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
   },
 
   // Article buttons
