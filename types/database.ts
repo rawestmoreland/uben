@@ -8,6 +8,7 @@ export interface Noun {
   plural: string | null;
   english: string | null;
   translation_key: string | null; // Derived from english field, used for i18n lookups
+  sense: string | null; // Disambiguation hint for homographs (e.g. "lake" vs "sea" for "See")
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
   category_id: number;
   is_user_added: number; // 0 or 1 (SQLite boolean)
@@ -103,7 +104,17 @@ export interface DueCard extends CardProgress {
   article: string | null;
   english: string | null;
   translation_key: string | null;
+  sense: string | null; // Disambiguation hint for homographs, null for most words
   remote_id: string | null;
+  /** 1 if other nouns with the same German spelling exist; 0 otherwise */
+  has_homograph_siblings: number;
+  /**
+   * Comma-separated list of distinct articles belonging to sibling nouns
+   * (nouns with the same German spelling but a different id).
+   * Null when there are no siblings.
+   * Example: "die" for "der See" when "die See" also exists.
+   */
+  sibling_articles: string | null;
 }
 
 /** Aggregated user statistics */
@@ -165,6 +176,7 @@ export interface SeedNoun {
   article: 'der' | 'die' | 'das';
   plural: string | null;
   english: string;
+  sense?: string | null; // Disambiguation hint for homographs (optional)
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   category: CategoryName;
 }
@@ -182,12 +194,20 @@ export interface NounCorrection {
   german: string;
   /** The current article to match (part of UNIQUE key) */
   currentArticle: 'der' | 'die' | 'das';
+  /**
+   * Optionally narrow the target row by its current sense value.
+   * - `null`  → target rows where sense IS NULL
+   * - `string` → target rows where sense = that value
+   * - omitted  → target any row with matching (german, article)
+   */
+  currentSense?: string | null;
   /** Fields to overwrite — only specify fields that need correction */
   corrections: {
     article?: 'der' | 'die' | 'das';
     plural?: string | null;
     english?: string;
     category?: CategoryName;
+    sense?: string | null;
   };
 }
 
@@ -220,7 +240,7 @@ export interface MigrationDiagnostics {
   /** All log entries, newest first */
   log: MigrationLogEntry[];
   /** Migrations recorded in the migrations table */
-  applied: Array<{ version: string; applied_at: string }>;
+  applied: { version: string; applied_at: string }[];
   /** Failed migration entries from the log */
   failures: MigrationLogEntry[];
   /** Number of migrations defined in code */

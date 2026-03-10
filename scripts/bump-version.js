@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-undef */
 
 /**
  * Automatic version bumping for release train
@@ -72,10 +73,16 @@ console.log(`✅ Updated app.json`);
 
 // Update package.json
 packageJson.version = newVersion;
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
+fs.writeFileSync(
+  packageJsonPath,
+  JSON.stringify(packageJson, null, 2) + '\n',
+  'utf8',
+);
 console.log(`✅ Updated package.json`);
 
-console.log(`\n🎉 Version bumped successfully: ${currentVersion} → ${newVersion}\n`);
+console.log(
+  `\n🎉 Version bumped successfully: ${currentVersion} → ${newVersion}\n`,
+);
 
 // Output for GitHub Actions
 if (process.env.GITHUB_OUTPUT) {

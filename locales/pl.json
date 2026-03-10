@@ -56,7 +56,8 @@
       "you_said": "Twoja odpowiedź: {{article}}",
       "hard_words_drill": "Trudne słowa",
       "no_struggling_words": "Świetnie!",
-      "no_struggling_words_desc": "Nie masz jeszcze słów poniżej 60% trafności.\n\nĆwicz dalej, a najtrudniejsze słowa pojawią się tutaj."
+      "no_struggling_words_desc": "Nie masz jeszcze słów poniżej 60% trafności.\n\nĆwicz dalej, a najtrudniejsze słowa pojawią się tutaj.",
+      "also_valid_for_sibling": "Także: {{article}} {{word}} (inne znaczenie)"
     },
     "settings": {
       "title": "Ustawienia",
@@ -115,6 +116,20 @@
       "hardest_words_empty": "Ćwicz słowo co najmniej 3 razy, aby zobaczyć tu najtrudniejsze.",
       "success_rate": "{{rate}}% poprawnie ({{count}} powtórzeń)",
       "no_data": "Ukończ pierwszą sesję ćwiczeń, aby zobaczyć tu swoje statystyki."
+    },
+    "senses": {
+      "lake": "jezioro",
+      "sea": "morze",
+      "bench": "ławka",
+      "bank": "bank",
+      "lock": "zamek",
+      "castle": "zamek",
+      "wing": "skrzydło",
+      "piano": "fortepian",
+      "mother": "matka",
+      "nut": "nakrętka",
+      "leader": "lider",
+      "ladder": "drabina"
     },
     "how_it_works": {
       "title": "Jak to działa",

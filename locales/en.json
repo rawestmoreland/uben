@@ -48,7 +48,8 @@
       "you_said": "You said: {{article}}",
       "hard_words_drill": "Hard Words Drill",
       "no_struggling_words": "Looking good!",
-      "no_struggling_words_desc": "You have no words below 60% accuracy yet.\n\nKeep practicing and your toughest words will appear here."
+      "no_struggling_words_desc": "You have no words below 60% accuracy yet.\n\nKeep practicing and your toughest words will appear here.",
+      "also_valid_for_sibling": "Also: {{article}} {{word}} (different meaning)"
     },
     "settings": {
       "title": "Settings",
@@ -105,6 +106,20 @@
       "hardest_words_empty": "Practice a word at least 3 times to see your toughest ones here.",
       "success_rate": "{{rate}}% correct ({{count}} reviews)",
       "no_data": "Complete your first practice session to see your stats here."
+    },
+    "senses": {
+      "lake": "lake",
+      "sea": "sea",
+      "bench": "bench",
+      "bank": "bank",
+      "lock": "lock",
+      "castle": "castle",
+      "wing": "wing",
+      "piano": "piano",
+      "mother": "mother",
+      "nut": "nut",
+      "leader": "leader",
+      "ladder": "ladder"
     },
     "how_it_works": {
       "title": "How It Works",
