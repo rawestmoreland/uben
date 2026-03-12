@@ -50,6 +50,7 @@ categoriesCollection.Fields.Add(
 ```
 
 **Fields:**
+
 - `id` (auto, 15-char) — deterministic remote ID from import
 - `name` (text) — machine name ("people", "animals")
 - `display_name` (text) — human-readable ("People & Family")
@@ -57,6 +58,7 @@ categoriesCollection.Fields.Add(
 - `created`, `updated` (auto) — timestamps
 
 **API Rules:**
+
 - Anyone can read (public vocabulary)
 - Only admins can create/update/delete
 
@@ -84,6 +86,7 @@ nounsCollection.AddIndex("idx_nouns_german_article", true, "german, article", ""
 ```
 
 **Fields:**
+
 - `id` (auto, 15-char) — deterministic remote ID from import
 - `german` (text, required) — the German noun
 - `article` (select, required) — "der", "die", or "das"
@@ -94,9 +97,11 @@ nounsCollection.AddIndex("idx_nouns_german_article", true, "german, article", ""
 - `created`, `updated` (auto) — timestamps
 
 **Indexes:**
+
 - Unique constraint on `(german, article)` — prevents duplicates
 
 **API Rules:**
+
 - Anyone can read (public vocabulary)
 - Only admins can create/update/delete
 
@@ -133,7 +138,7 @@ cd base && go run . serve --http="127.0.0.1:8080"
 ```
 
 - Auto-migrates on startup (migrations run automatically with `go run`)
-- Admin UI: http://localhost:8080/_/
+- Admin UI: http://localhost:8080/\_/
 - API: http://localhost:8080/api/
 
 #### Option 2: Docker Compose
@@ -146,24 +151,6 @@ docker compose up --build
 - Builds multi-stage Dockerfile
 - Persists data to `./base/pb_data` volume
 - Migrations run on first startup
-
-### Seeding Data
-
-After starting PocketBase, seed vocabulary data:
-
-```bash
-# From project root
-npm run pb:import        # Generate pb-import-*.json files
-node scripts/pbjson-to-pb.js   # POST to PocketBase API
-```
-
-**Script details** (`scripts/pbjson-to-pb.js`):
-- Reads `pb-import-categories.json` and `pb-import-nouns.json`
-- POSTs to `/api/collections/{collection}/records`
-- Imports categories first, then nouns (nouns reference category IDs)
-- Uses deterministic IDs so local `remote_id` values match PocketBase records
-
-**Alternative**: Use PocketBase Admin UI → Collections → Import records (paste JSON).
 
 ## Migrations
 
@@ -419,7 +406,7 @@ PocketBase supports SSE subscriptions for live updates:
 ```javascript
 // Example: subscribe to noun changes
 const eventSource = new EventSource(
-  'http://localhost:8080/api/realtime?collections=nouns'
+  'http://localhost:8080/api/realtime?collections=nouns',
 );
 
 eventSource.addEventListener('message', (e) => {
@@ -460,6 +447,7 @@ EXPO_PUBLIC_PB_API_KEY=optional-key-for-query-param-auth
 The sync service fetches categories and nouns from PocketBase and upserts them into local SQLite. It matches records by `remote_id` to avoid losing user progress.
 
 **Key operations**:
+
 - Fetch paginated data from PocketBase
 - Upsert into local SQLite (match by `remote_id`)
 - Track last sync timestamp in settings
@@ -475,34 +463,11 @@ Generates JSON import files from local seed data.
 **Script**: `scripts/generate-pb-import.js`
 
 **Output**:
+
 - `pb-import-categories.json` — 18 categories with deterministic IDs
 - `pb-import-nouns.json` — 477+ nouns with deterministic IDs
 
 **Why deterministic IDs?** So local `remote_id` values match PocketBase records (enables sync without orphaning `card_progress` data).
-
-### `node scripts/pbjson-to-pb.js`
-
-POSTs JSON import files to PocketBase API.
-
-**Usage**:
-
-```bash
-# 1. Start PocketBase
-cd database/pocketbase && make run
-
-# 2. Generate import files
-npm run pb:import
-
-# 3. Import to PocketBase
-node scripts/pbjson-to-pb.js
-```
-
-**What it does**:
-- POSTs categories to `/api/collections/categories/records`
-- POSTs nouns to `/api/collections/nouns/records`
-- Uses parallel requests (Promise.all)
-
-**Note**: This is for initial seeding. For incremental updates, use the PocketBase Admin UI or write a smarter sync script.
 
 ## Security
 

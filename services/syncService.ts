@@ -33,6 +33,7 @@ interface PBNoun {
   plural: string;
   english: string;
   translation_key: string;
+  sense: string | null;
   level: string;
   category: string; // PocketBase category ID (relation)
   expand?: {
@@ -325,14 +326,15 @@ class SyncService {
           // Insert new noun
           try {
             const result = await this.db.runAsync(
-              `INSERT INTO nouns (german, article, plural, english, translation_key, level, category_id, remote_id, is_user_added)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+              `INSERT INTO nouns (german, article, plural, english, translation_key, sense, level, category_id, remote_id, is_user_added)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
               [
                 noun.german,
                 noun.article,
                 noun.plural || null,
                 noun.english || null,
                 noun.translation_key || null,
+                noun.sense ?? null,
                 noun.level,
                 categoryId,
                 noun.id,
@@ -340,28 +342,30 @@ class SyncService {
             );
             if (result.changes > 0) synced++;
           } catch (error) {
-            // Handle UNIQUE(german, article) constraint violation
+            // Handle UNIQUE(german, article, sense) constraint violation
             const message =
               error instanceof Error ? error.message : String(error);
             if (message.includes('UNIQUE constraint')) {
-              // Word exists with same german+article but different/no remote_id.
-              // Check if it's a user-added word — if so, only assign remote_id
-              // without overwriting user's custom data.
+              // Word exists with same (german, article, sense) but different/no remote_id.
+              // Must match on sense too — multiple homograph rows share the same german+article.
+              const senseClause =
+                noun.sense != null ? 'sense = ?' : 'sense IS NULL';
+              const senseParams =
+                noun.sense != null ? [noun.sense] : [];
+
               const existingWord = await this.db.getFirstAsync<{
                 id: number;
                 is_user_added: number;
               }>(
-                'SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ?',
-                [noun.german, noun.article],
+                `SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ? AND ${senseClause}`,
+                [noun.german, noun.article, ...senseParams],
               );
 
               if (existingWord?.is_user_added) {
                 // User-added word exists — only assign remote_id, preserve user data
                 const result = await this.db.runAsync(
-                  `UPDATE nouns
-                   SET remote_id = ?
-                   WHERE german = ? AND article = ?`,
-                  [noun.id, noun.german, noun.article],
+                  `UPDATE nouns SET remote_id = ? WHERE id = ?`,
+                  [noun.id, existingWord.id],
                 );
                 if (result.changes > 0) {
                   console.log(
@@ -369,12 +373,12 @@ class SyncService {
                   );
                   synced++;
                 }
-              } else {
+              } else if (existingWord) {
                 // Pre-seeded word without remote_id — safe to update with PocketBase data
                 const result = await this.db.runAsync(
                   `UPDATE nouns
                    SET plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?, remote_id = ?
-                   WHERE german = ? AND article = ?`,
+                   WHERE id = ?`,
                   [
                     noun.plural || null,
                     noun.english || null,
@@ -382,11 +386,14 @@ class SyncService {
                     noun.level,
                     categoryId,
                     noun.id,
-                    noun.german,
-                    noun.article,
+                    existingWord.id,
                   ],
                 );
                 if (result.changes > 0) synced++;
+              } else {
+                console.warn(
+                  `[Sync] Could not find local row for noun "${noun.german}" (${noun.article}, sense=${noun.sense ?? 'null'}) to link`,
+                );
               }
             } else {
               console.warn(

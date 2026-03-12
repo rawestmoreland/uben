@@ -105,6 +105,8 @@ const sampleNoun = {
   article: 'der' as const,
   plural: 'Hunde',
   english: 'dog',
+  translation_key: null,
+  sense: null,
   level: 'A1',
   category: 'cat123',
   expand: { category: sampleCategory },
@@ -416,13 +418,57 @@ describe('syncService.syncIfOnline()', () => {
 
       const updateCall = (mockDb.runAsync as jest.Mock).mock.calls.find(
         ([sql]: [string]) =>
-          sql.includes('SET remote_id = ?') && sql.includes('WHERE german = ?'),
+          sql.includes('SET remote_id = ?') && sql.includes('WHERE id = ?'),
       );
       expect(updateCall).toBeDefined();
+      expect(updateCall[1]).toEqual([sampleNoun.id, 10]);
       // Should not overwrite user-owned fields
       const sql = updateCall[0] as string;
       expect(sql).not.toContain('plural');
       expect(sql).not.toContain('english');
+    });
+
+    it('uses sense IS NULL in fallback lookup for nouns without a sense', async () => {
+      setNounsFetch([sampleNoun]); // sampleNoun.sense === null
+      mockDb.getFirstAsync
+        .mockResolvedValueOnce(null) // No remote_id match
+        .mockResolvedValueOnce({ id: 7, is_user_added: 0 }); // Pre-seeded word found
+      mockDb.runAsync
+        .mockRejectedValueOnce(
+          new Error('UNIQUE constraint failed: idx_nouns_german_article_sense'),
+        )
+        .mockResolvedValueOnce({ changes: 1 });
+
+      await syncService.syncIfOnline();
+
+      const fallbackSelect = (mockDb.getFirstAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) =>
+          sql.includes('WHERE german = ?') && sql.includes('sense IS NULL'),
+      );
+      expect(fallbackSelect).toBeDefined();
+      expect(fallbackSelect[1]).toEqual([sampleNoun.german, sampleNoun.article]);
+    });
+
+    it('uses sense = ? in fallback lookup for homograph nouns with a sense value', async () => {
+      const homographNoun = { ...sampleNoun, id: 'noun789', sense: 'lake' };
+      setNounsFetch([homographNoun]);
+      mockDb.getFirstAsync
+        .mockResolvedValueOnce(null) // No remote_id match
+        .mockResolvedValueOnce({ id: 8, is_user_added: 0 }); // Pre-seeded homograph found
+      mockDb.runAsync
+        .mockRejectedValueOnce(
+          new Error('UNIQUE constraint failed: idx_nouns_german_article_sense'),
+        )
+        .mockResolvedValueOnce({ changes: 1 });
+
+      await syncService.syncIfOnline();
+
+      const fallbackSelect = (mockDb.getFirstAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) =>
+          sql.includes('WHERE german = ?') && sql.includes('sense = ?'),
+      );
+      expect(fallbackSelect).toBeDefined();
+      expect(fallbackSelect[1]).toEqual([homographNoun.german, homographNoun.article, 'lake']);
     });
 
     it('updates plural/english/level for pre-seeded words on UNIQUE conflict', async () => {

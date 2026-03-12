@@ -32,7 +32,28 @@ export class VocabularyService {
         END AS word,
         CASE
           WHEN cp.word_type = 'noun' THEN n.article
-        END AS article
+        END AS article,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.english
+        END AS english,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.translation_key
+        END AS translation_key,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.sense
+        END AS sense,
+        CASE
+          WHEN cp.word_type = 'noun' THEN n.remote_id
+        END AS remote_id,
+        CASE
+          WHEN cp.word_type = 'noun' THEN
+            (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id)
+          ELSE 0
+        END AS has_homograph_siblings,
+        CASE
+          WHEN cp.word_type = 'noun' THEN
+            (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id)
+        END AS sibling_articles
       FROM card_progress cp
       LEFT JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
       LEFT JOIN verbs v ON cp.word_type = 'verb' AND cp.word_id = v.id
@@ -46,15 +67,19 @@ export class VocabularyService {
 
 
   /**
-   * Check if a noun with the given German word and article already exists.
+   * Check if a noun with the given German word and article already exists
+   * without a sense (i.e. the slot that a user-added word would occupy).
    * Used for real-time duplicate validation in the add word form.
+   *
+   * Homograph siblings that carry an explicit sense are separate rows and do
+   * not block the user from adding their own un-sensed entry.
    */
   async checkNounExists(
     german: string,
     article: string,
   ): Promise<{ exists: boolean; isUserAdded?: boolean }> {
     const existing = await this.db.getFirstAsync<{ is_user_added: number }>(
-      'SELECT is_user_added FROM nouns WHERE german = ? AND article = ?',
+      'SELECT is_user_added FROM nouns WHERE german = ? AND article = ? AND sense IS NULL',
       [german, article],
     );
     if (existing) {
@@ -85,9 +110,11 @@ export class VocabularyService {
       };
     }
 
-    // Check if the word already exists before attempting insert
+    // Check if the word already exists in the null-sense slot (the slot that
+    // the new user-added row would occupy).  Homograph siblings with explicit
+    // senses are separate entries and do not block user additions.
     const existing = await this.db.getFirstAsync<{ id: number; is_user_added: number }>(
-      'SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ?',
+      'SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ? AND sense IS NULL',
       [noun.german, noun.article],
     );
 

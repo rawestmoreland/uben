@@ -48,7 +48,8 @@
       "you_said": "Hai detto: {{article}}",
       "hard_words_drill": "Ripasso parole difficili",
       "no_struggling_words": "Ottimo lavoro!",
-      "no_struggling_words_desc": "Non hai ancora parole con precisione inferiore al 60%.\n\nContinua a praticare e le parole più difficili appariranno qui."
+      "no_struggling_words_desc": "Non hai ancora parole con precisione inferiore al 60%.\n\nContinua a praticare e le parole più difficili appariranno qui.",
+      "also_valid_for_sibling": "Anche: {{article}} {{word}} (significato diverso)"
     },
     "settings": {
       "title": "Impostazioni",
@@ -105,6 +106,20 @@
       "hardest_words_empty": "Esercitati su una parola almeno 3 volte per vedere quelle più difficili qui.",
       "success_rate": "{{rate}}% corretto ({{count}} ripetizioni)",
       "no_data": "Completa la tua prima sessione di pratica per vedere le tue statistiche qui."
+    },
+    "senses": {
+      "lake": "lago",
+      "sea": "mare",
+      "bench": "panchina",
+      "bank": "banca",
+      "lock": "serratura",
+      "castle": "castello",
+      "wing": "ala",
+      "piano": "pianoforte",
+      "mother": "madre",
+      "nut": "dado",
+      "leader": "capo",
+      "ladder": "scalino"
     },
     "how_it_works": {
       "title": "Come Funziona",

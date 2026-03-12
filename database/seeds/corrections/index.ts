@@ -1,4 +1,5 @@
 import type { NounCorrectionVersion } from '@/types/database';
+import { homographSenseCorrections } from './homograph-senses';
 
 /**
  * Registry of versioned noun corrections.
@@ -16,6 +17,5 @@ import type { NounCorrectionVersion } from '@/types/database';
  * 3. Fix the same data in the original seed file (e.g., v1-initial.ts)
  */
 export const nounCorrectionVersions: NounCorrectionVersion[] = [
-  // Example (uncomment and replace when needed):
-  // { version: '4.0.0_corrections_001', corrections: exampleCorrections },
+  homographSenseCorrections,
 ];
