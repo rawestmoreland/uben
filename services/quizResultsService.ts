@@ -32,6 +32,7 @@ export function submitQuizResult(
   timeTakenMs: number,
 ): void {
   if (!PB_URL) return;
+  return; // hotfix: quiz result analytics temporarily disabled
 
   fetch(
     `${PB_URL}/api/collections/quiz_results/records?key=${process.env.EXPO_PUBLIC_PB_API_KEY}`,
