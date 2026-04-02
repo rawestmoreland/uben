@@ -8,6 +8,7 @@ import {
 import { getMigrationDiagnostics } from '@/database/db';
 import { useSettings } from '@/hooks/use-settings';
 import type { MigrationDiagnostics } from '@/types/database';
+import Constants from 'expo-constants';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -353,6 +354,11 @@ export default function SettingsScreen() {
             )}
           </View>
         )}
+
+        {/* ── Version ─────────────────────────────────────────── */}
+        <Text style={styles.versionText}>
+          v{Constants.expoConfig?.version ?? '—'}
+        </Text>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
@@ -608,5 +614,13 @@ const styles = StyleSheet.create({
     fontWeight: Typography.regular,
     color: AppColors.textSecondary,
     flex: 1,
+  },
+  versionText: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.textSecondary,
+    textAlign: 'center',
+    letterSpacing: 1,
+    marginTop: Spacing.sm,
   },
 });
