@@ -72,11 +72,13 @@ export function useQuizSession(mode: QuizMode = 'daily'): QuizSessionData {
             settingsService.getSelectedCategories(),
             settingsService.getSelectedLevels(),
           ]);
+          // B1+ is a virtual level meaning "all words" — pass no level filter
+          const hasB1Plus = levels.includes('B1+');
           reviewSession = await spacedRepetitionService.getDailyReviewSession(
             20,
             5,
             categoryIds.length > 0 ? categoryIds : undefined,
-            levels.length > 0 ? levels : undefined,
+            hasB1Plus ? undefined : (levels.length > 0 ? levels : undefined),
           );
         }
 
