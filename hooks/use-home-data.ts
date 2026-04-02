@@ -12,7 +12,9 @@ export interface LevelOption {
   comingSoon: boolean;
 }
 
-const ALL_CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const ALL_CEFR_LEVELS = ['A1', 'A2', 'B1+'];
+const VALID_LEVELS = ALL_CEFR_LEVELS;
+const LEGACY_LEVELS_MAP: Record<string, string> = { B1: 'B1+', B2: 'B1+', C1: 'B1+', C2: 'B1+' };
 
 interface HomeData {
   stats: UserStats;
@@ -90,13 +92,32 @@ export function useHomeData(): HomeData {
             setStrugglingCount(fetchedStrugglingCount);
             setMasteredCount(fetchedMasteredCount);
             const mergedLevels: LevelOption[] = ALL_CEFR_LEVELS.map((level) => {
+              if (level === 'B1+') {
+                // Virtual level: includes all words in the database
+                return { level: 'B1+', wordCount: fetchedCount, comingSoon: false };
+              }
               const found = fetchedLevels.find((l) => l.level === level);
               return found
                 ? { ...found, comingSoon: false }
                 : { level, wordCount: 0, comingSoon: true };
             });
             setAvailableLevels(mergedLevels);
-            setSelectedLevelsState(fetchedSelectedLevels);
+
+            // Migrate any stale level selections (B1/B2/C1/C2 → B1+)
+            const migrated = fetchedSelectedLevels.map(
+              (l) => LEGACY_LEVELS_MAP[l] ?? l,
+            );
+            const normalised = [...new Set(migrated)].filter((l) =>
+              VALID_LEVELS.includes(l),
+            );
+            const finalLevels = normalised.length > 0 ? normalised : ['A1'];
+            setSelectedLevelsState(finalLevels);
+            if (
+              JSON.stringify(finalLevels) !==
+              JSON.stringify(fetchedSelectedLevels)
+            ) {
+              await settingsService.setSelectedLevels(finalLevels);
+            }
           }
         } catch (error) {
           console.error('[HomeData] Failed to load:', error);

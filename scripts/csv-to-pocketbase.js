@@ -18,13 +18,13 @@ const main = async () => {
     'database',
     'seeds',
     'nouns',
-    'goethe-a2.csv',
+    'goethe-b1.csv',
   );
   fs.createReadStream(csvFilePath)
     .pipe(csv())
     .on('data', (data) => nounJson.push(data))
     .on('end', async () => {
-      const level = 'A2';
+      const level = 'B1';
       const sources = ['Goethe'];
 
       const total = nounJson.length;

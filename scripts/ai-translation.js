@@ -7,8 +7,8 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
 
 const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
-const LANGUAGE = 'Polish';
-const LOCALE = 'pl';
+const LANGUAGE = 'Italian';
+const LOCALE = 'it';
 
 const TranslationResponseSchema = z.array(
   z.object({

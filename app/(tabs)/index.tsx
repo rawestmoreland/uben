@@ -50,9 +50,11 @@ export default function HomeScreen() {
   const isFirstTime = stats.total_reviews === 0;
   const accuracyText =
     stats.success_rate != null ? `${Math.round(stats.success_rate)}%` : '--';
-  const selectedLevelNounCount = availableLevels
-    .filter((l) => selectedLevels.includes(l.level))
-    .reduce((sum, l) => sum + l.wordCount, 0);
+  const selectedLevelNounCount = selectedLevels.includes('B1+')
+    ? nounCount
+    : availableLevels
+        .filter((l) => selectedLevels.includes(l.level))
+        .reduce((sum, l) => sum + l.wordCount, 0);
   const newCount = Math.max(0, selectedLevelNounCount - stats.total_cards);
   const learningCount = Math.max(0, stats.total_cards - masteredCount);
 
