@@ -332,7 +332,7 @@ eas submit --platform ios
 
 ### AdMob Integration
 
-- Banner ads on non-critical screens (settings, word list) — `components/ads/ad-banner.tsx`
+- Banner ads on non-critical screens (progress, word list) — `components/ads/ad-banner.tsx`
 - Interstitial ads between quiz sessions, every 3rd completed session (not mid-quiz) — `hooks/use-quiz-interstitial-ad.ts`
 - Rewarded ads for unlocking features (future)
 - Never interrupt active learning

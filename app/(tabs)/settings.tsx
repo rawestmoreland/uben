@@ -1,4 +1,3 @@
-import { AdBanner } from '@/components/ads/ad-banner';
 import {
   AppColors,
   Layout,
@@ -356,11 +355,6 @@ export default function SettingsScreen() {
           </View>
         )}
 
-        {/* ── Ad Banner ───────────────────────────────────────── */}
-        <View style={styles.adContainer}>
-          <AdBanner />
-        </View>
-
         {/* ── Version ─────────────────────────────────────────── */}
         <Text style={styles.versionText}>
           v{Constants.expoConfig?.version ?? '—'}
@@ -628,8 +622,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 1,
     marginTop: Spacing.sm,
-  },
-  adContainer: {
-    marginTop: Spacing.lg,
   },
 });
