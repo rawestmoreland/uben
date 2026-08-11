@@ -332,10 +332,13 @@ eas submit --platform ios
 
 ### AdMob Integration
 
-- Banner ads on non-critical screens (settings, word list)
-- Interstitial ads between quiz sessions (not mid-quiz)
+- Banner ads on non-critical screens (settings, word list) — `components/ads/ad-banner.tsx`
+- Interstitial ads between quiz sessions, every 3rd completed session (not mid-quiz) — `hooks/use-quiz-interstitial-ad.ts`
 - Rewarded ads for unlocking features (future)
 - Never interrupt active learning
+- Ships with Google's test ad unit IDs by default (`constants/ads.ts`) so builds work before a real AdMob account exists; override with `EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID`, `EXPO_PUBLIC_ADMOB_INTERSTITIAL_UNIT_ID`, `EXPO_PUBLIC_ADMOB_ANDROID_APP_ID`, `EXPO_PUBLIC_ADMOB_IOS_APP_ID`
+- AdMob is not supported on web — ad components/hooks have `.web` stub variants that render/do nothing there
+- IAP (ad-free unlock, premium features) is intentionally deferred to a later phase
 
 ## Future Roadmap
 

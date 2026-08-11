@@ -11,6 +11,7 @@ export const SETTINGS_KEYS = {
   APP_LANGUAGE: 'app_language',
   QUIZ_SESSIONS_COMPLETED: 'quiz_sessions_completed',
   LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
+  INTERSTITIAL_SESSION_COUNT: 'interstitial_session_count',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -120,6 +121,21 @@ class SettingsService {
 
   async setAppLanguage(language: 'en' | 'it' | 'pl'): Promise<void> {
     await this.setSetting(SETTINGS_KEYS.APP_LANGUAGE, language);
+  }
+
+  // ── Convenience: Interstitial Ad Session Count ────────────────────
+
+  /** Number of quiz sessions completed since the last interstitial ad was shown. */
+  async getInterstitialSessionCount(): Promise<number> {
+    const value = await this.getSetting(SETTINGS_KEYS.INTERSTITIAL_SESSION_COUNT);
+    return value ? parseInt(value, 10) : 0;
+  }
+
+  async setInterstitialSessionCount(count: number): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.INTERSTITIAL_SESSION_COUNT,
+      String(count),
+    );
   }
 
 }
