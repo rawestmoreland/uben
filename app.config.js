@@ -68,6 +68,19 @@ export default {
           },
         },
       ],
+      [
+        'react-native-google-mobile-ads',
+        {
+          // Google's sample App IDs, used until real AdMob app IDs are issued.
+          // Safe to ship with test IDs — no real ads or revenue will be served.
+          androidAppId:
+            process.env.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID ||
+            'ca-app-pub-3940256099942544~3347511713',
+          iosAppId:
+            process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID ||
+            'ca-app-pub-3940256099942544~1458002511',
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,

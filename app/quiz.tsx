@@ -7,6 +7,7 @@ import {
   shadowStyleSmall,
 } from '@/constants/design';
 import { useNounTranslation } from '@/hooks/use-noun-translation';
+import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
 import {
   useQuizSession,
   type QuizMode,
@@ -337,11 +338,19 @@ interface CompleteStateProps {
 function CompleteState({ results, eszettPreference }: CompleteStateProps) {
   const { t } = useTranslation('app');
   const { handleSessionComplete } = useStoreReview();
+  const { maybeShowInterstitial } = useQuizInterstitialAd();
 
   // Request a review once per completed session, when conditions are met
   useEffect(() => {
     handleSessionComplete();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleBackToHome = () => {
+    // Fire-and-forget: the interstitial (if shown) overlays natively, so
+    // navigation doesn't need to wait on it.
+    maybeShowInterstitial();
+    router.back();
+  };
 
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
@@ -418,7 +427,7 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
             styles.backButton,
             pressed && styles.backButtonPressed,
           ]}
-          onPress={() => router.back()}
+          onPress={handleBackToHome}
           accessibilityRole="button"
           accessibilityLabel={t('back_to_home')}
         >

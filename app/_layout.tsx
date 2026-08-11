@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import '@/constants/i18n'; // Initialize i18next before any component renders
 import AnimatedSplash from '@/components/animated-splash';
+import { useAdsInit } from '@/hooks/use-ads-init';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
 
@@ -17,6 +18,7 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { isReady, error } = useDatabase();
+  useAdsInit();
   const [showingSplash, setShowingSplash] = useState(true);
   const [splashAnimationDone, setSplashAnimationDone] = useState(false);
 
