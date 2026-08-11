@@ -19,7 +19,7 @@ export default {
   expo: {
     name: `üben${getAppVariant()}`,
     slug: 'uben',
-    version: '1.7.0',
+    version: '1.8.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: 'germanpractice',
@@ -66,6 +66,19 @@ export default {
               '-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1',
             ],
           },
+        },
+      ],
+      [
+        'react-native-google-mobile-ads',
+        {
+          // Google's sample App IDs, used until real AdMob app IDs are issued.
+          // Safe to ship with test IDs — no real ads or revenue will be served.
+          androidAppId:
+            process.env.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID ||
+            'ca-app-pub-3940256099942544~3347511713',
+          iosAppId:
+            process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID ||
+            'ca-app-pub-3940256099942544~1458002511',
         },
       ],
     ],

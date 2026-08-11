@@ -1,3 +1,4 @@
+import { AdBanner } from '@/components/ads/ad-banner';
 import {
   AppColors,
   Layout,
@@ -405,6 +406,13 @@ export default function ProgressScreen() {
             </Text>
           </View>
         )}
+
+        {/* ── Ad Banner ─────────────────────────────────────────── */}
+        {!isLoading && hasAnyData && (
+          <View style={styles.adContainer}>
+            <AdBanner />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -656,5 +664,10 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     lineHeight: 24,
     textAlign: 'center',
+  },
+
+  // ── Ad banner
+  adContainer: {
+    marginTop: Spacing.sm,
   },
 });

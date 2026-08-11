@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { AdBanner } from '@/components/ads/ad-banner';
 import {
   AppColors,
   Layout,
@@ -120,6 +121,13 @@ export default function MyWordsScreen() {
           renderItem={({ item }) => (
             <WordRow word={item} onDelete={() => handleDelete(item)} />
           )}
+          ListFooterComponent={
+            words.length > 0 ? (
+              <View style={styles.adContainer}>
+                <AdBanner />
+              </View>
+            ) : null
+          }
         />
       )}
     </SafeAreaView>
@@ -257,6 +265,9 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     letterSpacing: 1.5,
     marginBottom: Spacing.md,
+  },
+  adContainer: {
+    marginTop: Spacing.md,
   },
 
   // Word row
