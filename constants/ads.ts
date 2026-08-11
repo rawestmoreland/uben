@@ -17,7 +17,7 @@
 import { TestIds } from 'react-native-google-mobile-ads';
 
 export const AD_UNIT_IDS = {
-  banner: process.env.EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID || TestIds.ADAPTIVE_BANNER,
+  banner: process.env.EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID || TestIds.BANNER,
   interstitial:
     process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_UNIT_ID || TestIds.INTERSTITIAL,
 } as const;

@@ -7,6 +7,10 @@ import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 /**
  * Neo-brutalist bordered banner ad slot.
  *
+ * Uses a fixed BANNER size (320x50) rather than an adaptive size — adaptive
+ * banners size themselves to the full device width for edge-to-edge
+ * placement, which overflows this app's padded, bordered card layout.
+ *
  * Renders nothing until an ad actually loads (and nothing again if it fails
  * to load, e.g. offline) so a failed/slow fetch never leaves an empty
  * bordered box on screen.
@@ -21,7 +25,7 @@ export function AdBanner() {
     <View style={[styles.container, !hasLoaded && styles.hidden]}>
       <BannerAd
         unitId={AD_UNIT_IDS.banner}
-        size={BannerAdSize.LARGE_ANCHORED_ADAPTIVE_BANNER}
+        size={BannerAdSize.BANNER}
         onAdLoaded={() => setHasLoaded(true)}
         onAdFailedToLoad={() => setHasFailed(true)}
       />
