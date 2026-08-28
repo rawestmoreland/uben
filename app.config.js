@@ -81,6 +81,7 @@ export default {
             'ca-app-pub-3940256099942544~1458002511',
         },
       ],
+      'expo-iap',
     ],
     experiments: {
       typedRoutes: true,

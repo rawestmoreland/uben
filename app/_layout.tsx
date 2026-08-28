@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import '@/constants/i18n'; // Initialize i18next before any component renders
 import AnimatedSplash from '@/components/animated-splash';
+import { EntitlementProvider } from '@/contexts/entitlement-context';
 import { useAdsInit } from '@/hooks/use-ads-init';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
@@ -40,6 +41,7 @@ export default function RootLayout() {
 
   return (
     <KeyboardProvider>
+    <EntitlementProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -76,6 +78,7 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
+    </EntitlementProvider>
     </KeyboardProvider>
   );
 }

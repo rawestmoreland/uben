@@ -12,6 +12,7 @@ export const SETTINGS_KEYS = {
   QUIZ_SESSIONS_COMPLETED: 'quiz_sessions_completed',
   LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
   INTERSTITIAL_SESSION_COUNT: 'interstitial_session_count',
+  IS_PRO: 'is_pro',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -136,6 +137,18 @@ class SettingsService {
       SETTINGS_KEYS.INTERSTITIAL_SESSION_COUNT,
       String(count),
     );
+  }
+
+  // ── Convenience: Pro Entitlement ───────────────────────────────────
+
+  /** Whether the user has purchased the Pro unlock. Default: false. */
+  async getIsPro(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.IS_PRO);
+    return value === 'true';
+  }
+
+  async setIsPro(isPro: boolean): Promise<void> {
+    await this.setSetting(SETTINGS_KEYS.IS_PRO, isPro ? 'true' : 'false');
   }
 
 }

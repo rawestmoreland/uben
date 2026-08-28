@@ -6,6 +6,8 @@ import {
   shadowStyle,
   shadowStyleSmall,
 } from '@/constants/design';
+import { FREE_TIER_LIMITS } from '@/constants/iap';
+import { useEntitlement } from '@/contexts/entitlement-context';
 import { vocabularyService } from '@/services/vocabularyService';
 import type { Category } from '@/types/database';
 import * as Haptics from 'expo-haptics';
@@ -33,6 +35,8 @@ type Article = (typeof ARTICLES)[number];
 // ── Add Word Screen ──────────────────────────────────────────────────
 
 export default function AddWordScreen() {
+  const { isPro, proProduct, isPurchasing, purchasePro } = useEntitlement();
+
   // Form state
   const [german, setGerman] = useState('');
   const [article, setArticle] = useState<Article | null>(null);
@@ -46,10 +50,25 @@ export default function AddWordScreen() {
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const duplicateCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load categories on mount
+  // Free-tier word cap
+  const [userWordCount, setUserWordCount] = useState<number | null>(null);
+  const hasReachedLimit =
+    !isPro &&
+    userWordCount !== null &&
+    userWordCount >= FREE_TIER_LIMITS.MAX_USER_WORDS;
+
+  // Load categories and current word count on mount
   useEffect(() => {
     vocabularyService.getCategories().then(setCategories);
+    vocabularyService.getUserNounCount().then(setUserWordCount);
   }, []);
+
+  const handleUpgrade = useCallback(async () => {
+    const result = await purchasePro();
+    if (!result.success && result.error) {
+      Alert.alert('Upgrade Failed', result.error, [{ text: 'OK' }]);
+    }
+  }, [purchasePro]);
 
   // Real-time duplicate check when german word and article are both present
   useEffect(() => {
@@ -145,6 +164,37 @@ export default function AddWordScreen() {
           </View>
         </View>
 
+        {hasReachedLimit ? (
+          <View style={styles.paywallContainer}>
+            <View style={[styles.paywallCard, shadowStyle]}>
+              <Text style={styles.paywallTitle}>FREE LIMIT REACHED</Text>
+              <Text style={styles.paywallSubtext}>
+                You&apos;ve added {FREE_TIER_LIMITS.MAX_USER_WORDS} custom
+                words — the max on the free plan. Upgrade to Pro for
+                unlimited custom words and an ad-free app.
+              </Text>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.saveButton,
+                  pressed && styles.saveButtonPressed,
+                ]}
+                onPress={handleUpgrade}
+                disabled={isPurchasing}
+                accessibilityRole="button"
+                accessibilityLabel="Upgrade to Pro"
+              >
+                <Text style={styles.saveButtonText}>
+                  {isPurchasing
+                    ? 'PROCESSING...'
+                    : proProduct
+                      ? `UPGRADE TO PRO — ${proProduct.displayPrice}`
+                      : 'UPGRADE TO PRO'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : (
+        <>
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
@@ -299,6 +349,8 @@ export default function AddWordScreen() {
             </Text>
           </Pressable>
         </View>
+        </>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -346,6 +398,33 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.bold,
     color: AppColors.black,
+  },
+
+  // Paywall (free-tier word limit reached)
+  paywallContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: Layout.screenPadding,
+  },
+  paywallCard: {
+    backgroundColor: AppColors.white,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    padding: Layout.cardPadding,
+  },
+  paywallTitle: {
+    fontSize: Typography.heading,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+    marginBottom: Spacing.sm,
+  },
+  paywallSubtext: {
+    fontSize: Typography.body,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    lineHeight: 22,
+    marginBottom: Spacing.lg,
   },
 
   // Scroll
