@@ -20,12 +20,15 @@ import {
   shadowStyle,
   shadowStyleSmall,
 } from '@/constants/design';
+import { FREE_TIER_LIMITS } from '@/constants/iap';
+import { useEntitlement } from '@/contexts/entitlement-context';
 import { vocabularyService } from '@/services/vocabularyService';
 import type { UserNounWithCategory } from '@/types/database';
 
 // ── My Words Screen ──────────────────────────────────────────────────
 
 export default function MyWordsScreen() {
+  const { isPro } = useEntitlement();
   const [words, setWords] = useState<UserNounWithCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -115,6 +118,9 @@ export default function MyWordsScreen() {
             words.length > 0 ? (
               <Text style={styles.countHeader}>
                 {words.length} WORD{words.length !== 1 ? 'S' : ''} ADDED
+                {!isPro
+                  ? ` (${Math.min(words.length, FREE_TIER_LIMITS.MAX_USER_WORDS)}/${FREE_TIER_LIMITS.MAX_USER_WORDS} FREE)`
+                  : ''}
               </Text>
             ) : null
           }

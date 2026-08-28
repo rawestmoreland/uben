@@ -5,13 +5,16 @@ import {
   Typography,
   shadowStyle,
 } from '@/constants/design';
+import { FREE_TIER_LIMITS } from '@/constants/iap';
+import { useEntitlement } from '@/contexts/entitlement-context';
 import { getMigrationDiagnostics } from '@/database/db';
 import { useSettings } from '@/hooks/use-settings';
 import type { MigrationDiagnostics } from '@/types/database';
 import Constants from 'expo-constants';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   Platform,
   Pressable,
   StyleSheet,
@@ -37,6 +40,38 @@ export default function SettingsScreen() {
     setAppLanguage,
     isLoading,
   } = useSettings();
+  const {
+    isPro,
+    proProduct,
+    isPurchasing,
+    purchasePro,
+    restorePurchases,
+  } = useEntitlement();
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  const handleUpgrade = useCallback(async () => {
+    const result = await purchasePro();
+    if (!result.success && result.error) {
+      Alert.alert('Upgrade Failed', result.error, [{ text: 'OK' }]);
+    }
+  }, [purchasePro]);
+
+  const handleRestore = useCallback(async () => {
+    setIsRestoring(true);
+    const result = await restorePurchases();
+    setIsRestoring(false);
+    if (result.success) {
+      Alert.alert('Restore Complete', 'Your purchases have been restored.', [
+        { text: 'OK' },
+      ]);
+    } else {
+      Alert.alert(
+        'Restore Failed',
+        result.error ?? 'No previous purchase was found.',
+        [{ text: 'OK' }],
+      );
+    }
+  }, [restorePurchases]);
 
   const [diagnostics, setDiagnostics] = useState<MigrationDiagnostics | null>(
     null,
@@ -99,6 +134,61 @@ export default function SettingsScreen() {
             </View>
           )}
         </Pressable>
+
+        {/* ── Pro Card ─────────────────────────────────────────── */}
+        <View style={[styles.card, shadowStyle]}>
+          <View style={styles.proHeader}>
+            <Text style={styles.cardTitle}>ÜBEN PRO</Text>
+            {isPro && (
+              <View style={styles.proBadge}>
+                <Text style={styles.proBadgeText}>UNLOCKED</Text>
+              </View>
+            )}
+          </View>
+
+          {isPro ? (
+            <Text style={styles.settingDescription}>
+              Thanks for going Pro — ads are off and your custom word list
+              has no limit.
+            </Text>
+          ) : (
+            <>
+              <Text style={styles.settingDescription}>
+                Remove ads and add unlimited custom words (free plan is
+                capped at {FREE_TIER_LIMITS.MAX_USER_WORDS}).
+              </Text>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.proButton,
+                  pressed && styles.proButtonPressed,
+                ]}
+                onPress={handleUpgrade}
+                disabled={isPurchasing}
+                accessibilityRole="button"
+                accessibilityLabel="Upgrade to Pro"
+              >
+                <Text style={styles.proButtonText}>
+                  {isPurchasing
+                    ? 'PROCESSING...'
+                    : proProduct
+                      ? `UPGRADE — ${proProduct.displayPrice}`
+                      : 'UPGRADE TO PRO'}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.restoreLink}
+                onPress={handleRestore}
+                disabled={isRestoring}
+                accessibilityRole="button"
+                accessibilityLabel="Restore purchases"
+              >
+                <Text style={styles.restoreLinkText}>
+                  {isRestoring ? 'RESTORING...' : 'RESTORE PURCHASES'}
+                </Text>
+              </Pressable>
+            </>
+          )}
+        </View>
 
         {/* ── Language Card ───────────────────────────────────── */}
         <View style={[styles.card, shadowStyle]}>
@@ -414,6 +504,60 @@ const styles = StyleSheet.create({
     color: AppColors.black,
     letterSpacing: 1.5,
     marginBottom: Spacing.md,
+  },
+
+  // Pro card
+  proHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  proBadge: {
+    backgroundColor: AppColors.green,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    paddingVertical: 2,
+    paddingHorizontal: Spacing.sm,
+  },
+  proBadgeText: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+  },
+  proButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
+    marginTop: Spacing.md,
+    ...shadowStyle,
+  },
+  proButtonPressed: {
+    transform: [{ translateY: 4 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  proButtonText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+  },
+  restoreLink: {
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  restoreLinkText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.textSecondary,
+    letterSpacing: 0.5,
+    textDecorationLine: 'underline',
   },
 
   // Setting row
