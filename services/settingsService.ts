@@ -12,6 +12,7 @@ export const SETTINGS_KEYS = {
   QUIZ_SESSIONS_COMPLETED: 'quiz_sessions_completed',
   LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
   INTERSTITIAL_SESSION_COUNT: 'interstitial_session_count',
+  ADJECTIVE_DECLENSION_UNLOCKED: 'adjective_declension_unlocked',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -135,6 +136,27 @@ class SettingsService {
     await this.setSetting(
       SETTINGS_KEYS.INTERSTITIAL_SESSION_COUNT,
       String(count),
+    );
+  }
+
+  // ── Convenience: Adjective Declension Unlock ──────────────────────
+  // Cached locally as the source of truth for now (see purchaseService.ts —
+  // no real payment processor is wired up yet). Once RevenueCat is
+  // integrated, this becomes an offline-fast-path cache of the entitlement
+  // it reports, refreshed on app foreground.
+
+  /** Whether the (premium, one-time-purchase) adjective declension feature is unlocked. */
+  async getAdjectiveDeclensionUnlocked(): Promise<boolean> {
+    const value = await this.getSetting(
+      SETTINGS_KEYS.ADJECTIVE_DECLENSION_UNLOCKED,
+    );
+    return value === 'true';
+  }
+
+  async setAdjectiveDeclensionUnlocked(unlocked: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.ADJECTIVE_DECLENSION_UNLOCKED,
+      unlocked ? 'true' : 'false',
     );
   }
 

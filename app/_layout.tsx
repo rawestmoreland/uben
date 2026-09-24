@@ -72,6 +72,21 @@ export default function RootLayout() {
             animation: 'slide_from_bottom',
           }}
         />
+        <Stack.Screen
+          name="adjective-quiz"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="paywall"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="dark" />

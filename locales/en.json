@@ -146,6 +146,27 @@
       "slow_correct_description": "You're learning it. Review comes back sooner to reinforce.",
       "wrong_answer": "Wrong Answer",
       "wrong_answer_description": "No problem. The word resets so you see it again soon."
+    },
+    "adjective_quiz": {
+      "badge": "Declension Practice",
+      "all_caught_up": "All caught up",
+      "no_cards_due": "No adjectives due for review right now.\n\nCome back later!",
+      "correct_answer_was": "Correct answer: {{answer}}",
+      "entry_point_label": "Practice adjective declension",
+      "entry_point_title": "Adjective Declension",
+      "entry_point_subtitle": "Master der/die/das adjective endings"
+    },
+    "paywall": {
+      "premium_badge": "Premium",
+      "title": "Unlock Adjective Declension",
+      "subtitle": "Master the trickiest part of German grammar — the endings that change with case, gender, and article type.",
+      "feature_1": "Fill-in-the-blank sentences with instant feedback",
+      "feature_2": "Covers weak, mixed, and strong declension",
+      "feature_3": "Spaced repetition tracks your progress over time",
+      "unlock_button": "Unlock now",
+      "one_time_purchase": "One-time purchase. No subscription.",
+      "purchase_failed": "Something went wrong. Please try again.",
+      "close": "Close"
     }
   }
 }

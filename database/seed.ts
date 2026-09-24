@@ -1,6 +1,7 @@
 import type { NounCorrection } from '@/types/database';
 import type * as SQLite from 'expo-sqlite';
 import { generateCategoryRemoteId, generateNounRemoteId } from './remote-id';
+import { adjectivesV1 } from './seeds/adjectives/v1-initial';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
@@ -35,6 +36,50 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // Assign deterministic remote_ids to any rows that don't have one yet.
   // Runs every launch but is a no-op when all rows already have remote_ids.
   await assignRemoteIds(db);
+
+  // Seed adjectives for the adjective declension feature (independent of
+  // nouns/categories — adjectives have no category or remote sync yet).
+  await seedAdjectives(db, '1.0.0_adjectives_v1');
+}
+
+/**
+ * Seed the adjectives table from the versioned seed list.
+ * Uses UPSERT (matched on the UNIQUE `german` column) to preserve existing
+ * row IDs, so any card_progress already tracking an adjective isn't orphaned.
+ */
+async function seedAdjectives(
+  db: SQLite.SQLiteDatabase,
+  version: string,
+): Promise<void> {
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [version],
+  );
+
+  if (exists) {
+    return; // Already seeded
+  }
+
+  console.log(`[DB] Seeding adjectives (${version})...`);
+
+  await db.withTransactionAsync(async () => {
+    for (const adjective of adjectivesV1) {
+      await db.runAsync(
+        `INSERT INTO adjectives (german, english, level, is_user_added)
+         VALUES (?, ?, ?, 0)
+         ON CONFLICT(german) DO UPDATE SET
+           english = excluded.english,
+           level = excluded.level`,
+        [adjective.german, adjective.english, adjective.level],
+      );
+    }
+
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+  });
+
+  console.log(`[DB] Seeded ${adjectivesV1.length} adjectives`);
 }
 
 /**
