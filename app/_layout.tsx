@@ -40,10 +40,10 @@ export default function RootLayout() {
     // Prefer per-platform keys if the RevenueCat dashboard has them split;
     // fall back to the shared key so existing single-key setups keep working.
     const iosApiKey =
-      process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY ??
+      process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE ??
       process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!;
     const androidApiKey =
-      process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY ??
+      process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY_ANDROID ??
       process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!;
 
     Purchases.configure({
