@@ -146,6 +146,33 @@
       "slow_correct_description": "You're learning it. Review comes back sooner to reinforce.",
       "wrong_answer": "Wrong Answer",
       "wrong_answer_description": "No problem. The word resets so you see it again soon."
+    },
+    "adjective_quiz": {
+      "badge": "Adjective Endings",
+      "all_caught_up": "All caught up",
+      "no_cards_due": "No adjectives due for review right now.\n\nCome back later!",
+      "correct_answer_was": "Correct answer: {{answer}}",
+      "entry_point_label": "Practice adjective endings",
+      "entry_point_title": "Adjective Endings",
+      "entry_point_subtitle": "Master der/die/das adjective endings",
+      "why_label": "Why",
+      "continue": "Continue",
+      "trial_badge": "{{count}} Free",
+      "trial_questions_remaining": "{{count}} free questions left",
+      "trial_used_up_title": "You're hooked!",
+      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
+    },
+    "paywall": {
+      "premium_badge": "Premium",
+      "title": "Unlock Adjective Endings",
+      "subtitle": "Master the trickiest part of German grammar — the endings that change with case, gender, and article type.",
+      "feature_1": "Fill-in-the-blank sentences with instant feedback",
+      "feature_2": "Covers every article type — der-words, ein-words, and no article at all",
+      "feature_3": "Spaced repetition tracks your progress over time",
+      "unlock_button": "Unlock now",
+      "one_time_purchase": "One-time purchase. No subscription.",
+      "purchase_failed": "Something went wrong. Please try again.",
+      "close": "Close"
     }
   }
 }

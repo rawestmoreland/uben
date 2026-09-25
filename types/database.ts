@@ -49,10 +49,20 @@ export interface Verb {
   created_at: string;
 }
 
+/** A German adjective stored in the local database (base/uninflected form) */
+export interface Adjective {
+  id: number;
+  german: string;
+  english: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
+  is_user_added: number; // 0 or 1 (SQLite boolean)
+  created_at: string;
+}
+
 /** SM-2 spaced repetition progress for a single card */
 export interface CardProgress {
   id: number;
-  word_type: 'noun' | 'verb';
+  word_type: 'noun' | 'verb' | 'adjective';
   word_id: number;
   ease_factor: number;
   interval: number;
@@ -133,6 +143,19 @@ export interface ReviewSession {
   newCount: number;
 }
 
+/** An adjective card that is due for review, joined with its word data */
+export interface DueAdjectiveCard extends CardProgress {
+  german: string;
+  english: string;
+}
+
+/** An adjective declension review session containing due cards and new cards */
+export interface AdjectiveReviewSession {
+  cards: DueAdjectiveCard[];
+  dueCount: number;
+  newCount: number;
+}
+
 // ── Input Types ───────────────────────────────────────────────────────
 
 /** A user-added noun joined with its category display name */
@@ -186,6 +209,13 @@ export interface SeedCategory {
   name: string;
   display_name: string;
   display_order: number;
+}
+
+/** Shape for seed adjective data */
+export interface SeedAdjective {
+  german: string;
+  english: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 }
 
 /** A correction to an existing noun in the database */

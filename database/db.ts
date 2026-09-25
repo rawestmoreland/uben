@@ -56,6 +56,7 @@ export async function resetDatabase(): Promise<void> {
     DROP TABLE IF EXISTS review_history;
     DROP TABLE IF EXISTS card_progress;
     DROP TABLE IF EXISTS verbs;
+    DROP TABLE IF EXISTS adjectives;
     DROP TABLE IF EXISTS noun_translations;
     DROP TABLE IF EXISTS nouns;
     DROP TABLE IF EXISTS categories;

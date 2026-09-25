@@ -474,6 +474,119 @@ export const migrations: Migration[] = [
       );
     },
   },
+  {
+    version: '008',
+    name: 'add_adjectives_and_declension_support',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 008] Adding adjectives table and widening card_progress.word_type...',
+      );
+
+      // ── Adjectives ──────────────────────────────────────────────────
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS adjectives (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          german TEXT NOT NULL UNIQUE,
+          english TEXT NOT NULL,
+          level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+          is_user_added BOOLEAN DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_adjectives_level ON adjectives(level);',
+      );
+
+      // ── Widen card_progress.word_type to allow 'adjective' ──────────
+      // SQLite CHECK constraints can't be altered in place, so rebuild the
+      // table (same rebuild pattern used for nouns in migrations 004/007).
+      await db.execAsync(`
+        CREATE TABLE card_progress_v8 (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          word_type TEXT NOT NULL CHECK(word_type IN ('noun', 'verb', 'adjective')),
+          word_id INTEGER NOT NULL,
+
+          ease_factor REAL DEFAULT 2.5,
+          interval INTEGER DEFAULT 0,
+          repetitions INTEGER DEFAULT 0,
+          next_review_date DATE DEFAULT CURRENT_DATE,
+
+          total_reviews INTEGER DEFAULT 0,
+          correct_reviews INTEGER DEFAULT 0,
+          last_reviewed_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+          UNIQUE(word_type, word_id)
+        );
+      `);
+
+      await db.execAsync(`
+        INSERT INTO card_progress_v8 (id, word_type, word_id, ease_factor, interval, repetitions, next_review_date, total_reviews, correct_reviews, last_reviewed_at, created_at)
+        SELECT id, word_type, word_id, ease_factor, interval, repetitions, next_review_date, total_reviews, correct_reviews, last_reviewed_at, created_at
+        FROM card_progress;
+      `);
+
+      await db.execAsync('DROP TABLE card_progress;');
+      await db.execAsync(
+        'ALTER TABLE card_progress_v8 RENAME TO card_progress;',
+      );
+
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_card_progress_next_review ON card_progress(next_review_date);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_card_progress_word ON card_progress(word_type, word_id);',
+      );
+
+      console.log('[Migration 008] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove adjective cards before restoring the narrower CHECK constraint
+      await db.execAsync(
+        "DELETE FROM card_progress WHERE word_type = 'adjective';",
+      );
+
+      await db.execAsync(`
+        CREATE TABLE card_progress_rollback (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          word_type TEXT NOT NULL CHECK(word_type IN ('noun', 'verb')),
+          word_id INTEGER NOT NULL,
+
+          ease_factor REAL DEFAULT 2.5,
+          interval INTEGER DEFAULT 0,
+          repetitions INTEGER DEFAULT 0,
+          next_review_date DATE DEFAULT CURRENT_DATE,
+
+          total_reviews INTEGER DEFAULT 0,
+          correct_reviews INTEGER DEFAULT 0,
+          last_reviewed_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+          UNIQUE(word_type, word_id)
+        );
+      `);
+
+      await db.execAsync(`
+        INSERT INTO card_progress_rollback (id, word_type, word_id, ease_factor, interval, repetitions, next_review_date, total_reviews, correct_reviews, last_reviewed_at, created_at)
+        SELECT id, word_type, word_id, ease_factor, interval, repetitions, next_review_date, total_reviews, correct_reviews, last_reviewed_at, created_at
+        FROM card_progress;
+      `);
+
+      await db.execAsync('DROP TABLE card_progress;');
+      await db.execAsync(
+        'ALTER TABLE card_progress_rollback RENAME TO card_progress;',
+      );
+
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_card_progress_next_review ON card_progress(next_review_date);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_card_progress_word ON card_progress(word_type, word_id);',
+      );
+
+      await db.execAsync('DROP TABLE IF EXISTS adjectives;');
+    },
+  },
 ];
 
 /**
