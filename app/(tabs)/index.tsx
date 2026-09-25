@@ -41,14 +41,24 @@ export default function HomeScreen() {
 
   const handleAdjectiveDeclensionPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push(
-      canAccessAdjectiveDeclension ? '/adjective-quiz' : '/paywall',
-    );
+    if (canAccessAdjectiveDeclension) {
+      router.push('/adjective-quiz');
+    } else {
+      router.push({
+        pathname: '/paywall',
+        params: { redirectTo: '/adjective-quiz' },
+      });
+    }
   }, [canAccessAdjectiveDeclension]);
 
   const handleLevelToggle = useCallback(
     async (level: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const tapped = availableLevels.find((l) => l.level === level);
+      if (tapped?.locked) {
+        router.push('/paywall');
+        return;
+      }
       const levelOrder = availableLevels.map((l) => l.level);
       const tappedIndex = levelOrder.indexOf(level);
       if (tappedIndex < 0) return;
@@ -118,6 +128,7 @@ export default function HomeScreen() {
             onToggle={handleLevelToggle}
             label={t('level_filter.label')}
             comingSoonLabel={t('level_filter.coming_soon')}
+            lockedLabel={t('level_filter.locked_badge')}
             tooltip={{
               title: t('level_filter.tooltip_title'),
               intro: t('level_filter.tooltip_intro'),
@@ -317,6 +328,7 @@ interface LevelSelectorProps {
   onToggle: (level: string) => void;
   label: string;
   comingSoonLabel: string;
+  lockedLabel: string;
   tooltip: {
     title: string;
     intro: string;
@@ -327,7 +339,7 @@ interface LevelSelectorProps {
   };
 }
 
-function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comingSoonLabel, tooltip }: LevelSelectorProps) {
+function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comingSoonLabel, lockedLabel, tooltip }: LevelSelectorProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -377,7 +389,7 @@ function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comin
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.levelChips}
       >
-        {availableLevels.map(({ level, comingSoon }) => {
+        {availableLevels.map(({ level, comingSoon, locked }) => {
           const isSelected = selectedLevels.includes(level);
           if (comingSoon) {
             return (
@@ -389,6 +401,20 @@ function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comin
                 <Text style={styles.levelChipTextComingSoon}>{level}</Text>
                 <Text style={styles.levelChipComingSoonBadge}>{comingSoonLabel}</Text>
               </View>
+            );
+          }
+          if (locked) {
+            return (
+              <Pressable
+                key={level}
+                style={styles.levelChipLocked}
+                onPress={() => onToggle(level)}
+                accessibilityRole="button"
+                accessibilityLabel={`${level} level, requires Üben Pro`}
+              >
+                <Text style={styles.levelChipTextLocked}>{level}</Text>
+                <Text style={styles.levelChipLockedBadge}>{lockedLabel}</Text>
+              </Pressable>
             );
           }
           return (
@@ -617,6 +643,29 @@ const styles = StyleSheet.create({
     fontSize: 8,
     fontWeight: Typography.bold,
     color: AppColors.textSecondary,
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  levelChipLocked: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.purple,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 72,
+  },
+  levelChipTextLocked: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 0.5,
+  },
+  levelChipLockedBadge: {
+    fontSize: 8,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
     letterSpacing: 0.5,
     marginTop: 2,
   },

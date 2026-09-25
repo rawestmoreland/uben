@@ -15,6 +15,10 @@ export const SETTINGS_KEYS = {
   ADJECTIVE_DECLENSION_UNLOCKED: 'adjective_declension_unlocked',
   ADJECTIVE_DECLENSION_TRIAL_QUESTIONS_USED:
     'adjective_declension_trial_questions_used',
+  PRO_UNLOCKED: 'pro_unlocked',
+  PRO_GRANDFATHER_MIGRATION_DONE: 'pro_grandfather_migration_done',
+  GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
+  GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -141,24 +145,71 @@ class SettingsService {
     );
   }
 
-  // ── Convenience: Adjective Declension Unlock ──────────────────────
+  // ── Convenience: Üben Pro Unlock ───────────────────────────────────
   // Cached locally as the source of truth for now (see purchaseService.ts —
   // no real payment processor is wired up yet). Once RevenueCat is
   // integrated, this becomes an offline-fast-path cache of the entitlement
   // it reports, refreshed on app foreground.
 
-  /** Whether the (premium, one-time-purchase) adjective declension feature is unlocked. */
-  async getAdjectiveDeclensionUnlocked(): Promise<boolean> {
-    const value = await this.getSetting(
+  /** Whether the Üben Pro bundle (no ads, B-level words, unlimited words, adjective endings) is unlocked. */
+  async getProUnlocked(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.PRO_UNLOCKED);
+    if (value === 'true') return true;
+    // Legacy: some installs unlocked adjective declension only, before it
+    // was folded into the Pro bundle. Honor that purchase as full Pro.
+    const legacy = await this.getSetting(
       SETTINGS_KEYS.ADJECTIVE_DECLENSION_UNLOCKED,
+    );
+    return legacy === 'true';
+  }
+
+  async setProUnlocked(unlocked: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.PRO_UNLOCKED,
+      unlocked ? 'true' : 'false',
+    );
+  }
+
+  // ── Convenience: Pro Bundle Grandfathering ─────────────────────────
+  // One-time migration flags set on first launch after the Pro bundle
+  // shipped, so users who already had B1+ selected or more than the new
+  // free word cap keep what they had rather than being locked out.
+
+  async getProGrandfatherMigrationDone(): Promise<boolean> {
+    const value = await this.getSetting(
+      SETTINGS_KEYS.PRO_GRANDFATHER_MIGRATION_DONE,
     );
     return value === 'true';
   }
 
-  async setAdjectiveDeclensionUnlocked(unlocked: boolean): Promise<void> {
+  async setProGrandfatherMigrationDone(done: boolean): Promise<void> {
     await this.setSetting(
-      SETTINGS_KEYS.ADJECTIVE_DECLENSION_UNLOCKED,
-      unlocked ? 'true' : 'false',
+      SETTINGS_KEYS.PRO_GRANDFATHER_MIGRATION_DONE,
+      done ? 'true' : 'false',
+    );
+  }
+
+  async getGrandfatheredBLevel(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.GRANDFATHERED_B_LEVEL);
+    return value === 'true';
+  }
+
+  async setGrandfatheredBLevel(grandfathered: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.GRANDFATHERED_B_LEVEL,
+      grandfathered ? 'true' : 'false',
+    );
+  }
+
+  async getGrandfatheredWordCap(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.GRANDFATHERED_WORD_CAP);
+    return value === 'true';
+  }
+
+  async setGrandfatheredWordCap(grandfathered: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.GRANDFATHERED_WORD_CAP,
+      grandfathered ? 'true' : 'false',
     );
   }
 

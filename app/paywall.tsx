@@ -5,10 +5,10 @@ import {
   Typography,
   shadowStyle,
 } from '@/constants/design';
-import { useAdjectiveDeclensionEntitlement } from '@/hooks/use-adjective-declension-entitlement';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { purchaseService } from '@/services/purchaseService';
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -29,7 +29,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PaywallScreen() {
   const { t } = useTranslation('app');
-  const { refresh } = useAdjectiveDeclensionEntitlement();
+  const { redirectTo } = useLocalSearchParams<{ redirectTo?: string }>();
+  const { refresh } = useProEntitlement();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,11 +40,15 @@ export default function PaywallScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      const result = await purchaseService.purchaseAdjectiveDeclension();
+      const result = await purchaseService.purchasePro();
       if (result.success) {
         await refresh();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.replace('/adjective-quiz');
+        if (redirectTo) {
+          router.replace(redirectTo as any);
+        } else {
+          router.back();
+        }
       } else {
         setError(result.error ?? t('paywall.purchase_failed'));
       }
@@ -82,6 +87,7 @@ export default function PaywallScreen() {
             <FeatureRow text={t('paywall.feature_1')} />
             <FeatureRow text={t('paywall.feature_2')} />
             <FeatureRow text={t('paywall.feature_3')} />
+            <FeatureRow text={t('paywall.feature_4')} />
           </View>
 
           {error && <Text style={styles.errorText}>{error}</Text>}

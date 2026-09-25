@@ -20,7 +20,7 @@ export function useAdjectiveDeclensionEntitlement() {
   const refresh = useCallback(async () => {
     try {
       const [unlocked, remaining] = await Promise.all([
-        purchaseService.isAdjectiveDeclensionUnlocked(),
+        purchaseService.isProUnlocked(),
         purchaseService.getAdjectiveDeclensionTrialQuestionsRemaining(),
       ]);
       setIsUnlocked(unlocked);
