@@ -1,5 +1,11 @@
 import { getDatabase } from '@/database/db';
-import type { CardReview, DueCard, ReviewSession } from '@/types/database';
+import type {
+  AdjectiveReviewSession,
+  CardReview,
+  DueAdjectiveCard,
+  DueCard,
+  ReviewSession,
+} from '@/types/database';
 
 // CEFR levels in ascending order — used to build cumulative level filters.
 // Selecting 'A2' means "show me everything up to and including A2", i.e.
@@ -198,7 +204,7 @@ export class SpacedRepetitionService {
    * The card starts with default SM-2 values and is due for review immediately.
    */
   async createCardForWord(
-    wordType: 'noun' | 'verb',
+    wordType: 'noun' | 'verb' | 'adjective',
     wordId: number,
   ): Promise<number> {
     const result = await this.db.runAsync(
@@ -330,6 +336,55 @@ export class SpacedRepetitionService {
       cards: shuffleArray(cards),
       dueCount: cards.length,
       newCount: 0,
+    };
+  }
+
+  /**
+   * Build a review session for the adjective declension feature: due cards
+   * mixed with new adjectives, shuffled together (mirrors getDailyReviewSession,
+   * but adjectives have no category/level filtering yet — v1 is one flat pool).
+   */
+  async getAdjectiveDeclensionSession(
+    maxCards: number = 20,
+    newCardsLimit: number = 5,
+  ): Promise<AdjectiveReviewSession> {
+    const dueCards = await this.db.getAllAsync<DueAdjectiveCard>(
+      `SELECT cp.*, a.german, a.english
+       FROM card_progress cp
+       JOIN adjectives a ON cp.word_type = 'adjective' AND cp.word_id = a.id
+       WHERE cp.next_review_date <= date('now')
+       ORDER BY cp.next_review_date ASC
+       LIMIT ?`,
+      [maxCards - newCardsLimit],
+    );
+
+    const newCards = await this.db.getAllAsync<DueAdjectiveCard>(
+      `SELECT
+         0 AS id,
+         'adjective' AS word_type,
+         a.id AS word_id,
+         2.5 AS ease_factor,
+         0 AS interval,
+         0 AS repetitions,
+         date('now') AS next_review_date,
+         0 AS total_reviews,
+         0 AS correct_reviews,
+         NULL AS last_reviewed_at,
+         a.created_at,
+         a.german,
+         a.english
+       FROM adjectives a
+       LEFT JOIN card_progress cp ON cp.word_type = 'adjective' AND cp.word_id = a.id
+       WHERE cp.id IS NULL
+       ORDER BY RANDOM()
+       LIMIT ?`,
+      [newCardsLimit],
+    );
+
+    return {
+      cards: shuffleArray([...dueCards, ...newCards]),
+      dueCount: dueCards.length,
+      newCount: newCards.length,
     };
   }
 
