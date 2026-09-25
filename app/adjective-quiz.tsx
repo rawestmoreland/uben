@@ -11,7 +11,9 @@ import {
   useAdjectiveQuizSession,
   type AdjectiveQuizResult,
 } from '@/hooks/use-adjective-quiz-session';
+import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
+import { applyGermanTextPreference } from '@/utils/germanText';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -36,6 +38,7 @@ export default function AdjectiveQuizScreen() {
   const { t } = useTranslation('app');
   const quiz = useAdjectiveQuizSession();
   const { phase, results, isTrialSession, trialQuestionsRemaining } = quiz;
+  const { eszettPreference } = useSettings();
 
   // Defensive gate: the home screen already routes to the paywall once the
   // trial is spent, but a direct/deep link could still land here.
@@ -50,7 +53,7 @@ export default function AdjectiveQuizScreen() {
       {(phase === 'loading' || phase === 'locked') && <LoadingState t={t} />}
       {phase === 'empty' && <EmptyState t={t} />}
       {(phase === 'playing' || phase === 'feedback') && (
-        <PlayingState quiz={quiz} />
+        <PlayingState quiz={quiz} eszettPreference={eszettPreference} />
       )}
       {phase === 'complete' && (
         <CompleteState
@@ -58,6 +61,7 @@ export default function AdjectiveQuizScreen() {
           t={t}
           isTrialSession={isTrialSession}
           trialQuestionsRemaining={trialQuestionsRemaining}
+          eszettPreference={eszettPreference}
         />
       )}
     </SafeAreaView>
@@ -109,9 +113,10 @@ function EmptyState({ t }: { t: TFunction }) {
 
 interface PlayingStateProps {
   quiz: ReturnType<typeof useAdjectiveQuizSession>;
+  eszettPreference: 'eszett' | 'ss';
 }
 
-function PlayingState({ quiz }: PlayingStateProps) {
+function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
   const { t } = useTranslation('app');
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
 
@@ -188,7 +193,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
         {/* ── Sentence Card ─────────────────────────────────── */}
         <View style={[styles.sentenceCard, shadowStyle]}>
           <Text style={styles.sentenceText}>
-            {currentQuestion.before}{' '}
+            {applyGermanTextPreference(currentQuestion.before, eszettPreference)}{' '}
             <Text
               style={[
                 styles.blankText,
@@ -197,15 +202,20 @@ function PlayingState({ quiz }: PlayingStateProps) {
                 },
               ]}
             >
-              {isFeedback ? selectedAnswer : '____'}
+              {isFeedback
+                ? applyGermanTextPreference(selectedAnswer ?? '', eszettPreference)
+                : '____'}
             </Text>{' '}
-            {currentQuestion.after}
+            {applyGermanTextPreference(currentQuestion.after, eszettPreference)}
           </Text>
           <Text style={styles.englishHint}>{currentQuestion.english}</Text>
           {isFeedback && !isCorrect && (
             <Text style={styles.correctAnswerNote}>
               {t('adjective_quiz.correct_answer_was', {
-                answer: currentQuestion.correctAnswer,
+                answer: applyGermanTextPreference(
+                  currentQuestion.correctAnswer,
+                  eszettPreference,
+                ),
               })}
             </Text>
           )}
@@ -259,7 +269,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
                       },
                   ]}
                 >
-                  {option}
+                  {applyGermanTextPreference(option, eszettPreference)}
                 </Text>
               </Pressable>
             );
@@ -295,6 +305,7 @@ interface CompleteStateProps {
   t: TFunction;
   isTrialSession: boolean;
   trialQuestionsRemaining: number;
+  eszettPreference: 'eszett' | 'ss';
 }
 
 function CompleteState({
@@ -302,6 +313,7 @@ function CompleteState({
   t,
   isTrialSession,
   trialQuestionsRemaining,
+  eszettPreference,
 }: CompleteStateProps) {
   const { handleSessionComplete } = useStoreReview();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
@@ -405,12 +417,18 @@ function CompleteState({
                 ]}
               />
               <Text style={styles.resultWord}>
-                {result.question.correctAnswer}
+                {applyGermanTextPreference(
+                  result.question.correctAnswer,
+                  eszettPreference,
+                )}
               </Text>
               {!result.isCorrect && (
                 <Text style={styles.resultYourAnswer}>
                   {t('quiz_mode.you_said', {
-                    article: result.selectedAnswer,
+                    article: applyGermanTextPreference(
+                      result.selectedAnswer,
+                      eszettPreference,
+                    ),
                   })}
                 </Text>
               )}
