@@ -6,6 +6,9 @@ import {
   shadowStyle,
   shadowStyleSmall,
 } from '@/constants/design';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
+import { PRO_FREE_WORD_LIMIT } from '@/services/purchaseService';
+import { settingsService } from '@/services/settingsService';
 import { vocabularyService } from '@/services/vocabularyService';
 import type { Category } from '@/types/database';
 import * as Haptics from 'expo-haptics';
@@ -46,9 +49,16 @@ export default function AddWordScreen() {
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const duplicateCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load categories on mount
+  // Free-tier word cap state
+  const { isPro } = useProEntitlement();
+  const [userNounCount, setUserNounCount] = useState(0);
+  const [isGrandfathered, setIsGrandfathered] = useState(false);
+
+  // Load categories and free-tier cap status on mount
   useEffect(() => {
     vocabularyService.getCategories().then(setCategories);
+    vocabularyService.getUserNounCount().then(setUserNounCount);
+    settingsService.getGrandfatheredWordCap().then(setIsGrandfathered);
   }, []);
 
   // Real-time duplicate check when german word and article are both present
@@ -107,6 +117,23 @@ export default function AddWordScreen() {
       if (result.success) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         router.back();
+      } else if (result.limitReached) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Alert.alert(
+          'Free Word Limit Reached',
+          `You've added ${PRO_FREE_WORD_LIMIT} words on the free plan. Unlock Üben Pro to add unlimited words.`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Upgrade to Pro',
+              onPress: () =>
+                router.push({
+                  pathname: '/paywall',
+                  params: { redirectTo: '/add-word' },
+                }),
+            },
+          ],
+        );
       } else {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert('Cannot Add Word', result.error ?? 'Failed to add word', [
@@ -143,6 +170,12 @@ export default function AddWordScreen() {
             <Text style={styles.headerTitle}>ADD WORD</Text>
             <View style={{ width: 44, height: 44 }} />
           </View>
+          {!isPro && !isGrandfathered && (
+            <Text style={styles.freeLimitText}>
+              {Math.min(userNounCount, PRO_FREE_WORD_LIMIT)} / {PRO_FREE_WORD_LIMIT}{' '}
+              free words added
+            </Text>
+          )}
         </View>
 
         <ScrollView
@@ -346,6 +379,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.bold,
     color: AppColors.black,
+  },
+  freeLimitText: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.textSecondary,
+    letterSpacing: 0.5,
+    marginTop: Spacing.sm,
   },
 
   // Scroll

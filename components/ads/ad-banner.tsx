@@ -1,5 +1,6 @@
 import { AD_UNIT_IDS } from '@/constants/ads';
 import { AppColors, Layout, Spacing } from '@/constants/design';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
@@ -13,12 +14,14 @@ import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
  *
  * Renders nothing until an ad actually loads (and nothing again if it fails
  * to load, e.g. offline) so a failed/slow fetch never leaves an empty
- * bordered box on screen.
+ * bordered box on screen. Renders nothing at all for Üben Pro users.
  */
 export function AdBanner() {
+  const { isPro, isLoading } = useProEntitlement();
   const [hasLoaded, setHasLoaded] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
 
+  if (isLoading || isPro) return null;
   if (hasFailed) return null;
 
   return (

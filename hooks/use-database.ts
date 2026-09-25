@@ -1,5 +1,6 @@
 import i18n from '@/constants/i18n';
 import { initializeDatabase } from '@/database/db';
+import { purchaseService } from '@/services/purchaseService';
 import { settingsService } from '@/services/settingsService';
 import { syncService } from '@/services/syncService';
 import { useEffect, useState } from 'react';
@@ -33,6 +34,7 @@ export function useDatabase() {
         await initializeDatabase();
         const savedLanguage = await settingsService.getAppLanguage();
         await i18n.changeLanguage(savedLanguage);
+        await purchaseService.runProGrandfatherMigration();
         if (!cancelled) {
           setIsReady(true);
         }

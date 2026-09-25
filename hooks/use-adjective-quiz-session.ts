@@ -79,7 +79,7 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
 
     async function loadSession() {
       try {
-        const unlocked = await purchaseService.isAdjectiveDeclensionUnlocked();
+        const unlocked = await purchaseService.isProUnlocked();
 
         // Defensive re-check: the home screen already gates entry on
         // entitlement, but a deep link could land here directly with the
