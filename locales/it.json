@@ -148,22 +148,22 @@
       "wrong_answer_description": "Nessun problema. La parola si azzera così la vedi di nuovo presto."
     },
     "adjective_quiz": {
-      "badge": "Pratica declinazione",
+      "badge": "Desinenze degli Aggettivi",
       "all_caught_up": "Tutto in regola",
       "no_cards_due": "Nessun aggettivo da ripassare al momento.\n\nTorna più tardi!",
       "correct_answer_was": "Risposta corretta: {{answer}}",
-      "entry_point_label": "Pratica la declinazione degli aggettivi",
-      "entry_point_title": "Declinazione Aggettivi",
+      "entry_point_label": "Pratica le desinenze degli aggettivi",
+      "entry_point_title": "Desinenze degli Aggettivi",
       "entry_point_subtitle": "Padroneggia le desinenze con der/die/das",
       "why_label": "Perché",
       "continue": "Continua"
     },
     "paywall": {
       "premium_badge": "Premium",
-      "title": "Sblocca Declinazione Aggettivi",
+      "title": "Sblocca Desinenze degli Aggettivi",
       "subtitle": "Padroneggia la parte più difficile della grammatica tedesca: le desinenze che cambiano con caso, genere e tipo di articolo.",
       "feature_1": "Frasi da completare con feedback immediato",
-      "feature_2": "Copre declinazione debole, mista e forte",
+      "feature_2": "Copre ogni tipo di articolo — con \"der\", con \"ein\" e senza articolo",
       "feature_3": "La ripetizione dilazionata traccia i tuoi progressi nel tempo",
       "unlock_button": "Sblocca ora",
       "one_time_purchase": "Acquisto una tantum. Nessun abbonamento.",
