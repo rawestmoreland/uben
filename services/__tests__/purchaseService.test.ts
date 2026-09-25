@@ -55,10 +55,17 @@ jest.mock('react-native-purchases', () => ({
   PURCHASES_ERROR_CODE: { PURCHASE_CANCELLED_ERROR: '1' },
 }));
 
+jest.mock('../purchaseAnalyticsService', () => ({
+  trackPurchaseFunnelEvent: jest.fn(),
+}));
+
 const mockDb = jest.requireMock('@/database/db').getDatabase();
 const mockSettingsService = jest.requireMock('../settingsService').settingsService;
 const mockPurchases = jest.requireMock('react-native-purchases').default;
 const { PURCHASES_ERROR_CODE } = jest.requireMock('react-native-purchases');
+const { trackPurchaseFunnelEvent: mockTrackPurchaseFunnelEvent } = jest.requireMock(
+  '../purchaseAnalyticsService',
+);
 
 function customerInfoWithEntitlement(active: boolean): CustomerInfo {
   return {
@@ -175,13 +182,21 @@ describe('purchaseService.purchasePro', () => {
       customerInfo: customerInfoWithEntitlement(true),
     });
 
-    const result = await purchaseService.purchasePro();
+    const result = await purchaseService.purchasePro('adjective_quiz');
 
     expect(mockPurchases.purchasePackage).toHaveBeenCalledWith(
       offerings.current.lifetime,
     );
     expect(mockSettingsService.setProUnlocked).toHaveBeenCalledWith(true);
     expect(result).toEqual({ success: true });
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'purchase_attempted',
+      'adjective_quiz',
+    );
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'purchase_succeeded',
+      'adjective_quiz',
+    );
   });
 
   it('errors without purchasing when no lifetime package is available', async () => {
@@ -192,6 +207,10 @@ describe('purchaseService.purchasePro', () => {
     expect(mockPurchases.purchasePackage).not.toHaveBeenCalled();
     expect(result.success).toBe(false);
     expect(result.error).toBeTruthy();
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'purchase_failed',
+      undefined,
+    );
   });
 
   it('returns cancelled without an error message when the user cancels', async () => {
@@ -204,6 +223,10 @@ describe('purchaseService.purchasePro', () => {
 
     expect(result).toEqual({ success: false, cancelled: true });
     expect(mockSettingsService.setProUnlocked).not.toHaveBeenCalled();
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'purchase_cancelled',
+      undefined,
+    );
   });
 
   it('returns a generic error on an unexpected purchase failure', async () => {
@@ -215,6 +238,10 @@ describe('purchaseService.purchasePro', () => {
     expect(result.success).toBe(false);
     expect(result.cancelled).toBeFalsy();
     expect(result.error).toBeTruthy();
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'purchase_failed',
+      undefined,
+    );
   });
 
   it('errors if the purchase completes but the entitlement is not active', async () => {
@@ -227,6 +254,10 @@ describe('purchaseService.purchasePro', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBeTruthy();
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'purchase_failed',
+      undefined,
+    );
   });
 });
 
@@ -238,10 +269,18 @@ describe('purchaseService.restorePurchases', () => {
   it('unlocks Pro when a previous purchase is restored', async () => {
     mockPurchases.restorePurchases.mockResolvedValue(customerInfoWithEntitlement(true));
 
-    const result = await purchaseService.restorePurchases();
+    const result = await purchaseService.restorePurchases('settings');
 
     expect(mockSettingsService.setProUnlocked).toHaveBeenCalledWith(true);
     expect(result).toEqual({ success: true });
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'restore_attempted',
+      'settings',
+    );
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'restore_succeeded',
+      'settings',
+    );
   });
 
   it('reports no purchase found when the entitlement is not active', async () => {
@@ -251,6 +290,10 @@ describe('purchaseService.restorePurchases', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBeTruthy();
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'restore_failed',
+      undefined,
+    );
   });
 
   it('returns a generic error when the restore call fails', async () => {
@@ -260,5 +303,24 @@ describe('purchaseService.restorePurchases', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBeTruthy();
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'restore_failed',
+      undefined,
+    );
+  });
+});
+
+describe('purchaseService.trackPaywallViewed', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('tracks a paywall_viewed event with the given source', () => {
+    purchaseService.trackPaywallViewed('adjective_quiz');
+
+    expect(mockTrackPurchaseFunnelEvent).toHaveBeenCalledWith(
+      'paywall_viewed',
+      'adjective_quiz',
+    );
   });
 });
