@@ -5,8 +5,8 @@ import { useCallback, useState } from 'react';
 /**
  * Reports whether the (premium) adjective declension feature is accessible —
  * either purchased outright, or still within the free trial question
- * allowance. Backed by purchaseService — currently a local-only stub, see
- * its TODOs for where RevenueCat plugs in.
+ * allowance. Backed by purchaseService, which checks the RevenueCat
+ * entitlement (cached locally for offline use).
  *
  * Re-checks on every screen focus (not just mount) so the home screen's
  * badge/remaining-count updates immediately after a trial session or a
