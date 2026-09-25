@@ -164,7 +164,9 @@
       "correct_answer_was": "Poprawna odpowiedź: {{answer}}",
       "entry_point_label": "Ćwicz deklinację przymiotników",
       "entry_point_title": "Deklinacja Przymiotników",
-      "entry_point_subtitle": "Opanuj końcówki der/die/das"
+      "entry_point_subtitle": "Opanuj końcówki der/die/das",
+      "why_label": "Dlaczego",
+      "continue": "Dalej"
     },
     "paywall": {
       "premium_badge": "Premium",

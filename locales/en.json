@@ -154,7 +154,9 @@
       "correct_answer_was": "Correct answer: {{answer}}",
       "entry_point_label": "Practice adjective declension",
       "entry_point_title": "Adjective Declension",
-      "entry_point_subtitle": "Master der/die/das adjective endings"
+      "entry_point_subtitle": "Master der/die/das adjective endings",
+      "why_label": "Why",
+      "continue": "Continue"
     },
     "paywall": {
       "premium_badge": "Premium",

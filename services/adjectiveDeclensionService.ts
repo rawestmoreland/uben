@@ -281,6 +281,44 @@ export interface AdjectiveDeclensionQuestion {
   germanCase: GermanCase;
   gender: GermanGender;
   declensionType: DeclensionType;
+  /** Plain-language explanation of why correctAnswer takes this ending */
+  explanation: string;
+}
+
+const GENDER_LABELS: Record<GermanGender, string> = {
+  masculine: 'masculine',
+  feminine: 'feminine',
+  neuter: 'neuter',
+  plural: 'plural',
+};
+
+const CASE_LABELS: Record<'nominative' | 'accusative', string> = {
+  nominative: 'nominative (the subject)',
+  accusative: 'accusative (the direct object)',
+};
+
+/**
+ * Build a plain-language explanation of why `ending` is correct here, tied
+ * to the actual grammatical trigger (determiner type + case + gender) so it
+ * reinforces the rule rather than just restating the answer.
+ */
+function explainEnding(
+  declensionType: DeclensionType,
+  germanCase: 'nominative' | 'accusative',
+  gender: GermanGender,
+  determiner: string,
+  ending: string,
+): string {
+  const genderLabel = GENDER_LABELS[gender];
+  const caseLabel = CASE_LABELS[germanCase];
+
+  if (declensionType === 'weak') {
+    return `"${determiner}" is a der-word, and it already marks the ${genderLabel} ${caseLabel} — so the adjective just takes the weak ending "-${ending}".`;
+  }
+  if (declensionType === 'mixed') {
+    return `After the ein-word "${determiner}", the adjective takes "-${ending}" here: ${genderLabel} ${caseLabel}.`;
+  }
+  return `With no article at all, the adjective itself has to show the gender and case — that's why it takes the strong ending "-${ending}" (${genderLabel} ${caseLabel}).`;
 }
 
 /**
@@ -360,5 +398,6 @@ export function generateDeclensionQuestion(adjective: {
     germanCase,
     gender,
     declensionType,
+    explanation: explainEnding(declensionType, germanCase, gender, determiner, ending),
   };
 }

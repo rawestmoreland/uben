@@ -27,23 +27,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// ── Constants ────────────────────────────────────────────────────────
-
-const FEEDBACK_DELAY_MS = 1400;
-
 // ── Quiz Screen ──────────────────────────────────────────────────────
+//
+// Feedback does NOT auto-advance: the explanation needs to actually be read,
+// not flash past. The learner taps "Continue" when ready — see PlayingState.
 
 export default function AdjectiveQuizScreen() {
   const { t } = useTranslation('app');
   const quiz = useAdjectiveQuizSession();
-  const { phase, nextCard, results } = quiz;
-
-  // Auto-advance after feedback
-  useEffect(() => {
-    if (phase !== 'feedback') return;
-    const timer = setTimeout(nextCard, FEEDBACK_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, [phase, nextCard]);
+  const { phase, results } = quiz;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -128,6 +120,11 @@ function PlayingState({ quiz }: PlayingStateProps) {
     quiz.submitAnswer(answer);
   }
 
+  function handleContinue() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    quiz.nextCard();
+  }
+
   return (
     <View style={styles.playingContainer}>
       {/* ── Top row: close ──────────────────────────────────── */}
@@ -168,8 +165,12 @@ function PlayingState({ quiz }: PlayingStateProps) {
         </View>
       </View>
 
-      {/* ── Sentence Card ───────────────────────────────────── */}
-      <View style={styles.sentenceSection}>
+      <ScrollView
+        style={styles.answerScroll}
+        contentContainerStyle={styles.answerScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Sentence Card ─────────────────────────────────── */}
         <View style={[styles.sentenceCard, shadowStyle]}>
           <Text style={styles.sentenceText}>
             {currentQuestion.before}{' '}
@@ -194,10 +195,20 @@ function PlayingState({ quiz }: PlayingStateProps) {
             </Text>
           )}
         </View>
-      </View>
 
-      {/* ── Answer Options ───────────────────────────────────── */}
-      <View style={styles.optionsSection}>
+        {/* ── Explanation ──────────────────────────────────── */}
+        {isFeedback && (
+          <View style={[styles.explanationCard, shadowStyleSmall]}>
+            <Text style={styles.explanationLabel}>
+              {t('adjective_quiz.why_label').toUpperCase()}
+            </Text>
+            <Text style={styles.explanationText}>
+              {currentQuestion.explanation}
+            </Text>
+          </View>
+        )}
+
+        {/* ── Answer Options ───────────────────────────────── */}
         <View style={styles.optionsGrid}>
           {currentQuestion.options.map((option) => {
             const isSelected = selectedAnswer === option;
@@ -239,7 +250,25 @@ function PlayingState({ quiz }: PlayingStateProps) {
             );
           })}
         </View>
-      </View>
+
+        {/* ── Continue ─────────────────────────────────────── */}
+        {isFeedback && (
+          <Pressable
+            style={({ pressed }) => [
+              styles.continueButton,
+              shadowStyle,
+              pressed && styles.continueButtonPressed,
+            ]}
+            onPress={handleContinue}
+            accessibilityRole="button"
+            accessibilityLabel={t('adjective_quiz.continue')}
+          >
+            <Text style={styles.continueButtonText}>
+              {t('adjective_quiz.continue').toUpperCase()}
+            </Text>
+          </Pressable>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -453,10 +482,13 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.purple,
   },
 
-  sentenceSection: {
+  answerScroll: {
     flex: 1,
+  },
+  answerScrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingBottom: Spacing.lg,
   },
   sentenceCard: {
     backgroundColor: AppColors.white,
@@ -465,7 +497,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xl,
     paddingHorizontal: Spacing.xl,
     alignItems: 'center',
-    alignSelf: 'stretch',
   },
   sentenceText: {
     fontSize: Typography.heading,
@@ -493,13 +524,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  optionsSection: {
-    paddingBottom: Spacing.lg,
+  explanationCard: {
+    backgroundColor: AppColors.cream,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    borderLeftWidth: Layout.borderWidth,
+    borderLeftColor: AppColors.purple,
+    padding: Spacing.md,
+    marginTop: Spacing.md,
   },
+  explanationLabel: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.purple,
+    letterSpacing: 1,
+    marginBottom: Spacing.xs,
+  },
+  explanationText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.black,
+    lineHeight: 20,
+  },
+
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
+    marginTop: Spacing.lg,
   },
   optionButton: {
     flexBasis: '48%',
@@ -519,6 +571,27 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.bold,
     color: AppColors.black,
+  },
+
+  continueButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 64,
+    marginTop: Spacing.lg,
+  },
+  continueButtonPressed: {
+    transform: [{ translateY: 4 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  continueButtonText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
   },
 
   completeContainer: {

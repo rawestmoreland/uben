@@ -185,6 +185,28 @@ describe('generateDeclensionQuestion()', () => {
     }
   });
 
+  it('includes a non-empty explanation that mentions the correct ending', () => {
+    for (let i = 0; i < 20; i++) {
+      const q = generateDeclensionQuestion(adjective);
+      expect(q.explanation.length).toBeGreaterThan(0);
+      const ending = q.correctAnswer.slice(q.adjectiveBase.length);
+      expect(q.explanation.includes(`-${ending}`)).toBe(true);
+    }
+  });
+
+  it('names the determiner in the explanation for weak/mixed declension', () => {
+    for (let i = 0; i < 50; i++) {
+      const q = generateDeclensionQuestion(adjective);
+      if (q.declensionType === 'weak' || q.declensionType === 'mixed') {
+        // The determiner (der/die/das/den/ein/eine/einen) appears in `before`
+        // for weak/mixed sentences and should also be quoted in the explanation.
+        expect(q.explanation).toMatch(/"[a-zäöüß]+"/);
+      } else {
+        expect(q.explanation).toMatch(/no article/);
+      }
+    }
+  });
+
   it('does offer strong declension for a drink-compatible adjective, always with a mass noun', () => {
     const drinkAdjective = { german: 'kalt', english: 'cold' };
     let sawStrong = false;

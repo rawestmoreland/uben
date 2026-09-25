@@ -154,7 +154,9 @@
       "correct_answer_was": "Risposta corretta: {{answer}}",
       "entry_point_label": "Pratica la declinazione degli aggettivi",
       "entry_point_title": "Declinazione Aggettivi",
-      "entry_point_subtitle": "Padroneggia le desinenze con der/die/das"
+      "entry_point_subtitle": "Padroneggia le desinenze con der/die/das",
+      "why_label": "Perché",
+      "continue": "Continua"
     },
     "paywall": {
       "premium_badge": "Premium",
