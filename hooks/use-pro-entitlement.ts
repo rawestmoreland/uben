@@ -4,8 +4,8 @@ import { useCallback, useState } from 'react';
 
 /**
  * Reports whether the "Üben Pro" bundle (no ads, B-level words, unlimited
- * added words, adjective endings) is unlocked. Backed by purchaseService —
- * currently a local-only stub, see its TODOs for where RevenueCat plugs in.
+ * added words, adjective endings) is unlocked. Backed by purchaseService,
+ * which checks the RevenueCat entitlement (cached locally for offline use).
  *
  * Re-checks on every screen focus (not just mount) so gated surfaces (ads,
  * the level selector, the add-word screen) update immediately after a

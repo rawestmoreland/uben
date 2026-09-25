@@ -1,5 +1,29 @@
 import { getDatabase } from '@/database/db';
+import Purchases, {
+  type CustomerInfo,
+  PURCHASES_ERROR_CODE,
+  type PurchasesError,
+  type PurchasesOfferings,
+  type PurchasesPackage,
+} from 'react-native-purchases';
+import { Platform } from 'react-native';
 import { settingsService } from './settingsService';
+
+/**
+ * The RevenueCat entitlement identifier configured in the dashboard.
+ *
+ * Written as an explicit ü (U+00FC, precomposed "u with diaeresis")
+ * escape rather than a literal character on purpose: the identifier
+ * contains "ü", which can round-trip as either the precomposed codepoint or
+ * "u" + a combining diaeresis (U+0308) — two byte sequences that render
+ * identically but never string-match. Before shipping, copy the identifier
+ * directly from the RevenueCat dashboard and confirm it matches this exact
+ * escape (or update the escape to match) rather than retyping either one.
+ */
+export const PRO_ENTITLEMENT_ID = 'üben_german_articles_pro';
+
+/** The one-time, non-consumable product that unlocks the Üben Pro bundle. */
+export const LIFETIME_PRO_PRODUCT_ID = 'lifetime_pro';
 
 /**
  * Number of free adjective-endings questions a user can answer before
@@ -18,19 +42,77 @@ export const PRO_FREE_WORD_LIMIT = 5;
 /**
  * Entitlement layer for the "Üben Pro" bundle: no ads, B-level words,
  * unlimited added words, and adjective endings practice — all behind a
- * single one-time purchase.
+ * single one-time purchase, backed by RevenueCat.
  *
- * This is currently a LOCAL-ONLY STUB — there is no real payment processor
- * wired up yet. `purchasePro` just flips a local flag so the paywall and
- * every gated surface can be built and tested end-to-end. When RevenueCat
- * (react-native-purchases) is integrated, only the bodies of these methods
- * need to change to call the SDK and cache its result via settingsService —
- * callers don't need to change.
+ * `settingsService`'s `pro_unlocked` flag is kept as an offline-fast-path
+ * cache of the entitlement RevenueCat reports, per the app's offline-first
+ * architecture — it's written through on every successful RevenueCat call
+ * and read as a fallback when the SDK call fails (no network, not
+ * configured on web, etc).
  */
 class PurchaseService {
+  private isEntitlementActive(customerInfo: CustomerInfo): boolean {
+    return Boolean(customerInfo.entitlements.active[PRO_ENTITLEMENT_ID]);
+  }
+
+  /**
+   * Cache the Pro entitlement state from a CustomerInfo payload. Also used
+   * by the app-wide `addCustomerInfoUpdateListener` in `app/_layout.tsx` so
+   * a purchase or restore completed outside this session's own flow (e.g.
+   * from another device, or via the App/Play Store directly) updates the
+   * cache immediately.
+   */
+  async syncCustomerInfo(customerInfo: CustomerInfo): Promise<boolean> {
+    const unlocked = this.isEntitlementActive(customerInfo);
+    await settingsService.setProUnlocked(unlocked);
+    return unlocked;
+  }
+
+  private isUserCancelledError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false;
+    const purchasesError = error as Partial<PurchasesError>;
+    return (
+      purchasesError.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR ||
+      purchasesError.userCancelled === true
+    );
+  }
+
+  /** Finds the `lifetime_pro` package, checked across the current offering first, then all configured offerings. */
+  private findLifetimePackage(
+    offerings: PurchasesOfferings,
+  ): PurchasesPackage | null {
+    const offeringsToSearch = offerings.current
+      ? [offerings.current, ...Object.values(offerings.all)]
+      : Object.values(offerings.all);
+
+    for (const offering of offeringsToSearch) {
+      const match =
+        offering.lifetime ??
+        offering.availablePackages.find(
+          (pkg) => pkg.product.identifier === LIFETIME_PRO_PRODUCT_ID,
+        );
+      if (match) return match;
+    }
+
+    return null;
+  }
+
   /** Whether the Üben Pro bundle is unlocked (purchased). */
   async isProUnlocked(): Promise<boolean> {
-    return settingsService.getProUnlocked();
+    if (Platform.OS === 'web') {
+      return settingsService.getProUnlocked();
+    }
+
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      return await this.syncCustomerInfo(customerInfo);
+    } catch (error) {
+      console.error(
+        '[Purchase] Failed to fetch customer info, using cached entitlement:',
+        error,
+      );
+      return settingsService.getProUnlocked();
+    }
   }
 
   /** How many free trial questions the user has left (0 once spent or once Pro is unlocked). */
@@ -64,26 +146,78 @@ class PurchaseService {
     await settingsService.setAdjectiveDeclensionTrialQuestionsUsed(used + 1);
   }
 
-  /**
-   * Complete a one-time purchase unlocking the full Üben Pro bundle.
-   *
-   * TODO(RevenueCat): replace this body with a real purchase flow —
-   * `Purchases.purchasePackage(...)` against the `lifetime_pro` product,
-   * then persist the resulting entitlement via settingsService.setProUnlocked
-   * on success (checking `customerInfo.entitlements.active['üben_german_articles_pro']`).
-   */
-  async purchasePro(): Promise<{ success: boolean; error?: string }> {
-    await settingsService.setProUnlocked(true);
-    return { success: true };
+  /** Complete a one-time purchase unlocking the full Üben Pro bundle. */
+  async purchasePro(): Promise<{
+    success: boolean;
+    error?: string;
+    cancelled?: boolean;
+  }> {
+    if (Platform.OS === 'web') {
+      return { success: false, error: 'Purchases are not available on web.' };
+    }
+
+    try {
+      const offerings = await Purchases.getOfferings();
+      const lifetimePackage = this.findLifetimePackage(offerings);
+
+      if (!lifetimePackage) {
+        console.error(
+          `[Purchase] No "${LIFETIME_PRO_PRODUCT_ID}" package found in RevenueCat offerings`,
+        );
+        return {
+          success: false,
+          error:
+            'The Pro upgrade is not available right now. Please try again later.',
+        };
+      }
+
+      const { customerInfo } = await Purchases.purchasePackage(lifetimePackage);
+      const unlocked = await this.syncCustomerInfo(customerInfo);
+
+      if (!unlocked) {
+        console.error(
+          '[Purchase] Purchase completed but entitlement is not active:',
+          customerInfo.entitlements.all,
+        );
+        return {
+          success: false,
+          error:
+            'Purchase completed, but Pro could not be activated. Please try restoring your purchase.',
+        };
+      }
+
+      return { success: true };
+    } catch (error) {
+      if (this.isUserCancelledError(error)) {
+        return { success: false, cancelled: true };
+      }
+      console.error('[Purchase] purchasePro failed:', error);
+      return {
+        success: false,
+        error: 'Something went wrong completing your purchase. Please try again.',
+      };
+    }
   }
 
-  /**
-   * TODO(RevenueCat): replace with `Purchases.restorePurchases()` and sync
-   * the resulting entitlement state via settingsService.
-   */
+  /** Restore a previous purchase (e.g. after a reinstall or on a new device). */
   async restorePurchases(): Promise<{ success: boolean; error?: string }> {
-    const unlocked = await settingsService.getProUnlocked();
-    return { success: unlocked };
+    if (Platform.OS === 'web') {
+      return { success: false, error: 'Purchases are not available on web.' };
+    }
+
+    try {
+      const customerInfo = await Purchases.restorePurchases();
+      const unlocked = await this.syncCustomerInfo(customerInfo);
+      return unlocked
+        ? { success: true }
+        : { success: false, error: 'No previous purchase found for this account.' };
+    } catch (error) {
+      console.error('[Purchase] restorePurchases failed:', error);
+      return {
+        success: false,
+        error: 'Something went wrong restoring your purchase. Please try again.',
+      };
+    }
   }
 
   /**
