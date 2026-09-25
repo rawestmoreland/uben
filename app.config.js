@@ -15,6 +15,16 @@ const getBundleSuffix = () => {
   return ''; // Production: com.westmorelandcreative.uben
 };
 
+// Determine URL scheme suffix — each variant needs its own scheme so that
+// scanning the `expo start` QR code (a germanpractice://expo-development-client/...
+// deep link) can only be claimed by the dev-client build, not by a preview
+// or production build also installed on the same device.
+const getSchemeSuffix = () => {
+  if (IS_DEV) return '-dev';
+  if (IS_PREVIEW) return '-preview';
+  return ''; // Production: germanpractice
+};
+
 export default {
   expo: {
     name: `üben${getAppVariant()}`,
@@ -22,7 +32,7 @@ export default {
     version: '1.8.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
-    scheme: 'germanpractice',
+    scheme: `germanpractice${getSchemeSuffix()}`,
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
     ios: {
