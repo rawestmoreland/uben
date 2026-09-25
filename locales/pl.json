@@ -173,6 +173,17 @@
       "trial_used_up_title": "Spodobało się?",
       "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować."
     },
+    "verb_quiz": {
+      "badge": "Czas Präteritum",
+      "all_caught_up": "Wszystko zrobione",
+      "no_verbs_due": "Brak czasowników do powtórki.\n\nWróć później!",
+      "correct_answer_was": "Poprawna odpowiedź: {{answer}}",
+      "entry_point_label": "Ćwicz formy czasu przeszłego prostego",
+      "entry_point_title": "Czasowniki: Präteritum",
+      "entry_point_subtitle": "Opanuj nieregularne formy czasu przeszłego",
+      "question_prompt": "Jaka jest forma Präteritum (czas przeszły prosty) dla \"{{infinitive}}\"?",
+      "continue": "Dalej"
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Odblokuj Üben Pro",

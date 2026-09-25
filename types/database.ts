@@ -156,6 +156,20 @@ export interface AdjectiveReviewSession {
   newCount: number;
 }
 
+/** A verb card that is due for review, joined with its word data */
+export interface DueVerbCard extends CardProgress {
+  infinitive: string;
+  past_tense: string;
+  english: string | null;
+}
+
+/** A verb Präteritum (simple past) review session containing due cards and new cards */
+export interface VerbImperfectSession {
+  cards: DueVerbCard[];
+  dueCount: number;
+  newCount: number;
+}
+
 // ── Input Types ───────────────────────────────────────────────────────
 
 /** A user-added noun joined with its category display name */
@@ -170,6 +184,15 @@ export interface UserNounInput {
   category_id: number;
   plural?: string;
   english?: string;
+}
+
+/** Shape for adding a user-created verb */
+export interface UserVerbInput {
+  infinitive: string;
+  past_tense: string;
+  past_participle?: string;
+  english?: string;
+  is_separable?: boolean;
 }
 
 /** Valid category names for noun classification */
@@ -215,6 +238,17 @@ export interface SeedCategory {
 export interface SeedAdjective {
   german: string;
   english: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/** Shape for seed verb data */
+export interface SeedVerb {
+  infinitive: string;
+  /** 3rd person singular Präteritum (simple past) form, e.g. "ging" for "gehen" */
+  past_tense: string;
+  past_participle?: string;
+  english: string;
+  is_separable?: boolean;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 }
 
