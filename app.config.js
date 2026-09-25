@@ -25,26 +25,10 @@ const getSchemeSuffix = () => {
   return ''; // Production: germanpractice
 };
 
-// Determine slug suffix. This is the actual fix for the QR-opens-wrong-build
-// issue: expo-dev-client's config plugin always registers an `exp+<slug>`
-// scheme (see expo-dev-client/plugin/build/getDefaultScheme.js), and `expo
-// start`'s scheme resolver *prefers* any `exp+`-prefixed scheme over our own
-// custom `scheme` above (see @expo/cli's utils/scheme.js,
-// resolveExpoOrLongestScheme). Since `expo-dev-client` is a normal dependency
-// installed in every build profile, every variant registers `exp+uben`
-// unless the slug itself is varied — the custom scheme suffix alone can't
-// fix this, because the CLI never even looks at it once an exp+ scheme
-// exists.
-const getSlugSuffix = () => {
-  if (IS_DEV) return '-dev';
-  if (IS_PREVIEW) return '-preview';
-  return ''; // Production: uben
-};
-
 export default {
   expo: {
     name: `üben${getAppVariant()}`,
-    slug: `uben${getSlugSuffix()}`,
+    slug: 'uben',
     version: '1.8.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
@@ -66,6 +50,29 @@ export default {
     },
     plugins: [
       'expo-router',
+      [
+        'expo-dev-client',
+        {
+          // expo-dev-client is a normal dependency, so its config plugin
+          // runs for every build profile — including preview/production —
+          // and by default registers an `exp+uben` URL scheme in each one
+          // (see expo-dev-client/plugin/build/getDefaultScheme.js). Worse,
+          // `expo start`'s scheme resolver *prefers* any `exp+`-prefixed
+          // scheme over our own custom `scheme` field above, so with that
+          // scheme duplicated across variants, the dev-client QR code could
+          // resolve to whichever installed app the OS picked — often the
+          // preview build instead of the dev client.
+          //
+          // (`slug` can't be varied per environment instead: EAS build
+          // requires it to match the slug already registered for
+          // extra.eas.projectId.)
+          //
+          // Only the development build actually needs this scheme for
+          // `expo start`'s QR handshake, so it's the only one that
+          // registers it.
+          addGeneratedScheme: IS_DEV,
+        },
+      ],
       [
         'expo-splash-screen',
         {
