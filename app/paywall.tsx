@@ -21,18 +21,22 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Paywall Screen ───────────────────────────────────────────────────
-//
-// Purchase flow currently goes through purchaseService, a local-only stub
-// (see its TODOs) — no real payment processor is wired up yet. The UI here
-// is written against the final shape (purchase / restore / error) so it
-// doesn't need to change once RevenueCat replaces the stub's internals.
 
 export default function PaywallScreen() {
   const { t } = useTranslation('app');
   const { redirectTo } = useLocalSearchParams<{ redirectTo?: string }>();
   const { refresh } = useProEntitlement();
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function goToDestination() {
+    if (redirectTo) {
+      router.replace(redirectTo as any);
+    } else {
+      router.back();
+    }
+  }
 
   async function handleUnlock() {
     setError(null);
@@ -44,12 +48,8 @@ export default function PaywallScreen() {
       if (result.success) {
         await refresh();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        if (redirectTo) {
-          router.replace(redirectTo as any);
-        } else {
-          router.back();
-        }
-      } else {
+        goToDestination();
+      } else if (!result.cancelled) {
         setError(result.error ?? t('paywall.purchase_failed'));
       }
     } catch (err) {
@@ -57,6 +57,28 @@ export default function PaywallScreen() {
       setError(t('paywall.purchase_failed'));
     } finally {
       setIsPurchasing(false);
+    }
+  }
+
+  async function handleRestore() {
+    setError(null);
+    setIsRestoring(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    try {
+      const result = await purchaseService.restorePurchases();
+      if (result.success) {
+        await refresh();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        goToDestination();
+      } else {
+        setError(result.error ?? t('paywall.restore_failed'));
+      }
+    } catch (err) {
+      console.error('[Paywall] Restore failed:', err);
+      setError(t('paywall.restore_failed'));
+    } finally {
+      setIsRestoring(false);
     }
   }
 
@@ -100,7 +122,7 @@ export default function PaywallScreen() {
               pressed && !isPurchasing && styles.unlockButtonPressed,
             ]}
             onPress={handleUnlock}
-            disabled={isPurchasing}
+            disabled={isPurchasing || isRestoring}
             accessibilityRole="button"
             accessibilityLabel={t('paywall.unlock_button')}
           >
@@ -113,6 +135,19 @@ export default function PaywallScreen() {
             )}
           </Pressable>
           <Text style={styles.footnote}>{t('paywall.one_time_purchase')}</Text>
+          <Pressable
+            onPress={handleRestore}
+            disabled={isPurchasing || isRestoring}
+            accessibilityRole="button"
+            accessibilityLabel={t('paywall.restore_button')}
+            hitSlop={8}
+          >
+            <Text style={styles.restoreText}>
+              {isRestoring
+                ? t('paywall.restoring')
+                : t('paywall.restore_button')}
+            </Text>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
@@ -250,5 +285,13 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.sm,
+  },
+  restoreText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+    marginTop: Spacing.lg,
   },
 });

@@ -146,10 +146,9 @@ class SettingsService {
   }
 
   // ── Convenience: Üben Pro Unlock ───────────────────────────────────
-  // Cached locally as the source of truth for now (see purchaseService.ts —
-  // no real payment processor is wired up yet). Once RevenueCat is
-  // integrated, this becomes an offline-fast-path cache of the entitlement
-  // it reports, refreshed on app foreground.
+  // An offline-fast-path cache of the RevenueCat entitlement (see
+  // purchaseService.ts), written through on every successful purchase,
+  // restore, customer-info check, or customer-info update event.
 
   /** Whether the Üben Pro bundle (no ads, B-level words, unlimited words, adjective endings) is unlocked. */
   async getProUnlocked(): Promise<boolean> {
