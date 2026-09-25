@@ -4,13 +4,19 @@ import { vocabularyService } from '@/services/vocabularyService';
 import { spacedRepetitionService } from '@/services/spacedRepetitionService';
 import { statisticsService } from '@/services/statisticsService';
 import { settingsService } from '@/services/settingsService';
+import { purchaseService } from '@/services/purchaseService';
 import type { UserStats } from '@/types/database';
 
 export interface LevelOption {
   level: string;
   wordCount: number;
   comingSoon: boolean;
+  /** True when this level requires Üben Pro (and the user doesn't have it). */
+  locked: boolean;
 }
+
+/** CEFR levels bundled behind the Üben Pro entitlement (B-level and up). */
+const PRO_GATED_LEVELS = ['B1+'];
 
 const ALL_CEFR_LEVELS = ['A1', 'A2', 'B1+'];
 const VALID_LEVELS = ALL_CEFR_LEVELS;
@@ -71,6 +77,8 @@ export function useHomeData(): HomeData {
             fetchedMasteredCount,
             fetchedLevels,
             fetchedSelectedLevels,
+            isPro,
+            isGrandfatheredBLevel,
           ] = await Promise.all([
             vocabularyService.getUserStats(),
             vocabularyService.getNounCount(),
@@ -81,6 +89,8 @@ export function useHomeData(): HomeData {
             statisticsService.getMasteredCount(),
             vocabularyService.getLevelsWithCounts(),
             settingsService.getSelectedLevels(),
+            purchaseService.isProUnlocked(),
+            settingsService.getGrandfatheredBLevel(),
           ]);
 
           if (!cancelled) {
@@ -91,15 +101,23 @@ export function useHomeData(): HomeData {
             setHasReviewedToday(fetchedHasReviewedToday);
             setStrugglingCount(fetchedStrugglingCount);
             setMasteredCount(fetchedMasteredCount);
+            const canAccessProLevels = isPro || isGrandfatheredBLevel;
             const mergedLevels: LevelOption[] = ALL_CEFR_LEVELS.map((level) => {
+              const locked =
+                PRO_GATED_LEVELS.includes(level) && !canAccessProLevels;
               if (level === 'B1+') {
                 // Virtual level: includes all words in the database
-                return { level: 'B1+', wordCount: fetchedCount, comingSoon: false };
+                return {
+                  level: 'B1+',
+                  wordCount: fetchedCount,
+                  comingSoon: false,
+                  locked,
+                };
               }
               const found = fetchedLevels.find((l) => l.level === level);
               return found
-                ? { ...found, comingSoon: false }
-                : { level, wordCount: 0, comingSoon: true };
+                ? { ...found, comingSoon: false, locked }
+                : { level, wordCount: 0, comingSoon: true, locked };
             });
             setAvailableLevels(mergedLevels);
 
