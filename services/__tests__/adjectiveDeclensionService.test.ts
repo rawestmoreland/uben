@@ -1,5 +1,6 @@
 import {
   DECLENSION_NOUNS,
+  MASS_NOUNS,
   generateDeclensionQuestion,
   getAdjectiveEnding,
   getEndingOptions,
@@ -95,11 +96,105 @@ describe('generateDeclensionQuestion()', () => {
     expect(q.after).not.toContain('\u0000');
   });
 
-  it('draws its noun from the curated regular-noun list', () => {
+  it('draws its noun from the curated noun lists (regular nouns or, for strong declension, mass nouns)', () => {
+    // 'klein' is tagged for drink contexts, so this may land on either pool.
     const q = generateDeclensionQuestion(adjective);
-    const nounInSentence = DECLENSION_NOUNS.some((n) =>
+    const nounInSentence = [...DECLENSION_NOUNS, ...MASS_NOUNS].some((n) =>
       q.after.includes(n.german),
     );
     expect(nounInSentence).toBe(true);
+  });
+
+  it('never leaves a countable noun without a determiner (no bare "Ich sehe Straße" style sentences)', () => {
+    // Regression test: strong declension (no article at all) must never be
+    // combined with a countable noun from DECLENSION_NOUNS — only with a
+    // bare mass noun from MASS_NOUNS ("Ich trinke kalten Kaffee").
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(adjective);
+      if (q.declensionType !== 'strong') continue;
+
+      const pairedWithCountableNoun = DECLENSION_NOUNS.some((n) =>
+        q.after.includes(n.german),
+      );
+      expect(pairedWithCountableNoun).toBe(false);
+
+      const pairedWithMassNoun = MASS_NOUNS.some((n) => q.after.includes(n.german));
+      expect(pairedWithMassNoun).toBe(true);
+    }
+  });
+
+  it('only pairs emotion/health adjectives with animate nouns (never "sad street")', () => {
+    const emotionAdjective = { german: 'traurig', english: 'sad' };
+    const inanimateNouns = DECLENSION_NOUNS.filter((n) => !n.animate).map(
+      (n) => n.german,
+    );
+
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(emotionAdjective);
+      for (const noun of inanimateNouns) {
+        expect(q.after.includes(noun)).toBe(false);
+      }
+      // Never offered strong declension either, since 'traurig' has no
+      // 'drink' context and there's nothing else strong declension could
+      // grammatically pair it with.
+      expect(q.declensionType).not.toBe('strong');
+    }
+  });
+
+  it('never offers strong declension for an adjective without a drink context', () => {
+    const objectOnlyAdjective = { german: 'schwierig', english: 'difficult' };
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(objectOnlyAdjective);
+      expect(q.declensionType).not.toBe('strong');
+    }
+  });
+
+  it('never pairs an object-only adjective with an animate noun (never "cheap man")', () => {
+    const objectOnlyAdjective = { german: 'billig', english: 'cheap' };
+    const animateNouns = DECLENSION_NOUNS.filter((n) => n.animate).map(
+      (n) => n.german,
+    );
+
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(objectOnlyAdjective);
+      for (const noun of animateNouns) {
+        expect(q.after.includes(noun)).toBe(false);
+      }
+    }
+  });
+
+  it('elides the trailing "e" on adjectives like "leise"/"müde" instead of doubling it', () => {
+    // Regression test: "leise" + "-e" ending must produce "leise", not
+    // "leisee"; "müde" + "-er" must produce "müder", not "müdeer".
+    for (const base of ['leise', 'müde']) {
+      for (let i = 0; i < 50; i++) {
+        const q = generateDeclensionQuestion({ german: base, english: 'x' });
+        expect(q.correctAnswer).not.toMatch(/ee/);
+        for (const option of q.options) {
+          expect(option).not.toMatch(/ee/);
+        }
+      }
+    }
+  });
+
+  it('never uses "kaufen" (buy) with an animate noun', () => {
+    const animateOnlyAdjective = { german: 'traurig', english: 'sad' };
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(animateOnlyAdjective);
+      expect(q.before + ' ' + q.after).not.toMatch(/kaufen/i);
+    }
+  });
+
+  it('does offer strong declension for a drink-compatible adjective, always with a mass noun', () => {
+    const drinkAdjective = { german: 'kalt', english: 'cold' };
+    let sawStrong = false;
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(drinkAdjective);
+      if (q.declensionType === 'strong') {
+        sawStrong = true;
+        expect(MASS_NOUNS.some((n) => q.after.includes(n.german))).toBe(true);
+      }
+    }
+    expect(sawStrong).toBe(true);
   });
 });
