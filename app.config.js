@@ -25,10 +25,26 @@ const getSchemeSuffix = () => {
   return ''; // Production: germanpractice
 };
 
+// Determine slug suffix. This is the actual fix for the QR-opens-wrong-build
+// issue: expo-dev-client's config plugin always registers an `exp+<slug>`
+// scheme (see expo-dev-client/plugin/build/getDefaultScheme.js), and `expo
+// start`'s scheme resolver *prefers* any `exp+`-prefixed scheme over our own
+// custom `scheme` above (see @expo/cli's utils/scheme.js,
+// resolveExpoOrLongestScheme). Since `expo-dev-client` is a normal dependency
+// installed in every build profile, every variant registers `exp+uben`
+// unless the slug itself is varied — the custom scheme suffix alone can't
+// fix this, because the CLI never even looks at it once an exp+ scheme
+// exists.
+const getSlugSuffix = () => {
+  if (IS_DEV) return '-dev';
+  if (IS_PREVIEW) return '-preview';
+  return ''; // Production: uben
+};
+
 export default {
   expo: {
     name: `üben${getAppVariant()}`,
-    slug: 'uben',
+    slug: `uben${getSlugSuffix()}`,
     version: '1.8.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
