@@ -43,7 +43,7 @@ export default function RootLayout() {
       process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE ??
       process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!;
     const androidApiKey =
-      process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY_ANDROID ??
+      process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID ??
       process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!;
 
     Purchases.configure({
