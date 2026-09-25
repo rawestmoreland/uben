@@ -313,12 +313,12 @@ function explainEnding(
   const caseLabel = CASE_LABELS[germanCase];
 
   if (declensionType === 'weak') {
-    return `"${determiner}" is a der-word, and it already marks the ${genderLabel} ${caseLabel} — so the adjective just takes the weak ending "-${ending}".`;
+    return `"${determiner}" is a definite article — a "der-word" (der/die/das and similar) — so it already marks the ${genderLabel} ${caseLabel}. That means the adjective only needs the weak ending "-${ending}".`;
   }
   if (declensionType === 'mixed') {
-    return `After the ein-word "${determiner}", the adjective takes "-${ending}" here: ${genderLabel} ${caseLabel}.`;
+    return `"${determiner}" is an "ein-word" (ein/eine/kein/mein and similar). After an ein-word, the adjective takes "-${ending}" here: ${genderLabel} ${caseLabel}.`;
   }
-  return `With no article at all, the adjective itself has to show the gender and case — that's why it takes the strong ending "-${ending}" (${genderLabel} ${caseLabel}).`;
+  return `With no article at all, the adjective itself has to show the gender and case — that's why it takes the strong ending "-${ending}" here: ${genderLabel} ${caseLabel}.`;
 }
 
 /**
