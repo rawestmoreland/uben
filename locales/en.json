@@ -156,7 +156,11 @@
       "entry_point_title": "Adjective Endings",
       "entry_point_subtitle": "Master der/die/das adjective endings",
       "why_label": "Why",
-      "continue": "Continue"
+      "continue": "Continue",
+      "trial_badge": "{{count}} Free",
+      "trial_questions_remaining": "{{count}} free questions left",
+      "trial_used_up_title": "You're hooked!",
+      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
     },
     "paywall": {
       "premium_badge": "Premium",

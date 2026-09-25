@@ -156,7 +156,11 @@
       "entry_point_title": "Desinenze degli Aggettivi",
       "entry_point_subtitle": "Padroneggia le desinenze con der/die/das",
       "why_label": "Perché",
-      "continue": "Continua"
+      "continue": "Continua",
+      "trial_badge": "{{count}} Gratis",
+      "trial_questions_remaining": "{{count}} domande gratuite rimaste",
+      "trial_used_up_title": "Ti è piaciuto?",
+      "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare."
     },
     "paywall": {
       "premium_badge": "Premium",

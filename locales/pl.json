@@ -166,7 +166,11 @@
       "entry_point_title": "Końcówki Przymiotników",
       "entry_point_subtitle": "Opanuj końcówki der/die/das",
       "why_label": "Dlaczego",
-      "continue": "Dalej"
+      "continue": "Dalej",
+      "trial_badge": "{{count}} Za darmo",
+      "trial_questions_remaining": "Pozostało {{count}} darmowych pytań",
+      "trial_used_up_title": "Spodobało się?",
+      "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować."
     },
     "paywall": {
       "premium_badge": "Premium",

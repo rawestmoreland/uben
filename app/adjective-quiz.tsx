@@ -35,16 +35,31 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function AdjectiveQuizScreen() {
   const { t } = useTranslation('app');
   const quiz = useAdjectiveQuizSession();
-  const { phase, results } = quiz;
+  const { phase, results, isTrialSession, trialQuestionsRemaining } = quiz;
+
+  // Defensive gate: the home screen already routes to the paywall once the
+  // trial is spent, but a direct/deep link could still land here.
+  useEffect(() => {
+    if (phase === 'locked') {
+      router.replace('/paywall');
+    }
+  }, [phase]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {phase === 'loading' && <LoadingState t={t} />}
+      {(phase === 'loading' || phase === 'locked') && <LoadingState t={t} />}
       {phase === 'empty' && <EmptyState t={t} />}
       {(phase === 'playing' || phase === 'feedback') && (
         <PlayingState quiz={quiz} />
       )}
-      {phase === 'complete' && <CompleteState results={results} t={t} />}
+      {phase === 'complete' && (
+        <CompleteState
+          results={results}
+          t={t}
+          isTrialSession={isTrialSession}
+          trialQuestionsRemaining={trialQuestionsRemaining}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -278,9 +293,16 @@ function PlayingState({ quiz }: PlayingStateProps) {
 interface CompleteStateProps {
   results: AdjectiveQuizResult[];
   t: TFunction;
+  isTrialSession: boolean;
+  trialQuestionsRemaining: number;
 }
 
-function CompleteState({ results, t }: CompleteStateProps) {
+function CompleteState({
+  results,
+  t,
+  isTrialSession,
+  trialQuestionsRemaining,
+}: CompleteStateProps) {
   const { handleSessionComplete } = useStoreReview();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
@@ -292,6 +314,13 @@ function CompleteState({ results, t }: CompleteStateProps) {
     maybeShowInterstitial();
     router.back();
   };
+
+  const handleUnlock = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    router.push('/paywall');
+  };
+
+  const trialExhausted = isTrialSession && trialQuestionsRemaining <= 0;
 
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
@@ -329,6 +358,38 @@ function CompleteState({ results, t }: CompleteStateProps) {
             </Text>
           </View>
         </View>
+
+        {trialExhausted && (
+          <View style={[styles.trialUpsellCard, shadowStyle]}>
+            <Text style={styles.trialUpsellTitle}>
+              {t('adjective_quiz.trial_used_up_title').toUpperCase()}
+            </Text>
+            <Text style={styles.trialUpsellText}>
+              {t('adjective_quiz.trial_used_up_subtitle')}
+            </Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.trialUpsellButton,
+                shadowStyleSmall,
+                pressed && styles.trialUpsellButtonPressed,
+              ]}
+              onPress={handleUnlock}
+              accessibilityRole="button"
+              accessibilityLabel={t('paywall.unlock_button')}
+            >
+              <Text style={styles.trialUpsellButtonText}>
+                {t('paywall.unlock_button').toUpperCase()}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+        {isTrialSession && !trialExhausted && (
+          <Text style={styles.trialRemainingNote}>
+            {t('adjective_quiz.trial_questions_remaining', {
+              count: trialQuestionsRemaining,
+            })}
+          </Text>
+        )}
 
         <View style={styles.resultsList}>
           {results.map((result, index) => (
@@ -648,6 +709,57 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     letterSpacing: 1,
     marginTop: Spacing.xs,
+  },
+
+  trialUpsellCard: {
+    backgroundColor: AppColors.purple,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
+    alignItems: 'center',
+  },
+  trialUpsellTitle: {
+    fontSize: Typography.heading,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  trialUpsellText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.regular,
+    color: AppColors.white,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  trialUpsellButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
+    alignSelf: 'stretch',
+  },
+  trialUpsellButtonPressed: {
+    transform: [{ translateY: 2 }],
+  },
+  trialUpsellButtonText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+  },
+  trialRemainingNote: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.purple,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
   },
 
   resultsList: {

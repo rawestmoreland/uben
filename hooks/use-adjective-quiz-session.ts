@@ -2,6 +2,7 @@ import {
   generateDeclensionQuestion,
   type AdjectiveDeclensionQuestion,
 } from '@/services/adjectiveDeclensionService';
+import { purchaseService } from '@/services/purchaseService';
 import {
   getQualityFromResponse,
   spacedRepetitionService,
@@ -16,7 +17,8 @@ export type AdjectiveQuizPhase =
   | 'playing'
   | 'feedback'
   | 'complete'
-  | 'empty';
+  | 'empty'
+  | 'locked';
 
 interface AdjectiveQuizCard {
   card: DueAdjectiveCard;
@@ -38,6 +40,10 @@ export interface AdjectiveQuizSessionData {
   isCorrect: boolean | null;
   progress: { current: number; total: number };
   results: AdjectiveQuizResult[];
+  /** True once this session was capped to the free trial (i.e. not purchased). */
+  isTrialSession: boolean;
+  /** Free trial questions left after the most recent answer (only meaningful for trial sessions). */
+  trialQuestionsRemaining: number;
   submitAnswer: (answer: string) => void;
   nextCard: () => void;
 }
@@ -61,6 +67,8 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [results, setResults] = useState<AdjectiveQuizResult[]>([]);
+  const [isTrialSession, setIsTrialSession] = useState(false);
+  const [trialQuestionsRemaining, setTrialQuestionsRemaining] = useState(0);
 
   const cardStartTime = useRef<number>(0);
 
@@ -71,8 +79,38 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
 
     async function loadSession() {
       try {
-        const session =
-          await spacedRepetitionService.getAdjectiveDeclensionSession(20, 5);
+        const unlocked = await purchaseService.isAdjectiveDeclensionUnlocked();
+
+        // Defensive re-check: the home screen already gates entry on
+        // entitlement, but a deep link could land here directly with the
+        // trial already spent.
+        if (!unlocked) {
+          const remaining =
+            await purchaseService.getAdjectiveDeclensionTrialQuestionsRemaining();
+          if (remaining <= 0) {
+            if (!cancelled) setPhase('locked');
+            return;
+          }
+        }
+
+        const trialRemaining = unlocked
+          ? null
+          : await purchaseService.getAdjectiveDeclensionTrialQuestionsRemaining();
+
+        // Cap the session to what's left of the free trial so the very last
+        // trial question always lands cleanly on the session-complete screen
+        // (the natural moment to show the paywall) instead of cutting off
+        // mid-sentence. Trial sessions draw entirely from new cards — SM-2
+        // intervals start at 1+ day, so nothing will actually be "due" this
+        // soon anyway, and reserving part of the cap for an empty due-card
+        // bucket would just under-deliver the promised trial size.
+        const maxCards = trialRemaining !== null ? trialRemaining : 20;
+        const newCardsLimit = trialRemaining !== null ? maxCards : 5;
+
+        const session = await spacedRepetitionService.getAdjectiveDeclensionSession(
+          maxCards,
+          newCardsLimit,
+        );
 
         if (cancelled) return;
 
@@ -80,6 +118,9 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
           setPhase('empty');
           return;
         }
+
+        setIsTrialSession(trialRemaining !== null);
+        if (trialRemaining !== null) setTrialQuestionsRemaining(trialRemaining);
 
         setCards(
           session.cards.map((card) => ({
@@ -154,8 +195,20 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
       } catch (error) {
         console.error('[AdjectiveQuiz] Failed to record review:', error);
       }
+
+      // Meter the free trial (no-ops once purchased or already spent)
+      if (isTrialSession) {
+        try {
+          await purchaseService.recordAdjectiveDeclensionTrialQuestionUsed();
+          const remaining =
+            await purchaseService.getAdjectiveDeclensionTrialQuestionsRemaining();
+          setTrialQuestionsRemaining(remaining);
+        } catch (error) {
+          console.error('[AdjectiveQuiz] Failed to record trial usage:', error);
+        }
+      }
     },
-    [phase, currentCard],
+    [phase, currentCard, isTrialSession],
   );
 
   // ── Next card ────────────────────────────────────────────────────
@@ -186,6 +239,8 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
       total: cards.length,
     },
     results,
+    isTrialSession,
+    trialQuestionsRemaining,
     submitAnswer,
     nextCard,
   };

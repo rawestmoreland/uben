@@ -33,15 +33,18 @@ export default function HomeScreen() {
     setSelectedLevels,
     isLoading,
   } = useHomeData();
-  const { isUnlocked: isAdjectiveDeclensionUnlocked } =
-    useAdjectiveDeclensionEntitlement();
+  const {
+    isUnlocked: isAdjectiveDeclensionUnlocked,
+    canAccess: canAccessAdjectiveDeclension,
+    trialQuestionsRemaining: adjectiveTrialQuestionsRemaining,
+  } = useAdjectiveDeclensionEntitlement();
 
   const handleAdjectiveDeclensionPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push(
-      isAdjectiveDeclensionUnlocked ? '/adjective-quiz' : '/paywall',
+      canAccessAdjectiveDeclension ? '/adjective-quiz' : '/paywall',
     );
-  }, [isAdjectiveDeclensionUnlocked]);
+  }, [canAccessAdjectiveDeclension]);
 
   const handleLevelToggle = useCallback(
     async (level: string) => {
@@ -233,13 +236,23 @@ export default function HomeScreen() {
                 {t('adjective_quiz.entry_point_subtitle')}
               </Text>
             </View>
-            {!isAdjectiveDeclensionUnlocked && (
-              <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>
-                  {t('paywall.premium_badge').toUpperCase()}
+            {!isAdjectiveDeclensionUnlocked && adjectiveTrialQuestionsRemaining > 0 && (
+              <View style={styles.trialBadge}>
+                <Text style={styles.trialBadgeText}>
+                  {t('adjective_quiz.trial_badge', {
+                    count: adjectiveTrialQuestionsRemaining,
+                  }).toUpperCase()}
                 </Text>
               </View>
             )}
+            {!isAdjectiveDeclensionUnlocked &&
+              adjectiveTrialQuestionsRemaining <= 0 && (
+                <View style={styles.proBadge}>
+                  <Text style={styles.proBadgeText}>
+                    {t('paywall.premium_badge').toUpperCase()}
+                  </Text>
+                </View>
+              )}
           </View>
         </Pressable>
 
@@ -759,6 +772,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
   },
   proBadgeText: {
+    fontSize: 10,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 0.5,
+  },
+  trialBadge: {
+    backgroundColor: AppColors.green,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    paddingVertical: 4,
+    paddingHorizontal: Spacing.sm,
+  },
+  trialBadgeText: {
     fontSize: 10,
     fontWeight: Typography.bold,
     color: AppColors.black,

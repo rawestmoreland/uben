@@ -13,6 +13,8 @@ export const SETTINGS_KEYS = {
   LAST_REVIEW_REQUEST_DATE: 'last_review_request_date',
   INTERSTITIAL_SESSION_COUNT: 'interstitial_session_count',
   ADJECTIVE_DECLENSION_UNLOCKED: 'adjective_declension_unlocked',
+  ADJECTIVE_DECLENSION_TRIAL_QUESTIONS_USED:
+    'adjective_declension_trial_questions_used',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -157,6 +159,25 @@ class SettingsService {
     await this.setSetting(
       SETTINGS_KEYS.ADJECTIVE_DECLENSION_UNLOCKED,
       unlocked ? 'true' : 'false',
+    );
+  }
+
+  // ── Convenience: Adjective Endings Free Trial ─────────────────────
+  // A lifetime (not daily) counter: once spent, it never replenishes on
+  // its own — the whole point is a one-time taste before the paywall.
+
+  /** Total free trial questions answered so far (lifetime, not per-session). */
+  async getAdjectiveDeclensionTrialQuestionsUsed(): Promise<number> {
+    const value = await this.getSetting(
+      SETTINGS_KEYS.ADJECTIVE_DECLENSION_TRIAL_QUESTIONS_USED,
+    );
+    return value ? parseInt(value, 10) : 0;
+  }
+
+  async setAdjectiveDeclensionTrialQuestionsUsed(count: number): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.ADJECTIVE_DECLENSION_TRIAL_QUESTIONS_USED,
+      String(count),
     );
   }
 
