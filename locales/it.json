@@ -163,6 +163,17 @@
       "trial_used_up_title": "Ti è piaciuto?",
       "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare."
     },
+    "verb_quiz": {
+      "badge": "Präteritum dei Verbi",
+      "all_caught_up": "Tutto in regola",
+      "no_verbs_due": "Nessun verbo da ripassare al momento.\n\nTorna più tardi!",
+      "correct_answer_was": "Risposta corretta: {{answer}}",
+      "entry_point_label": "Pratica il passato semplice dei verbi",
+      "entry_point_title": "Präteritum dei Verbi",
+      "entry_point_subtitle": "Padroneggia le forme irregolari del passato",
+      "question_prompt": "Qual è il Präteritum (passato semplice) di \"{{infinitive}}\"?",
+      "continue": "Continua"
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Sblocca Üben Pro",

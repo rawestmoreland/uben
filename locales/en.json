@@ -163,6 +163,17 @@
       "trial_used_up_title": "You're hooked!",
       "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
     },
+    "verb_quiz": {
+      "badge": "Verb Präteritum",
+      "all_caught_up": "All caught up",
+      "no_verbs_due": "No verbs due for review right now.\n\nCome back later!",
+      "correct_answer_was": "Correct answer: {{answer}}",
+      "entry_point_label": "Practice verb simple past forms",
+      "entry_point_title": "Verb Präteritum",
+      "entry_point_subtitle": "Master irregular simple past forms",
+      "question_prompt": "What's the Präteritum (simple past) of \"{{infinitive}}\"?",
+      "continue": "Continue"
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Unlock Üben Pro",
