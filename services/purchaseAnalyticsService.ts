@@ -37,16 +37,13 @@ export function trackPurchaseFunnelEvent(
   event: PurchaseFunnelEvent,
   source?: string | null,
 ): void {
-  if (!PB_URL || !PB_API_KEY) return;
+  if (!PB_URL || !PB_API_KEY || __DEV__) return;
 
-  fetch(
-    `${PB_URL}/api/collections/purchase_events/records?key=${PB_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event, source: source || undefined }),
-    },
-  ).catch(() => {
+  fetch(`${PB_URL}/api/collections/purchase_events/records?key=${PB_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, source: source || undefined }),
+  }).catch(() => {
     // Analytics submissions are best-effort — never surface errors to the user.
   });
 }
