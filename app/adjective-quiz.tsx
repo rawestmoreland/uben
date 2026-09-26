@@ -329,7 +329,10 @@ function CompleteState({
 
   const handleUnlock = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push('/paywall');
+    router.push({
+      pathname: '/paywall',
+      params: { source: 'adjective_quiz_trial_exhausted' },
+    });
   };
 
   const trialExhausted = isTrialSession && trialQuestionsRemaining <= 0;

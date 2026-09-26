@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "GERMAN ARTICLE PRACTICE",
+    "pro_badge": "Pro",
     "description": "Learn German nouns and articles with spaced repetition.",
     "start_practicing": "Start practicing to track your progress",
     "start_practice": "Start practice",
@@ -177,7 +178,10 @@
       "restore_button": "Restore purchases",
       "restoring": "Restoring…",
       "restore_failed": "No previous purchase found for this account.",
-      "close": "Close"
+      "close": "Close",
+      "success_title": "You're Pro now!",
+      "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, and adjective endings practice are all unlocked.",
+      "success_continue": "Continue"
     }
   }
 }
