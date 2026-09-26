@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "PRATICA ARTICOLI TEDESCHI",
+    "pro_badge": "Pro",
     "description": "Impara i sostantivi e gli articoli tedeschi con la ripetizione spaziata.",
     "start_practicing": "Inizia a praticare per monitorare i tuoi progressi",
     "start_practice": "Inizia a praticare",
@@ -177,7 +178,10 @@
       "restore_button": "Ripristina acquisti",
       "restoring": "Ripristino in corso…",
       "restore_failed": "Nessun acquisto precedente trovato per questo account.",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "success_title": "Ora sei Pro!",
+      "success_subtitle": "Niente pubblicità, vocabolario B1+, parole aggiunte illimitate e pratica delle desinenze degli aggettivi sono tutti sbloccati.",
+      "success_continue": "Continua"
     }
   }
 }

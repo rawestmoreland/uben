@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "NAUKA RODZAJNIKÓW NIEMIECKICH",
+    "pro_badge": "Pro",
     "description": "Ucz się niemieckich rzeczowników i rodzajników metodą powtórzeń rozłożonych w czasie.",
     "start_practicing": "Zacznij ćwiczyć, aby śledzić swoje postępy",
     "start_practice": "Zacznij ćwiczyć",
@@ -187,7 +188,10 @@
       "restore_button": "Przywróć zakupy",
       "restoring": "Przywracanie…",
       "restore_failed": "Nie znaleziono wcześniejszego zakupu dla tego konta.",
-      "close": "Zamknij"
+      "close": "Zamknij",
+      "success_title": "Masz teraz Pro!",
+      "success_subtitle": "Brak reklam, słownictwo B1+, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników są odblokowane.",
+      "success_continue": "Dalej"
     }
   }
 }

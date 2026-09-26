@@ -8,9 +8,11 @@ import {
 } from '@/constants/design';
 import { useAdjectiveDeclensionEntitlement } from '@/hooks/use-adjective-declension-entitlement';
 import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { ProBadge } from '@/components/pro-badge';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -38,6 +40,7 @@ export default function HomeScreen() {
     canAccess: canAccessAdjectiveDeclension,
     trialQuestionsRemaining: adjectiveTrialQuestionsRemaining,
   } = useAdjectiveDeclensionEntitlement();
+  const { isPro } = useProEntitlement();
 
   const handleAdjectiveDeclensionPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -46,7 +49,7 @@ export default function HomeScreen() {
     } else {
       router.push({
         pathname: '/paywall',
-        params: { redirectTo: '/adjective-quiz' },
+        params: { redirectTo: '/adjective-quiz', source: 'adjective_quiz_entry' },
       });
     }
   }, [canAccessAdjectiveDeclension]);
@@ -56,7 +59,10 @@ export default function HomeScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       const tapped = availableLevels.find((l) => l.level === level);
       if (tapped?.locked) {
-        router.push('/paywall');
+        router.push({
+          pathname: '/paywall',
+          params: { source: 'level_selector' },
+        });
         return;
       }
       const levelOrder = availableLevels.map((l) => l.level);
@@ -90,7 +96,10 @@ export default function HomeScreen() {
       >
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Üben</Text>
+          <View style={styles.headerTitleRow}>
+            <Text style={styles.headerTitle}>Üben</Text>
+            {isPro && <ProBadge />}
+          </View>
           <Text style={styles.headerSubtitle}>
             {t('article_practice_title')}
           </Text>
@@ -502,6 +511,11 @@ const styles = StyleSheet.create({
     borderBottomColor: AppColors.black,
     paddingBottom: Spacing.md,
     marginBottom: Spacing.lg,
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   headerTitle: {
     fontSize: Typography.huge,

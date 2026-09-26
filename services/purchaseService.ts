@@ -1,4 +1,5 @@
 import { getDatabase } from '@/database/db';
+import { trackPurchaseFunnelEvent } from './purchaseAnalyticsService';
 import Purchases, {
   type CustomerInfo,
   PURCHASES_ERROR_CODE,
@@ -146,8 +147,13 @@ class PurchaseService {
     await settingsService.setAdjectiveDeclensionTrialQuestionsUsed(used + 1);
   }
 
+  /** Track that the paywall was shown, and from where (for funnel analytics). */
+  trackPaywallViewed(source?: string | null): void {
+    trackPurchaseFunnelEvent('paywall_viewed', source);
+  }
+
   /** Complete a one-time purchase unlocking the full Üben Pro bundle. */
-  async purchasePro(): Promise<{
+  async purchasePro(source?: string | null): Promise<{
     success: boolean;
     error?: string;
     cancelled?: boolean;
@@ -155,6 +161,8 @@ class PurchaseService {
     if (Platform.OS === 'web') {
       return { success: false, error: 'Purchases are not available on web.' };
     }
+
+    trackPurchaseFunnelEvent('purchase_attempted', source);
 
     try {
       const offerings = await Purchases.getOfferings();
@@ -164,6 +172,7 @@ class PurchaseService {
         console.error(
           `[Purchase] No "${LIFETIME_PRO_PRODUCT_ID}" package found in RevenueCat offerings`,
         );
+        trackPurchaseFunnelEvent('purchase_failed', source);
         return {
           success: false,
           error:
@@ -179,6 +188,7 @@ class PurchaseService {
           '[Purchase] Purchase completed but entitlement is not active:',
           customerInfo.entitlements.all,
         );
+        trackPurchaseFunnelEvent('purchase_failed', source);
         return {
           success: false,
           error:
@@ -186,12 +196,15 @@ class PurchaseService {
         };
       }
 
+      trackPurchaseFunnelEvent('purchase_succeeded', source);
       return { success: true };
     } catch (error) {
       if (this.isUserCancelledError(error)) {
+        trackPurchaseFunnelEvent('purchase_cancelled', source);
         return { success: false, cancelled: true };
       }
       console.error('[Purchase] purchasePro failed:', error);
+      trackPurchaseFunnelEvent('purchase_failed', source);
       return {
         success: false,
         error: 'Something went wrong completing your purchase. Please try again.',
@@ -200,19 +213,27 @@ class PurchaseService {
   }
 
   /** Restore a previous purchase (e.g. after a reinstall or on a new device). */
-  async restorePurchases(): Promise<{ success: boolean; error?: string }> {
+  async restorePurchases(
+    source?: string | null,
+  ): Promise<{ success: boolean; error?: string }> {
     if (Platform.OS === 'web') {
       return { success: false, error: 'Purchases are not available on web.' };
     }
 
+    trackPurchaseFunnelEvent('restore_attempted', source);
+
     try {
       const customerInfo = await Purchases.restorePurchases();
       const unlocked = await this.syncCustomerInfo(customerInfo);
-      return unlocked
-        ? { success: true }
-        : { success: false, error: 'No previous purchase found for this account.' };
+      if (unlocked) {
+        trackPurchaseFunnelEvent('restore_succeeded', source);
+        return { success: true };
+      }
+      trackPurchaseFunnelEvent('restore_failed', source);
+      return { success: false, error: 'No previous purchase found for this account.' };
     } catch (error) {
       console.error('[Purchase] restorePurchases failed:', error);
+      trackPurchaseFunnelEvent('restore_failed', source);
       return {
         success: false,
         error: 'Something went wrong restoring your purchase. Please try again.',
