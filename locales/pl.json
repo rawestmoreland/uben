@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "NAUKA RODZAJNIKÓW NIEMIECKICH",
+    "pro_badge": "Pro",
     "description": "Ucz się niemieckich rzeczowników i rodzajników metodą powtórzeń rozłożonych w czasie.",
     "start_practicing": "Zacznij ćwiczyć, aby śledzić swoje postępy",
     "start_practice": "Zacznij ćwiczyć",
@@ -80,6 +81,7 @@
       "chip_c1": "C1",
       "chip_c2": "C2",
       "coming_soon": "WKRÓTCE",
+      "locked_badge": "PRO",
       "tooltip_title": "UCZ SIĘ NA SWOIM POZIOMIE",
       "tooltip_intro": "Badania nad przyswajaniem języków obcych pokazują, że nauka słownictwa na odpowiednim poziomie trudności prowadzi do szybszego i trwalszego zapamiętywania.",
       "tooltip_cite_krashen": "Hipoteza inputu mówi, że nauka języka przebiega najefektywniej, gdy materiał jest nieco powyżej aktualnego poziomu — nie za łatwy, ale i nie przytłaczający. (Krashen, 1982)",
@@ -156,6 +158,40 @@
       "slow_correct_description": "Uczysz się go. Powtórka wraca szybciej, aby utrwalić wiedzę.",
       "wrong_answer": "Błędna odpowiedź",
       "wrong_answer_description": "Nie ma problemu. Słowo resetuje się, dzięki czemu wkrótce zobaczysz je ponownie."
+    },
+    "adjective_quiz": {
+      "badge": "Końcówki Przymiotników",
+      "all_caught_up": "Wszystko zrobione",
+      "no_cards_due": "Brak przymiotników do powtórki.\n\nWróć później!",
+      "correct_answer_was": "Poprawna odpowiedź: {{answer}}",
+      "entry_point_label": "Ćwicz końcówki przymiotników",
+      "entry_point_title": "Końcówki Przymiotników",
+      "entry_point_subtitle": "Opanuj końcówki der/die/das",
+      "why_label": "Dlaczego",
+      "continue": "Dalej",
+      "trial_badge": "{{count}} Za darmo",
+      "trial_questions_remaining": "Pozostało {{count}} darmowych pytań",
+      "trial_used_up_title": "Spodobało się?",
+      "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować."
+    },
+    "paywall": {
+      "premium_badge": "Üben Pro",
+      "title": "Odblokuj Üben Pro",
+      "subtitle": "Jeden zakup. Bez reklam, słownictwo poziomu B, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników.",
+      "feature_1": "Żadnych reklam, nigdy",
+      "feature_2": "Odblokowane słownictwo B1+",
+      "feature_3": "Dodawaj nieograniczoną liczbę własnych słów",
+      "feature_4": "Ćwiczenie końcówek przymiotników z natychmiastową informacją zwrotną",
+      "unlock_button": "Odblokuj teraz",
+      "one_time_purchase": "Jednorazowy zakup. Bez subskrypcji.",
+      "purchase_failed": "Coś poszło nie tak. Spróbuj ponownie.",
+      "restore_button": "Przywróć zakupy",
+      "restoring": "Przywracanie…",
+      "restore_failed": "Nie znaleziono wcześniejszego zakupu dla tego konta.",
+      "close": "Zamknij",
+      "success_title": "Masz teraz Pro!",
+      "success_subtitle": "Brak reklam, słownictwo B1+, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników są odblokowane.",
+      "success_continue": "Dalej"
     }
   }
 }

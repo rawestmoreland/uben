@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "PRATICA ARTICOLI TEDESCHI",
+    "pro_badge": "Pro",
     "description": "Impara i sostantivi e gli articoli tedeschi con la ripetizione spaziata.",
     "start_practicing": "Inizia a praticare per monitorare i tuoi progressi",
     "start_practice": "Inizia a praticare",
@@ -72,6 +73,7 @@
       "chip_c1": "C1",
       "chip_c2": "C2",
       "coming_soon": "PRESTO",
+      "locked_badge": "PRO",
       "tooltip_title": "STUDIA AL TUO LIVELLO",
       "tooltip_intro": "Le ricerche sull'acquisizione delle lingue mostrano che studiare il vocabolario al giusto livello di difficoltà porta a una memorizzazione più rapida e duratura.",
       "tooltip_cite_krashen": "L'ipotesi dell'input sostiene che l'acquisizione del linguaggio è più efficace quando il materiale è leggermente superiore al livello attuale — non troppo facile, non troppo difficile. (Krashen, 1982)",
@@ -146,6 +148,40 @@
       "slow_correct_description": "Stai imparando. Il ripasso torna prima per rinforzare.",
       "wrong_answer": "Risposta Sbagliata",
       "wrong_answer_description": "Nessun problema. La parola si azzera così la vedi di nuovo presto."
+    },
+    "adjective_quiz": {
+      "badge": "Desinenze degli Aggettivi",
+      "all_caught_up": "Tutto in regola",
+      "no_cards_due": "Nessun aggettivo da ripassare al momento.\n\nTorna più tardi!",
+      "correct_answer_was": "Risposta corretta: {{answer}}",
+      "entry_point_label": "Pratica le desinenze degli aggettivi",
+      "entry_point_title": "Desinenze degli Aggettivi",
+      "entry_point_subtitle": "Padroneggia le desinenze con der/die/das",
+      "why_label": "Perché",
+      "continue": "Continua",
+      "trial_badge": "{{count}} Gratis",
+      "trial_questions_remaining": "{{count}} domande gratuite rimaste",
+      "trial_used_up_title": "Ti è piaciuto?",
+      "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare."
+    },
+    "paywall": {
+      "premium_badge": "Üben Pro",
+      "title": "Sblocca Üben Pro",
+      "subtitle": "Un solo acquisto. Niente pubblicità, vocabolario di livello B, parole aggiunte illimitate e pratica delle desinenze degli aggettivi.",
+      "feature_1": "Niente pubblicità, mai",
+      "feature_2": "Vocabolario B1+ sbloccato",
+      "feature_3": "Aggiungi un numero illimitato di parole tue",
+      "feature_4": "Pratica delle desinenze degli aggettivi con feedback immediato",
+      "unlock_button": "Sblocca ora",
+      "one_time_purchase": "Acquisto una tantum. Nessun abbonamento.",
+      "purchase_failed": "Qualcosa è andato storto. Riprova.",
+      "restore_button": "Ripristina acquisti",
+      "restoring": "Ripristino in corso…",
+      "restore_failed": "Nessun acquisto precedente trovato per questo account.",
+      "close": "Chiudi",
+      "success_title": "Ora sei Pro!",
+      "success_subtitle": "Niente pubblicità, vocabolario B1+, parole aggiunte illimitate e pratica delle desinenze degli aggettivi sono tutti sbloccati.",
+      "success_continue": "Continua"
     }
   }
 }

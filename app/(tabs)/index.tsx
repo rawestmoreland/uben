@@ -6,10 +6,13 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useAdjectiveDeclensionEntitlement } from '@/hooks/use-adjective-declension-entitlement';
 import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { ProBadge } from '@/components/pro-badge';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -32,10 +35,36 @@ export default function HomeScreen() {
     setSelectedLevels,
     isLoading,
   } = useHomeData();
+  const {
+    isUnlocked: isAdjectiveDeclensionUnlocked,
+    canAccess: canAccessAdjectiveDeclension,
+    trialQuestionsRemaining: adjectiveTrialQuestionsRemaining,
+  } = useAdjectiveDeclensionEntitlement();
+  const { isPro } = useProEntitlement();
+
+  const handleAdjectiveDeclensionPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (canAccessAdjectiveDeclension) {
+      router.push('/adjective-quiz');
+    } else {
+      router.push({
+        pathname: '/paywall',
+        params: { redirectTo: '/adjective-quiz', source: 'adjective_quiz_entry' },
+      });
+    }
+  }, [canAccessAdjectiveDeclension]);
 
   const handleLevelToggle = useCallback(
     async (level: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const tapped = availableLevels.find((l) => l.level === level);
+      if (tapped?.locked) {
+        router.push({
+          pathname: '/paywall',
+          params: { source: 'level_selector' },
+        });
+        return;
+      }
       const levelOrder = availableLevels.map((l) => l.level);
       const tappedIndex = levelOrder.indexOf(level);
       if (tappedIndex < 0) return;
@@ -67,7 +96,10 @@ export default function HomeScreen() {
       >
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Üben</Text>
+          <View style={styles.headerTitleRow}>
+            <Text style={styles.headerTitle}>Üben</Text>
+            {isPro && <ProBadge />}
+          </View>
           <Text style={styles.headerSubtitle}>
             {t('article_practice_title')}
           </Text>
@@ -105,6 +137,7 @@ export default function HomeScreen() {
             onToggle={handleLevelToggle}
             label={t('level_filter.label')}
             comingSoonLabel={t('level_filter.coming_soon')}
+            lockedLabel={t('level_filter.locked_badge')}
             tooltip={{
               title: t('level_filter.tooltip_title'),
               intro: t('level_filter.tooltip_intro'),
@@ -203,6 +236,46 @@ export default function HomeScreen() {
           </Pressable>
         )}
 
+        {/* ── Adjective Declension (premium) ───────────────────── */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.adjectiveButton,
+            shadowStyleSmall,
+            pressed && styles.adjectiveButtonPressed,
+          ]}
+          onPress={handleAdjectiveDeclensionPress}
+          accessibilityRole="button"
+          accessibilityLabel={t('adjective_quiz.entry_point_label')}
+        >
+          <View style={styles.adjectiveButtonInner}>
+            <View>
+              <Text style={styles.adjectiveButtonText}>
+                {t('adjective_quiz.entry_point_title').toUpperCase()}
+              </Text>
+              <Text style={styles.adjectiveButtonSub}>
+                {t('adjective_quiz.entry_point_subtitle')}
+              </Text>
+            </View>
+            {!isAdjectiveDeclensionUnlocked && adjectiveTrialQuestionsRemaining > 0 && (
+              <View style={styles.trialBadge}>
+                <Text style={styles.trialBadgeText}>
+                  {t('adjective_quiz.trial_badge', {
+                    count: adjectiveTrialQuestionsRemaining,
+                  }).toUpperCase()}
+                </Text>
+              </View>
+            )}
+            {!isAdjectiveDeclensionUnlocked &&
+              adjectiveTrialQuestionsRemaining <= 0 && (
+                <View style={styles.proBadge}>
+                  <Text style={styles.proBadgeText}>
+                    {t('paywall.premium_badge').toUpperCase()}
+                  </Text>
+                </View>
+              )}
+          </View>
+        </Pressable>
+
         {/* ── Mastery Card ─────────────────────────────────────── */}
         <View style={styles.masteryCard}>
           <View style={styles.masteryHeader}>
@@ -264,6 +337,7 @@ interface LevelSelectorProps {
   onToggle: (level: string) => void;
   label: string;
   comingSoonLabel: string;
+  lockedLabel: string;
   tooltip: {
     title: string;
     intro: string;
@@ -274,7 +348,7 @@ interface LevelSelectorProps {
   };
 }
 
-function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comingSoonLabel, tooltip }: LevelSelectorProps) {
+function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comingSoonLabel, lockedLabel, tooltip }: LevelSelectorProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -324,7 +398,7 @@ function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comin
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.levelChips}
       >
-        {availableLevels.map(({ level, comingSoon }) => {
+        {availableLevels.map(({ level, comingSoon, locked }) => {
           const isSelected = selectedLevels.includes(level);
           if (comingSoon) {
             return (
@@ -336,6 +410,20 @@ function LevelSelector({ availableLevels, selectedLevels, onToggle, label, comin
                 <Text style={styles.levelChipTextComingSoon}>{level}</Text>
                 <Text style={styles.levelChipComingSoonBadge}>{comingSoonLabel}</Text>
               </View>
+            );
+          }
+          if (locked) {
+            return (
+              <Pressable
+                key={level}
+                style={styles.levelChipLocked}
+                onPress={() => onToggle(level)}
+                accessibilityRole="button"
+                accessibilityLabel={`${level} level, requires Üben Pro`}
+              >
+                <Text style={styles.levelChipTextLocked}>{level}</Text>
+                <Text style={styles.levelChipLockedBadge}>{lockedLabel}</Text>
+              </Pressable>
             );
           }
           return (
@@ -423,6 +511,11 @@ const styles = StyleSheet.create({
     borderBottomColor: AppColors.black,
     paddingBottom: Spacing.md,
     marginBottom: Spacing.lg,
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   headerTitle: {
     fontSize: Typography.huge,
@@ -567,6 +660,29 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 2,
   },
+  levelChipLocked: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.purple,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 72,
+  },
+  levelChipTextLocked: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 0.5,
+  },
+  levelChipLockedBadge: {
+    fontSize: 8,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
 
   // CTA Button
   ctaButton: {
@@ -676,6 +792,65 @@ const styles = StyleSheet.create({
     fontWeight: Typography.semibold,
     color: AppColors.white,
     opacity: 0.85,
+    letterSpacing: 0.5,
+  },
+
+  // Adjective Declension (premium) button
+  adjectiveButton: {
+    backgroundColor: AppColors.purple,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  adjectiveButtonPressed: {
+    transform: [{ translateY: 2 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  adjectiveButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  adjectiveButtonText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+  },
+  adjectiveButtonSub: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.white,
+    opacity: 0.85,
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  proBadge: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    paddingVertical: 4,
+    paddingHorizontal: Spacing.sm,
+  },
+  proBadgeText: {
+    fontSize: 10,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 0.5,
+  },
+  trialBadge: {
+    backgroundColor: AppColors.green,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    paddingVertical: 4,
+    paddingHorizontal: Spacing.sm,
+  },
+  trialBadgeText: {
+    fontSize: 10,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
     letterSpacing: 0.5,
   },
 

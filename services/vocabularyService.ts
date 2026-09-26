@@ -1,4 +1,6 @@
 import { getDatabase } from '@/database/db';
+import { PRO_FREE_WORD_LIMIT, purchaseService } from '@/services/purchaseService';
+import { settingsService } from '@/services/settingsService';
 import type {
   Category,
   DueCard,
@@ -96,7 +98,30 @@ export class VocabularyService {
    */
   async addUserNoun(
     noun: UserNounInput,
-  ): Promise<{ success: boolean; id?: number; error?: string; existingId?: number }> {
+  ): Promise<{
+    success: boolean;
+    id?: number;
+    error?: string;
+    existingId?: number;
+    limitReached?: boolean;
+  }> {
+    // Free-tier cap: Pro users and grandfathered users (who already had more
+    // than the cap before it shipped) bypass this check.
+    const [isPro, isGrandfathered] = await Promise.all([
+      purchaseService.isProUnlocked(),
+      settingsService.getGrandfatheredWordCap(),
+    ]);
+    if (!isPro && !isGrandfathered) {
+      const userNounCount = await this.getUserNounCount();
+      if (userNounCount >= PRO_FREE_WORD_LIMIT) {
+        return {
+          success: false,
+          limitReached: true,
+          error: `You've reached the free limit of ${PRO_FREE_WORD_LIMIT} added words`,
+        };
+      }
+    }
+
     // Validate category exists
     const categoryExists = await this.db.getFirstAsync<{ '1': number }>(
       'SELECT 1 FROM categories WHERE id = ?',

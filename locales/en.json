@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "GERMAN ARTICLE PRACTICE",
+    "pro_badge": "Pro",
     "description": "Learn German nouns and articles with spaced repetition.",
     "start_practicing": "Start practicing to track your progress",
     "start_practice": "Start practice",
@@ -72,6 +73,7 @@
       "chip_c1": "C1",
       "chip_c2": "C2",
       "coming_soon": "SOON",
+      "locked_badge": "PRO",
       "tooltip_title": "STUDY AT YOUR LEVEL",
       "tooltip_intro": "Research in second language acquisition consistently shows that studying vocabulary at the right difficulty level leads to faster, longer-lasting retention.",
       "tooltip_cite_krashen": "The Input Hypothesis argues that language acquisition is most effective when material is just slightly above your current level — not too easy, not overwhelming. (Krashen, 1982)",
@@ -146,6 +148,40 @@
       "slow_correct_description": "You're learning it. Review comes back sooner to reinforce.",
       "wrong_answer": "Wrong Answer",
       "wrong_answer_description": "No problem. The word resets so you see it again soon."
+    },
+    "adjective_quiz": {
+      "badge": "Adjective Endings",
+      "all_caught_up": "All caught up",
+      "no_cards_due": "No adjectives due for review right now.\n\nCome back later!",
+      "correct_answer_was": "Correct answer: {{answer}}",
+      "entry_point_label": "Practice adjective endings",
+      "entry_point_title": "Adjective Endings",
+      "entry_point_subtitle": "Master der/die/das adjective endings",
+      "why_label": "Why",
+      "continue": "Continue",
+      "trial_badge": "{{count}} Free",
+      "trial_questions_remaining": "{{count}} free questions left",
+      "trial_used_up_title": "You're hooked!",
+      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
+    },
+    "paywall": {
+      "premium_badge": "Üben Pro",
+      "title": "Unlock Üben Pro",
+      "subtitle": "One purchase. No ads, B-level vocabulary, unlimited added words, and adjective endings practice.",
+      "feature_1": "No ads, ever",
+      "feature_2": "B1+ vocabulary unlocked",
+      "feature_3": "Add unlimited words of your own",
+      "feature_4": "Adjective endings practice with instant feedback",
+      "unlock_button": "Unlock now",
+      "one_time_purchase": "One-time purchase. No subscription.",
+      "purchase_failed": "Something went wrong. Please try again.",
+      "restore_button": "Restore purchases",
+      "restoring": "Restoring…",
+      "restore_failed": "No previous purchase found for this account.",
+      "close": "Close",
+      "success_title": "You're Pro now!",
+      "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, and adjective endings practice are all unlocked.",
+      "success_continue": "Continue"
     }
   }
 }
