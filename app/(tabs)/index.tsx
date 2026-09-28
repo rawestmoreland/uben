@@ -54,6 +54,18 @@ export default function HomeScreen() {
     }
   }, [canAccessAdjectiveDeclension]);
 
+  const handleVerbQuizPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (isPro) {
+      router.push('/verb-quiz');
+    } else {
+      router.push({
+        pathname: '/paywall',
+        params: { redirectTo: '/verb-quiz' },
+      });
+    }
+  }, [isPro]);
+
   const handleLevelToggle = useCallback(
     async (level: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -273,6 +285,36 @@ export default function HomeScreen() {
                   </Text>
                 </View>
               )}
+          </View>
+        </Pressable>
+
+        {/* ── Verb Präteritum (premium) ────────────────────────── */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.verbButton,
+            shadowStyleSmall,
+            pressed && styles.verbButtonPressed,
+          ]}
+          onPress={handleVerbQuizPress}
+          accessibilityRole="button"
+          accessibilityLabel={t('verb_quiz.entry_point_label')}
+        >
+          <View style={styles.verbButtonInner}>
+            <View>
+              <Text style={styles.verbButtonText}>
+                {t('verb_quiz.entry_point_title').toUpperCase()}
+              </Text>
+              <Text style={styles.verbButtonSub}>
+                {t('verb_quiz.entry_point_subtitle')}
+              </Text>
+            </View>
+            {!isPro && (
+              <View style={styles.proBadge}>
+                <Text style={styles.proBadgeText}>
+                  {t('paywall.premium_badge').toUpperCase()}
+                </Text>
+              </View>
+            )}
           </View>
         </Pressable>
 
@@ -852,6 +894,39 @@ const styles = StyleSheet.create({
     fontWeight: Typography.bold,
     color: AppColors.black,
     letterSpacing: 0.5,
+  },
+
+  // Verb Präteritum (premium) button
+  verbButton: {
+    backgroundColor: AppColors.blue,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  verbButtonPressed: {
+    transform: [{ translateY: 2 }],
+    shadowOffset: { width: 2, height: 2 },
+  },
+  verbButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  verbButtonText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.white,
+    letterSpacing: 1,
+  },
+  verbButtonSub: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.white,
+    opacity: 0.85,
+    letterSpacing: 0.5,
+    marginTop: 2,
   },
 
   // Mastery Card

@@ -8,6 +8,8 @@ import type {
   UserNounInput,
   UserNounWithCategory,
   UserStats,
+  UserVerbInput,
+  Verb,
 } from '@/types/database';
 
 /**
@@ -388,6 +390,165 @@ export class VocabularyService {
 
       // Delete the noun itself
       await this.db.runAsync('DELETE FROM nouns WHERE id = ?', [id]);
+    });
+
+    return { success: true };
+  }
+
+  // ── Verbs ────────────────────────────────────────────────────────────
+
+  /**
+   * Get all verbs, optionally filtered by level.
+   */
+  async getVerbs(options?: { level?: string }): Promise<Verb[]> {
+    const conditions: string[] = [];
+    const params: string[] = [];
+
+    if (options?.level) {
+      conditions.push('level = ?');
+      params.push(options.level);
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    return await this.db.getAllAsync<Verb>(
+      `SELECT * FROM verbs ${whereClause} ORDER BY infinitive`,
+      params,
+    );
+  }
+
+  /**
+   * Get the total count of verbs in the database.
+   */
+  async getVerbCount(): Promise<number> {
+    const result = await this.db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) AS count FROM verbs',
+    );
+    return result?.count ?? 0;
+  }
+
+  /**
+   * Check if a verb with the given infinitive already exists.
+   * Used for real-time duplicate validation in the add word form.
+   */
+  async checkVerbExists(
+    infinitive: string,
+  ): Promise<{ exists: boolean; isUserAdded?: boolean }> {
+    const existing = await this.db.getFirstAsync<{ is_user_added: number }>(
+      'SELECT is_user_added FROM verbs WHERE infinitive = ?',
+      [infinitive],
+    );
+    if (existing) {
+      return { exists: true, isUserAdded: !!existing.is_user_added };
+    }
+    return { exists: false };
+  }
+
+  /**
+   * Add a user-created verb to the database.
+   * If the verb already exists (e.g. from seed data), returns a specific
+   * message so the UI can inform the user.
+   */
+  async addUserVerb(
+    verb: UserVerbInput,
+  ): Promise<{ success: boolean; id?: number; error?: string }> {
+    const existing = await this.db.getFirstAsync<{
+      id: number;
+      is_user_added: number;
+    }>('SELECT id, is_user_added FROM verbs WHERE infinitive = ?', [
+      verb.infinitive,
+    ]);
+
+    if (existing) {
+      return {
+        success: false,
+        error: existing.is_user_added
+          ? 'You have already added this verb'
+          : 'This verb is already in your vocabulary',
+      };
+    }
+
+    try {
+      const result = await this.db.runAsync(
+        `INSERT INTO verbs (infinitive, past_tense, past_participle, english, is_separable, is_user_added)
+         VALUES (?, ?, ?, ?, ?, 1)`,
+        [
+          verb.infinitive,
+          verb.past_tense,
+          verb.past_participle ?? null,
+          verb.english ?? null,
+          verb.is_separable ? 1 : 0,
+        ],
+      );
+      return { success: true, id: result.lastInsertRowId };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes('UNIQUE constraint')) {
+        return {
+          success: false,
+          error: 'This verb already exists in your vocabulary',
+        };
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get all user-added verbs, ordered by most recently added first.
+   */
+  async getUserVerbs(): Promise<Verb[]> {
+    return await this.db.getAllAsync<Verb>(
+      `SELECT * FROM verbs WHERE is_user_added = 1 ORDER BY created_at DESC`,
+    );
+  }
+
+  /**
+   * Get the count of user-added verbs.
+   */
+  async getUserVerbCount(): Promise<number> {
+    const result = await this.db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) AS count FROM verbs WHERE is_user_added = 1',
+    );
+    return result?.count ?? 0;
+  }
+
+  /**
+   * Delete a user-added verb and its associated card_progress / review_history.
+   * Only deletes verbs where is_user_added = 1 to prevent accidental
+   * deletion of seed data.
+   */
+  async deleteUserVerb(id: number): Promise<{ success: boolean; error?: string }> {
+    const verb = await this.db.getFirstAsync<{ is_user_added: number }>(
+      'SELECT is_user_added FROM verbs WHERE id = ?',
+      [id],
+    );
+
+    if (!verb) {
+      return { success: false, error: 'Word not found' };
+    }
+
+    if (!verb.is_user_added) {
+      return { success: false, error: 'Cannot delete built-in vocabulary' };
+    }
+
+    await this.db.withTransactionAsync(async () => {
+      await this.db.runAsync(
+        `DELETE FROM review_history
+         WHERE card_progress_id IN (
+           SELECT id FROM card_progress
+           WHERE word_type = 'verb' AND word_id = ?
+         )`,
+        [id],
+      );
+
+      await this.db.runAsync(
+        `DELETE FROM card_progress
+         WHERE word_type = 'verb' AND word_id = ?`,
+        [id],
+      );
+
+      await this.db.runAsync('DELETE FROM verbs WHERE id = ?', [id]);
     });
 
     return { success: true };

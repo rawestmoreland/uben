@@ -4,7 +4,9 @@ import type {
   CardReview,
   DueAdjectiveCard,
   DueCard,
+  DueVerbCard,
   ReviewSession,
+  VerbImperfectSession,
 } from '@/types/database';
 
 // CEFR levels in ascending order — used to build cumulative level filters.
@@ -376,6 +378,59 @@ export class SpacedRepetitionService {
        FROM adjectives a
        LEFT JOIN card_progress cp ON cp.word_type = 'adjective' AND cp.word_id = a.id
        WHERE cp.id IS NULL
+       ORDER BY RANDOM()
+       LIMIT ?`,
+      [newCardsLimit],
+    );
+
+    return {
+      cards: shuffleArray([...dueCards, ...newCards]),
+      dueCount: dueCards.length,
+      newCount: newCards.length,
+    };
+  }
+
+  /**
+   * Build a review session for the verb Präteritum (simple past) quiz: due
+   * cards mixed with new verbs, shuffled together (mirrors
+   * getAdjectiveDeclensionSession's SM-2/card_progress wiring). Unlike
+   * adjective endings, the correct answer here isn't grammatically
+   * derivable — it's memorized vocabulary (verbs.past_tense) looked up the
+   * same way a noun's article is, so there's no rule engine involved.
+   */
+  async getVerbImperfectSession(
+    maxCards: number = 20,
+    newCardsLimit: number = 5,
+  ): Promise<VerbImperfectSession> {
+    const dueCards = await this.db.getAllAsync<DueVerbCard>(
+      `SELECT cp.*, v.infinitive, v.past_tense, v.english
+       FROM card_progress cp
+       JOIN verbs v ON cp.word_type = 'verb' AND cp.word_id = v.id
+       WHERE cp.next_review_date <= date('now') AND v.past_tense IS NOT NULL
+       ORDER BY cp.next_review_date ASC
+       LIMIT ?`,
+      [maxCards - newCardsLimit],
+    );
+
+    const newCards = await this.db.getAllAsync<DueVerbCard>(
+      `SELECT
+         0 AS id,
+         'verb' AS word_type,
+         v.id AS word_id,
+         2.5 AS ease_factor,
+         0 AS interval,
+         0 AS repetitions,
+         date('now') AS next_review_date,
+         0 AS total_reviews,
+         0 AS correct_reviews,
+         NULL AS last_reviewed_at,
+         v.created_at,
+         v.infinitive,
+         v.past_tense,
+         v.english
+       FROM verbs v
+       LEFT JOIN card_progress cp ON cp.word_type = 'verb' AND cp.word_id = v.id
+       WHERE cp.id IS NULL AND v.past_tense IS NOT NULL
        ORDER BY RANDOM()
        LIMIT ?`,
       [newCardsLimit],
