@@ -3,6 +3,7 @@ import {
   type AdjectiveDeclensionQuestion,
 } from '@/services/adjectiveDeclensionService';
 import { purchaseService } from '@/services/purchaseService';
+import { settingsService } from '@/services/settingsService';
 import {
   getQualityFromResponse,
   spacedRepetitionService,
@@ -107,10 +108,13 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
         const maxCards = trialRemaining !== null ? trialRemaining : 20;
         const newCardsLimit = trialRemaining !== null ? maxCards : 5;
 
-        const session = await spacedRepetitionService.getAdjectiveDeclensionSession(
-          maxCards,
-          newCardsLimit,
-        );
+        const [session, difficulty] = await Promise.all([
+          spacedRepetitionService.getAdjectiveDeclensionSession(
+            maxCards,
+            newCardsLimit,
+          ),
+          settingsService.getAdjectiveDeclensionDifficulty(),
+        ]);
 
         if (cancelled) return;
 
@@ -122,13 +126,17 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
         setIsTrialSession(trialRemaining !== null);
         if (trialRemaining !== null) setTrialQuestionsRemaining(trialRemaining);
 
+        const includeDative = difficulty === 'advanced';
         setCards(
           session.cards.map((card) => ({
             card,
-            question: generateDeclensionQuestion({
-              german: card.german,
-              english: card.english,
-            }),
+            question: generateDeclensionQuestion(
+              {
+                german: card.german,
+                english: card.english,
+              },
+              { includeDative },
+            ),
           })),
         );
         setPhase('playing');

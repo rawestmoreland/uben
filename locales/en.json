@@ -62,7 +62,9 @@
       "use_standard_german_with_eszett": "Use standard German spelling with eszett",
       "use_swiss_german_with_ss": "Use Swiss German spelling with ss",
       "language": "Language",
-      "choose_app_language": "Choose the app display language."
+      "choose_app_language": "Choose the app display language.",
+      "adjective_difficulty_advanced": "Advanced adjective endings",
+      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice."
     },
     "level_filter": {
       "label": "STUDY LEVEL",
