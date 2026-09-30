@@ -1,0 +1,131 @@
+<title>Üben Pro Promo</title>
+<style>
+  /* Layout: fixed 1024x1024 poster. Yellow field, black slab headline, white feature card, article chips. */
+  :root {
+    --black: #000000;
+    --white: #ffffff;
+    --yellow: #ffe500;
+    --blue: #0066ff;
+    --red: #ff3333;
+    --green: #00cc66;
+    --cream: #fff8e1;
+    --font: 'Archivo Black', 'Arial Black', Impact, sans-serif;
+    --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  }
+  html, body { margin: 0; padding: 0; background: var(--black); color: var(--black); }
+  body { display: flex; justify-content: center; }
+  .wrap { width: 1024px; height: 1024px; flex: none; transform-origin: top center; }
+  .poster {
+    position: relative; width: 1024px; height: 1024px; overflow: hidden;
+    background: var(--yellow); font-family: var(--font-body);
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--black) 3px, transparent 3px),
+      linear-gradient(90deg, var(--black) 3px, transparent 3px);
+    background-size: 64px 64px; opacity: 0.08;
+  }
+  .block { position: absolute; border: 8px solid var(--black); }
+  .b-blue { width: 220px; height: 220px; background: var(--blue); top: -70px; right: 90px; transform: rotate(12deg); }
+  .b-red { width: 150px; height: 150px; background: var(--red); bottom: -50px; left: -40px; transform: rotate(-10deg); }
+  .b-green { width: 120px; height: 120px; background: var(--green); bottom: 110px; right: -40px; transform: rotate(8deg); }
+
+  .tag {
+    position: absolute; top: 64px; left: 64px;
+    background: var(--black); color: var(--yellow);
+    font: 34px/1 var(--font); letter-spacing: 6px; text-transform: uppercase;
+    padding: 16px 26px;
+  }
+  .title {
+    position: absolute; top: 150px; left: 64px; margin: 0;
+    font: 250px/0.86 var(--font); color: var(--black); letter-spacing: -6px;
+  }
+  .title span {
+    display: inline-block; background: var(--white); border: 8px solid var(--black);
+    padding: 6px 30px 14px; box-shadow: 16px 16px 0 var(--black);
+  }
+  .chips { position: absolute; top: 440px; left: 64px; display: flex; gap: 20px; }
+  .chip {
+    font: 48px/1 var(--font); text-transform: lowercase;
+    padding: 16px 30px 20px; border: 6px solid var(--black); box-shadow: 8px 8px 0 var(--black);
+  }
+  .chip.der { background: var(--blue); color: var(--white); }
+  .chip.die { background: var(--red); color: var(--white); }
+  .chip.das { background: var(--green); color: var(--black); }
+
+  .card {
+    position: absolute; left: 64px; right: 64px; bottom: 64px;
+    background: var(--cream); border: 8px solid var(--black); box-shadow: 16px 16px 0 var(--black);
+    padding: 34px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px 36px;
+  }
+  .feat { display: flex; gap: 18px; align-items: flex-start; }
+  .tick {
+    flex: none; width: 46px; height: 46px; background: var(--green);
+    border: 5px solid var(--black); display: grid; place-items: center;
+  }
+  .tick svg { width: 26px; height: 26px; display: block; }
+  .feat p { margin: 0; font: 800 29px/1.15 var(--font-body); }
+  .feat small { display: block; margin-top: 4px; font: 600 20px/1.2 var(--font-body); color: #333; }
+  .once {
+    position: absolute; right: 64px; top: 130px; transform: rotate(6deg);
+    background: var(--red); color: var(--white); border: 6px solid var(--black);
+    box-shadow: 8px 8px 0 var(--black); padding: 14px 22px; text-align: center;
+    font: 30px/1.05 var(--font); text-transform: uppercase;
+  }
+  .once small { display: block; margin-top: 6px; font: 800 18px/1 var(--font-body); letter-spacing: 2px; }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Archivo+Black&display=swap">
+
+<div class="wrap" id="wrap">
+  <div class="poster" id="poster">
+    <div class="grid"></div>
+    <div class="block b-blue"></div>
+    <div class="block b-red"></div>
+    <div class="block b-green"></div>
+
+    <div class="tag">Üben</div>
+    <div class="once">One-time<small>NO SUBSCRIPTION</small></div>
+    <h1 class="title"><span>PRO</span></h1>
+
+    <div class="chips">
+      <div class="chip der">der</div>
+      <div class="chip die">die</div>
+      <div class="chip das">das</div>
+    </div>
+
+    <div class="card">
+      <div class="feat">
+        <div class="tick"><svg viewBox="0 0 24 24"><path d="M3 13l6 6L21 6" fill="none" stroke="#000" stroke-width="4" stroke-linecap="square"/></svg></div>
+        <p>No ads, ever<small>Quiz without interruptions</small></p>
+      </div>
+      <div class="feat">
+        <div class="tick"><svg viewBox="0 0 24 24"><path d="M3 13l6 6L21 6" fill="none" stroke="#000" stroke-width="4" stroke-linecap="square"/></svg></div>
+        <p>B1+ vocabulary<small>Beyond A1 and A2</small></p>
+      </div>
+      <div class="feat">
+        <div class="tick"><svg viewBox="0 0 24 24"><path d="M3 13l6 6L21 6" fill="none" stroke="#000" stroke-width="4" stroke-linecap="square"/></svg></div>
+        <p>Unlimited own words<small>Add as many as you like</small></p>
+      </div>
+      <div class="feat">
+        <div class="tick"><svg viewBox="0 0 24 24"><path d="M3 13l6 6L21 6" fill="none" stroke="#000" stroke-width="4" stroke-linecap="square"/></svg></div>
+        <p>Adjective endings<small>Practice with instant feedback</small></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Shrink to fit small windows for preview; screenshot at 1024px wide for a 1:1 export.
+  (function () {
+    var wrap = document.getElementById('wrap');
+    function fit() {
+      var scale = Math.min(1, window.innerWidth / 1024);
+      wrap.style.transform = 'scale(' + scale + ')';
+      wrap.style.marginBottom = (1024 * scale - 1024) + 'px';
+      wrap.style.marginRight = (1024 * scale - 1024) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+  })();
+</script>
