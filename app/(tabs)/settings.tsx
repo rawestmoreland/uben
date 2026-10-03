@@ -35,6 +35,8 @@ export default function SettingsScreen() {
     setEszettPreference,
     appLanguage,
     setAppLanguage,
+    adjectiveDeclensionDifficulty,
+    setAdjectiveDeclensionDifficulty,
     isLoading,
   } = useSettings();
 
@@ -268,6 +270,33 @@ export default function SettingsScreen() {
                 </Text>
               </Pressable>
             </View>
+          </View>
+
+          {/* Adjective Endings Difficulty Toggle */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingTextGroup}>
+              <Text style={styles.settingLabel}>
+                {t('settings.adjective_difficulty_advanced').toUpperCase()}
+              </Text>
+              <Text style={styles.settingDescription}>
+                {t('settings.adjective_difficulty_advanced_description')}
+              </Text>
+            </View>
+            <Switch
+              value={adjectiveDeclensionDifficulty === 'advanced'}
+              onValueChange={(enabled) =>
+                setAdjectiveDeclensionDifficulty(
+                  enabled ? 'advanced' : 'standard',
+                )
+              }
+              disabled={isLoading}
+              trackColor={{
+                false: AppColors.lightGray,
+                true: AppColors.yellow,
+              }}
+              thumbColor={AppColors.white}
+              style={styles.switch}
+            />
           </View>
         </View>
         {/* ── Database Diagnostics Card (unlocked by tapping header 7×) ── */}
