@@ -62,7 +62,9 @@
       "use_standard_german_with_eszett": "Usa l'ortografia tedesca standard con eszett",
       "use_swiss_german_with_ss": "Usa l'ortografia del tedesco svizzero con ss",
       "language": "Lingua",
-      "choose_app_language": "Scegli la lingua dell'app."
+      "choose_app_language": "Scegli la lingua dell'app.",
+      "adjective_difficulty_advanced": "Desinenze avanzate",
+      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
     },
     "level_filter": {
       "label": "LIVELLO DI STUDIO",

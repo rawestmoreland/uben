@@ -14,6 +14,8 @@ export function useSettings() {
     'eszett' | 'ss'
   >('eszett');
   const [appLanguage, setAppLanguageState] = useState<'en' | 'it' | 'pl'>('en');
+  const [adjectiveDeclensionDifficulty, setAdjectiveDeclensionDifficultyState] =
+    useState<'standard' | 'advanced'>('standard');
   const [isLoading, setIsLoading] = useState(true);
 
   // ── Load on mount ──────────────────────────────────────────────────
@@ -23,15 +25,18 @@ export function useSettings() {
 
     (async () => {
       try {
-        const [englishHint, eszett, language] = await Promise.all([
-          settingsService.getShowEnglishHint(),
-          settingsService.getEszettPreference(),
-          settingsService.getAppLanguage(),
-        ]);
+        const [englishHint, eszett, language, adjectiveDifficulty] =
+          await Promise.all([
+            settingsService.getShowEnglishHint(),
+            settingsService.getEszettPreference(),
+            settingsService.getAppLanguage(),
+            settingsService.getAdjectiveDeclensionDifficulty(),
+          ]);
         if (!cancelled) {
           setShowEnglishHintState(englishHint);
           setEszettPreferenceState(eszett);
           setAppLanguageState(language);
+          setAdjectiveDeclensionDifficultyState(adjectiveDifficulty);
         }
       } catch (error) {
         console.error('[Settings] Failed to load settings:', error);
@@ -90,6 +95,24 @@ export function useSettings() {
     [appLanguage],
   );
 
+  const setAdjectiveDeclensionDifficulty = useCallback(
+    async (difficulty: 'standard' | 'advanced') => {
+      const previous = adjectiveDeclensionDifficulty;
+      setAdjectiveDeclensionDifficultyState(difficulty);
+      try {
+        await settingsService.setAdjectiveDeclensionDifficulty(difficulty);
+      } catch (error) {
+        console.error(
+          '[Settings] Failed to save adjective declension difficulty:',
+          error,
+        );
+        // Revert optimistic update on failure
+        setAdjectiveDeclensionDifficultyState(previous);
+      }
+    },
+    [adjectiveDeclensionDifficulty],
+  );
+
   return {
     showEnglishHint,
     setShowEnglishHint,
@@ -97,6 +120,8 @@ export function useSettings() {
     setEszettPreference,
     appLanguage,
     setAppLanguage,
+    adjectiveDeclensionDifficulty,
+    setAdjectiveDeclensionDifficulty,
     isLoading,
   };
 }

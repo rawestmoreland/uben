@@ -15,6 +15,7 @@ export const SETTINGS_KEYS = {
   ADJECTIVE_DECLENSION_UNLOCKED: 'adjective_declension_unlocked',
   ADJECTIVE_DECLENSION_TRIAL_QUESTIONS_USED:
     'adjective_declension_trial_questions_used',
+  ADJECTIVE_DECLENSION_DIFFICULTY: 'adjective_declension_difficulty',
   PRO_UNLOCKED: 'pro_unlocked',
   PRO_GRANDFATHER_MIGRATION_DONE: 'pro_grandfather_migration_done',
   GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
@@ -228,6 +229,25 @@ class SettingsService {
     await this.setSetting(
       SETTINGS_KEYS.ADJECTIVE_DECLENSION_TRIAL_QUESTIONS_USED,
       String(count),
+    );
+  }
+
+  // ── Convenience: Adjective Endings Difficulty ─────────────────────
+
+  /** Adjective declension quiz difficulty: 'standard' (nominative/accusative) or 'advanced' (adds dative). Default: 'standard'. */
+  async getAdjectiveDeclensionDifficulty(): Promise<'standard' | 'advanced'> {
+    const value = await this.getSetting(
+      SETTINGS_KEYS.ADJECTIVE_DECLENSION_DIFFICULTY,
+    );
+    return value === 'advanced' ? 'advanced' : 'standard';
+  }
+
+  async setAdjectiveDeclensionDifficulty(
+    difficulty: 'standard' | 'advanced',
+  ): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.ADJECTIVE_DECLENSION_DIFFICULTY,
+      difficulty,
     );
   }
 

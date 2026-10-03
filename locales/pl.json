@@ -70,7 +70,9 @@
       "use_standard_german_with_eszett": "Używaj standardowej pisowni z eszett",
       "use_swiss_german_with_ss": "Używaj szwajcarskiej pisowni z ss",
       "language": "Język",
-      "choose_app_language": "Wybierz język aplikacji."
+      "choose_app_language": "Wybierz język aplikacji.",
+      "adjective_difficulty_advanced": "Zaawansowane końcówki",
+      "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników."
     },
     "level_filter": {
       "label": "POZIOM NAUKI",
