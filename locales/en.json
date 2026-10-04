@@ -184,6 +184,30 @@
       "success_title": "You're Pro now!",
       "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, and adjective endings practice are all unlocked.",
       "success_continue": "Continue"
+    },
+    "home_screen": {
+      "header_subtitle": "GERMAN GRAMMAR PRACTICE",
+      "practice_label": "PRACTICE",
+      "soon_badge": "Soon",
+      "tile_due": "{{count}} due",
+      "tiles": {
+        "articles": {
+          "title": "Articles",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Plurals",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Adjectives",
+          "subtitle": "Endings"
+        },
+        "verbs": {
+          "title": "Verbs",
+          "subtitle": "Conjugation"
+        }
+      }
     }
   }
 }
