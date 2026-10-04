@@ -16,14 +16,17 @@ import { useStoreReview } from '@/hooks/use-store-review';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { TFunction } from 'i18next';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -108,6 +111,8 @@ interface PlayingStateProps {
 function PlayingState({ quiz }: PlayingStateProps) {
   const { t } = useTranslation('app');
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
 
   const isFeedback = phase === 'feedback';
 
@@ -121,12 +126,22 @@ function PlayingState({ quiz }: PlayingStateProps) {
     }
   }, [isFeedback, isCorrect]);
 
+  // Reset the input and refocus whenever a new question appears (a fresh
+  // object every time, so this also covers the loop back from feedback to
+  // the next "playing" question after Continue).
+  useEffect(() => {
+    setInputValue('');
+    inputRef.current?.focus();
+  }, [currentQuestion]);
+
   if (!currentQuestion) return null;
 
-  function handleAnswer(answer: string) {
-    if (isFeedback) return;
+  const canSubmit = inputValue.trim().length > 0;
+
+  function handleSubmit() {
+    if (isFeedback || !canSubmit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    quiz.submitAnswer(answer);
+    quiz.submitAnswer(inputValue.trim());
   }
 
   function handleContinue() {
@@ -135,7 +150,10 @@ function PlayingState({ quiz }: PlayingStateProps) {
   }
 
   return (
-    <View style={styles.playingContainer}>
+    <KeyboardAvoidingView
+      style={styles.playingContainer}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       {/* ── Top row: close ──────────────────────────────────── */}
       <View style={styles.topRow}>
         <View style={styles.modeBadge}>
@@ -178,6 +196,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
         style={styles.answerScroll}
         contentContainerStyle={styles.answerScrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* ── Question Card ─────────────────────────────────── */}
         <View style={[styles.questionCard, shadowStyle]}>
@@ -210,48 +229,41 @@ function PlayingState({ quiz }: PlayingStateProps) {
           )}
         </View>
 
-        {/* ── Answer Options ───────────────────────────────── */}
-        <View style={styles.optionsGrid}>
-          {currentQuestion.options.map((option) => {
-            const isSelected = selectedAnswer === option;
-            const isCorrectAnswer = currentQuestion.correctAnswer === option;
-
-            let buttonBg: string = AppColors.white;
-            if (isFeedback && isCorrectAnswer) {
-              buttonBg = AppColors.green;
-            } else if (isFeedback && isSelected && !isCorrectAnswer) {
-              buttonBg = AppColors.red;
-            }
-
-            return (
-              <Pressable
-                key={option}
-                style={({ pressed }) => [
-                  styles.optionButton,
-                  shadowStyleSmall,
-                  { backgroundColor: buttonBg },
-                  pressed && !isFeedback && styles.optionButtonPressed,
-                ]}
-                onPress={() => handleAnswer(option)}
-                disabled={isFeedback}
-                accessibilityRole="button"
-                accessibilityLabel={`Select ${option}`}
-              >
-                <Text
-                  style={[
-                    styles.optionButtonText,
-                    isFeedback &&
-                      (isCorrectAnswer || isSelected) && {
-                        color: AppColors.white,
-                      },
-                  ]}
-                >
-                  {option}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        {/* ── Free-text Answer ─────────────────────────────── */}
+        {!isFeedback && (
+          <View style={styles.answerRow}>
+            <TextInput
+              ref={inputRef}
+              style={styles.answerInput}
+              value={inputValue}
+              onChangeText={setInputValue}
+              placeholder={t('verb_quiz.answer_placeholder')}
+              placeholderTextColor={AppColors.textSecondary}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="off"
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+              editable={!isFeedback}
+            />
+            <Pressable
+              style={({ pressed }) => [
+                styles.checkButton,
+                shadowStyleSmall,
+                !canSubmit && styles.checkButtonDisabled,
+                pressed && canSubmit && styles.checkButtonPressed,
+              ]}
+              onPress={handleSubmit}
+              disabled={!canSubmit}
+              accessibilityRole="button"
+              accessibilityLabel={t('verb_quiz.check_button')}
+            >
+              <Text style={styles.checkButtonText}>
+                {t('verb_quiz.check_button').toUpperCase()}
+              </Text>
+            </Pressable>
+          </View>
+        )}
 
         {/* ── Continue ─────────────────────────────────────── */}
         {isFeedback && (
@@ -271,7 +283,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
           </Pressable>
         )}
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -534,30 +546,46 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  optionsGrid: {
+  answerRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.sm,
     marginTop: Spacing.lg,
+    alignItems: 'flex-start',
   },
-  optionButton: {
-    flexBasis: '48%',
-    flexGrow: 1,
+  answerInput: {
+    flex: 1,
+    backgroundColor: AppColors.white,
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
-    paddingVertical: 18,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    fontSize: Typography.body,
+    fontWeight: Typography.semibold,
+    color: AppColors.black,
+    minHeight: 56,
+  },
+  checkButton: {
+    backgroundColor: AppColors.blue,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 60,
+    minHeight: 56,
   },
-  optionButtonPressed: {
+  checkButtonPressed: {
     transform: [{ translateY: 2 }],
-    backgroundColor: AppColors.blue,
+    shadowOffset: { width: 2, height: 2 },
   },
-  optionButtonText: {
-    fontSize: Typography.body,
+  checkButtonDisabled: {
+    backgroundColor: AppColors.lightGray,
+  },
+  checkButtonText: {
+    fontSize: Typography.small,
     fontWeight: Typography.bold,
-    color: AppColors.black,
+    color: AppColors.white,
+    letterSpacing: 1,
   },
 
   continueButton: {

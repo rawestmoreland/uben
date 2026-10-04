@@ -402,11 +402,18 @@ export class SpacedRepetitionService {
     maxCards: number = 20,
     newCardsLimit: number = 5,
   ): Promise<VerbImperfectSession> {
+    // Every pronoun form must be present — a verb missing any of them
+    // (e.g. a future user-added verb that skipped some fields) can't be
+    // asked about reliably and is excluded entirely rather than risking a
+    // question with a null/empty correct answer.
+    const hasAllForms = `v.past_tense IS NOT NULL AND v.past_du IS NOT NULL
+       AND v.past_wir IS NOT NULL AND v.past_ihr IS NOT NULL AND v.past_sie IS NOT NULL`;
+
     const dueCards = await this.db.getAllAsync<DueVerbCard>(
-      `SELECT cp.*, v.infinitive, v.past_tense, v.english
+      `SELECT cp.*, v.infinitive, v.past_tense, v.past_du, v.past_wir, v.past_ihr, v.past_sie, v.english
        FROM card_progress cp
        JOIN verbs v ON cp.word_type = 'verb' AND cp.word_id = v.id
-       WHERE cp.next_review_date <= date('now') AND v.past_tense IS NOT NULL
+       WHERE cp.next_review_date <= date('now') AND ${hasAllForms}
        ORDER BY cp.next_review_date ASC
        LIMIT ?`,
       [maxCards - newCardsLimit],
@@ -427,10 +434,14 @@ export class SpacedRepetitionService {
          v.created_at,
          v.infinitive,
          v.past_tense,
+         v.past_du,
+         v.past_wir,
+         v.past_ihr,
+         v.past_sie,
          v.english
        FROM verbs v
        LEFT JOIN card_progress cp ON cp.word_type = 'verb' AND cp.word_id = v.id
-       WHERE cp.id IS NULL AND v.past_tense IS NOT NULL
+       WHERE cp.id IS NULL AND ${hasAllForms}
        ORDER BY RANDOM()
        LIMIT ?`,
       [newCardsLimit],

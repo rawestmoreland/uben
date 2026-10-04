@@ -587,6 +587,27 @@ export const migrations: Migration[] = [
       await db.execAsync('DROP TABLE IF EXISTS adjectives;');
     },
   },
+  {
+    version: '009',
+    name: 'add_verb_praeteritum_person_forms',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 009] Adding per-pronoun Präteritum columns to verbs...',
+      );
+
+      // past_tense already covers ich/er (identical for every German verb);
+      // these four cover the remaining pronouns the verb quiz asks about.
+      for (const column of ['past_du', 'past_wir', 'past_ihr', 'past_sie']) {
+        await db.execAsync(`ALTER TABLE verbs ADD COLUMN ${column} TEXT;`);
+      }
+
+      console.log('[Migration 009] Complete');
+    },
+    down: async () => {
+      // SQLite doesn't support DROP COLUMN before 3.35.0, so just leave the
+      // columns in place (matches migration 003's precedent for remote_id).
+    },
+  },
 ];
 
 /**

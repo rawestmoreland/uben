@@ -46,7 +46,10 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Seed verbs for the Präteritum (simple past) quiz feature (independent of
   // nouns/categories — verbs have no category or remote sync yet).
-  await seedVerbs(db, '1.0.0_verbs_v1');
+  // Re-versioned from '1.0.0_verbs_v1' when past_du/wir/ihr/sie were added,
+  // so any dev install that already seeded v1 re-runs the UPSERT and
+  // backfills the new columns instead of staying permanently null.
+  await seedVerbs(db, '1.1.0_verbs_v2_person_forms');
 }
 
 /**
@@ -114,10 +117,14 @@ async function seedVerbs(
   await db.withTransactionAsync(async () => {
     for (const verb of verbsV1) {
       await db.runAsync(
-        `INSERT INTO verbs (infinitive, past_tense, past_participle, english, is_separable, level, is_user_added)
-         VALUES (?, ?, ?, ?, ?, ?, 0)
+        `INSERT INTO verbs (infinitive, past_tense, past_du, past_wir, past_ihr, past_sie, past_participle, english, is_separable, level, is_user_added)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
          ON CONFLICT(infinitive) DO UPDATE SET
            past_tense = excluded.past_tense,
+           past_du = excluded.past_du,
+           past_wir = excluded.past_wir,
+           past_ihr = excluded.past_ihr,
+           past_sie = excluded.past_sie,
            past_participle = excluded.past_participle,
            english = excluded.english,
            is_separable = excluded.is_separable,
@@ -125,6 +132,10 @@ async function seedVerbs(
         [
           verb.infinitive,
           verb.past_tense,
+          verb.past_du,
+          verb.past_wir,
+          verb.past_ihr,
+          verb.past_sie,
           verb.past_participle ?? null,
           verb.english,
           verb.is_separable ? 1 : 0,

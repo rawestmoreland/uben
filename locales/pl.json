@@ -181,6 +181,8 @@
       "all_caught_up": "Wszystko zrobione",
       "no_verbs_due": "Brak czasowników do powtórki.\n\nWróć później!",
       "correct_answer_was": "Poprawna odpowiedź: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Wpisz odpowiedź...",
+      "check_button": "Sprawdź",
       "continue": "Dalej"
     },
     "paywall": {

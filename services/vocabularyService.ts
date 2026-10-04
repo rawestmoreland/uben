@@ -471,11 +471,15 @@ export class VocabularyService {
 
     try {
       const result = await this.db.runAsync(
-        `INSERT INTO verbs (infinitive, past_tense, past_participle, english, is_separable, is_user_added)
-         VALUES (?, ?, ?, ?, ?, 1)`,
+        `INSERT INTO verbs (infinitive, past_tense, past_du, past_wir, past_ihr, past_sie, past_participle, english, is_separable, is_user_added)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
         [
           verb.infinitive,
           verb.past_tense,
+          verb.past_du ?? null,
+          verb.past_wir ?? null,
+          verb.past_ihr ?? null,
+          verb.past_sie ?? null,
           verb.past_participle ?? null,
           verb.english ?? null,
           verb.is_separable ? 1 : 0,

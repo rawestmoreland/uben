@@ -7,8 +7,8 @@ import {
   getQualityFromResponse,
   spacedRepetitionService,
 } from '@/services/spacedRepetitionService';
-import { vocabularyService } from '@/services/vocabularyService';
 import type { DueVerbCard } from '@/types/database';
+import { normalizeGermanAnswer } from '@/utils/germanText';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // ── Types ────────────────────────────────────────────────────────────
@@ -49,14 +49,17 @@ export interface VerbQuizSessionData {
 
 /**
  * Manages the verb Präteritum (simple past) quiz lifecycle: loading a
- * session, generating a fresh multiple-choice question for each verb, and
+ * session, generating a fresh free-text question for each verb, and
  * recording answers with SM-2 scoring.
  *
  * Mirrors useAdjectiveQuizSession's SM-2/card_progress wiring, but this
  * feature is Pro-only with no metered free trial (unlike the adjective
  * quiz) — see purchaseService.isProUnlocked. The "correct answer" is
- * looked-up vocabulary (verbs.past_tense), not a derived grammatical rule,
- * so there's no explanation step between question and next card.
+ * looked-up vocabulary (one of the verb's stored Präteritum forms), not a
+ * derived grammatical rule, so there's no explanation step between
+ * question and next card. The learner types their answer free-text;
+ * grading is lenient (case-insensitive, ß/ss-insensitive) via
+ * normalizeGermanAnswer.
  */
 export function useVerbQuizSession(): VerbQuizSessionData {
   const [phase, setPhase] = useState<VerbQuizPhase>('loading');
@@ -84,10 +87,10 @@ export function useVerbQuizSession(): VerbQuizSessionData {
           return;
         }
 
-        const [session, allVerbs] = await Promise.all([
-          spacedRepetitionService.getVerbImperfectSession(20, 5),
-          vocabularyService.getVerbs(),
-        ]);
+        const session = await spacedRepetitionService.getVerbImperfectSession(
+          20,
+          5,
+        );
 
         if (cancelled) return;
 
@@ -96,21 +99,21 @@ export function useVerbQuizSession(): VerbQuizSessionData {
           return;
         }
 
-        const distractorPool = allVerbs
-          .map((v) => v.past_tense)
-          .filter((form): form is string => !!form);
-
         setCards(
           session.cards.map((card) => ({
             card,
-            question: generateImperfectQuestion(
-              {
-                infinitive: card.infinitive,
-                pastTense: card.past_tense,
-                english: card.english,
+            question: generateImperfectQuestion({
+              infinitive: card.infinitive,
+              forms: {
+                ich: card.past_tense,
+                du: card.past_du,
+                er: card.past_tense,
+                wir: card.past_wir,
+                ihr: card.past_ihr,
+                sie: card.past_sie,
               },
-              distractorPool,
-            ),
+              english: card.english,
+            }),
           })),
         );
         setPhase('playing');
@@ -139,7 +142,9 @@ export function useVerbQuizSession(): VerbQuizSessionData {
       if (phase !== 'playing' || !currentCard) return;
 
       const timeTakenMs = Date.now() - cardStartTime.current;
-      const correct = answer === currentCard.question.correctAnswer;
+      const correct =
+        normalizeGermanAnswer(answer) ===
+        normalizeGermanAnswer(currentCard.question.correctAnswer);
       const quality = getQualityFromResponse(correct, timeTakenMs);
 
       setSelectedAnswer(answer);

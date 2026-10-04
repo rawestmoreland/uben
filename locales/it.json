@@ -171,6 +171,8 @@
       "all_caught_up": "Tutto in regola",
       "no_verbs_due": "Nessun verbo da ripassare al momento.\n\nTorna più tardi!",
       "correct_answer_was": "Risposta corretta: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Scrivi la tua risposta...",
+      "check_button": "Controlla",
       "continue": "Continua"
     },
     "paywall": {

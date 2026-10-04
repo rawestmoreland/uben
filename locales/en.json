@@ -171,6 +171,8 @@
       "all_caught_up": "All caught up",
       "no_verbs_due": "No verbs due for review right now.\n\nCome back later!",
       "correct_answer_was": "Correct answer: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Type your answer...",
+      "check_button": "Check",
       "continue": "Continue"
     },
     "paywall": {
