@@ -102,17 +102,6 @@ export default {
         },
       ],
       [
-        'expo-build-properties',
-        {
-          android: {
-            // play-services-ads 25.4.0 (pulled in by react-native-google-mobile-ads)
-            // ships Kotlin 2.3.0 metadata; Expo SDK 54 defaults to Kotlin 2.1.x,
-            // which fails with "incompatible version of Kotlin".
-            kotlinVersion: '2.3.0',
-          },
-        },
-      ],
-      [
         'react-native-google-mobile-ads',
         {
           // Google's sample App IDs, used until real AdMob app IDs are issued.
