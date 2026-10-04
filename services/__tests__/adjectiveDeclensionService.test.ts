@@ -219,4 +219,61 @@ describe('generateDeclensionQuestion()', () => {
     }
     expect(sawStrong).toBe(true);
   });
+
+  describe('with includeDative: true (advanced difficulty)', () => {
+    it('can produce dative questions in addition to nominative/accusative', () => {
+      let sawDative = false;
+      for (let i = 0; i < 100; i++) {
+        const q = generateDeclensionQuestion(adjective, { includeDative: true });
+        expect(['nominative', 'accusative', 'dative']).toContain(q.germanCase);
+        if (q.germanCase === 'dative') sawDative = true;
+      }
+      expect(sawDative).toBe(true);
+    });
+
+    it('never pairs dative with strong declension (no dative mass-noun templates)', () => {
+      for (let i = 0; i < 100; i++) {
+        const q = generateDeclensionQuestion(adjective, { includeDative: true });
+        if (q.germanCase === 'dative') {
+          expect(q.declensionType).not.toBe('strong');
+        }
+      }
+    });
+
+    it('produces a correct answer that is one of the offered options for dative questions', () => {
+      for (let i = 0; i < 200; i++) {
+        const q = generateDeclensionQuestion(adjective, { includeDative: true });
+        if (q.germanCase === 'dative') {
+          expect(q.options).toContain(q.correctAnswer);
+        }
+      }
+    });
+
+    it('always uses a dem/der/einem/einer-style determiner and mentions dative in the explanation', () => {
+      for (let i = 0; i < 200; i++) {
+        const q = generateDeclensionQuestion(adjective, { includeDative: true });
+        if (q.germanCase !== 'dative') continue;
+
+        expect(q.before + ' ' + q.after).toMatch(
+          /\b(dem|der|einem|einer)\b/,
+        );
+        expect(q.explanation).toMatch(/dative/);
+      }
+    });
+
+    it('never leaves the sentence with an unresolved blank token for dative questions', () => {
+      for (let i = 0; i < 50; i++) {
+        const q = generateDeclensionQuestion(adjective, { includeDative: true });
+        expect(q.before).not.toContain('\u0000');
+        expect(q.after).not.toContain('\u0000');
+      }
+    });
+  });
+
+  it('defaults to includeDative: false, never producing a dative question when omitted', () => {
+    for (let i = 0; i < 100; i++) {
+      const q = generateDeclensionQuestion(adjective);
+      expect(q.germanCase).not.toBe('dative');
+    }
+  });
 });
