@@ -18,7 +18,7 @@
     "update:staging": "eas update --branch staging",
     "update:prod": "eas update --branch production",
     "build:dev": "eas build --profile development --platform all",
-    "build:staging": "eas build --profile preview-store --platform all",
+    "build:staging": "eas build --profile preview --platform all",
     "build:prod": "eas build --profile production --platform all"
   },
   "dependencies": {
