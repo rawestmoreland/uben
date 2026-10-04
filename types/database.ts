@@ -40,7 +40,16 @@ export interface Category {
 export interface Verb {
   id: number;
   infinitive: string;
+  /** 3rd person singular Präteritum form — doubles as the 1st person singular (ich/er) */
   past_tense: string | null;
+  /** 2nd person singular Präteritum form (du) */
+  past_du: string | null;
+  /** 1st person plural Präteritum form (wir) */
+  past_wir: string | null;
+  /** 2nd person plural Präteritum form (ihr) */
+  past_ihr: string | null;
+  /** 3rd person plural Präteritum form (sie) */
+  past_sie: string | null;
   past_participle: string | null;
   english: string | null;
   is_separable: number; // 0 or 1 (SQLite boolean)
@@ -156,6 +165,26 @@ export interface AdjectiveReviewSession {
   newCount: number;
 }
 
+/** A verb card that is due for review, joined with its word data. All six
+ * Präteritum forms are guaranteed non-null — the session query filters out
+ * any verb missing one. */
+export interface DueVerbCard extends CardProgress {
+  infinitive: string;
+  past_tense: string;
+  past_du: string;
+  past_wir: string;
+  past_ihr: string;
+  past_sie: string;
+  english: string | null;
+}
+
+/** A verb Präteritum (simple past) review session containing due cards and new cards */
+export interface VerbImperfectSession {
+  cards: DueVerbCard[];
+  dueCount: number;
+  newCount: number;
+}
+
 // ── Input Types ───────────────────────────────────────────────────────
 
 /** A user-added noun joined with its category display name */
@@ -170,6 +199,19 @@ export interface UserNounInput {
   category_id: number;
   plural?: string;
   english?: string;
+}
+
+/** Shape for adding a user-created verb */
+export interface UserVerbInput {
+  infinitive: string;
+  past_tense: string;
+  past_du?: string;
+  past_wir?: string;
+  past_ihr?: string;
+  past_sie?: string;
+  past_participle?: string;
+  english?: string;
+  is_separable?: boolean;
 }
 
 /** Valid category names for noun classification */
@@ -215,6 +257,29 @@ export interface SeedCategory {
 export interface SeedAdjective {
   german: string;
   english: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/** Shape for seed verb data. All six Präteritum forms must be given
+ * explicitly — strong/irregular verbs aren't grammatically derivable, and
+ * even the regular personal endings have exceptions (epenthetic "-e-"
+ * after stems ending in a dental or sibilant) that aren't worth deriving
+ * automatically when getting it wrong would be silent. */
+export interface SeedVerb {
+  infinitive: string;
+  /** 3rd person singular Präteritum form, e.g. "ging" for "gehen" — also used for 1st person singular (ich) */
+  past_tense: string;
+  /** 2nd person singular (du), e.g. "gingst" */
+  past_du: string;
+  /** 1st person plural (wir), e.g. "gingen" */
+  past_wir: string;
+  /** 2nd person plural (ihr), e.g. "gingt" */
+  past_ihr: string;
+  /** 3rd person plural (sie), e.g. "gingen" */
+  past_sie: string;
+  past_participle?: string;
+  english: string;
+  is_separable?: boolean;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 }
 

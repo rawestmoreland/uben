@@ -6,6 +6,7 @@ import { adjectivesV2 } from './seeds/adjectives/v2-expanded';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
+import { verbsV1 } from './seeds/verbs/v1-initial';
 
 /**
  * Seed the database with vocabulary and categories.
@@ -42,6 +43,13 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // nouns/categories — adjectives have no category or remote sync yet).
   await seedAdjectives(db, adjectivesV1, '1.0.0_adjectives_v1');
   await seedAdjectives(db, adjectivesV2, '1.1.0_adjectives_v2');
+
+  // Seed verbs for the Präteritum (simple past) quiz feature (independent of
+  // nouns/categories — verbs have no category or remote sync yet).
+  // Re-versioned from '1.0.0_verbs_v1' when past_du/wir/ihr/sie were added,
+  // so any dev install that already seeded v1 re-runs the UPSERT and
+  // backfills the new columns instead of staying permanently null.
+  await seedVerbs(db, '1.1.0_verbs_v2_person_forms');
 }
 
 /**
@@ -83,6 +91,65 @@ async function seedAdjectives(
   });
 
   console.log(`[DB] Seeded ${adjectiveList.length} adjectives (${version})`);
+}
+
+/**
+ * Seed the verbs table from the versioned seed list.
+ * Uses UPSERT (matched on the UNIQUE `infinitive` column) to preserve
+ * existing row IDs, so any card_progress already tracking a verb isn't
+ * orphaned.
+ */
+async function seedVerbs(
+  db: SQLite.SQLiteDatabase,
+  version: string,
+): Promise<void> {
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [version],
+  );
+
+  if (exists) {
+    return; // Already seeded
+  }
+
+  console.log(`[DB] Seeding verbs (${version})...`);
+
+  await db.withTransactionAsync(async () => {
+    for (const verb of verbsV1) {
+      await db.runAsync(
+        `INSERT INTO verbs (infinitive, past_tense, past_du, past_wir, past_ihr, past_sie, past_participle, english, is_separable, level, is_user_added)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+         ON CONFLICT(infinitive) DO UPDATE SET
+           past_tense = excluded.past_tense,
+           past_du = excluded.past_du,
+           past_wir = excluded.past_wir,
+           past_ihr = excluded.past_ihr,
+           past_sie = excluded.past_sie,
+           past_participle = excluded.past_participle,
+           english = excluded.english,
+           is_separable = excluded.is_separable,
+           level = excluded.level`,
+        [
+          verb.infinitive,
+          verb.past_tense,
+          verb.past_du,
+          verb.past_wir,
+          verb.past_ihr,
+          verb.past_sie,
+          verb.past_participle ?? null,
+          verb.english,
+          verb.is_separable ? 1 : 0,
+          verb.level,
+        ],
+      );
+    }
+
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+  });
+
+  console.log(`[DB] Seeded ${verbsV1.length} verbs`);
 }
 
 /**

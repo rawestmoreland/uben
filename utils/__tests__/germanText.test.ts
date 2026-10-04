@@ -1,4 +1,8 @@
-import { convertEszettToSS, applyGermanTextPreference } from '../germanText';
+import {
+  convertEszettToSS,
+  applyGermanTextPreference,
+  normalizeGermanAnswer,
+} from '../germanText';
 
 describe('germanText utilities', () => {
   describe('convertEszettToSS', () => {
@@ -36,6 +40,28 @@ describe('germanText utilities', () => {
       expect(applyGermanTextPreference('Großmutter', 'ss')).toBe(
         'Grossmutter',
       );
+    });
+  });
+
+  describe('normalizeGermanAnswer', () => {
+    it('trims surrounding whitespace', () => {
+      expect(normalizeGermanAnswer('  ging  ')).toBe('ging');
+    });
+
+    it('lowercases', () => {
+      expect(normalizeGermanAnswer('GING')).toBe('ging');
+      expect(normalizeGermanAnswer('Aßt')).toBe('asst');
+    });
+
+    it('treats ß and ss as equivalent regardless of input spelling', () => {
+      expect(normalizeGermanAnswer('aßt')).toBe(normalizeGermanAnswer('asst'));
+      expect(normalizeGermanAnswer('saßen')).toBe(
+        normalizeGermanAnswer('SASSEN'),
+      );
+    });
+
+    it('combines all three normalizations', () => {
+      expect(normalizeGermanAnswer('  Standest  ')).toBe('standest');
     });
   });
 });
