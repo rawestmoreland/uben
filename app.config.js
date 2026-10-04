@@ -45,7 +45,6 @@ export default {
     android: {
       package: `com.westmorelandcreative.uben${getBundleSuffix()}`,
       icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
-      edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
     },
     plugins: [

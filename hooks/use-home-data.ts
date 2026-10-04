@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { vocabularyService } from '@/services/vocabularyService';
+import { purchaseService } from '@/services/purchaseService';
+import { settingsService } from '@/services/settingsService';
 import { spacedRepetitionService } from '@/services/spacedRepetitionService';
 import { statisticsService } from '@/services/statisticsService';
-import { settingsService } from '@/services/settingsService';
-import { purchaseService } from '@/services/purchaseService';
+import { vocabularyService } from '@/services/vocabularyService';
 import type { UserStats } from '@/types/database';
+import { useFocusEffect } from 'expo-router/react-navigation';
+import { useCallback, useState } from 'react';
 
 export interface LevelOption {
   level: string;
@@ -20,7 +20,12 @@ const PRO_GATED_LEVELS = ['B1+'];
 
 const ALL_CEFR_LEVELS = ['A1', 'A2', 'B1+'];
 const VALID_LEVELS = ALL_CEFR_LEVELS;
-const LEGACY_LEVELS_MAP: Record<string, string> = { B1: 'B1+', B2: 'B1+', C1: 'B1+', C2: 'B1+' };
+const LEGACY_LEVELS_MAP: Record<string, string> = {
+  B1: 'B1+',
+  B2: 'B1+',
+  C1: 'B1+',
+  C2: 'B1+',
+};
 
 interface HomeData {
   stats: UserStats;

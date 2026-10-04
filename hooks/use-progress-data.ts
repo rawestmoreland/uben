@@ -1,5 +1,3 @@
-import { useCallback, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
 import { spacedRepetitionService } from '@/services/spacedRepetitionService';
 import {
   statisticsService,
@@ -8,6 +6,8 @@ import {
 } from '@/services/statisticsService';
 import { vocabularyService } from '@/services/vocabularyService';
 import type { UserStats } from '@/types/database';
+import { useFocusEffect } from 'expo-router/react-navigation';
+import { useCallback, useState } from 'react';
 
 // ── Types ─────────────────────────────────────────────────────────────
 
