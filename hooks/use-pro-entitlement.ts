@@ -1,5 +1,5 @@
 import { purchaseService } from '@/services/purchaseService';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router/react-navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Purchases, { type CustomerInfo } from 'react-native-purchases';
