@@ -1,5 +1,6 @@
 import { AppColors, Spacing, Typography } from '@/constants/design';
 import { useAdjectiveDeclensionEntitlement } from '@/hooks/use-adjective-declension-entitlement';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import * as Haptics from 'expo-haptics';
 import { router, type Href } from 'expo-router';
 import { useCallback, useMemo } from 'react';
@@ -14,8 +15,14 @@ interface ExerciseConfig {
   route: Href;
   accentColor: string;
   status: 'available' | 'coming_soon';
-  /** Premium exercises resolve to a trial/locked badge and paywall redirect. */
-  entitlement?: 'adjective_declension';
+  /**
+   * Premium exercises resolve to a locked/trial badge and paywall redirect.
+   * 'adjective_declension' has its own metered free trial; 'pro_only' is a
+   * straight Pro/no-Pro gate with no trial.
+   */
+  entitlement?: 'adjective_declension' | 'pro_only';
+  /** Analytics `source` param passed through to the paywall redirect. */
+  paywallSource?: string;
 }
 
 // Adding an exercise type is one entry here plus its `home_screen.tiles.<id>` strings.
@@ -38,12 +45,15 @@ const EXERCISES: readonly ExerciseConfig[] = [
     accentColor: AppColors.purple,
     status: 'available',
     entitlement: 'adjective_declension',
+    paywallSource: 'adjective_quiz_entry',
   },
   {
     id: 'verbs',
-    route: '/select-categories',
+    route: '/verb-quiz',
     accentColor: AppColors.yellow,
-    status: 'coming_soon',
+    status: 'available',
+    entitlement: 'pro_only',
+    paywallSource: 'verb_quiz_entry',
   },
 ];
 
@@ -60,6 +70,7 @@ export function ExerciseTileGrid({
   const { t } = useTranslation('app');
   const { isUnlocked, canAccess, trialQuestionsRemaining } =
     useAdjectiveDeclensionEntitlement();
+  const { isPro } = useProEntitlement();
 
   const handlePress = useCallback(
     (id: string) => {
@@ -67,20 +78,21 @@ export function ExerciseTileGrid({
       if (!exercise) return;
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       const isLocked =
-        exercise.entitlement === 'adjective_declension' && !canAccess;
+        (exercise.entitlement === 'adjective_declension' && !canAccess) ||
+        (exercise.entitlement === 'pro_only' && !isPro);
       if (isLocked) {
         router.push({
           pathname: '/paywall',
           params: {
             redirectTo: exercise.route as string,
-            source: 'adjective_quiz_entry',
+            source: exercise.paywallSource ?? `${exercise.id}_entry`,
           },
         });
         return;
       }
       router.push(exercise.route);
     },
-    [canAccess],
+    [canAccess, isPro],
   );
 
   const tiles = useMemo(
@@ -89,7 +101,7 @@ export function ExerciseTileGrid({
         let badge: ExerciseTileBadge | undefined;
         if (exercise.status === 'coming_soon') {
           badge = { kind: 'soon', label: t('home_screen.soon_badge').toUpperCase() };
-        } else if (exercise.entitlement && !isUnlocked) {
+        } else if (exercise.entitlement === 'adjective_declension' && !isUnlocked) {
           badge =
             trialQuestionsRemaining > 0
               ? {
@@ -102,6 +114,11 @@ export function ExerciseTileGrid({
                   kind: 'locked',
                   label: t('paywall.premium_badge').toUpperCase(),
                 };
+        } else if (exercise.entitlement === 'pro_only' && !isPro) {
+          badge = {
+            kind: 'locked',
+            label: t('paywall.premium_badge').toUpperCase(),
+          };
         }
 
         let footer: string | undefined;
@@ -118,7 +135,7 @@ export function ExerciseTileGrid({
           footer,
         };
       }),
-    [t, isUnlocked, trialQuestionsRemaining, articlesDueCount, isLoading],
+    [t, isUnlocked, trialQuestionsRemaining, isPro, articlesDueCount, isLoading],
   );
 
   return (

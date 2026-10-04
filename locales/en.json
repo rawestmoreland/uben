@@ -166,6 +166,15 @@
       "trial_used_up_title": "You're hooked!",
       "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
     },
+    "verb_quiz": {
+      "badge": "Verb Präteritum",
+      "all_caught_up": "All caught up",
+      "no_verbs_due": "No verbs due for review right now.\n\nCome back later!",
+      "correct_answer_was": "Correct answer: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Type your answer...",
+      "check_button": "Check",
+      "continue": "Continue"
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Unlock Üben Pro",
@@ -205,7 +214,7 @@
         },
         "verbs": {
           "title": "Verbs",
-          "subtitle": "Conjugation"
+          "subtitle": "Präteritum"
         }
       }
     }
