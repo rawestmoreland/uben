@@ -1,4 +1,8 @@
 import {
+  AdjectiveDifficultyControl,
+  AdvancedEndingsPrompt,
+} from '@/components/quiz/adjective-difficulty';
+import {
   AppColors,
   Layout,
   Spacing,
@@ -8,6 +12,7 @@ import {
 } from '@/constants/design';
 import {
   useAdjectiveQuizSession,
+  type AdjectiveDifficulty,
   type AdjectiveQuizResult,
 } from '@/hooks/use-adjective-quiz-session';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
@@ -18,7 +23,7 @@ import { applyGermanTextPreference } from '@/utils/germanText';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { TFunction } from 'i18next';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -38,7 +43,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function AdjectiveQuizScreen() {
   const { t } = useTranslation('app');
   const quiz = useAdjectiveQuizSession();
-  const { phase, results, isTrialSession, trialQuestionsRemaining } = quiz;
+  const {
+    phase,
+    results,
+    isTrialSession,
+    trialQuestionsRemaining,
+    difficulty,
+    setDifficulty,
+  } = quiz;
   const { eszettPreference } = useSettings();
 
   // Defensive gate: the home screen already routes to the paywall once the
@@ -49,10 +61,29 @@ export default function AdjectiveQuizScreen() {
     }
   }, [phase]);
 
+  const enableAdvanced = useCallback(
+    () => setDifficulty('advanced'),
+    [setDifficulty],
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {(phase === 'loading' || phase === 'locked') && <LoadingState t={t} />}
-      {phase === 'empty' && <EmptyState t={t} />}
+      {phase === 'ready' && (
+        <ReadyState
+          t={t}
+          difficulty={difficulty}
+          onChangeDifficulty={setDifficulty}
+          onStart={quiz.startQuiz}
+        />
+      )}
+      {phase === 'empty' && (
+        <EmptyState
+          t={t}
+          difficulty={difficulty}
+          onEnableAdvanced={enableAdvanced}
+        />
+      )}
       {(phase === 'playing' || phase === 'feedback') && (
         <PlayingState quiz={quiz} eszettPreference={eszettPreference} />
       )}
@@ -63,6 +94,8 @@ export default function AdjectiveQuizScreen() {
           isTrialSession={isTrialSession}
           trialQuestionsRemaining={trialQuestionsRemaining}
           eszettPreference={eszettPreference}
+          difficulty={difficulty}
+          onEnableAdvanced={enableAdvanced}
         />
       )}
     </SafeAreaView>
@@ -80,9 +113,72 @@ function LoadingState({ t }: { t: TFunction }) {
   );
 }
 
+// ── Ready State ──────────────────────────────────────────────────────
+
+interface ReadyStateProps {
+  t: TFunction;
+  difficulty: AdjectiveDifficulty;
+  onChangeDifficulty: (difficulty: AdjectiveDifficulty) => void;
+  onStart: () => void;
+}
+
+function ReadyState({
+  t,
+  difficulty,
+  onChangeDifficulty,
+  onStart,
+}: ReadyStateProps) {
+  return (
+    <View style={styles.centeredContainer}>
+      <View style={styles.readyContent}>
+        <View style={styles.modeBadge}>
+          <Text style={styles.modeBadgeText}>
+            {t('adjective_quiz.badge').toUpperCase()}
+          </Text>
+        </View>
+        <View style={styles.readyControl}>
+          <AdjectiveDifficultyControl
+            difficulty={difficulty}
+            onChange={onChangeDifficulty}
+          />
+        </View>
+        <Pressable
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && styles.backButtonPressed,
+          ]}
+          onPress={onStart}
+          accessibilityRole="button"
+          accessibilityLabel={t('adjective_quiz.start')}
+        >
+          <Text style={styles.backButtonText}>
+            {t('adjective_quiz.start').toUpperCase()}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={styles.readyCancel}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('back_to_home')}
+        >
+          <Text style={styles.readyCancelText}>
+            {t('back_to_home').toUpperCase()}
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 // ── Empty State ──────────────────────────────────────────────────────
 
-function EmptyState({ t }: { t: TFunction }) {
+interface EmptyStateProps {
+  t: TFunction;
+  difficulty: AdjectiveDifficulty;
+  onEnableAdvanced: () => void;
+}
+
+function EmptyState({ t, difficulty, onEnableAdvanced }: EmptyStateProps) {
   return (
     <View style={styles.centeredContainer}>
       <View style={[styles.emptyCard, shadowStyle]}>
@@ -93,6 +189,10 @@ function EmptyState({ t }: { t: TFunction }) {
           {t('adjective_quiz.no_cards_due')}
         </Text>
       </View>
+      <AdvancedEndingsPrompt
+        difficulty={difficulty}
+        onEnable={onEnableAdvanced}
+      />
       <Pressable
         style={({ pressed }) => [
           styles.backButton,
@@ -313,6 +413,8 @@ interface CompleteStateProps {
   isTrialSession: boolean;
   trialQuestionsRemaining: number;
   eszettPreference: 'eszett' | 'ss';
+  difficulty: AdjectiveDifficulty;
+  onEnableAdvanced: () => void;
 }
 
 function CompleteState({
@@ -321,6 +423,8 @@ function CompleteState({
   isTrialSession,
   trialQuestionsRemaining,
   eszettPreference,
+  difficulty,
+  onEnableAdvanced,
 }: CompleteStateProps) {
   const { handleSessionComplete } = useStoreReview();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
@@ -414,6 +518,11 @@ function CompleteState({
             })}
           </Text>
         )}
+
+        <AdvancedEndingsPrompt
+          difficulty={difficulty}
+          onEnable={onEnableAdvanced}
+        />
 
         <View style={styles.resultsList}>
           {results.map((result, index) => (
@@ -509,6 +618,26 @@ const styles = StyleSheet.create({
     fontWeight: Typography.regular,
     color: AppColors.textSecondary,
     textAlign: 'center',
+  },
+
+  readyContent: {
+    alignSelf: 'stretch',
+    alignItems: 'stretch',
+  },
+  readyControl: {
+    marginVertical: Spacing.xl,
+  },
+  readyCancel: {
+    minHeight: 44,
+    marginTop: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  readyCancelText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 1,
   },
 
   playingContainer: {

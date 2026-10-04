@@ -174,7 +174,17 @@
       "trial_badge": "{{count}} Za darmo",
       "trial_questions_remaining": "Pozostało {{count}} darmowych pytań",
       "trial_used_up_title": "Spodobało się?",
-      "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować."
+      "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować.",
+      "difficulty_label": "Poziom trudności",
+      "difficulty_standard": "Standardowy",
+      "difficulty_standard_hint": "Mianownik i biernik",
+      "difficulty_advanced": "Zaawansowany",
+      "difficulty_advanced_hint": "Dodaje celownik",
+      "start": "Start",
+      "advanced_prompt_title": "Gotowy na więcej?",
+      "advanced_prompt_body": "Dodaj celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników.",
+      "advanced_prompt_button": "Dodaj celownik",
+      "advanced_enabled_note": "Celownik jest włączony. Zadziała od następnej sesji."
     },
     "paywall": {
       "premium_badge": "Üben Pro",

@@ -164,7 +164,17 @@
       "trial_badge": "{{count}} Gratis",
       "trial_questions_remaining": "{{count}} domande gratuite rimaste",
       "trial_used_up_title": "Ti è piaciuto?",
-      "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare."
+      "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare.",
+      "difficulty_label": "Difficoltà",
+      "difficulty_standard": "Standard",
+      "difficulty_standard_hint": "Nominativo e accusativo",
+      "difficulty_advanced": "Avanzato",
+      "difficulty_advanced_hint": "Aggiunge il caso dativo",
+      "start": "Inizia",
+      "advanced_prompt_title": "Pronto per di più?",
+      "advanced_prompt_body": "Aggiungi il caso dativo (complemento di termine) alla pratica sulle desinenze degli aggettivi.",
+      "advanced_prompt_button": "Aggiungi dativo",
+      "advanced_enabled_note": "Il dativo è attivo. Si applica dalla prossima sessione."
     },
     "paywall": {
       "premium_badge": "Üben Pro",
