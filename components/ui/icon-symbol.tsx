@@ -19,6 +19,7 @@ const MAPPING = {
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
   'book.fill': 'menu-book',
+  'chart.bar.fill': 'bar-chart',
   'info.circle.fill': 'info',
   'gearshape.fill': 'settings',
   'checkmark.circle.fill': 'check-circle',
