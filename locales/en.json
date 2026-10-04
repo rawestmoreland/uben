@@ -164,7 +164,17 @@
       "trial_badge": "{{count}} Free",
       "trial_questions_remaining": "{{count}} free questions left",
       "trial_used_up_title": "You're hooked!",
-      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
+      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going.",
+      "difficulty_label": "Difficulty",
+      "difficulty_standard": "Standard",
+      "difficulty_standard_hint": "Nominative and accusative",
+      "difficulty_advanced": "Advanced",
+      "difficulty_advanced_hint": "Adds the dative case",
+      "start": "Start",
+      "advanced_prompt_title": "Ready for more?",
+      "advanced_prompt_body": "Add the dative case (indirect object) to your adjective endings practice.",
+      "advanced_prompt_button": "Add dative case",
+      "advanced_enabled_note": "Dative case is on. It applies from your next session."
     },
     "verb_quiz": {
       "badge": "Verb Präteritum",
