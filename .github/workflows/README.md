@@ -44,7 +44,21 @@ This directory contains CI/CD workflows for the üben release train.
 5. Create production tag (e.g., v1.1.0)
 6. Generate changelog and create GitHub Release
 
-### 4. `pr-checks.yml` - Pull Request Validation
+### 4. `release-notes.yml` - Claude Release Notes
+
+**Trigger:** Pull request from `staging` merged into `main`
+
+**Purpose:** Uses `anthropics/claude-code-action` to write user-facing release notes from the commits/PRs since the previous release tag.
+
+**Steps:**
+1. Read version from `app.json` and find the previous release tag
+2. Claude writes `RELEASE_NOTES.md`
+3. Create (as draft) or update the `v<version>` GitHub Release with the notes
+4. Comment the notes on the merged PR
+
+`production.yml` publishes the draft when the tag is pushed, falling back to a git-log changelog if no draft exists. Requires the `ANTHROPIC_API_KEY` secret.
+
+### 5. `pr-checks.yml` - Pull Request Validation
 
 **Trigger:** Pull requests to `develop`, `staging`, or `main`
 
