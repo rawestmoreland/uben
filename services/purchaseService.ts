@@ -1,4 +1,5 @@
 import { getDatabase } from '@/database/db';
+import { trackPurchaseFunnelEvent } from './purchaseAnalyticsService';
 import Purchases, {
   type CustomerInfo,
   PURCHASES_ERROR_CODE,
@@ -7,6 +8,7 @@ import Purchases, {
   type PurchasesPackage,
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { settingsService } from './settingsService';
 
 /**
@@ -24,6 +26,20 @@ export const PRO_ENTITLEMENT_ID = 'üben_german_articles_pro';
 
 /** The one-time, non-consumable product that unlocks the Üben Pro bundle. */
 export const LIFETIME_PRO_PRODUCT_ID = 'lifetime_pro';
+
+/**
+ * The preview build has its own bundle identifier, so App Store Connect needs
+ * a separate product for it. Only looked for in preview builds.
+ */
+export const LIFETIME_PRO_PREVIEW_PRODUCT_ID = 'lifetime_pro_preview';
+
+/** `extra.appEnv` is set from `APP_ENV` in `app.config.js`. */
+const IS_PREVIEW_BUILD = Constants.expoConfig?.extra?.appEnv === 'preview';
+
+/** Product identifiers that unlock Pro in the current build. */
+export const LIFETIME_PRO_PRODUCT_IDS: readonly string[] = IS_PREVIEW_BUILD
+  ? [LIFETIME_PRO_PRODUCT_ID, LIFETIME_PRO_PREVIEW_PRODUCT_ID]
+  : [LIFETIME_PRO_PRODUCT_ID];
 
 /**
  * Number of free adjective-endings questions a user can answer before
@@ -77,7 +93,7 @@ class PurchaseService {
     );
   }
 
-  /** Finds the `lifetime_pro` package, checked across the current offering first, then all configured offerings. */
+  /** Finds the lifetime Pro package (`lifetime_pro`, or `lifetime_pro_preview` in preview builds), checked across the current offering first, then all configured offerings. */
   private findLifetimePackage(
     offerings: PurchasesOfferings,
   ): PurchasesPackage | null {
@@ -89,7 +105,7 @@ class PurchaseService {
       const match =
         offering.lifetime ??
         offering.availablePackages.find(
-          (pkg) => pkg.product.identifier === LIFETIME_PRO_PRODUCT_ID,
+          (pkg) => LIFETIME_PRO_PRODUCT_IDS.includes(pkg.product.identifier),
         );
       if (match) return match;
     }
@@ -146,8 +162,13 @@ class PurchaseService {
     await settingsService.setAdjectiveDeclensionTrialQuestionsUsed(used + 1);
   }
 
+  /** Track that the paywall was shown, and from where (for funnel analytics). */
+  trackPaywallViewed(source?: string | null): void {
+    trackPurchaseFunnelEvent('paywall_viewed', source);
+  }
+
   /** Complete a one-time purchase unlocking the full Üben Pro bundle. */
-  async purchasePro(): Promise<{
+  async purchasePro(source?: string | null): Promise<{
     success: boolean;
     error?: string;
     cancelled?: boolean;
@@ -156,14 +177,17 @@ class PurchaseService {
       return { success: false, error: 'Purchases are not available on web.' };
     }
 
+    trackPurchaseFunnelEvent('purchase_attempted', source);
+
     try {
       const offerings = await Purchases.getOfferings();
       const lifetimePackage = this.findLifetimePackage(offerings);
 
       if (!lifetimePackage) {
         console.error(
-          `[Purchase] No "${LIFETIME_PRO_PRODUCT_ID}" package found in RevenueCat offerings`,
+          `[Purchase] No ${LIFETIME_PRO_PRODUCT_IDS.map((id) => `"${id}"`).join(' or ')} package found in RevenueCat offerings`,
         );
+        trackPurchaseFunnelEvent('purchase_failed', source);
         return {
           success: false,
           error:
@@ -179,6 +203,7 @@ class PurchaseService {
           '[Purchase] Purchase completed but entitlement is not active:',
           customerInfo.entitlements.all,
         );
+        trackPurchaseFunnelEvent('purchase_failed', source);
         return {
           success: false,
           error:
@@ -186,12 +211,15 @@ class PurchaseService {
         };
       }
 
+      trackPurchaseFunnelEvent('purchase_succeeded', source);
       return { success: true };
     } catch (error) {
       if (this.isUserCancelledError(error)) {
+        trackPurchaseFunnelEvent('purchase_cancelled', source);
         return { success: false, cancelled: true };
       }
       console.error('[Purchase] purchasePro failed:', error);
+      trackPurchaseFunnelEvent('purchase_failed', source);
       return {
         success: false,
         error: 'Something went wrong completing your purchase. Please try again.',
@@ -200,19 +228,27 @@ class PurchaseService {
   }
 
   /** Restore a previous purchase (e.g. after a reinstall or on a new device). */
-  async restorePurchases(): Promise<{ success: boolean; error?: string }> {
+  async restorePurchases(
+    source?: string | null,
+  ): Promise<{ success: boolean; error?: string }> {
     if (Platform.OS === 'web') {
       return { success: false, error: 'Purchases are not available on web.' };
     }
 
+    trackPurchaseFunnelEvent('restore_attempted', source);
+
     try {
       const customerInfo = await Purchases.restorePurchases();
       const unlocked = await this.syncCustomerInfo(customerInfo);
-      return unlocked
-        ? { success: true }
-        : { success: false, error: 'No previous purchase found for this account.' };
+      if (unlocked) {
+        trackPurchaseFunnelEvent('restore_succeeded', source);
+        return { success: true };
+      }
+      trackPurchaseFunnelEvent('restore_failed', source);
+      return { success: false, error: 'No previous purchase found for this account.' };
     } catch (error) {
       console.error('[Purchase] restorePurchases failed:', error);
+      trackPurchaseFunnelEvent('restore_failed', source);
       return {
         success: false,
         error: 'Something went wrong restoring your purchase. Please try again.',

@@ -6,11 +6,12 @@ import {
   shadowStyle,
   shadowStyleSmall,
 } from '@/constants/design';
-import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
 import {
   useAdjectiveQuizSession,
   type AdjectiveQuizResult,
 } from '@/hooks/use-adjective-quiz-session';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
+import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
 import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
@@ -193,7 +194,10 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
         {/* ── Sentence Card ─────────────────────────────────── */}
         <View style={[styles.sentenceCard, shadowStyle]}>
           <Text style={styles.sentenceText}>
-            {applyGermanTextPreference(currentQuestion.before, eszettPreference)}{' '}
+            {applyGermanTextPreference(
+              currentQuestion.before,
+              eszettPreference,
+            )}{' '}
             <Text
               style={[
                 styles.blankText,
@@ -203,7 +207,10 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
               ]}
             >
               {isFeedback
-                ? applyGermanTextPreference(selectedAnswer ?? '', eszettPreference)
+                ? applyGermanTextPreference(
+                    selectedAnswer ?? '',
+                    eszettPreference,
+                  )
                 : '____'}
             </Text>{' '}
             {applyGermanTextPreference(currentQuestion.after, eszettPreference)}
@@ -318,6 +325,8 @@ function CompleteState({
   const { handleSessionComplete } = useStoreReview();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
+  const { isPro } = useProEntitlement();
+
   useEffect(() => {
     handleSessionComplete();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -329,7 +338,10 @@ function CompleteState({
 
   const handleUnlock = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push('/paywall');
+    router.push({
+      pathname: '/paywall',
+      params: { source: 'adjective_quiz_trial_exhausted' },
+    });
   };
 
   const trialExhausted = isTrialSession && trialQuestionsRemaining <= 0;
@@ -371,7 +383,7 @@ function CompleteState({
           </View>
         </View>
 
-        {trialExhausted && (
+        {trialExhausted && !isPro && (
           <View style={[styles.trialUpsellCard, shadowStyle]}>
             <Text style={styles.trialUpsellTitle}>
               {t('adjective_quiz.trial_used_up_title').toUpperCase()}

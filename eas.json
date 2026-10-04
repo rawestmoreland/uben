@@ -17,7 +17,8 @@
         "image": "latest"
       },
       "env": {
-        "APP_ENV": "development"
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE": "test_gLjPIWTrPKyVprHQlwoDfuUcdNo"
       }
     },
     "development-simulator": {
@@ -41,7 +42,8 @@
         "image": "latest"
       },
       "env": {
-        "APP_ENV": "preview"
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE": "appl_JCzhxuGmazpDGAgnxEdWmiyvfys"
       }
     },
     "preview-store": {
@@ -56,7 +58,8 @@
         "image": "latest"
       },
       "env": {
-        "APP_ENV": "preview"
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE": "appl_JCzhxuGmazpDGAgnxEdWmiyvfys"
       }
     },
     "production": {
@@ -71,7 +74,8 @@
         "image": "latest"
       },
       "env": {
-        "APP_ENV": "production"
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE": "appl_xJhojbdVRRUIgDSUoUkQdgJiSSp"
       }
     }
   },

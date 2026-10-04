@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "PRATICA ARTICOLI TEDESCHI",
+    "pro_badge": "Pro",
     "description": "Impara i sostantivi e gli articoli tedeschi con la ripetizione spaziata.",
     "start_practicing": "Inizia a praticare per monitorare i tuoi progressi",
     "start_practice": "Inizia a praticare",
@@ -61,7 +62,9 @@
       "use_standard_german_with_eszett": "Usa l'ortografia tedesca standard con eszett",
       "use_swiss_german_with_ss": "Usa l'ortografia del tedesco svizzero con ss",
       "language": "Lingua",
-      "choose_app_language": "Scegli la lingua dell'app."
+      "choose_app_language": "Scegli la lingua dell'app.",
+      "adjective_difficulty_advanced": "Desinenze avanzate",
+      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
     },
     "level_filter": {
       "label": "LIVELLO DI STUDIO",
@@ -168,9 +171,6 @@
       "all_caught_up": "Tutto in regola",
       "no_verbs_due": "Nessun verbo da ripassare al momento.\n\nTorna più tardi!",
       "correct_answer_was": "Risposta corretta: {{answer}}",
-      "entry_point_label": "Pratica il passato semplice dei verbi",
-      "entry_point_title": "Präteritum dei Verbi",
-      "entry_point_subtitle": "Padroneggia le forme irregolari del passato",
       "question_prompt": "Qual è il Präteritum (passato semplice) di \"{{infinitive}}\"?",
       "continue": "Continua"
     },
@@ -188,7 +188,34 @@
       "restore_button": "Ripristina acquisti",
       "restoring": "Ripristino in corso…",
       "restore_failed": "Nessun acquisto precedente trovato per questo account.",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "success_title": "Ora sei Pro!",
+      "success_subtitle": "Niente pubblicità, vocabolario B1+, parole aggiunte illimitate e pratica delle desinenze degli aggettivi sono tutti sbloccati.",
+      "success_continue": "Continua"
+    },
+    "home_screen": {
+      "header_subtitle": "PRATICA DI GRAMMATICA TEDESCA",
+      "practice_label": "ESERCIZI",
+      "soon_badge": "Presto",
+      "tile_due": "{{count}} da ripassare",
+      "tiles": {
+        "articles": {
+          "title": "Articoli",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Plurali",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Aggettivi",
+          "subtitle": "Desinenze"
+        },
+        "verbs": {
+          "title": "Verbi",
+          "subtitle": "Präteritum"
+        }
+      }
     }
   }
 }

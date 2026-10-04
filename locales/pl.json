@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "NAUKA RODZAJNIKÓW NIEMIECKICH",
+    "pro_badge": "Pro",
     "description": "Ucz się niemieckich rzeczowników i rodzajników metodą powtórzeń rozłożonych w czasie.",
     "start_practicing": "Zacznij ćwiczyć, aby śledzić swoje postępy",
     "start_practice": "Zacznij ćwiczyć",
@@ -69,7 +70,9 @@
       "use_standard_german_with_eszett": "Używaj standardowej pisowni z eszett",
       "use_swiss_german_with_ss": "Używaj szwajcarskiej pisowni z ss",
       "language": "Język",
-      "choose_app_language": "Wybierz język aplikacji."
+      "choose_app_language": "Wybierz język aplikacji.",
+      "adjective_difficulty_advanced": "Zaawansowane końcówki",
+      "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników."
     },
     "level_filter": {
       "label": "POZIOM NAUKI",
@@ -178,9 +181,6 @@
       "all_caught_up": "Wszystko zrobione",
       "no_verbs_due": "Brak czasowników do powtórki.\n\nWróć później!",
       "correct_answer_was": "Poprawna odpowiedź: {{answer}}",
-      "entry_point_label": "Ćwicz formy czasu przeszłego prostego",
-      "entry_point_title": "Czasowniki: Präteritum",
-      "entry_point_subtitle": "Opanuj nieregularne formy czasu przeszłego",
       "question_prompt": "Jaka jest forma Präteritum (czas przeszły prosty) dla \"{{infinitive}}\"?",
       "continue": "Dalej"
     },
@@ -198,7 +198,34 @@
       "restore_button": "Przywróć zakupy",
       "restoring": "Przywracanie…",
       "restore_failed": "Nie znaleziono wcześniejszego zakupu dla tego konta.",
-      "close": "Zamknij"
+      "close": "Zamknij",
+      "success_title": "Masz teraz Pro!",
+      "success_subtitle": "Brak reklam, słownictwo B1+, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników są odblokowane.",
+      "success_continue": "Dalej"
+    },
+    "home_screen": {
+      "header_subtitle": "NAUKA GRAMATYKI NIEMIECKIEJ",
+      "practice_label": "ĆWICZENIA",
+      "soon_badge": "Wkrótce",
+      "tile_due": "do powtórki: {{count}}",
+      "tiles": {
+        "articles": {
+          "title": "Rodzajniki",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Liczba mnoga",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Przymiotniki",
+          "subtitle": "Końcówki"
+        },
+        "verbs": {
+          "title": "Czasowniki",
+          "subtitle": "Präteritum"
+        }
+      }
     }
   }
 }

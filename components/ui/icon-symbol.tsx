@@ -21,6 +21,7 @@ const MAPPING = {
   'book.fill': 'menu-book',
   'info.circle.fill': 'info',
   'gearshape.fill': 'settings',
+  'checkmark.circle.fill': 'check-circle',
 } as IconMapping;
 
 /**

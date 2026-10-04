@@ -83,24 +83,31 @@ function genderFromArticle(article: 'der' | 'die' | 'das'): GermanGender {
 }
 
 // ── Determiners ──────────────────────────────────────────────────────
-// Only nominative/accusative are populated — v1 quiz content is scoped to
-// these two cases (the ones A1/A2 learners meet first).
+// Nominative/accusative are the core two cases (the ones A1/A2 learners
+// meet first). Dative is offered as an optional "advanced" difficulty —
+// see generateDeclensionQuestion's `includeDative` option — and is scoped
+// to weak/mixed declension only; strong-declension dative would need its
+// own bare-mass-noun sentence templates (rare in practice), so its row
+// below is unused filler, never selected by the generator.
 
 const DETERMINERS: Record<
   DeclensionType,
-  Record<'nominative' | 'accusative', Record<GermanGender, string>>
+  Record<'nominative' | 'accusative' | 'dative', Record<GermanGender, string>>
 > = {
   weak: {
     nominative: { masculine: 'der', feminine: 'die', neuter: 'das', plural: 'die' },
     accusative: { masculine: 'den', feminine: 'die', neuter: 'das', plural: 'die' },
+    dative: { masculine: 'dem', feminine: 'der', neuter: 'dem', plural: 'den' },
   },
   mixed: {
     nominative: { masculine: 'ein', feminine: 'eine', neuter: 'ein', plural: 'meine' },
     accusative: { masculine: 'einen', feminine: 'eine', neuter: 'ein', plural: 'meine' },
+    dative: { masculine: 'einem', feminine: 'einer', neuter: 'einem', plural: 'meinen' },
   },
   strong: {
     nominative: { masculine: '', feminine: '', neuter: '', plural: '' },
     accusative: { masculine: '', feminine: '', neuter: '', plural: '' },
+    dative: { masculine: '', feminine: '', neuter: '', plural: '' },
   },
 };
 
@@ -187,6 +194,26 @@ type NounContext = 'object' | 'animate' | 'drink';
 const DEFAULT_CONTEXTS: NounContext[] = ['object', 'animate'];
 
 const ADJECTIVE_CONTEXTS: Record<string, NounContext[]> = {
+  süß: ['object', 'animate', 'drink'],
+  ruhig: ['object', 'animate'],
+  lustig: ['object', 'animate'],
+  höflich: ['animate'],
+  unhöflich: ['animate'],
+  ehrlich: ['animate'],
+  pünktlich: ['animate'],
+  langweilig: ['object', 'animate'],
+  spannend: ['object', 'animate'],
+  gefährlich: ['object', 'animate'],
+  bequem: ['object'],
+  praktisch: ['object'],
+  typisch: ['object', 'animate'],
+  mutig: ['animate'],
+  fleißig: ['animate'],
+  faul: ['animate'],
+  berühmt: ['object', 'animate'],
+  beliebt: ['object', 'animate'],
+  notwendig: ['object'],
+  kompliziert: ['object'],
   groß: ['object', 'animate', 'drink'],
   klein: ['object', 'animate', 'drink'],
   neu: ['object', 'animate'],
@@ -242,6 +269,10 @@ function getContextsFor(adjectiveGerman: string): NounContext[] {
 // types work cleanly there — but strong declension there always pairs with
 // a MASS_NOUNS entry (via ACCUSATIVE_MASS_NOUN_TEMPLATES), never a
 // DECLENSION_NOUNS one, since a countable noun always needs its article.
+// Dative templates (advanced difficulty only) also put the blank
+// mid-sentence, but are scoped to weak/mixed declension — the determiner is
+// always present, so unlike accusative's templates they never need to
+// handle a missing article.
 
 const BLANK = '\u0000';
 
@@ -265,6 +296,21 @@ const ACCUSATIVE_ANIMATE_TEMPLATES: ((det: string, noun: string) => string)[] = 
 const ACCUSATIVE_MASS_NOUN_TEMPLATES: ((det: string, noun: string) => string)[] = [
   (_det, noun) => `Ich trinke ${BLANK} ${noun}.`,
   (_det, noun) => `Wir kaufen ${BLANK} ${noun}.`,
+];
+
+// "helfen" (help) and "vertrauen" (trust) both require a dative object and
+// only make sense with someone who can be helped/trusted — never use them
+// with an inanimate noun ("Ich helfe dem Tisch" doesn't work).
+const DATIVE_ANIMATE_TEMPLATES: ((det: string, noun: string) => string)[] = [
+  (det, noun) => `Ich helfe ${det} ${BLANK} ${noun}.`,
+  (det, noun) => `Ich vertraue ${det} ${BLANK} ${noun}.`,
+];
+
+// "vor" (in front of) and "neben" (next to) take the dative for a static
+// location and read naturally with any curated noun, animate or not.
+const DATIVE_OBJECT_TEMPLATES: ((det: string, noun: string) => string)[] = [
+  (det, noun) => `Ich stehe vor ${det} ${BLANK} ${noun}.`,
+  (det, noun) => `Wir sitzen neben ${det} ${BLANK} ${noun}.`,
 ];
 
 export interface AdjectiveDeclensionQuestion {
@@ -292,9 +338,10 @@ const GENDER_LABELS: Record<GermanGender, string> = {
   plural: 'plural',
 };
 
-const CASE_LABELS: Record<'nominative' | 'accusative', string> = {
+const CASE_LABELS: Record<'nominative' | 'accusative' | 'dative', string> = {
   nominative: 'nominative (the subject)',
   accusative: 'accusative (the direct object)',
+  dative: 'dative (the indirect object)',
 };
 
 /**
@@ -304,7 +351,7 @@ const CASE_LABELS: Record<'nominative' | 'accusative', string> = {
  */
 function explainEnding(
   declensionType: DeclensionType,
-  germanCase: 'nominative' | 'accusative',
+  germanCase: 'nominative' | 'accusative' | 'dative',
   gender: GermanGender,
   determiner: string,
   ending: string,
@@ -330,20 +377,33 @@ function explainEnding(
  * option) is chosen based on which contexts this adjective is tagged for —
  * see ADJECTIVE_CONTEXTS — so the generator never produces a nonsensical
  * pairing like "sad street" or a grammatically bare "important coffee".
+ *
+ * `includeDative` opts into the "advanced" difficulty: alongside nominative
+ * and accusative, questions can land on dative (weak/mixed declension only —
+ * see DATIVE_ANIMATE_TEMPLATES/DATIVE_OBJECT_TEMPLATES). Off by default so
+ * existing sessions are unaffected.
  */
-export function generateDeclensionQuestion(adjective: {
-  german: string;
-  english: string;
-}): AdjectiveDeclensionQuestion {
+export function generateDeclensionQuestion(
+  adjective: {
+    german: string;
+    english: string;
+  },
+  options: { includeDative?: boolean } = {},
+): AdjectiveDeclensionQuestion {
   const contexts = getContextsFor(adjective.german);
 
-  const germanCase: 'nominative' | 'accusative' =
-    Math.random() < 0.5 ? 'nominative' : 'accusative';
+  const caseOptions: ('nominative' | 'accusative' | 'dative')[] =
+    options.includeDative
+      ? ['nominative', 'accusative', 'dative']
+      : ['nominative', 'accusative'];
+  const germanCase = pickRandom(caseOptions);
 
   const candidateTypes: DeclensionType[] =
     germanCase === 'nominative'
       ? ['weak', 'mixed']
-      : ['weak', 'mixed', 'strong'];
+      : germanCase === 'accusative'
+        ? ['weak', 'mixed', 'strong']
+        : ['weak', 'mixed']; // dative: strong declension out of scope (no mass-noun templates)
   // Only offer strong declension if this adjective is tagged for drink
   // contexts — it's the only pool strong declension can grammatically draw
   // from (see MASS_NOUNS above).
@@ -374,9 +434,13 @@ export function generateDeclensionQuestion(adjective: {
     nounGerman = noun.german;
     if (germanCase === 'nominative') {
       templateFn = pickRandom(NOMINATIVE_TEMPLATES);
-    } else {
+    } else if (germanCase === 'accusative') {
       templateFn = pickRandom(
         noun.animate ? ACCUSATIVE_ANIMATE_TEMPLATES : ACCUSATIVE_OBJECT_TEMPLATES,
+      );
+    } else {
+      templateFn = pickRandom(
+        noun.animate ? DATIVE_ANIMATE_TEMPLATES : DATIVE_OBJECT_TEMPLATES,
       );
     }
   }

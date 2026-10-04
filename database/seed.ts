@@ -2,6 +2,7 @@ import type { NounCorrection } from '@/types/database';
 import type * as SQLite from 'expo-sqlite';
 import { generateCategoryRemoteId, generateNounRemoteId } from './remote-id';
 import { adjectivesV1 } from './seeds/adjectives/v1-initial';
+import { adjectivesV2 } from './seeds/adjectives/v2-expanded';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
@@ -40,7 +41,8 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Seed adjectives for the adjective declension feature (independent of
   // nouns/categories — adjectives have no category or remote sync yet).
-  await seedAdjectives(db, '1.0.0_adjectives_v1');
+  await seedAdjectives(db, adjectivesV1, '1.0.0_adjectives_v1');
+  await seedAdjectives(db, adjectivesV2, '1.1.0_adjectives_v2');
 
   // Seed verbs for the Präteritum (simple past) quiz feature (independent of
   // nouns/categories — verbs have no category or remote sync yet).
@@ -48,12 +50,13 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 }
 
 /**
- * Seed the adjectives table from the versioned seed list.
+ * Seed the adjectives table from a versioned seed list.
  * Uses UPSERT (matched on the UNIQUE `german` column) to preserve existing
  * row IDs, so any card_progress already tracking an adjective isn't orphaned.
  */
 async function seedAdjectives(
   db: SQLite.SQLiteDatabase,
+  adjectiveList: typeof adjectivesV1,
   version: string,
 ): Promise<void> {
   const exists = await db.getFirstAsync<{ '1': number }>(
@@ -68,7 +71,7 @@ async function seedAdjectives(
   console.log(`[DB] Seeding adjectives (${version})...`);
 
   await db.withTransactionAsync(async () => {
-    for (const adjective of adjectivesV1) {
+    for (const adjective of adjectiveList) {
       await db.runAsync(
         `INSERT INTO adjectives (german, english, level, is_user_added)
          VALUES (?, ?, ?, 0)
@@ -84,7 +87,7 @@ async function seedAdjectives(
     ]);
   });
 
-  console.log(`[DB] Seeded ${adjectivesV1.length} adjectives`);
+  console.log(`[DB] Seeded ${adjectiveList.length} adjectives (${version})`);
 }
 
 /**

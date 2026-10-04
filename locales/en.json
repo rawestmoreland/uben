@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "GERMAN ARTICLE PRACTICE",
+    "pro_badge": "Pro",
     "description": "Learn German nouns and articles with spaced repetition.",
     "start_practicing": "Start practicing to track your progress",
     "start_practice": "Start practice",
@@ -61,7 +62,9 @@
       "use_standard_german_with_eszett": "Use standard German spelling with eszett",
       "use_swiss_german_with_ss": "Use Swiss German spelling with ss",
       "language": "Language",
-      "choose_app_language": "Choose the app display language."
+      "choose_app_language": "Choose the app display language.",
+      "adjective_difficulty_advanced": "Advanced adjective endings",
+      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice."
     },
     "level_filter": {
       "label": "STUDY LEVEL",
@@ -168,9 +171,6 @@
       "all_caught_up": "All caught up",
       "no_verbs_due": "No verbs due for review right now.\n\nCome back later!",
       "correct_answer_was": "Correct answer: {{answer}}",
-      "entry_point_label": "Practice verb simple past forms",
-      "entry_point_title": "Verb Präteritum",
-      "entry_point_subtitle": "Master irregular simple past forms",
       "question_prompt": "What's the Präteritum (simple past) of \"{{infinitive}}\"?",
       "continue": "Continue"
     },
@@ -188,7 +188,34 @@
       "restore_button": "Restore purchases",
       "restoring": "Restoring…",
       "restore_failed": "No previous purchase found for this account.",
-      "close": "Close"
+      "close": "Close",
+      "success_title": "You're Pro now!",
+      "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, and adjective endings practice are all unlocked.",
+      "success_continue": "Continue"
+    },
+    "home_screen": {
+      "header_subtitle": "GERMAN GRAMMAR PRACTICE",
+      "practice_label": "PRACTICE",
+      "soon_badge": "Soon",
+      "tile_due": "{{count}} due",
+      "tiles": {
+        "articles": {
+          "title": "Articles",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Plurals",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Adjectives",
+          "subtitle": "Endings"
+        },
+        "verbs": {
+          "title": "Verbs",
+          "subtitle": "Präteritum"
+        }
+      }
     }
   }
 }

@@ -7,9 +7,10 @@ import {
 } from '@/constants/design';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { purchaseService } from '@/services/purchaseService';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -24,11 +25,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PaywallScreen() {
   const { t } = useTranslation('app');
-  const { redirectTo } = useLocalSearchParams<{ redirectTo?: string }>();
+  const { redirectTo, source } = useLocalSearchParams<{
+    redirectTo?: string;
+    source?: string;
+  }>();
   const { refresh } = useProEntitlement();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [justUnlocked, setJustUnlocked] = useState(false);
+
+  // Falls back to redirectTo when no explicit source is given, so an entry
+  // point that only sets redirectTo (the destination) still identifies itself.
+  const funnelSource = source ?? redirectTo ?? null;
+
+  useEffect(() => {
+    purchaseService.trackPaywallViewed(funnelSource);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function goToDestination() {
     if (redirectTo) {
@@ -44,11 +58,11 @@ export default function PaywallScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      const result = await purchaseService.purchasePro();
+      const result = await purchaseService.purchasePro(funnelSource);
       if (result.success) {
         await refresh();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        goToDestination();
+        setJustUnlocked(true);
       } else if (!result.cancelled) {
         setError(result.error ?? t('paywall.purchase_failed'));
       }
@@ -66,11 +80,11 @@ export default function PaywallScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     try {
-      const result = await purchaseService.restorePurchases();
+      const result = await purchaseService.restorePurchases(funnelSource);
       if (result.success) {
         await refresh();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        goToDestination();
+        setJustUnlocked(true);
       } else {
         setError(result.error ?? t('paywall.restore_failed'));
       }
@@ -80,6 +94,41 @@ export default function PaywallScreen() {
     } finally {
       setIsRestoring(false);
     }
+  }
+
+  if (justUnlocked) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.successContainer}>
+          <View style={[styles.successIconCircle, shadowStyle]}>
+            <IconSymbol
+              name="checkmark.circle.fill"
+              size={56}
+              color={AppColors.black}
+            />
+          </View>
+          <Text style={styles.successTitle}>{t('paywall.success_title')}</Text>
+          <Text style={styles.successSubtitle}>
+            {t('paywall.success_subtitle')}
+          </Text>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.unlockButton,
+              styles.successButton,
+              pressed && styles.unlockButtonPressed,
+            ]}
+            onPress={goToDestination}
+            accessibilityRole="button"
+            accessibilityLabel={t('paywall.success_continue')}
+          >
+            <Text style={styles.unlockButtonText}>
+              {t('paywall.success_continue').toUpperCase()}
+            </Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -293,5 +342,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textDecorationLine: 'underline',
     marginTop: Spacing.lg,
+  },
+
+  // Success state
+  successContainer: {
+    flex: 1,
+    padding: Layout.screenPadding,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  successIconCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: AppColors.green,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xl,
+  },
+  successTitle: {
+    fontSize: Typography.title,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  successSubtitle: {
+    fontSize: Typography.body,
+    fontWeight: Typography.regular,
+    color: AppColors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+  },
+  successButton: {
+    alignSelf: 'stretch',
   },
 });
