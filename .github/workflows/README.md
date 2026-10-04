@@ -33,17 +33,27 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 
 ### 3. `production.yml` - Production App Store Release
 
-**Trigger:** Push to `main` branch
+**Trigger:** Push of an exact semver tag (`v1.9.1`). Staging and hotfix tags do not match.
 
-**Purpose:** Automated production builds and App Store submissions.
+**Purpose:** Store builds and submissions for iOS and Android.
 
 **Steps:**
-1. Validate version (should match staging)
+1. Validate: tag equals `app.config.js` version, and the tagged commit is on `main` (both fail the run)
 2. Lint and TypeScript checks
-3. Build for iOS and Android (production profile)
-4. Auto-submit to App Store and Play Store
-5. Create production tag (e.g., v1.1.0)
-6. Generate changelog and create GitHub Release
+3. Per platform: build with `--wait`, then submit that exact build (a failed build or submission fails the run)
+4. Publish the `v<version>` GitHub Release (the draft from `release-notes.yml`, or a git-log changelog since the previous release tag)
+
+### 3b. `production-hotfix.yml` - Production OTA Hotfix
+
+**Trigger:** Manual (`workflow_dispatch`), from `main` only.
+
+**Purpose:** Publish a JS-only fix to the `production` channel without a store release.
+
+**Steps:**
+1. Lint and TypeScript checks
+2. Verify the native fingerprint matches the latest production builds (requires `runtimeVersion.policy: 'fingerprint'`)
+3. `eas update --branch production`
+4. Tag `v<version>-hotfix.<run number>` and create a pre-release recording the EAS update group ID
 
 ### 4. `release-notes.yml` - Claude Release Notes
 
@@ -52,7 +62,7 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 **Purpose:** Uses `anthropics/claude-code-action` to write user-facing release notes from the commits/PRs since the previous release tag.
 
 **Steps:**
-1. Read version from `app.json` and find the previous release tag
+1. Read version from `app.config.js` (via `scripts/app-version.cjs`) and find the previous release tag
 2. Claude writes `RELEASE_NOTES.md`
 3. Create (as draft) or update the `v<version>` GitHub Release with the notes
 4. Comment the notes on the merged PR
