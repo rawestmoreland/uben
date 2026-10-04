@@ -1,5 +1,5 @@
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 // Keep the splash screen visible while we prepare resources
@@ -11,29 +11,29 @@ interface AnimatedSplashProps {
 
 export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
   // Letter animations
-  const letterU = useRef(new Animated.Value(-100)).current;
-  const letterB = useRef(new Animated.Value(-100)).current;
-  const letterE = useRef(new Animated.Value(-100)).current;
-  const letterN = useRef(new Animated.Value(-100)).current;
+  const [letterU] = useState(() => new Animated.Value(-100));
+  const [letterB] = useState(() => new Animated.Value(-100));
+  const [letterE] = useState(() => new Animated.Value(-100));
+  const [letterN] = useState(() => new Animated.Value(-100));
 
   // Letter rotation animations
-  const rotateU = useRef(new Animated.Value(0)).current;
-  const rotateB = useRef(new Animated.Value(0)).current;
-  const rotateE = useRef(new Animated.Value(0)).current;
-  const rotateN = useRef(new Animated.Value(0)).current;
+  const [rotateU] = useState(() => new Animated.Value(0));
+  const [rotateB] = useState(() => new Animated.Value(0));
+  const [rotateE] = useState(() => new Animated.Value(0));
+  const [rotateN] = useState(() => new Animated.Value(0));
 
   // Tagline animation
-  const taglineOpacity = useRef(new Animated.Value(0)).current;
-  const taglineY = useRef(new Animated.Value(20)).current;
+  const [taglineOpacity] = useState(() => new Animated.Value(0));
+  const [taglineY] = useState(() => new Animated.Value(20));
 
   // Loading dots
-  const dot1 = useRef(new Animated.Value(0)).current;
-  const dot2 = useRef(new Animated.Value(0)).current;
-  const dot3 = useRef(new Animated.Value(0)).current;
+  const [dot1] = useState(() => new Animated.Value(0));
+  const [dot2] = useState(() => new Animated.Value(0));
+  const [dot3] = useState(() => new Animated.Value(0));
 
   // Decorative elements
-  const circleScale = useRef(new Animated.Value(0)).current;
-  const squareScale = useRef(new Animated.Value(0)).current;
+  const [circleScale] = useState(() => new Animated.Value(0));
+  const [squareScale] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     console.log(
