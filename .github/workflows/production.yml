@@ -7,6 +7,13 @@ on:
     tags:
       # Exact semver only. Does not match v1.9.1-staging.4 or v1.9.1-hotfix.2
       - 'v[0-9]+.[0-9]+.[0-9]+'
+  # Manual run: pick the semver tag as the ref. A non-tag ref fails validation.
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'Platforms to release, e.g. "ios", "android" or "ios,android". Blank = BUILD_PLATFORMS repo variable (default ios)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -17,6 +24,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  config:
+    name: Resolve Platforms
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.resolve.outputs.matrix }}
+    steps:
+      - name: Resolve platforms
+        id: resolve
+        env:
+          RAW: ${{ inputs.platforms || vars.BUILD_PLATFORMS || 'ios' }}
+        run: |
+          PLATFORMS=()
+          case "$RAW" in *ios*) PLATFORMS+=(ios) ;; esac
+          case "$RAW" in *android*) PLATFORMS+=(android) ;; esac
+          if [ ${#PLATFORMS[@]} -eq 0 ]; then
+            echo "::error::No valid platform in '$RAW'. Use ios, android, or both."
+            exit 1
+          fi
+          MATRIX=$(printf '%s\n' "${PLATFORMS[@]}" | jq -R . | jq -sc .)
+          echo "Platforms: $RAW -> $MATRIX"
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
   validate:
     name: Validate Tag
     runs-on: ubuntu-latest
@@ -76,12 +105,12 @@ jobs:
   build-and-submit:
     name: Build and Submit (${{ matrix.platform }})
     runs-on: ubuntu-latest
-    needs: [validate, lint-and-check]
+    needs: [config, validate, lint-and-check]
     timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        platform: [ios, android]
+        platform: ${{ fromJSON(needs.config.outputs.matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
