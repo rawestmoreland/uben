@@ -46,7 +46,12 @@ export default function AddWordScreen() {
   // UI state
   const [categories, setCategories] = useState<Category[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [duplicateError, setDuplicateError] = useState<string | null>(null);
+  // The error is stored with the word/article it was computed for, so a stale
+  // result is never shown for different input.
+  const [duplicateResult, setDuplicateResult] = useState<{
+    key: string;
+    message: string | null;
+  } | null>(null);
   const duplicateCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Free-tier word cap state
@@ -69,21 +74,20 @@ export default function AddWordScreen() {
 
     const trimmed = german.trim();
     if (!trimmed || !article) {
-      setDuplicateError(null);
       return;
     }
 
+    const key = `${trimmed}|${article}`;
     duplicateCheckTimer.current = setTimeout(async () => {
       const result = await vocabularyService.checkNounExists(trimmed, article);
-      if (result.exists) {
-        setDuplicateError(
-          result.isUserAdded
+      setDuplicateResult({
+        key,
+        message: result.exists
+          ? result.isUserAdded
             ? 'You have already added this word'
-            : 'This word is already in your vocabulary',
-        );
-      } else {
-        setDuplicateError(null);
-      }
+            : 'This word is already in your vocabulary'
+          : null,
+      });
     }, 400);
 
     return () => {
@@ -92,6 +96,11 @@ export default function AddWordScreen() {
       }
     };
   }, [german, article]);
+
+  const duplicateError =
+    article && duplicateResult?.key === `${german.trim()}|${article}`
+      ? duplicateResult.message
+      : null;
 
   const isValid =
     german.trim().length > 0 &&

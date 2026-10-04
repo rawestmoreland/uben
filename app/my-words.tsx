@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "expo-router/react-navigation";
 import * as Haptics from 'expo-haptics';
 import { AdBanner } from '@/components/ads/ad-banner';
 import {

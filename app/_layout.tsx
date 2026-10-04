@@ -2,7 +2,7 @@ import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from '@react-navigation/native';
+} from "expo-router/react-navigation";
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -66,11 +66,11 @@ export default function RootLayout() {
   }, []);
 
   // When splash animation finishes AND database is ready, hide splash
-  useEffect(() => {
-    if (splashAnimationDone && isReady) {
-      setShowingSplash(false);
-    }
-  }, [splashAnimationDone, isReady]);
+  // (adjusted during render rather than in an effect: the splash only ever
+  // goes from showing to hidden)
+  if (showingSplash && splashAnimationDone && isReady) {
+    setShowingSplash(false);
+  }
 
   if (error) {
     console.error('[App] Database failed to initialize:', error);
