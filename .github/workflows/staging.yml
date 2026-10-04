@@ -94,15 +94,15 @@ jobs:
           GROUP_ID=$(echo "$OUTPUT" | jq -r '.[0].group')
           echo "group_id=$GROUP_ID" >> $GITHUB_OUTPUT
 
-      - name: Build and submit iOS
+      - name: Build iOS (internal)
         if: steps.fingerprint.outputs.deploy_type == 'build'
         run: |
-          eas build --profile preview-store --platform ios --non-interactive --auto-submit --no-wait
+          eas build --profile preview --platform ios --non-interactive --no-wait
 
-      - name: Build and submit Android
+      - name: Build Android (internal)
         if: steps.fingerprint.outputs.deploy_type == 'build'
         run: |
-          eas build --profile preview-store --platform android --non-interactive --auto-submit --no-wait
+          eas build --profile preview --platform android --non-interactive --no-wait
 
       - name: Create pre-release tag
         env:
@@ -128,7 +128,7 @@ jobs:
             const deployType = '${{ steps.fingerprint.outputs.deploy_type }}';
             const body = deployType === 'ota'
               ? '📡 **OTA update published to staging**\n\nJS-only changes detected. Testers with existing builds will receive the update automatically.'
-              : '🔨 **Native build triggered for staging**\n\nNative changes detected. Full build submitted to TestFlight/internal testing track.';
+              : '🔨 **Native build triggered for staging**\n\nNative changes detected. Internal distribution build started on EAS.';
             github.rest.repos.createCommitComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
