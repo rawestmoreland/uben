@@ -170,8 +170,7 @@
       "badge": "Verb Präteritum",
       "all_caught_up": "All caught up",
       "no_verbs_due": "No verbs due for review right now.\n\nCome back later!",
-      "correct_answer_was": "Correct answer: {{answer}}",
-      "question_prompt": "What's the Präteritum (simple past) of \"{{infinitive}}\"?",
+      "correct_answer_was": "Correct answer: {{pronoun}} {{answer}}",
       "continue": "Continue"
     },
     "paywall": {

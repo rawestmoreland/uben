@@ -11,6 +11,7 @@ import {
   useVerbQuizSession,
   type VerbQuizResult,
 } from '@/hooks/use-verb-quiz-session';
+import { PRONOUN_LABELS } from '@/services/verbImperfectService';
 import { useStoreReview } from '@/hooks/use-store-review';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -180,10 +181,21 @@ function PlayingState({ quiz }: PlayingStateProps) {
       >
         {/* ── Question Card ─────────────────────────────────── */}
         <View style={[styles.questionCard, shadowStyle]}>
-          <Text style={styles.questionText}>
-            {t('verb_quiz.question_prompt', {
-              infinitive: currentQuestion.infinitive,
-            })}
+          <Text style={styles.infinitiveLabel}>
+            {currentQuestion.infinitive.toUpperCase()}
+          </Text>
+          <Text style={styles.blankSentence}>
+            {PRONOUN_LABELS[currentQuestion.pronoun]}{' '}
+            <Text
+              style={[
+                styles.blankText,
+                isFeedback && {
+                  color: isCorrect ? AppColors.green : AppColors.red,
+                },
+              ]}
+            >
+              {isFeedback ? selectedAnswer : '____'}
+            </Text>
           </Text>
           {currentQuestion.english && (
             <Text style={styles.englishHint}>{currentQuestion.english}</Text>
@@ -191,6 +203,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
           {isFeedback && !isCorrect && (
             <Text style={styles.correctAnswerNote}>
               {t('verb_quiz.correct_answer_was', {
+                pronoun: PRONOUN_LABELS[currentQuestion.pronoun],
                 answer: currentQuestion.correctAnswer,
               })}
             </Text>
@@ -333,7 +346,8 @@ function CompleteState({ results, t }: CompleteStateProps) {
                 ]}
               />
               <Text style={styles.resultWord}>
-                {result.question.infinitive} → {result.question.correctAnswer}
+                {result.question.infinitive} · {PRONOUN_LABELS[result.question.pronoun]}{' '}
+                {result.question.correctAnswer}
               </Text>
               {!result.isCorrect && (
                 <Text style={styles.resultYourAnswer}>
@@ -487,12 +501,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     alignItems: 'center',
   },
-  questionText: {
+  infinitiveLabel: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 2,
+    marginBottom: Spacing.sm,
+  },
+  blankSentence: {
     fontSize: Typography.heading,
     fontWeight: Typography.semibold,
     color: AppColors.black,
     textAlign: 'center',
     lineHeight: 34,
+  },
+  blankText: {
+    fontWeight: Typography.bold,
+    color: AppColors.blue,
+    textDecorationLine: 'underline',
   },
   englishHint: {
     fontSize: Typography.body,

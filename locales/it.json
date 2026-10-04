@@ -170,8 +170,7 @@
       "badge": "Präteritum dei Verbi",
       "all_caught_up": "Tutto in regola",
       "no_verbs_due": "Nessun verbo da ripassare al momento.\n\nTorna più tardi!",
-      "correct_answer_was": "Risposta corretta: {{answer}}",
-      "question_prompt": "Qual è il Präteritum (passato semplice) di \"{{infinitive}}\"?",
+      "correct_answer_was": "Risposta corretta: {{pronoun}} {{answer}}",
       "continue": "Continua"
     },
     "paywall": {

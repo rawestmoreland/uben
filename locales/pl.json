@@ -180,8 +180,7 @@
       "badge": "Czas Präteritum",
       "all_caught_up": "Wszystko zrobione",
       "no_verbs_due": "Brak czasowników do powtórki.\n\nWróć później!",
-      "correct_answer_was": "Poprawna odpowiedź: {{answer}}",
-      "question_prompt": "Jaka jest forma Präteritum (czas przeszły prosty) dla \"{{infinitive}}\"?",
+      "correct_answer_was": "Poprawna odpowiedź: {{pronoun}} {{answer}}",
       "continue": "Dalej"
     },
     "paywall": {
