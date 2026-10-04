@@ -129,8 +129,13 @@ function PlayingState({ quiz }: PlayingStateProps) {
   // Reset the input and refocus whenever a new question appears (a fresh
   // object every time, so this also covers the loop back from feedback to
   // the next "playing" question after Continue).
-  useEffect(() => {
+  const [inputQuestion, setInputQuestion] = useState(currentQuestion);
+  if (inputQuestion !== currentQuestion) {
+    setInputQuestion(currentQuestion);
     setInputValue('');
+  }
+
+  useEffect(() => {
     inputRef.current?.focus();
   }, [currentQuestion]);
 
