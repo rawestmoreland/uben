@@ -20,15 +20,16 @@ This directory contains CI/CD workflows for the üben release train.
 
 **Trigger:** Push to `staging` branch
 
-**Purpose:** Automated preview builds and TestFlight submissions.
+**Purpose:** Publishes a staging OTA update when only JS changed, or runs preview builds and TestFlight submissions when native code changed. This is the only publisher for the `staging` EAS branch.
 
 **Steps:**
-1. Bump version (minor increment)
-2. Commit version bump back to staging
-3. Lint and TypeScript checks
-4. Build for iOS and Android (preview-store profile)
-5. Auto-submit to TestFlight and Play Console
-6. Create pre-release tag (e.g., v1.1.0-staging)
+1. Lint and TypeScript checks
+2. Compare native fingerprints against the latest finished staging builds
+3. If they match: publish an OTA update to the `staging` branch
+4. If they differ: build for iOS and Android (preview-store profile) and auto-submit to TestFlight and Play Console
+5. Create a unique pre-release tag, `v<version>-staging.<run number>` (for OTAs, the tag message includes the EAS update group ID)
+
+The app version is not bumped here; an OTA reaches every build with a matching runtime version.
 
 ### 3. `production.yml` - Production App Store Release
 
