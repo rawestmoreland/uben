@@ -310,6 +310,28 @@ describe('purchaseService.restorePurchases', () => {
   });
 });
 
+describe('purchaseService.getBackupIdentity', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns the RevenueCat originalAppUserId', async () => {
+    mockPurchases.getCustomerInfo.mockResolvedValue({
+      originalAppUserId: '$RCAnonymousID:original',
+    });
+
+    await expect(purchaseService.getBackupIdentity()).resolves.toBe(
+      '$RCAnonymousID:original',
+    );
+  });
+
+  it('returns null when the SDK call fails (offline)', async () => {
+    mockPurchases.getCustomerInfo.mockRejectedValue(new Error('network error'));
+
+    await expect(purchaseService.getBackupIdentity()).resolves.toBeNull();
+  });
+});
+
 describe('purchaseService.trackPaywallViewed', () => {
   beforeEach(() => {
     jest.clearAllMocks();
