@@ -1,7 +1,7 @@
 name: Staging - OTA or Preview Builds
 
 on:
-  pull_request:
+  push:
     branches:
       - staging
   workflow_dispatch:
