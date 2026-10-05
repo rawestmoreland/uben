@@ -164,7 +164,26 @@
       "trial_badge": "{{count}} Free",
       "trial_questions_remaining": "{{count}} free questions left",
       "trial_used_up_title": "You're hooked!",
-      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going."
+      "trial_used_up_subtitle": "You've used all your free practice questions. Unlock Adjective Endings to keep going.",
+      "difficulty_label": "Difficulty",
+      "difficulty_standard": "Standard",
+      "difficulty_standard_hint": "Nominative and accusative",
+      "difficulty_advanced": "Advanced",
+      "difficulty_advanced_hint": "Adds the dative case",
+      "start": "Start",
+      "advanced_prompt_title": "Ready for more?",
+      "advanced_prompt_body": "Add the dative case (indirect object) to your adjective endings practice.",
+      "advanced_prompt_button": "Add dative case",
+      "advanced_enabled_note": "Dative case is on. It applies from your next session."
+    },
+    "verb_quiz": {
+      "badge": "Verb Präteritum",
+      "all_caught_up": "All caught up",
+      "no_verbs_due": "No verbs due for review right now.\n\nCome back later!",
+      "correct_answer_was": "Correct answer: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Type your answer...",
+      "check_button": "Check",
+      "continue": "Continue"
     },
     "paywall": {
       "premium_badge": "Üben Pro",
@@ -184,6 +203,30 @@
       "success_title": "You're Pro now!",
       "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, and adjective endings practice are all unlocked.",
       "success_continue": "Continue"
+    },
+    "home_screen": {
+      "header_subtitle": "GERMAN GRAMMAR PRACTICE",
+      "practice_label": "PRACTICE",
+      "soon_badge": "Soon",
+      "tile_due": "{{count}} due",
+      "tiles": {
+        "articles": {
+          "title": "Articles",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Plurals",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Adjectives",
+          "subtitle": "Endings"
+        },
+        "verbs": {
+          "title": "Verbs",
+          "subtitle": "Präteritum"
+        }
+      }
     }
   }
 }

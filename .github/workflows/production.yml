@@ -1,54 +1,86 @@
 name: Production - App Store Release
 
+# Full store release. Push a semver tag (v1.9.1) from a commit on main.
+# OTA hotfixes live in production-hotfix.yml.
 on:
   push:
     tags:
-      - 'v*' # Triggers on version tags like v1.3.0, v1.3.1, etc.
+      # Exact semver only. Does not match v1.9.1-staging.4 or v1.9.1-hotfix.2
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  # Manual run: pick the semver tag as the ref. A non-tag ref fails validation.
   workflow_dispatch:
     inputs:
-      deploy_type:
-        description: 'Deploy type'
-        required: true
-        default: 'release'
-        type: choice
-        options:
-          - release
-          - hotfix
-      hotfix_message:
-        description: 'Hotfix description (required for OTA hotfix)'
+      platforms:
+        description: 'Platforms to release, e.g. "ios", "android" or "ios,android". Blank = BUILD_PLATFORMS repo variable (default ios)'
         required: false
-        type: string
+        default: ''
 
 permissions:
   contents: write
 
+# Never run two store releases at once, and never cancel one halfway through
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
 jobs:
-  # ──────────────────────────────────────────────
-  # Full App Store release (push to main or manual release)
-  # ──────────────────────────────────────────────
-  validate:
-    name: Validate Version
-    if: github.event_name == 'push' || inputs.deploy_type == 'release'
+  config:
+    name: Resolve Platforms
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.resolve.outputs.matrix }}
+    steps:
+      - name: Resolve platforms
+        id: resolve
+        env:
+          RAW: ${{ inputs.platforms || vars.BUILD_PLATFORMS || 'ios' }}
+        run: |
+          PLATFORMS=()
+          case "$RAW" in *ios*) PLATFORMS+=(ios) ;; esac
+          case "$RAW" in *android*) PLATFORMS+=(android) ;; esac
+          if [ ${#PLATFORMS[@]} -eq 0 ]; then
+            echo "::error::No valid platform in '$RAW'. Use ios, android, or both."
+            exit 1
+          fi
+          MATRIX=$(printf '%s\n' "${PLATFORMS[@]}" | jq -R . | jq -sc .)
+          echo "Platforms: $RAW -> $MATRIX"
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  validate:
+    name: Validate Tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          fetch-depth: 0
 
-      - name: Validate version
+      - name: Check tag matches app version
+        id: version
         run: |
-          VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
-          echo "✅ Production release version: $VERSION"
+          VERSION=$(node scripts/app-version.cjs)
+          TAG="${GITHUB_REF_NAME}"
+          if [ "$TAG" != "v${VERSION}" ]; then
+            echo "::error::Tag $TAG does not match app.config.js version v${VERSION}. Delete the tag, fix the version, and re-tag."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing v${VERSION}"
+
+      - name: Check tagged commit is on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tagged commit $GITHUB_SHA is not on main. Production releases must come from main."
+            exit 1
+          fi
 
   lint-and-check:
     name: Lint and Type Check
     runs-on: ubuntu-latest
     needs: validate
-    if: github.event_name == 'push' || inputs.deploy_type == 'release'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,11 +100,17 @@ jobs:
       - name: Run TypeScript check
         run: npx tsc --noEmit
 
+  # One job per platform so a failure on one doesn't hide the other.
+  # Each job waits for the EAS build to finish, then submits that exact build.
   build-and-submit:
-    name: Build and Submit to App Store
+    name: Build and Submit (${{ matrix.platform }})
     runs-on: ubuntu-latest
-    needs: [validate, lint-and-check]
-    if: github.event_name == 'push' || inputs.deploy_type == 'release'
+    needs: [config, validate, lint-and-check]
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJSON(needs.config.outputs.matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -93,169 +131,82 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and submit iOS
+      - name: Build
+        id: build
+        env:
+          PLATFORM: ${{ matrix.platform }}
         run: |
-          eas build --profile production --platform ios --non-interactive --auto-submit --no-wait
-
-      - name: Build and submit Android
-        run: |
-          eas build --profile production --platform android --non-interactive --auto-submit --no-wait
-
-      - name: Verify tag matches version
-        run: |
-          VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-          if [ "$TAG_NAME" != "v${VERSION}" ]; then
-            echo "⚠️  Warning: Tag $TAG_NAME does not match app.json version v${VERSION}"
-            echo "This is acceptable but may indicate a mismatch in versioning"
-          else
-            echo "✅ Tag $TAG_NAME matches app.json version v${VERSION}"
+          OUTPUT=$(eas build --profile production --platform "$PLATFORM" --non-interactive --wait --json)
+          echo "$OUTPUT"
+          BUILD_ID=$(echo "$OUTPUT" | jq -r '.[0].id')
+          STATUS=$(echo "$OUTPUT" | jq -r '.[0].status')
+          if [ "$STATUS" != "FINISHED" ]; then
+            echo "::error::$PLATFORM build $BUILD_ID ended with status $STATUS"
+            exit 1
           fi
+          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
 
-      - name: Generate changelog
-        id: changelog
+      - name: Submit
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          BUILD_ID: ${{ steps.build.outputs.build_id }}
         run: |
-          VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
-          echo "## Version $VERSION" > CHANGELOG.txt
-          echo "" >> CHANGELOG.txt
-          git log --pretty=format:"- %s (%h)" HEAD~10..HEAD >> CHANGELOG.txt
+          eas submit --platform "$PLATFORM" --profile production --id "$BUILD_ID" --non-interactive --wait
 
-      - name: Create GitHub Release
+  # Only runs if every build and submission succeeded
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate, build-and-submit]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate fallback changelog
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          # Previous release = newest exact-semver tag other than this one
+          PREV_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "$TAG" | head -n 1 || true)
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..${TAG}"
+          else
+            RANGE="${TAG}"
+          fi
+          {
+            echo "## Version ${TAG#v}"
+            echo ""
+            git log --no-merges --pretty=format:"- %s (%h)" "$RANGE"
+          } > CHANGELOG.txt
+
+      - name: Publish release
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const changelog = fs.readFileSync('CHANGELOG.txt', 'utf8');
-            const version = JSON.parse(fs.readFileSync('app.json')).expo.version;
+            const { owner, repo } = context.repo;
+            const tag = process.env.GITHUB_REF_NAME;
 
-            await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `v${version}`,
-              name: `v${version}`,
-              body: changelog,
-              draft: false,
-              prerelease: false
+            // release-notes.yml may already have drafted this release with Claude-written notes.
+            // If so, publish it and keep its body; otherwise fall back to the git log changelog.
+            const releases = await github.paginate(github.rest.repos.listReleases, {
+              owner, repo, per_page: 100,
             });
+            const existing = releases.find((release) => release.tag_name === tag);
 
-  # ──────────────────────────────────────────────
-  # OTA hotfix (manual dispatch only)
-  # ──────────────────────────────────────────────
-  hotfix-validate:
-    name: Validate Hotfix
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'hotfix'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require hotfix message
-        run: |
-          if [ -z "${{ inputs.hotfix_message }}" ]; then
-            echo "❌ Hotfix message is required for OTA hotfixes"
-            exit 1
-          fi
-          echo "🩹 Production hotfix: ${{ inputs.hotfix_message }}"
-
-  hotfix-lint-and-check:
-    name: Hotfix - Lint and Type Check
-    runs-on: ubuntu-latest
-    needs: hotfix-validate
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'hotfix'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Run TypeScript check
-        run: npx tsc --noEmit
-
-  hotfix-deploy:
-    name: Hotfix - OTA Deploy
-    runs-on: ubuntu-latest
-    needs: [hotfix-validate, hotfix-lint-and-check]
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'hotfix'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Verify OTA compatibility
-        id: fingerprint
-        run: |
-          # Generate current native fingerprints
-          CURRENT_IOS=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | jq -r '.hash')
-          CURRENT_ANDROID=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | jq -r '.hash')
-          echo "Current iOS fingerprint: $CURRENT_IOS"
-          echo "Current Android fingerprint: $CURRENT_ANDROID"
-
-          # Get latest finished production build runtime versions
-          LATEST_IOS_RV=$(eas build:list --channel production --platform ios --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
-          LATEST_ANDROID_RV=$(eas build:list --channel production --platform android --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
-          echo "Latest iOS build runtime version: $LATEST_IOS_RV"
-          echo "Latest Android build runtime version: $LATEST_ANDROID_RV"
-
-          # OTA hotfix MUST match existing production builds
-          if [ -n "$LATEST_IOS_RV" ] && [ -n "$LATEST_ANDROID_RV" ] && [ "$CURRENT_IOS" = "$LATEST_IOS_RV" ] && [ "$CURRENT_ANDROID" = "$LATEST_ANDROID_RV" ]; then
-            echo "✅ Fingerprints match - OTA hotfix is safe to deploy"
-          else
-            echo "❌ ABORT: Native fingerprint has changed since the last production build."
-            echo "   This means native code was modified and an OTA update will not reach users."
-            echo "   Please do a full App Store release instead."
-            exit 1
-          fi
-
-      - name: Publish OTA hotfix
-        run: |
-          echo "🩹 Publishing production OTA hotfix..."
-          eas update --branch production --message "Hotfix: ${{ inputs.hotfix_message }}" --non-interactive --platform all
-
-      - name: Create hotfix tag
-        run: |
-          VERSION=$(cat app.json | grep -o '"version": "[^"]*' | cut -d'"' -f4)
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${VERSION}-hotfix-${TIMESTAMP}" -m "Production hotfix: ${{ inputs.hotfix_message }}"
-          git push origin "v${VERSION}-hotfix-${TIMESTAMP}"
-
-      - name: Create GitHub Release for hotfix
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const version = JSON.parse(require('fs').readFileSync('app.json')).expo.version;
-            const timestamp = new Date().toISOString().replace(/[:-]/g, '').slice(0, 14);
-            const tag = `v${version}-hotfix-${timestamp}`;
+            if (existing) {
+              await github.rest.repos.updateRelease({
+                owner, repo, release_id: existing.id, draft: false,
+              });
+              return;
+            }
 
             await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner, repo,
               tag_name: tag,
-              name: `v${version} Hotfix`,
-              body: `## 🩹 Production OTA Hotfix\n\n**Description:** ${{ inputs.hotfix_message }}\n\nThis update was delivered via OTA (Over-The-Air) and does not require an App Store update.`,
+              name: tag,
+              body: fs.readFileSync('CHANGELOG.txt', 'utf8'),
               draft: false,
-              prerelease: true
+              prerelease: false,
             });

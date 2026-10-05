@@ -15,6 +15,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type AdjectiveQuizPhase =
   | 'loading'
+  | 'ready'
   | 'playing'
   | 'feedback'
   | 'complete'
@@ -34,8 +35,14 @@ export interface AdjectiveQuizResult {
   timeTakenMs: number;
 }
 
+export type AdjectiveDifficulty = 'standard' | 'advanced';
+
 export interface AdjectiveQuizSessionData {
   phase: AdjectiveQuizPhase;
+  /** Current difficulty; changeable on the start screen, applied by startQuiz. */
+  difficulty: AdjectiveDifficulty;
+  setDifficulty: (difficulty: AdjectiveDifficulty) => void;
+  startQuiz: () => void;
   currentQuestion: AdjectiveDeclensionQuestion | null;
   selectedAnswer: string | null;
   isCorrect: boolean | null;
@@ -64,6 +71,11 @@ export interface AdjectiveQuizSessionData {
 export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
   const [phase, setPhase] = useState<AdjectiveQuizPhase>('loading');
   const [cards, setCards] = useState<AdjectiveQuizCard[]>([]);
+  // Cards fetched while 'loading'; questions are generated in startQuiz so the
+  // difficulty picked on the start screen applies to this session.
+  const [pendingCards, setPendingCards] = useState<DueAdjectiveCard[]>([]);
+  const [difficulty, setDifficultyState] =
+    useState<AdjectiveDifficulty>('standard');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -108,7 +120,7 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
         const maxCards = trialRemaining !== null ? trialRemaining : 20;
         const newCardsLimit = trialRemaining !== null ? maxCards : 5;
 
-        const [session, difficulty] = await Promise.all([
+        const [session, savedDifficulty] = await Promise.all([
           spacedRepetitionService.getAdjectiveDeclensionSession(
             maxCards,
             newCardsLimit,
@@ -126,21 +138,9 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
         setIsTrialSession(trialRemaining !== null);
         if (trialRemaining !== null) setTrialQuestionsRemaining(trialRemaining);
 
-        const includeDative = difficulty === 'advanced';
-        setCards(
-          session.cards.map((card) => ({
-            card,
-            question: generateDeclensionQuestion(
-              {
-                german: card.german,
-                english: card.english,
-              },
-              { includeDative },
-            ),
-          })),
-        );
-        setPhase('playing');
-        cardStartTime.current = Date.now();
+        setDifficultyState(savedDifficulty);
+        setPendingCards(session.cards);
+        setPhase('ready');
       } catch (error) {
         console.error('[AdjectiveQuiz] Failed to load session:', error);
         setPhase('empty');
@@ -153,6 +153,38 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
       cancelled = true;
     };
   }, []);
+
+  // ── Difficulty + start ───────────────────────────────────────────
+
+  const setDifficulty = useCallback(
+    async (next: AdjectiveDifficulty) => {
+      const previous = difficulty;
+      setDifficultyState(next);
+      try {
+        await settingsService.setAdjectiveDeclensionDifficulty(next);
+      } catch (error) {
+        console.error('[AdjectiveQuiz] Failed to save difficulty:', error);
+        setDifficultyState(previous);
+      }
+    },
+    [difficulty],
+  );
+
+  const startQuiz = useCallback(() => {
+    if (phase !== 'ready') return;
+    const includeDative = difficulty === 'advanced';
+    setCards(
+      pendingCards.map((card) => ({
+        card,
+        question: generateDeclensionQuestion(
+          { german: card.german, english: card.english },
+          { includeDative },
+        ),
+      })),
+    );
+    setPhase('playing');
+    cardStartTime.current = Date.now();
+  }, [phase, difficulty, pendingCards]);
 
   // ── Current card ─────────────────────────────────────────────────
 
@@ -239,6 +271,9 @@ export function useAdjectiveQuizSession(): AdjectiveQuizSessionData {
 
   return {
     phase,
+    difficulty,
+    setDifficulty,
+    startQuiz,
     currentQuestion: currentCard?.question ?? null,
     selectedAnswer,
     isCorrect,

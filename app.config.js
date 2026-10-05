@@ -29,7 +29,7 @@ export default {
   expo: {
     name: `üben${getAppVariant()}`,
     slug: 'uben',
-    version: '1.9.1',
+    version: '1.10.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: `germanpractice${getSchemeSuffix()}`,
@@ -45,7 +45,6 @@ export default {
     android: {
       package: `com.westmorelandcreative.uben${getBundleSuffix()}`,
       icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
-      edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
     },
     plugins: [

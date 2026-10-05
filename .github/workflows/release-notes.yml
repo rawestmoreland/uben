@@ -1,0 +1,112 @@
+name: Release Notes
+
+# Generates release notes with Claude when staging is merged into main.
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release-notes:
+    name: Generate Release Notes
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'staging'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(node scripts/app-version.cjs)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Previous production release tag (excluding hotfix/staging tags)
+          PREV_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "v$VERSION" | head -n 1 || true)
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes with Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Write release notes for Üben v${{ steps.version.outputs.version }}, a German
+            language learning app (article/plural quizzes with spaced repetition).
+
+            This release is PR #${{ github.event.pull_request.number }}
+            (staging -> main) in ${{ github.repository }}.
+            Previous release tag: "${{ steps.version.outputs.prev_tag }}" (empty means first release).
+
+            Steps:
+            1. Find what changed: use `git log` over the range
+               `${{ steps.version.outputs.prev_tag }}..${{ github.event.pull_request.merge_commit_sha }}`
+               (or the PR's commits if there is no previous tag), and `gh pr view` /
+               `gh pr list --state merged` to read the titles and descriptions of the PRs included.
+            2. Write the notes to RELEASE_NOTES.md in the repo root, in Markdown, with only
+               the sections that apply, in this order: "Highlights", "New Features",
+               "Improvements", "Bug Fixes", "Database / Vocabulary", "Internal".
+            3. Write for users first: short, plain-language bullets describing the user-visible
+               effect, with the PR number in parentheses (e.g. "(#123)"). Put dependency bumps,
+               CI and refactors under "Internal". Skip version-bump commits and merge commits.
+            4. Do not invent changes. Do not include a top-level title or version heading
+               (the release already has one). No emojis. Keep it under ~40 lines.
+            Do not modify any other files and do not commit.
+          claude_args: |
+            --allowedTools "Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(gh pr view:*),Bash(gh pr list:*),Write"
+
+      - name: Verify notes were written
+        run: |
+          test -s RELEASE_NOTES.md || { echo "Claude did not produce RELEASE_NOTES.md"; exit 1; }
+          cat RELEASE_NOTES.md
+
+      - name: Upsert GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('RELEASE_NOTES.md', 'utf8');
+            const tag = `v${{ steps.version.outputs.version }}`;
+            const { owner, repo } = context.repo;
+
+            // getReleaseByTag does not return drafts, so scan the release list
+            const releases = await github.paginate(github.rest.repos.listReleases, {
+              owner, repo, per_page: 100,
+            });
+            const existing = releases.find((release) => release.tag_name === tag);
+
+            if (existing) {
+              await github.rest.repos.updateRelease({
+                owner, repo, release_id: existing.id, body,
+              });
+            } else {
+              // Tag doesn't exist yet: create a draft so production.yml can publish it
+              await github.rest.repos.createRelease({
+                owner, repo,
+                tag_name: tag,
+                target_commitish: '${{ github.event.pull_request.merge_commit_sha }}',
+                name: tag,
+                body,
+                draft: true,
+              });
+            }
+
+      - name: Comment release notes on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const notes = fs.readFileSync('RELEASE_NOTES.md', 'utf8');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `## Release notes for v${{ steps.version.outputs.version }}\n\n${notes}`,
+            });

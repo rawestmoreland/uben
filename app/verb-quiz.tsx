@@ -1,8 +1,4 @@
 import {
-  AdjectiveDifficultyControl,
-  AdvancedEndingsPrompt,
-} from '@/components/quiz/adjective-difficulty';
-import {
   AppColors,
   Layout,
   Spacing,
@@ -10,94 +6,59 @@ import {
   shadowStyle,
   shadowStyleSmall,
 } from '@/constants/design';
-import {
-  useAdjectiveQuizSession,
-  type AdjectiveDifficulty,
-  type AdjectiveQuizResult,
-} from '@/hooks/use-adjective-quiz-session';
-import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
-import { useSettings } from '@/hooks/use-settings';
+import {
+  useVerbQuizSession,
+  type VerbQuizResult,
+} from '@/hooks/use-verb-quiz-session';
+import { PRONOUN_LABELS } from '@/services/verbImperfectService';
 import { useStoreReview } from '@/hooks/use-store-review';
-import { applyGermanTextPreference } from '@/utils/germanText';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { TFunction } from 'i18next';
-import { useCallback, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ── Quiz Screen ──────────────────────────────────────────────────────
 //
-// Feedback does NOT auto-advance: the explanation needs to actually be read,
-// not flash past. The learner taps "Continue" when ready — see PlayingState.
+// Feedback does NOT auto-advance: the learner taps "Continue" when ready —
+// see PlayingState. Mirrors adjective-quiz.tsx's phase machine, but there's
+// no explanation card here — the Präteritum form is memorized vocabulary,
+// not a rule to explain.
 
-export default function AdjectiveQuizScreen() {
+export default function VerbQuizScreen() {
   const { t } = useTranslation('app');
-  const quiz = useAdjectiveQuizSession();
-  const {
-    phase,
-    results,
-    isTrialSession,
-    trialQuestionsRemaining,
-    difficulty,
-    setDifficulty,
-  } = quiz;
-  const { eszettPreference } = useSettings();
+  const quiz = useVerbQuizSession();
+  const { phase, results } = quiz;
 
-  // Defensive gate: the home screen already routes to the paywall once the
-  // trial is spent, but a direct/deep link could still land here.
+  // Defensive gate: the home screen already routes to the paywall once
+  // locked, but a direct/deep link could still land here.
   useEffect(() => {
     if (phase === 'locked') {
       router.replace('/paywall');
     }
   }, [phase]);
 
-  const enableAdvanced = useCallback(
-    () => setDifficulty('advanced'),
-    [setDifficulty],
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       {(phase === 'loading' || phase === 'locked') && <LoadingState t={t} />}
-      {phase === 'ready' && (
-        <ReadyState
-          t={t}
-          difficulty={difficulty}
-          onChangeDifficulty={setDifficulty}
-          onStart={quiz.startQuiz}
-        />
-      )}
-      {phase === 'empty' && (
-        <EmptyState
-          t={t}
-          difficulty={difficulty}
-          onEnableAdvanced={enableAdvanced}
-        />
-      )}
+      {phase === 'empty' && <EmptyState t={t} />}
       {(phase === 'playing' || phase === 'feedback') && (
-        <PlayingState quiz={quiz} eszettPreference={eszettPreference} />
+        <PlayingState quiz={quiz} />
       )}
-      {phase === 'complete' && (
-        <CompleteState
-          results={results}
-          t={t}
-          isTrialSession={isTrialSession}
-          trialQuestionsRemaining={trialQuestionsRemaining}
-          eszettPreference={eszettPreference}
-          difficulty={difficulty}
-          onEnableAdvanced={enableAdvanced}
-        />
-      )}
+      {phase === 'complete' && <CompleteState results={results} t={t} />}
     </SafeAreaView>
   );
 }
@@ -113,86 +74,17 @@ function LoadingState({ t }: { t: TFunction }) {
   );
 }
 
-// ── Ready State ──────────────────────────────────────────────────────
-
-interface ReadyStateProps {
-  t: TFunction;
-  difficulty: AdjectiveDifficulty;
-  onChangeDifficulty: (difficulty: AdjectiveDifficulty) => void;
-  onStart: () => void;
-}
-
-function ReadyState({
-  t,
-  difficulty,
-  onChangeDifficulty,
-  onStart,
-}: ReadyStateProps) {
-  return (
-    <View style={styles.centeredContainer}>
-      <View style={styles.readyContent}>
-        <View style={styles.modeBadge}>
-          <Text style={styles.modeBadgeText}>
-            {t('adjective_quiz.badge').toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.readyControl}>
-          <AdjectiveDifficultyControl
-            difficulty={difficulty}
-            onChange={onChangeDifficulty}
-          />
-        </View>
-        <Pressable
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.backButtonPressed,
-          ]}
-          onPress={onStart}
-          accessibilityRole="button"
-          accessibilityLabel={t('adjective_quiz.start')}
-        >
-          <Text style={styles.backButtonText}>
-            {t('adjective_quiz.start').toUpperCase()}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={styles.readyCancel}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel={t('back_to_home')}
-        >
-          <Text style={styles.readyCancelText}>
-            {t('back_to_home').toUpperCase()}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
 // ── Empty State ──────────────────────────────────────────────────────
 
-interface EmptyStateProps {
-  t: TFunction;
-  difficulty: AdjectiveDifficulty;
-  onEnableAdvanced: () => void;
-}
-
-function EmptyState({ t, difficulty, onEnableAdvanced }: EmptyStateProps) {
+function EmptyState({ t }: { t: TFunction }) {
   return (
     <View style={styles.centeredContainer}>
       <View style={[styles.emptyCard, shadowStyle]}>
         <Text style={styles.emptyTitle}>
-          {t('adjective_quiz.all_caught_up').toUpperCase()}
+          {t('verb_quiz.all_caught_up').toUpperCase()}
         </Text>
-        <Text style={styles.emptySubtext}>
-          {t('adjective_quiz.no_cards_due')}
-        </Text>
+        <Text style={styles.emptySubtext}>{t('verb_quiz.no_verbs_due')}</Text>
       </View>
-      <AdvancedEndingsPrompt
-        difficulty={difficulty}
-        onEnable={onEnableAdvanced}
-      />
       <Pressable
         style={({ pressed }) => [
           styles.backButton,
@@ -213,13 +105,14 @@ function EmptyState({ t, difficulty, onEnableAdvanced }: EmptyStateProps) {
 // ── Playing State ────────────────────────────────────────────────────
 
 interface PlayingStateProps {
-  quiz: ReturnType<typeof useAdjectiveQuizSession>;
-  eszettPreference: 'eszett' | 'ss';
+  quiz: ReturnType<typeof useVerbQuizSession>;
 }
 
-function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
+function PlayingState({ quiz }: PlayingStateProps) {
   const { t } = useTranslation('app');
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
 
   const isFeedback = phase === 'feedback';
 
@@ -233,12 +126,27 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
     }
   }, [isFeedback, isCorrect]);
 
+  // Reset the input and refocus whenever a new question appears (a fresh
+  // object every time, so this also covers the loop back from feedback to
+  // the next "playing" question after Continue).
+  const [inputQuestion, setInputQuestion] = useState(currentQuestion);
+  if (inputQuestion !== currentQuestion) {
+    setInputQuestion(currentQuestion);
+    setInputValue('');
+  }
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [currentQuestion]);
+
   if (!currentQuestion) return null;
 
-  function handleAnswer(answer: string) {
-    if (isFeedback) return;
+  const canSubmit = inputValue.trim().length > 0;
+
+  function handleSubmit() {
+    if (isFeedback || !canSubmit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    quiz.submitAnswer(answer);
+    quiz.submitAnswer(inputValue.trim());
   }
 
   function handleContinue() {
@@ -247,12 +155,15 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
   }
 
   return (
-    <View style={styles.playingContainer}>
+    <KeyboardAvoidingView
+      style={styles.playingContainer}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       {/* ── Top row: close ──────────────────────────────────── */}
       <View style={styles.topRow}>
         <View style={styles.modeBadge}>
           <Text style={styles.modeBadgeText}>
-            {t('adjective_quiz.badge').toUpperCase()}
+            {t('verb_quiz.badge').toUpperCase()}
           </Text>
         </View>
         <Pressable
@@ -290,14 +201,15 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
         style={styles.answerScroll}
         contentContainerStyle={styles.answerScrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        {/* ── Sentence Card ─────────────────────────────────── */}
-        <View style={[styles.sentenceCard, shadowStyle]}>
-          <Text style={styles.sentenceText}>
-            {applyGermanTextPreference(
-              currentQuestion.before,
-              eszettPreference,
-            )}{' '}
+        {/* ── Question Card ─────────────────────────────────── */}
+        <View style={[styles.questionCard, shadowStyle]}>
+          <Text style={styles.infinitiveLabel}>
+            {currentQuestion.infinitive.toUpperCase()}
+          </Text>
+          <Text style={styles.blankSentence}>
+            {PRONOUN_LABELS[currentQuestion.pronoun]}{' '}
             <Text
               style={[
                 styles.blankText,
@@ -306,82 +218,57 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
                 },
               ]}
             >
-              {isFeedback
-                ? applyGermanTextPreference(
-                    selectedAnswer ?? '',
-                    eszettPreference,
-                  )
-                : '____'}
-            </Text>{' '}
-            {applyGermanTextPreference(currentQuestion.after, eszettPreference)}
+              {isFeedback ? selectedAnswer : '____'}
+            </Text>
           </Text>
-          <Text style={styles.englishHint}>{currentQuestion.english}</Text>
+          {currentQuestion.english && (
+            <Text style={styles.englishHint}>{currentQuestion.english}</Text>
+          )}
           {isFeedback && !isCorrect && (
             <Text style={styles.correctAnswerNote}>
-              {t('adjective_quiz.correct_answer_was', {
-                answer: applyGermanTextPreference(
-                  currentQuestion.correctAnswer,
-                  eszettPreference,
-                ),
+              {t('verb_quiz.correct_answer_was', {
+                pronoun: PRONOUN_LABELS[currentQuestion.pronoun],
+                answer: currentQuestion.correctAnswer,
               })}
             </Text>
           )}
         </View>
 
-        {/* ── Explanation ──────────────────────────────────── */}
-        {isFeedback && (
-          <View style={[styles.explanationCard, shadowStyleSmall]}>
-            <Text style={styles.explanationLabel}>
-              {t('adjective_quiz.why_label').toUpperCase()}
-            </Text>
-            <Text style={styles.explanationText}>
-              {currentQuestion.explanation}
-            </Text>
+        {/* ── Free-text Answer ─────────────────────────────── */}
+        {!isFeedback && (
+          <View style={styles.answerRow}>
+            <TextInput
+              ref={inputRef}
+              style={styles.answerInput}
+              value={inputValue}
+              onChangeText={setInputValue}
+              placeholder={t('verb_quiz.answer_placeholder')}
+              placeholderTextColor={AppColors.textSecondary}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="off"
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+              editable={!isFeedback}
+            />
+            <Pressable
+              style={({ pressed }) => [
+                styles.checkButton,
+                shadowStyleSmall,
+                !canSubmit && styles.checkButtonDisabled,
+                pressed && canSubmit && styles.checkButtonPressed,
+              ]}
+              onPress={handleSubmit}
+              disabled={!canSubmit}
+              accessibilityRole="button"
+              accessibilityLabel={t('verb_quiz.check_button')}
+            >
+              <Text style={styles.checkButtonText}>
+                {t('verb_quiz.check_button').toUpperCase()}
+              </Text>
+            </Pressable>
           </View>
         )}
-
-        {/* ── Answer Options ───────────────────────────────── */}
-        <View style={styles.optionsGrid}>
-          {currentQuestion.options.map((option) => {
-            const isSelected = selectedAnswer === option;
-            const isCorrectAnswer = currentQuestion.correctAnswer === option;
-
-            let buttonBg: string = AppColors.white;
-            if (isFeedback && isCorrectAnswer) {
-              buttonBg = AppColors.green;
-            } else if (isFeedback && isSelected && !isCorrectAnswer) {
-              buttonBg = AppColors.red;
-            }
-
-            return (
-              <Pressable
-                key={option}
-                style={({ pressed }) => [
-                  styles.optionButton,
-                  shadowStyleSmall,
-                  { backgroundColor: buttonBg },
-                  pressed && !isFeedback && styles.optionButtonPressed,
-                ]}
-                onPress={() => handleAnswer(option)}
-                disabled={isFeedback}
-                accessibilityRole="button"
-                accessibilityLabel={`Select ${option}`}
-              >
-                <Text
-                  style={[
-                    styles.optionButtonText,
-                    isFeedback &&
-                      (isCorrectAnswer || isSelected) && {
-                        color: AppColors.white,
-                      },
-                  ]}
-                >
-                  {applyGermanTextPreference(option, eszettPreference)}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
 
         {/* ── Continue ─────────────────────────────────────── */}
         {isFeedback && (
@@ -393,43 +280,28 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
             ]}
             onPress={handleContinue}
             accessibilityRole="button"
-            accessibilityLabel={t('adjective_quiz.continue')}
+            accessibilityLabel={t('verb_quiz.continue')}
           >
             <Text style={styles.continueButtonText}>
-              {t('adjective_quiz.continue').toUpperCase()}
+              {t('verb_quiz.continue').toUpperCase()}
             </Text>
           </Pressable>
         )}
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 // ── Complete State ───────────────────────────────────────────────────
 
 interface CompleteStateProps {
-  results: AdjectiveQuizResult[];
+  results: VerbQuizResult[];
   t: TFunction;
-  isTrialSession: boolean;
-  trialQuestionsRemaining: number;
-  eszettPreference: 'eszett' | 'ss';
-  difficulty: AdjectiveDifficulty;
-  onEnableAdvanced: () => void;
 }
 
-function CompleteState({
-  results,
-  t,
-  isTrialSession,
-  trialQuestionsRemaining,
-  eszettPreference,
-  difficulty,
-  onEnableAdvanced,
-}: CompleteStateProps) {
+function CompleteState({ results, t }: CompleteStateProps) {
   const { handleSessionComplete } = useStoreReview();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
-
-  const { isPro } = useProEntitlement();
 
   useEffect(() => {
     handleSessionComplete();
@@ -439,16 +311,6 @@ function CompleteState({
     maybeShowInterstitial();
     router.back();
   };
-
-  const handleUnlock = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push({
-      pathname: '/paywall',
-      params: { source: 'adjective_quiz_trial_exhausted' },
-    });
-  };
-
-  const trialExhausted = isTrialSession && trialQuestionsRemaining <= 0;
 
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
@@ -487,43 +349,6 @@ function CompleteState({
           </View>
         </View>
 
-        {trialExhausted && !isPro && (
-          <View style={[styles.trialUpsellCard, shadowStyle]}>
-            <Text style={styles.trialUpsellTitle}>
-              {t('adjective_quiz.trial_used_up_title').toUpperCase()}
-            </Text>
-            <Text style={styles.trialUpsellText}>
-              {t('adjective_quiz.trial_used_up_subtitle')}
-            </Text>
-            <Pressable
-              style={({ pressed }) => [
-                styles.trialUpsellButton,
-                shadowStyleSmall,
-                pressed && styles.trialUpsellButtonPressed,
-              ]}
-              onPress={handleUnlock}
-              accessibilityRole="button"
-              accessibilityLabel={t('paywall.unlock_button')}
-            >
-              <Text style={styles.trialUpsellButtonText}>
-                {t('paywall.unlock_button').toUpperCase()}
-              </Text>
-            </Pressable>
-          </View>
-        )}
-        {isTrialSession && !trialExhausted && (
-          <Text style={styles.trialRemainingNote}>
-            {t('adjective_quiz.trial_questions_remaining', {
-              count: trialQuestionsRemaining,
-            })}
-          </Text>
-        )}
-
-        <AdvancedEndingsPrompt
-          difficulty={difficulty}
-          onEnable={onEnableAdvanced}
-        />
-
         <View style={styles.resultsList}>
           {results.map((result, index) => (
             <View key={index} style={styles.resultRow}>
@@ -538,18 +363,13 @@ function CompleteState({
                 ]}
               />
               <Text style={styles.resultWord}>
-                {applyGermanTextPreference(
-                  result.question.correctAnswer,
-                  eszettPreference,
-                )}
+                {result.question.infinitive} · {PRONOUN_LABELS[result.question.pronoun]}{' '}
+                {result.question.correctAnswer}
               </Text>
               {!result.isCorrect && (
                 <Text style={styles.resultYourAnswer}>
                   {t('quiz_mode.you_said', {
-                    article: applyGermanTextPreference(
-                      result.selectedAnswer,
-                      eszettPreference,
-                    ),
+                    article: result.selectedAnswer,
                   })}
                 </Text>
               )}
@@ -620,26 +440,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  readyContent: {
-    alignSelf: 'stretch',
-    alignItems: 'stretch',
-  },
-  readyControl: {
-    marginVertical: Spacing.xl,
-  },
-  readyCancel: {
-    minHeight: 44,
-    marginTop: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  readyCancelText: {
-    fontSize: Typography.small,
-    fontWeight: Typography.bold,
-    color: AppColors.textSecondary,
-    letterSpacing: 1,
-  },
-
   playingContainer: {
     flex: 1,
     padding: Layout.screenPadding,
@@ -651,7 +451,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modeBadge: {
-    backgroundColor: AppColors.purple,
+    backgroundColor: AppColors.blue,
     borderWidth: Layout.borderWidthThin,
     borderColor: AppColors.black,
     paddingVertical: Spacing.xs,
@@ -699,7 +499,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: AppColors.purple,
+    backgroundColor: AppColors.blue,
   },
 
   answerScroll: {
@@ -710,7 +510,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: Spacing.lg,
   },
-  sentenceCard: {
+  questionCard: {
     backgroundColor: AppColors.white,
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
@@ -718,7 +518,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     alignItems: 'center',
   },
-  sentenceText: {
+  infinitiveLabel: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.textSecondary,
+    letterSpacing: 2,
+    marginBottom: Spacing.sm,
+  },
+  blankSentence: {
     fontSize: Typography.heading,
     fontWeight: Typography.semibold,
     color: AppColors.black,
@@ -727,7 +534,7 @@ const styles = StyleSheet.create({
   },
   blankText: {
     fontWeight: Typography.bold,
-    color: AppColors.purple,
+    color: AppColors.blue,
     textDecorationLine: 'underline',
   },
   englishHint: {
@@ -744,53 +551,46 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  explanationCard: {
-    backgroundColor: AppColors.cream,
-    borderWidth: Layout.borderWidthThin,
-    borderColor: AppColors.black,
-    borderLeftWidth: Layout.borderWidth,
-    borderLeftColor: AppColors.purple,
-    padding: Spacing.md,
-    marginTop: Spacing.md,
-  },
-  explanationLabel: {
-    fontSize: Typography.tiny,
-    fontWeight: Typography.bold,
-    color: AppColors.purple,
-    letterSpacing: 1,
-    marginBottom: Spacing.xs,
-  },
-  explanationText: {
-    fontSize: Typography.small,
-    fontWeight: Typography.regular,
-    color: AppColors.black,
-    lineHeight: 20,
-  },
-
-  optionsGrid: {
+  answerRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.sm,
     marginTop: Spacing.lg,
+    alignItems: 'flex-start',
   },
-  optionButton: {
-    flexBasis: '48%',
-    flexGrow: 1,
+  answerInput: {
+    flex: 1,
+    backgroundColor: AppColors.white,
     borderWidth: Layout.borderWidth,
     borderColor: AppColors.black,
-    paddingVertical: 18,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    fontSize: Typography.body,
+    fontWeight: Typography.semibold,
+    color: AppColors.black,
+    minHeight: 56,
+  },
+  checkButton: {
+    backgroundColor: AppColors.blue,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 60,
+    minHeight: 56,
   },
-  optionButtonPressed: {
+  checkButtonPressed: {
     transform: [{ translateY: 2 }],
-    backgroundColor: AppColors.blue,
+    shadowOffset: { width: 2, height: 2 },
   },
-  optionButtonText: {
-    fontSize: Typography.body,
+  checkButtonDisabled: {
+    backgroundColor: AppColors.lightGray,
+  },
+  checkButtonText: {
+    fontSize: Typography.small,
     fontWeight: Typography.bold,
-    color: AppColors.black,
+    color: AppColors.white,
+    letterSpacing: 1,
   },
 
   continueButton: {
@@ -868,57 +668,6 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     letterSpacing: 1,
     marginTop: Spacing.xs,
-  },
-
-  trialUpsellCard: {
-    backgroundColor: AppColors.purple,
-    borderWidth: Layout.borderWidth,
-    borderColor: AppColors.black,
-    padding: Spacing.lg,
-    marginBottom: Spacing.xl,
-    alignItems: 'center',
-  },
-  trialUpsellTitle: {
-    fontSize: Typography.heading,
-    fontWeight: Typography.bold,
-    color: AppColors.white,
-    letterSpacing: 1,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  trialUpsellText: {
-    fontSize: Typography.small,
-    fontWeight: Typography.regular,
-    color: AppColors.white,
-    textAlign: 'center',
-    marginBottom: Spacing.lg,
-  },
-  trialUpsellButton: {
-    backgroundColor: AppColors.yellow,
-    borderWidth: Layout.borderWidth,
-    borderColor: AppColors.black,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 56,
-    alignSelf: 'stretch',
-  },
-  trialUpsellButtonPressed: {
-    transform: [{ translateY: 2 }],
-  },
-  trialUpsellButtonText: {
-    fontSize: Typography.body,
-    fontWeight: Typography.bold,
-    color: AppColors.black,
-    letterSpacing: 1,
-  },
-  trialRemainingNote: {
-    fontSize: Typography.small,
-    fontWeight: Typography.semibold,
-    color: AppColors.purple,
-    textAlign: 'center',
-    marginBottom: Spacing.lg,
   },
 
   resultsList: {

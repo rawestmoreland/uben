@@ -174,7 +174,26 @@
       "trial_badge": "{{count}} Za darmo",
       "trial_questions_remaining": "Pozostało {{count}} darmowych pytań",
       "trial_used_up_title": "Spodobało się?",
-      "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować."
+      "trial_used_up_subtitle": "Wykorzystałeś wszystkie darmowe pytania próbne. Odblokuj Końcówki Przymiotników, aby kontynuować.",
+      "difficulty_label": "Poziom trudności",
+      "difficulty_standard": "Standardowy",
+      "difficulty_standard_hint": "Mianownik i biernik",
+      "difficulty_advanced": "Zaawansowany",
+      "difficulty_advanced_hint": "Dodaje celownik",
+      "start": "Start",
+      "advanced_prompt_title": "Gotowy na więcej?",
+      "advanced_prompt_body": "Dodaj celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników.",
+      "advanced_prompt_button": "Dodaj celownik",
+      "advanced_enabled_note": "Celownik jest włączony. Zadziała od następnej sesji."
+    },
+    "verb_quiz": {
+      "badge": "Czas Präteritum",
+      "all_caught_up": "Wszystko zrobione",
+      "no_verbs_due": "Brak czasowników do powtórki.\n\nWróć później!",
+      "correct_answer_was": "Poprawna odpowiedź: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Wpisz odpowiedź...",
+      "check_button": "Sprawdź",
+      "continue": "Dalej"
     },
     "paywall": {
       "premium_badge": "Üben Pro",
@@ -194,6 +213,30 @@
       "success_title": "Masz teraz Pro!",
       "success_subtitle": "Brak reklam, słownictwo B1+, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników są odblokowane.",
       "success_continue": "Dalej"
+    },
+    "home_screen": {
+      "header_subtitle": "NAUKA GRAMATYKI NIEMIECKIEJ",
+      "practice_label": "ĆWICZENIA",
+      "soon_badge": "Wkrótce",
+      "tile_due": "do powtórki: {{count}}",
+      "tiles": {
+        "articles": {
+          "title": "Rodzajniki",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Liczba mnoga",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Przymiotniki",
+          "subtitle": "Końcówki"
+        },
+        "verbs": {
+          "title": "Czasowniki",
+          "subtitle": "Präteritum"
+        }
+      }
     }
   }
 }

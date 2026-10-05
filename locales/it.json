@@ -164,7 +164,26 @@
       "trial_badge": "{{count}} Gratis",
       "trial_questions_remaining": "{{count}} domande gratuite rimaste",
       "trial_used_up_title": "Ti è piaciuto?",
-      "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare."
+      "trial_used_up_subtitle": "Hai usato tutte le domande di prova gratuite. Sblocca Desinenze degli Aggettivi per continuare.",
+      "difficulty_label": "Difficoltà",
+      "difficulty_standard": "Standard",
+      "difficulty_standard_hint": "Nominativo e accusativo",
+      "difficulty_advanced": "Avanzato",
+      "difficulty_advanced_hint": "Aggiunge il caso dativo",
+      "start": "Inizia",
+      "advanced_prompt_title": "Pronto per di più?",
+      "advanced_prompt_body": "Aggiungi il caso dativo (complemento di termine) alla pratica sulle desinenze degli aggettivi.",
+      "advanced_prompt_button": "Aggiungi dativo",
+      "advanced_enabled_note": "Il dativo è attivo. Si applica dalla prossima sessione."
+    },
+    "verb_quiz": {
+      "badge": "Präteritum dei Verbi",
+      "all_caught_up": "Tutto in regola",
+      "no_verbs_due": "Nessun verbo da ripassare al momento.\n\nTorna più tardi!",
+      "correct_answer_was": "Risposta corretta: {{pronoun}} {{answer}}",
+      "answer_placeholder": "Scrivi la tua risposta...",
+      "check_button": "Controlla",
+      "continue": "Continua"
     },
     "paywall": {
       "premium_badge": "Üben Pro",
@@ -184,6 +203,30 @@
       "success_title": "Ora sei Pro!",
       "success_subtitle": "Niente pubblicità, vocabolario B1+, parole aggiunte illimitate e pratica delle desinenze degli aggettivi sono tutti sbloccati.",
       "success_continue": "Continua"
+    },
+    "home_screen": {
+      "header_subtitle": "PRATICA DI GRAMMATICA TEDESCA",
+      "practice_label": "ESERCIZI",
+      "soon_badge": "Presto",
+      "tile_due": "{{count}} da ripassare",
+      "tiles": {
+        "articles": {
+          "title": "Articoli",
+          "subtitle": "der / die / das"
+        },
+        "plurals": {
+          "title": "Plurali",
+          "subtitle": "Hund -> Hunde"
+        },
+        "adjectives": {
+          "title": "Aggettivi",
+          "subtitle": "Desinenze"
+        },
+        "verbs": {
+          "title": "Verbi",
+          "subtitle": "Präteritum"
+        }
+      }
     }
   }
 }

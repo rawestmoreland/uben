@@ -29,7 +29,9 @@ export default function SelectCategoriesScreen() {
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAllWords, setIsAllWords] = useState(false);
+  const [isAllWordsChosen, setIsAllWords] = useState(false);
+  // Selecting no categories is the same as choosing all words
+  const isAllWords = isAllWordsChosen || selectedIds.length === 0;
 
   // Load categories and last selection on mount
   useEffect(() => {
@@ -49,12 +51,6 @@ export default function SelectCategoriesScreen() {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (selectedIds.length === 0) {
-      setIsAllWords(true);
-    }
-  }, [selectedIds]);
 
   const handleAllWords = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
