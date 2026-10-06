@@ -219,3 +219,35 @@ describe('classifyPluralCards()', () => {
     ).toEqual([]);
   });
 });
+
+describe('plural quiz translations', () => {
+  const locales = {
+    en: require('@/locales/en.json'),
+    it: require('@/locales/it.json'),
+    pl: require('@/locales/pl.json'),
+  };
+
+  it.each(Object.entries(locales))(
+    '%s has a screen-reader label for every ending button',
+    (_locale, messages) => {
+      for (const { ending } of PLURAL_ENDINGS) {
+        expect(messages.app.plural_quiz.endings[ending]).toEqual(
+          expect.any(String),
+        );
+      }
+    },
+  );
+
+  it('it and pl define every plural_quiz key that en does', () => {
+    const keyPaths = (value: unknown, prefix = ''): string[] =>
+      typeof value === 'object' && value !== null
+        ? Object.entries(value).flatMap(([key, child]) =>
+            keyPaths(child, `${prefix}${key}.`),
+          )
+        : [prefix];
+
+    const englishKeys = keyPaths(locales.en.app.plural_quiz).sort();
+    expect(keyPaths(locales.it.app.plural_quiz).sort()).toEqual(englishKeys);
+    expect(keyPaths(locales.pl.app.plural_quiz).sort()).toEqual(englishKeys);
+  });
+});

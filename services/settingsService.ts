@@ -22,6 +22,7 @@ export const SETTINGS_KEYS = {
   PRO_GRANDFATHER_MIGRATION_DONE: 'pro_grandfather_migration_done',
   GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
   GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
+  PLURAL_NOTATION_HINT_SEEN: 'plural_notation_hint_seen',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -276,6 +277,21 @@ class SettingsService {
     await this.setSetting(
       SETTINGS_KEYS.ADJECTIVE_DECLENSION_DIFFICULTY,
       difficulty,
+    );
+  }
+
+  // ── Convenience: Plural Quiz Notation Hint ────────────────────────
+
+  /** Whether the learner has dismissed the one-time "how to read ¨-er" hint in the plural quiz. Default: false. */
+  async getPluralNotationHintSeen(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN);
+    return value === 'true';
+  }
+
+  async setPluralNotationHintSeen(seen: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN,
+      seen ? 'true' : 'false',
     );
   }
 

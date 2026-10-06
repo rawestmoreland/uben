@@ -48,3 +48,40 @@ describe('settingsService.getProUnlocked', () => {
     await expect(settingsService.getProUnlocked()).resolves.toBe(false);
   });
 });
+
+describe('settingsService plural notation hint', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('defaults to not seen', async () => {
+    mockDb.getFirstAsync.mockResolvedValue(null);
+
+    await expect(settingsService.getPluralNotationHintSeen()).resolves.toBe(
+      false,
+    );
+  });
+
+  it('reads back as seen once dismissed', async () => {
+    mockDb.getFirstAsync.mockImplementation((_sql: string, [key]: string[]) =>
+      Promise.resolve(
+        key === SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN
+          ? { value: 'true' }
+          : null,
+      ),
+    );
+
+    await expect(settingsService.getPluralNotationHintSeen()).resolves.toBe(
+      true,
+    );
+  });
+
+  it('persists the dismissal under its own key', async () => {
+    await settingsService.setPluralNotationHintSeen(true);
+
+    expect(mockDb.runAsync).toHaveBeenCalledWith(expect.any(String), [
+      SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN,
+      'true',
+    ]);
+  });
+});
