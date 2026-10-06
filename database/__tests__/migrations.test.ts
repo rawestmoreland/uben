@@ -1,3 +1,8 @@
+import {
+  describeWithSqlite,
+  openTestDatabase,
+  type NodeSqliteDatabase,
+} from '@/test-utils/sqlite';
 import { migrations, runMigrations } from '../migrations';
 
 // ── Mock db factory ───────────────────────────────────────────────────────────
@@ -233,66 +238,6 @@ describe('migration 010 (add_noun_plural_cards)', () => {
 // The mock-based tests above can't prove the SQL actually runs. These run
 // every migration against a real in-memory SQLite database via Node's
 // built-in `node:sqlite` (Node 22.5+). Older Node versions skip them.
-
-interface NodeSqliteStatement {
-  run(...params: unknown[]): {
-    lastInsertRowid: number | bigint;
-    changes: number | bigint;
-  };
-  get(...params: unknown[]): unknown;
-  all(...params: unknown[]): unknown[];
-}
-
-interface NodeSqliteDatabase {
-  exec(sql: string): void;
-  prepare(sql: string): NodeSqliteStatement;
-  close(): void;
-}
-
-function loadNodeSqlite(): (new (path: string) => NodeSqliteDatabase) | null {
-  try {
-    return jest.requireActual('node:sqlite').DatabaseSync;
-  } catch {
-    return null;
-  }
-}
-
-const DatabaseSync = loadNodeSqlite();
-const describeWithSqlite = DatabaseSync ? describe : describe.skip;
-
-/** Minimal expo-sqlite-shaped async wrapper over node:sqlite. */
-function openTestDatabase() {
-  const raw = new DatabaseSync!(':memory:');
-  // Mirror initializeDatabase(), which turns foreign keys on before migrating
-  raw.exec('PRAGMA foreign_keys = ON;');
-
-  const db = {
-    execAsync: async (sql: string) => raw.exec(sql),
-    runAsync: async (sql: string, params: unknown[] = []) => {
-      const result = raw.prepare(sql).run(...params);
-      return {
-        lastInsertRowId: Number(result.lastInsertRowid),
-        changes: Number(result.changes),
-      };
-    },
-    getFirstAsync: async <T>(sql: string, params: unknown[] = []) =>
-      (raw.prepare(sql).get(...params) as T | undefined) ?? null,
-    getAllAsync: async <T>(sql: string, params: unknown[] = []) =>
-      raw.prepare(sql).all(...params) as T[],
-    withTransactionAsync: async (task: () => Promise<void>) => {
-      raw.exec('BEGIN');
-      try {
-        await task();
-        raw.exec('COMMIT');
-      } catch (error) {
-        raw.exec('ROLLBACK');
-        throw error;
-      }
-    },
-  };
-
-  return { raw, db };
-}
 
 describeWithSqlite('migrations against real SQLite', () => {
   let raw: NodeSqliteDatabase;
