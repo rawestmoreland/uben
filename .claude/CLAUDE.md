@@ -22,6 +22,7 @@ The app uses a tab-based navigation structure and supports iOS, Android, and web
 ### Core Functionality
 
 1. **Article Quiz** - Users practice identifying the correct article (der/die/das) for German nouns
+   - **Plural Ending Quiz** - Users pick a noun's plural ending from nine fixed textbook buttons (`-`, `¨-`, `-e`, `¨-e`, `-er`, `¨-er`, `-n`, `-en`, `-s`). The answer is derived from the stored `nouns.plural` (`services/pluralService.ts`), never predicted; nouns whose plural fits no button are excluded. Progress uses separate `card_progress` rows with `word_type = 'noun_plural'` and is excluded from article stats.
 2. **Spaced Repetition** - SM-2 algorithm schedules optimal review times based on user performance
 3. **Progress Tracking** - Statistics, streaks, and success rates
 4. **User-Generated Content** - Users can add their own nouns and verbs to the database
@@ -147,6 +148,7 @@ Business logic abstracted from UI components:
 
 - **vocabularyService.ts** - CRUD operations for nouns/verbs (SQLite)
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
+- **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
 - **statisticsService.ts** - User progress, streaks, forecasting
 - **syncService.ts** - Optional PocketBase vocabulary sync
 
@@ -356,7 +358,7 @@ eas submit --platform ios
 
 - Cloud backup (export/import JSON)
 - Verb conjugation quiz
-- Plural form quiz
+- ✅ Plural ending quiz
 - More vocabulary levels (A2, B1)
 - Daily goal customization
 - Dark mode polish
