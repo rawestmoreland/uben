@@ -81,7 +81,9 @@ class PurchaseService {
   async syncCustomerInfo(customerInfo: CustomerInfo): Promise<boolean> {
     const unlocked = this.isEntitlementActive(customerInfo);
     await settingsService.setProUnlocked(unlocked);
-    return unlocked;
+    // The promo flag lives under its own key so it survives this overwrite;
+    // report it here so listeners don't flip a promo user back to free.
+    return unlocked || (await settingsService.getPromoUnlocked());
   }
 
   private isUserCancelledError(error: unknown): boolean {
@@ -113,8 +115,12 @@ class PurchaseService {
     return null;
   }
 
-  /** Whether the Üben Pro bundle is unlocked (purchased). */
+  /** Whether the Üben Pro bundle is unlocked (purchased or via promo code). */
   async isProUnlocked(): Promise<boolean> {
+    // Promo unlock is local-only: short-circuit so promo users skip the
+    // RevenueCat network call and work offline.
+    if (await settingsService.getPromoUnlocked()) return true;
+
     if (Platform.OS === 'web') {
       return settingsService.getProUnlocked();
     }
