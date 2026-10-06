@@ -1,11 +1,9 @@
 name: Staging - OTA or Preview Builds
 
 on:
-  pull_request:
+  push:
     branches:
       - staging
-    types:
-      - closed
   workflow_dispatch:
     inputs:
       platforms:
@@ -19,8 +17,6 @@ permissions:
 jobs:
   config:
     name: Resolve Platforms
-    # `closed` also fires for PRs closed without merging; only run on a real merge (or manual dispatch)
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       ios: ${{ steps.resolve.outputs.ios }}
@@ -49,7 +45,6 @@ jobs:
 
   lint-and-check:
     name: Lint and Type Check
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
