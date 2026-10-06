@@ -1,3 +1,5 @@
+import type { AppLanguage } from './language';
+
 // Database entity types for the German learning app
 
 /** A German noun stored in the local database */
@@ -20,7 +22,7 @@ export interface NounTranslation {
   id: number;
   remote_id: string;
   noun_id: string;
-  locale: 'en' | 'it' | 'pl';
+  locale: AppLanguage;
   translation: string;
   created_at: string;
   updated_at: string;

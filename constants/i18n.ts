@@ -1,4 +1,5 @@
 import en from '@/locales/en.json';
+import fr from '@/locales/fr.json';
 import it from '@/locales/it.json';
 import pl from '@/locales/pl.json';
 import { getLocales } from 'expo-localization';
@@ -9,7 +10,7 @@ import { initReactI18next } from 'react-i18next';
 i18n.use(initReactI18next).init({
   lng: getLocales()[0]?.languageTag ?? 'en',
   fallbackLng: 'en',
-  resources: { en, it, pl },
+  resources: { en, it, pl, fr },
   ns: ['app', 'categories', 'settings'],
   defaultNS: 'app',
   interpolation: { escapeValue: false },
