@@ -106,7 +106,7 @@ jobs:
             if [ "$PLATFORM" = ios ]; then SELECTED=$BUILD_IOS; else SELECTED=$BUILD_ANDROID; fi
             [ "$SELECTED" = true ] || continue
 
-            CURRENT=$(APP_ENV=preview npx expo-updates fingerprint:generate --platform "$PLATFORM" 2>/dev/null | jq -r '.hash')
+            CURRENT=$(npx expo-updates fingerprint:generate --platform "$PLATFORM" 2>/dev/null | jq -r '.hash')
             LATEST_RV=$(eas build:list --channel staging --platform "$PLATFORM" --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
             echo "$PLATFORM fingerprint: $CURRENT (latest build runtime version: $LATEST_RV)"
 
