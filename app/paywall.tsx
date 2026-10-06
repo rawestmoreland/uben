@@ -8,6 +8,7 @@ import {
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { purchaseService } from '@/services/purchaseService';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { PromoCodeForm } from '@/components/promo-code-form';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -34,6 +35,7 @@ export default function PaywallScreen() {
   const [isRestoring, setIsRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [justUnlocked, setJustUnlocked] = useState(false);
+  const [showPromoForm, setShowPromoForm] = useState(false);
 
   // Falls back to redirectTo when no explicit source is given, so an entry
   // point that only sets redirectTo (the destination) still identifies itself.
@@ -72,6 +74,13 @@ export default function PaywallScreen() {
     } finally {
       setIsPurchasing(false);
     }
+  }
+
+  async function handlePromoRedeemed() {
+    // Pro is already unlocked locally; refresh so open screens update.
+    await refresh();
+    setShowPromoForm(false);
+    setJustUnlocked(true);
   }
 
   async function handleRestore() {
@@ -197,6 +206,23 @@ export default function PaywallScreen() {
                 : t('paywall.restore_button')}
             </Text>
           </Pressable>
+          <Pressable
+            onPress={() => setShowPromoForm(true)}
+            disabled={isPurchasing || isRestoring}
+            accessibilityRole="button"
+            accessibilityLabel={t('paywall.promo_button')}
+            hitSlop={8}
+          >
+            <Text style={styles.restoreText}>{t('paywall.promo_button')}</Text>
+          </Pressable>
+          {showPromoForm && (
+            <View style={styles.promoForm}>
+              <PromoCodeForm
+                onRedeemed={handlePromoRedeemed}
+                onCancel={() => setShowPromoForm(false)}
+              />
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -341,6 +367,10 @@ const styles = StyleSheet.create({
     color: AppColors.black,
     textAlign: 'center',
     textDecorationLine: 'underline',
+    marginTop: Spacing.lg,
+  },
+
+  promoForm: {
     marginTop: Spacing.lg,
   },
 
