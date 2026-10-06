@@ -39,6 +39,7 @@ jest.mock('../settingsService', () => ({
     setGrandfatheredWordCap: jest.fn(),
     getProUnlocked: jest.fn(),
     setProUnlocked: jest.fn(),
+    getPromoUnlocked: jest.fn(),
     getAdjectiveDeclensionTrialQuestionsUsed: jest.fn(),
     setAdjectiveDeclensionTrialQuestionsUsed: jest.fn(),
   },
@@ -76,6 +77,10 @@ function customerInfoWithEntitlement(active: boolean): CustomerInfo {
     },
   } as unknown as CustomerInfo;
 }
+
+beforeEach(() => {
+  mockSettingsService.getPromoUnlocked.mockResolvedValue(false);
+});
 
 describe('purchaseService.runProGrandfatherMigration', () => {
   beforeEach(() => {
@@ -131,6 +136,30 @@ describe('purchaseService.runProGrandfatherMigration', () => {
 describe('purchaseService.isProUnlocked', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSettingsService.getPromoUnlocked.mockResolvedValue(false);
+  });
+
+  it('is true when the promo flag is set, without calling RevenueCat', async () => {
+    mockSettingsService.getPromoUnlocked.mockResolvedValue(true);
+
+    await expect(purchaseService.isProUnlocked()).resolves.toBe(true);
+    expect(mockPurchases.getCustomerInfo).not.toHaveBeenCalled();
+  });
+
+  it('is true via promo even when RevenueCat says no', async () => {
+    mockSettingsService.getPromoUnlocked.mockResolvedValue(true);
+    mockPurchases.getCustomerInfo.mockResolvedValue(customerInfoWithEntitlement(false));
+
+    await expect(purchaseService.isProUnlocked()).resolves.toBe(true);
+  });
+
+  it('syncCustomerInfo(false) does not touch the promo flag and still reports promo as unlocked', async () => {
+    mockSettingsService.getPromoUnlocked.mockResolvedValue(true);
+
+    await expect(
+      purchaseService.syncCustomerInfo(customerInfoWithEntitlement(false)),
+    ).resolves.toBe(true);
+    expect(mockSettingsService.setProUnlocked).toHaveBeenCalledWith(false);
   });
 
   it('is true when RevenueCat reports the entitlement active, and caches it', async () => {

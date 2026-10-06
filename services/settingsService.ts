@@ -17,6 +17,8 @@ export const SETTINGS_KEYS = {
     'adjective_declension_trial_questions_used',
   ADJECTIVE_DECLENSION_DIFFICULTY: 'adjective_declension_difficulty',
   PRO_UNLOCKED: 'pro_unlocked',
+  PROMO_UNLOCKED: 'promo_unlocked',
+  PROMO_CODE_USED: 'promo_code_used',
   PRO_GRANDFATHER_MIGRATION_DONE: 'pro_grandfather_migration_done',
   GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
   GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
@@ -168,6 +170,32 @@ class SettingsService {
       SETTINGS_KEYS.PRO_UNLOCKED,
       unlocked ? 'true' : 'false',
     );
+  }
+
+  // ── Convenience: Promo Code Unlock ─────────────────────────────────
+  // Deliberately separate from `pro_unlocked`: purchaseService overwrites
+  // that cache with RevenueCat's answer on every check, which would wipe a
+  // promo unlock back to false.
+
+  async getPromoUnlocked(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.PROMO_UNLOCKED);
+    return value === 'true';
+  }
+
+  async setPromoUnlocked(unlocked: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.PROMO_UNLOCKED,
+      unlocked ? 'true' : 'false',
+    );
+  }
+
+  /** The promo code that unlocked Pro on this device, if any (for display/support). */
+  async getPromoCodeUsed(): Promise<string | null> {
+    return this.getSetting(SETTINGS_KEYS.PROMO_CODE_USED);
+  }
+
+  async setPromoCodeUsed(code: string): Promise<void> {
+    await this.setSetting(SETTINGS_KEYS.PROMO_CODE_USED, code);
   }
 
   // ── Convenience: Pro Bundle Grandfathering ─────────────────────────
