@@ -164,7 +164,7 @@ export default function SettingsScreen() {
                 style={({ pressed }) => [
                   styles.segmentButton,
                   styles.segmentButtonFlex,
-                  styles.segmentButtonRight,
+                  styles.segmentButtonMiddle,
                   appLanguage === 'pl' && styles.segmentButtonActive,
                   pressed && styles.segmentButtonPressed,
                 ]}
@@ -180,6 +180,28 @@ export default function SettingsScreen() {
                   ]}
                 >
                   PL
+                </Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.segmentButton,
+                  styles.segmentButtonFlex,
+                  styles.segmentButtonRight,
+                  appLanguage === 'fr' && styles.segmentButtonActive,
+                  pressed && styles.segmentButtonPressed,
+                ]}
+                onPress={() => setAppLanguage('fr')}
+                disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="Français"
+              >
+                <Text
+                  style={[
+                    styles.segmentButtonText,
+                    appLanguage === 'fr' && styles.segmentButtonTextActive,
+                  ]}
+                >
+                  FR
                 </Text>
               </Pressable>
             </View>

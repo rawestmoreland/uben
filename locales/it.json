@@ -185,6 +185,37 @@
       "check_button": "Controlla",
       "continue": "Continua"
     },
+    "plural_quiz": {
+      "badge": "Desinenze del plurale",
+      "prompt": "Quale desinenza al plurale?",
+      "question_a11y": "{{noun}}. Quale desinenza prende al plurale?",
+      "all_caught_up": "Tutto in regola",
+      "no_cards_due": "Nessun plurale da ripassare al momento.\n\nProva a selezionare categorie diverse o torna più tardi!",
+      "correct": "Corretto",
+      "incorrect": "Non proprio",
+      "you_picked": "Hai scelto {{ending}}",
+      "feedback_a11y": "{{verdict}}. Il plurale è die {{plural}}: {{ending}}.",
+      "continue": "Continua",
+      "hint": {
+        "title": "Come leggere i pulsanti",
+        "umlaut": "La vocale della radice prende l'Umlaut: Haus → Häuser è ¨-er.",
+        "suffix": "Si aggiunge una desinenza: Hund → Hunde è -e.",
+        "no_change": "Nessun cambiamento: Lehrer → Lehrer.",
+        "dismiss": "Ho capito",
+        "show": "Mostra aiuto sulle desinenze"
+      },
+      "endings": {
+        "none": "Nessun cambiamento",
+        "umlaut": "Solo Umlaut",
+        "e": "Più e",
+        "umlaut_e": "Umlaut più e",
+        "er": "Più e r",
+        "umlaut_er": "Umlaut più e r",
+        "n": "Più n",
+        "en": "Più e n",
+        "s": "Più s"
+      }
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Sblocca Üben Pro",
@@ -227,7 +258,7 @@
         },
         "plurals": {
           "title": "Plurali",
-          "subtitle": "Hund -> Hunde"
+          "subtitle": "Desinenze: Hund → Hunde"
         },
         "adjectives": {
           "title": "Aggettivi",

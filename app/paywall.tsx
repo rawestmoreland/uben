@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -153,77 +154,88 @@ export default function PaywallScreen() {
           <Text style={styles.closeButtonText}>X</Text>
         </Pressable>
 
-        <View style={styles.content}>
-          <View style={[styles.badgeCard, shadowStyle]}>
-            <Text style={styles.badgeText}>
-              {t('paywall.premium_badge').toUpperCase()}
-            </Text>
-          </View>
-
-          <Text style={styles.title}>{t('paywall.title')}</Text>
-          <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
-
-          <View style={styles.featureList}>
-            <FeatureRow text={t('paywall.feature_1')} />
-            <FeatureRow text={t('paywall.feature_2')} />
-            <FeatureRow text={t('paywall.feature_3')} />
-            <FeatureRow text={t('paywall.feature_4')} />
-          </View>
-
-          {error && <Text style={styles.errorText}>{error}</Text>}
-        </View>
-
-        <View style={styles.footer}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.unlockButton,
-              pressed && !isPurchasing && styles.unlockButtonPressed,
-            ]}
-            onPress={handleUnlock}
-            disabled={isPurchasing || isRestoring}
-            accessibilityRole="button"
-            accessibilityLabel={t('paywall.unlock_button')}
-          >
-            {isPurchasing ? (
-              <ActivityIndicator color={AppColors.black} />
-            ) : (
-              <Text style={styles.unlockButtonText}>
-                {t('paywall.unlock_button').toUpperCase()}
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            <View style={[styles.badgeCard, shadowStyle]}>
+              <Text style={styles.badgeText}>
+                {t('paywall.premium_badge').toUpperCase()}
               </Text>
-            )}
-          </Pressable>
-          <Text style={styles.footnote}>{t('paywall.one_time_purchase')}</Text>
-          <Pressable
-            onPress={handleRestore}
-            disabled={isPurchasing || isRestoring}
-            accessibilityRole="button"
-            accessibilityLabel={t('paywall.restore_button')}
-            hitSlop={8}
-          >
-            <Text style={styles.restoreText}>
-              {isRestoring
-                ? t('paywall.restoring')
-                : t('paywall.restore_button')}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setShowPromoForm(true)}
-            disabled={isPurchasing || isRestoring}
-            accessibilityRole="button"
-            accessibilityLabel={t('paywall.promo_button')}
-            hitSlop={8}
-          >
-            <Text style={styles.restoreText}>{t('paywall.promo_button')}</Text>
-          </Pressable>
-          {showPromoForm && (
-            <View style={styles.promoForm}>
-              <PromoCodeForm
-                onRedeemed={handlePromoRedeemed}
-                onCancel={() => setShowPromoForm(false)}
-              />
             </View>
-          )}
-        </View>
+
+            <Text style={styles.title}>{t('paywall.title')}</Text>
+            <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
+
+            <View style={styles.featureList}>
+              <FeatureRow text={t('paywall.feature_1')} />
+              <FeatureRow text={t('paywall.feature_2')} />
+              <FeatureRow text={t('paywall.feature_3')} />
+              <FeatureRow text={t('paywall.feature_4')} />
+            </View>
+
+            {error && <Text style={styles.errorText}>{error}</Text>}
+          </View>
+
+          <View style={styles.footer}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.unlockButton,
+                pressed && !isPurchasing && styles.unlockButtonPressed,
+              ]}
+              onPress={handleUnlock}
+              disabled={isPurchasing || isRestoring}
+              accessibilityRole="button"
+              accessibilityLabel={t('paywall.unlock_button')}
+            >
+              {isPurchasing ? (
+                <ActivityIndicator color={AppColors.black} />
+              ) : (
+                <Text style={styles.unlockButtonText}>
+                  {t('paywall.unlock_button').toUpperCase()}
+                </Text>
+              )}
+            </Pressable>
+            <Text style={styles.footnote}>
+              {t('paywall.one_time_purchase')}
+            </Text>
+            <Pressable
+              onPress={handleRestore}
+              disabled={isPurchasing || isRestoring}
+              accessibilityRole="button"
+              accessibilityLabel={t('paywall.restore_button')}
+              hitSlop={8}
+            >
+              <Text style={styles.restoreText}>
+                {isRestoring
+                  ? t('paywall.restoring')
+                  : t('paywall.restore_button')}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setShowPromoForm(true)}
+              disabled={isPurchasing || isRestoring}
+              accessibilityRole="button"
+              accessibilityLabel={t('paywall.promo_button')}
+              hitSlop={8}
+            >
+              <Text style={styles.restoreText}>
+                {t('paywall.promo_button')}
+              </Text>
+            </Pressable>
+            {showPromoForm && (
+              <View style={styles.promoForm}>
+                <PromoCodeForm
+                  onRedeemed={handlePromoRedeemed}
+                  onCancel={() => setShowPromoForm(false)}
+                />
+              </View>
+            )}
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -264,9 +276,17 @@ const styles = StyleSheet.create({
     fontWeight: Typography.bold,
     color: AppColors.black,
   },
+  scroll: {
+    flex: 1,
+  },
+  // flexGrow keeps content centered when it fits and scrollable when it doesn't
+  scrollContent: {
+    flexGrow: 1,
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
+    paddingVertical: Spacing.md,
   },
   badgeCard: {
     backgroundColor: AppColors.purple,

@@ -5,6 +5,7 @@ import {
   formatPocketBaseTimestamp,
 } from '@/constants/pocketbase';
 import { getDatabase } from '@/database/db';
+import type { AppLanguage } from '@/types/language';
 import { settingsService } from './settingsService';
 
 // ── PocketBase response types ────────────────────────────────────────
@@ -46,7 +47,7 @@ interface PBNoun {
 interface PBNounTranslation {
   id: string;
   noun_id: string;
-  locale: 'en' | 'it' | 'pl';
+  locale: AppLanguage;
   translation: string;
   created: string;
   updated: string;

@@ -1,5 +1,6 @@
 import i18n from '@/constants/i18n';
 import { settingsService } from '@/services/settingsService';
+import type { AppLanguage } from '@/types/language';
 import { useCallback, useEffect, useState } from 'react';
 
 /**
@@ -13,7 +14,7 @@ export function useSettings() {
   const [eszettPreference, setEszettPreferenceState] = useState<
     'eszett' | 'ss'
   >('eszett');
-  const [appLanguage, setAppLanguageState] = useState<'en' | 'it' | 'pl'>('en');
+  const [appLanguage, setAppLanguageState] = useState<AppLanguage>('en');
   const [adjectiveDeclensionDifficulty, setAdjectiveDeclensionDifficultyState] =
     useState<'standard' | 'advanced'>('standard');
   const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +81,7 @@ export function useSettings() {
   );
 
   const setAppLanguage = useCallback(
-    async (language: 'en' | 'it' | 'pl') => {
+    async (language: AppLanguage) => {
       const previous = appLanguage;
       setAppLanguageState(language);
       try {

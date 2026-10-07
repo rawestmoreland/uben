@@ -1,0 +1,187 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "v1.10.0",
+    "copyright": "2026",
+    "release": {
+      "automaticRelease": false
+    },
+    "info": {
+      "en-US": {
+        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "keywords": [
+          "der die das",
+          "german articles",
+          "german nouns",
+          "german grammar",
+          "gender",
+          "deutsch",
+          "A1",
+          "A2",
+          "goethe",
+          "telc",
+          "vocabulary"
+        ],
+        "releaseNotes": "We've added a Präteritum quiz for pro users. Enjoy!",
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "title": "Üben - German Articles",
+        "subtitle": "Master der, die, das",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.40.37@2x.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.43.36@2x.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.44.13@2x.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.42.07@2x.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.43.07@2x.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.44.57@2x.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.13.26@2x.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.15.05@2x.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.16.30@2x.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.17.35@2x.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.18.36@2x.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.19.34@2x.png"
+          ]
+        },
+        "promoText": "New in the latest update: Präteritum quiz for Pro users. Five focused minutes a day to finally stop guessing der, die, das - free, offline, no account, no ads."
+      },
+      "de-DE": {
+        "title": "Üben - Deutsche Artikel",
+        "subtitle": "der, die, das meistern",
+        "description": "Rätst du noch bei der, die, das?\n\nÜben trainiert den Genus deutscher Nomen mit Spaced Repetition - der wissenschaftlich bewährten Methode, mit der du jedes Wort genau dann wiederholst, kurz bevor du es vergisst.\n\nSO FUNKTIONIERT'S\n- Du siehst ein Nomen und wählst der, die oder das. Sofortiges Feedback.\n- Der SM-2-Algorithmus zeigt Wörter, die dir schwerfallen, häufiger.\n- Fünf Minuten pro Tag: Streaks, Statistiken und Wiederholungsprognose halten dich dran.\n\nKOSTENLOS\n- A1-Vokabular mit Artikeln und Pluralformen\n- Tägliche Wiederholungen, komplett offline\n- Kein Konto, keine Werbung, kein Tracking - deine Daten bleiben auf deinem Gerät\n\nPRO - einmalig, kein Abo\n- B1+-Vokabular\n- Übungen zu Adjektivendungen\n- Eigene Wörter speichern\n- Präteritum-Quiz\n\nEntwickelt von einem Deutschlernenden in Zürich. Ideal für Selbstlernende, Kursteilnehmende und alle, die sich auf Goethe-, telc-, TestDaF- oder fide-Prüfungen vorbereiten.",
+        "keywords": [
+          "der die das",
+          "artikel",
+          "genus",
+          "deutsch lernen",
+          "grammatik",
+          "nomen",
+          "deutsch A1",
+          "goethe",
+          "telc",
+          "vokabeln",
+          "quiz"
+        ],
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+      },
+      "pl": {
+        "title": "Üben - Niemieckie rodzajniki",
+        "subtitle": "der, die, das bez zgadywania",
+        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "keywords": [
+          "der die das",
+          "rodzajniki",
+          "niemiecki",
+          "gramatyka",
+          "deutsch A1",
+          "goethe",
+          "telc",
+          "slowka",
+          "quiz"
+        ],
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+      },
+      "fr-FR": {
+        "title": "Üben - Articles allemands",
+        "subtitle": "der, die, das enfin mémorisés",
+        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "keywords": [
+          "der die das",
+          "articles allemands",
+          "allemand",
+          "grammaire",
+          "deutsch A1",
+          "goethe",
+          "telc",
+          "vocabulaire",
+          "quiz"
+        ],
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+      },
+      "es-ES": {
+        "title": "Üben - Artículos alemanes",
+        "subtitle": "der, die, das sin adivinar",
+        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "keywords": [
+          "der die das",
+          "articulos alemanes",
+          "aleman",
+          "gramatica",
+          "deutsch A1",
+          "goethe",
+          "telc",
+          "vocabulario",
+          "quiz"
+        ],
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+      },
+      "tr": {
+        "title": "Üben - Almanca Artikeller",
+        "subtitle": "der, die, das artık ezberde",
+        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "keywords": [
+          "der die das",
+          "artikel",
+          "almanca",
+          "gramer",
+          "deutsch A1",
+          "goethe",
+          "telc",
+          "kelime",
+          "quiz"
+        ],
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+      }
+    },
+    "categories": ["EDUCATION"],
+    "advisory": {
+      "ageRatingOverride": "NONE",
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "kidsAgeBand": null,
+      "koreaAgeRatingOverride": "NONE",
+      "lootBox": false,
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "unrestrictedWebAccess": false,
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "advertising": true,
+      "ageAssurance": false,
+      "ageRatingOverrideV2": "NONE",
+      "developerAgeRatingInfoUrl": null,
+      "gunsOrOtherWeapons": "NONE",
+      "healthOrWellnessTopics": false,
+      "messagingAndChat": false,
+      "parentalControls": false,
+      "userGeneratedContent": false
+    },
+    "review": {
+      "firstName": "Richard",
+      "lastName": "Westmoreland",
+      "email": "richard@westmorelandcreative.com",
+      "phone": "+41767438843",
+      "demoRequired": false
+    }
+  }
+}

@@ -127,7 +127,7 @@ export default {
     },
     owner: 'rawestmoreland',
     runtimeVersion: {
-      policy: 'appVersion',
+      policy: 'fingerprint',
     },
     updates: {
       url: 'https://u.expo.dev/a1b09294-f1e5-411b-8ba0-a710103aa648',

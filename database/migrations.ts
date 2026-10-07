@@ -2,6 +2,80 @@ import type { Migration } from '@/types/database';
 import type * as SQLite from 'expo-sqlite';
 
 /**
+ * Rebuild card_progress with a new word_type CHECK constraint (SQLite can't
+ * alter a CHECK in place), preserving every row and its id.
+ *
+ * Foreign keys are switched off for the rebuild: initializeDatabase() turns
+ * them on, and with them on, DROP TABLE card_progress performs an implicit
+ * DELETE that cascades through review_history's ON DELETE CASCADE and wipes
+ * the user's entire review history. PRAGMA foreign_keys is a no-op inside a
+ * transaction, so it's toggled outside the transaction wrapping the rebuild.
+ *
+ * `allowedWordTypes` must be a hard-coded list — it's spliced into DDL,
+ * where bound parameters aren't allowed.
+ */
+async function rebuildCardProgress(
+  db: SQLite.SQLiteDatabase,
+  allowedWordTypes: readonly string[],
+): Promise<void> {
+  const wordTypeList = allowedWordTypes.map((type) => `'${type}'`).join(', ');
+  const fkState = await db.getFirstAsync<{ foreign_keys: number }>(
+    'PRAGMA foreign_keys',
+  );
+  const foreignKeysWereOn = fkState?.foreign_keys === 1;
+
+  if (foreignKeysWereOn) {
+    await db.execAsync('PRAGMA foreign_keys = OFF;');
+  }
+
+  try {
+    await db.withTransactionAsync(async () => {
+      await db.execAsync(`
+        CREATE TABLE card_progress_rebuild (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          word_type TEXT NOT NULL CHECK(word_type IN (${wordTypeList})),
+          word_id INTEGER NOT NULL,
+
+          ease_factor REAL DEFAULT 2.5,
+          interval INTEGER DEFAULT 0,
+          repetitions INTEGER DEFAULT 0,
+          next_review_date DATE DEFAULT CURRENT_DATE,
+
+          total_reviews INTEGER DEFAULT 0,
+          correct_reviews INTEGER DEFAULT 0,
+          last_reviewed_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+          UNIQUE(word_type, word_id)
+        );
+      `);
+
+      await db.execAsync(`
+        INSERT INTO card_progress_rebuild (id, word_type, word_id, ease_factor, interval, repetitions, next_review_date, total_reviews, correct_reviews, last_reviewed_at, created_at)
+        SELECT id, word_type, word_id, ease_factor, interval, repetitions, next_review_date, total_reviews, correct_reviews, last_reviewed_at, created_at
+        FROM card_progress;
+      `);
+
+      await db.execAsync('DROP TABLE card_progress;');
+      await db.execAsync(
+        'ALTER TABLE card_progress_rebuild RENAME TO card_progress;',
+      );
+
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_card_progress_next_review ON card_progress(next_review_date);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_card_progress_word ON card_progress(word_type, word_id);',
+      );
+    });
+  } finally {
+    if (foreignKeysWereOn) {
+      await db.execAsync('PRAGMA foreign_keys = ON;');
+    }
+  }
+}
+
+/**
  * All database migrations, ordered by version.
  * Each migration is applied at most once, tracked by the `migrations` table.
  */
@@ -606,6 +680,41 @@ export const migrations: Migration[] = [
     down: async () => {
       // SQLite doesn't support DROP COLUMN before 3.35.0, so just leave the
       // columns in place (matches migration 003's precedent for remote_id).
+    },
+  },
+  {
+    version: '010',
+    name: 'add_noun_plural_cards',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 010] Widening card_progress.word_type to allow noun_plural...',
+      );
+
+      // A noun's plural-ending progress is tracked separately from its
+      // article progress: same word_id (the noun id), different word_type,
+      // so the two cards don't collide on UNIQUE(word_type, word_id).
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+      ]);
+
+      console.log('[Migration 010] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove plural cards (and their history) before restoring the
+      // narrower CHECK constraint
+      await db.execAsync(`
+        DELETE FROM review_history WHERE card_progress_id IN (
+          SELECT id FROM card_progress WHERE word_type = 'noun_plural'
+        );
+      `);
+      await db.execAsync(
+        "DELETE FROM card_progress WHERE word_type = 'noun_plural';",
+      );
+
+      await rebuildCardProgress(db, ['noun', 'verb', 'adjective']);
     },
   },
 ];
