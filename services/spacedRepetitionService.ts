@@ -1,9 +1,15 @@
 import { getDatabase } from '@/database/db';
+import {
+  classifyPluralCards,
+  type PluralQuizSession,
+} from '@/services/pluralService';
 import type {
   AdjectiveReviewSession,
   CardReview,
+  CardWordType,
   DueAdjectiveCard,
   DueCard,
+  DuePluralCard,
   DueVerbCard,
   ReviewSession,
   VerbImperfectSession,
@@ -41,6 +47,53 @@ function shuffleArray<T>(array: T[]): T[] {
   }
   return shuffled;
 }
+
+/**
+ * Build the WHERE-clause fragments (for a nouns table aliased `n`) that
+ * narrow a session to the selected categories and CEFR levels, plus their
+ * bound params in placeholder order. Shared by every noun-based session.
+ *
+ * - `dueClause` applies to cards already in review.
+ * - `newClause` applies to unseen nouns; with no level filter it defaults
+ *   to A1 only (prevents flooding a session with higher-level words).
+ * User-added words always pass the level filter.
+ */
+function buildNounFilters(
+  categoryIds?: number[],
+  levels?: string[],
+): { dueClause: string; newClause: string; params: (string | number)[] } {
+  const hasCategoryFilter = !!categoryIds && categoryIds.length > 0;
+  // Expand selected levels cumulatively: selecting A2 also includes A1 words
+  const effectiveLevels =
+    levels && levels.length > 0 ? expandLevelsCumulative(levels) : [];
+  const hasLevelFilter = effectiveLevels.length > 0;
+
+  const categoryClause = hasCategoryFilter
+    ? `AND n.category_id IN (${categoryIds.map(() => '?').join(',')})`
+    : '';
+  const levelClause = hasLevelFilter
+    ? `AND (n.level IN (${effectiveLevels.map(() => '?').join(',')}) OR n.is_user_added = 1)`
+    : '';
+  const newLevelClause = hasLevelFilter
+    ? levelClause
+    : `AND (n.level = 'A1' OR n.is_user_added = 1)`;
+
+  return {
+    dueClause: `${categoryClause} ${levelClause}`,
+    newClause: `${categoryClause} ${newLevelClause}`,
+    params: [...(hasCategoryFilter ? categoryIds : []), ...effectiveLevels],
+  };
+}
+
+/**
+ * How many candidate rows the plural quiz fetches per session slot. Nouns
+ * whose stored plural doesn't fit one of the nine ending buttons are only
+ * dropped after the fetch (classification lives in pluralService, not SQL).
+ * In the seed data ~6% of nouns with a plural are dropped, but a single
+ * category can run much higher (people/jobs: Lehrerin -> Lehrerinnen, ...),
+ * so 3x keeps a session full even if two in three candidates are dropped.
+ */
+const PLURAL_CANDIDATE_OVERFETCH = 3;
 
 // ── SM-2 Core Algorithm ───────────────────────────────────────────────
 
@@ -206,7 +259,7 @@ export class SpacedRepetitionService {
    * The card starts with default SM-2 values and is due for review immediately.
    */
   async createCardForWord(
-    wordType: 'noun' | 'verb' | 'adjective',
+    wordType: CardWordType,
     wordId: number,
   ): Promise<number> {
     const result = await this.db.runAsync(
@@ -230,54 +283,22 @@ export class SpacedRepetitionService {
     categoryIds?: number[],
     levels?: string[],
   ): Promise<ReviewSession> {
-    const hasCategoryFilter = categoryIds && categoryIds.length > 0;
-    // Expand selected levels cumulatively: selecting A2 also includes A1 words
-    const effectiveLevels =
-      levels && levels.length > 0 ? expandLevelsCumulative(levels) : undefined;
-    const hasLevelFilter = effectiveLevels && effectiveLevels.length > 0;
-
-    // Build SQL fragment for category filter
-    const categoryFilter = hasCategoryFilter
-      ? `AND n.category_id IN (${categoryIds.map(() => '?').join(',')})`
-      : '';
-
-    // Build SQL fragment for level filter (always include user-added words)
-    const levelFilter = hasLevelFilter
-      ? `AND (n.level IN (${effectiveLevels.map(() => '?').join(',')}) OR n.is_user_added = 1)`
-      : '';
+    const filters = buildNounFilters(categoryIds, levels);
 
     // Due cards (already in the review system)
-    const dueParams: (string | number)[] = [
-      ...(hasCategoryFilter ? categoryIds : []),
-      ...(hasLevelFilter ? effectiveLevels : []),
-      maxCards - newCardsLimit,
-    ];
-
     const dueCards = await this.db.getAllAsync<DueCard>(
       `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id,
               (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS has_homograph_siblings,
               (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM card_progress cp
        JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.next_review_date <= date('now') ${categoryFilter} ${levelFilter}
+       WHERE cp.next_review_date <= date('now') ${filters.dueClause}
        ORDER BY cp.next_review_date ASC
        LIMIT ?`,
-      dueParams,
+      [...filters.params, maxCards - newCardsLimit],
     );
 
     // New cards (words not yet in card_progress)
-    const newParams: (string | number)[] = [
-      ...(hasCategoryFilter ? categoryIds : []),
-      ...(hasLevelFilter ? effectiveLevels : []),
-      newCardsLimit,
-    ];
-
-    // When no level filter is set, default to showing only A1 new words
-    // (prevents flooding the session with higher-level words unexpectedly)
-    const newCardLevelClause = hasLevelFilter
-      ? levelFilter
-      : `AND (n.level = 'A1' OR n.is_user_added = 1)`;
-
     const newCards = await this.db.getAllAsync<DueCard>(
       `SELECT
          0 AS id,
@@ -301,10 +322,10 @@ export class SpacedRepetitionService {
          (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM nouns n
        LEFT JOIN card_progress cp ON cp.word_type = 'noun' AND cp.word_id = n.id
-       WHERE cp.id IS NULL ${categoryFilter} ${newCardLevelClause}
+       WHERE cp.id IS NULL ${filters.newClause}
        ORDER BY RANDOM()
        LIMIT ?`,
-      newParams,
+      [...filters.params, newCardsLimit],
     );
 
     return {
@@ -449,6 +470,77 @@ export class SpacedRepetitionService {
 
     return {
       cards: shuffleArray([...dueCards, ...newCards]),
+      dueCount: dueCards.length,
+      newCount: newCards.length,
+    };
+  }
+
+  /**
+   * Build a review session for the plural-ending quiz, filtered by the same
+   * category/level selection as the article quiz. Plural cards are their
+   * own word_type ('noun_plural', word_id = noun id), so this progress is
+   * independent of the noun's article card.
+   *
+   * Only nouns whose stored plural classifies into one of the nine ending
+   * buttons are kept (see pluralService) — the correct answer always comes
+   * from nouns.plural, never from a rule. Due cards are served before new
+   * cards: they fill their slots first (most overdue first) and come first
+   * in the returned order.
+   */
+  async getPluralQuizSession(
+    maxCards: number = 20,
+    newCardsLimit: number = 5,
+    categoryIds?: number[],
+    levels?: string[],
+  ): Promise<PluralQuizSession> {
+    const filters = buildNounFilters(categoryIds, levels);
+    const dueLimit = maxCards - newCardsLimit;
+    const hasPlural = `n.plural IS NOT NULL AND TRIM(n.plural) != ''`;
+
+    const dueRows = await this.db.getAllAsync<DuePluralCard>(
+      `SELECT cp.*, n.german, n.article, n.plural, n.english, n.sense, n.remote_id
+       FROM card_progress cp
+       JOIN nouns n ON cp.word_type = 'noun_plural' AND cp.word_id = n.id
+       WHERE cp.next_review_date <= date('now') AND ${hasPlural} ${filters.dueClause}
+       ORDER BY cp.next_review_date ASC
+       LIMIT ?`,
+      [...filters.params, dueLimit * PLURAL_CANDIDATE_OVERFETCH],
+    );
+
+    const newRows = await this.db.getAllAsync<DuePluralCard>(
+      `SELECT
+         0 AS id,
+         'noun_plural' AS word_type,
+         n.id AS word_id,
+         2.5 AS ease_factor,
+         0 AS interval,
+         0 AS repetitions,
+         date('now') AS next_review_date,
+         0 AS total_reviews,
+         0 AS correct_reviews,
+         NULL AS last_reviewed_at,
+         n.created_at,
+         n.german,
+         n.article,
+         n.plural,
+         n.english,
+         n.sense,
+         n.remote_id
+       FROM nouns n
+       LEFT JOIN card_progress cp ON cp.word_type = 'noun_plural' AND cp.word_id = n.id
+       WHERE cp.id IS NULL AND ${hasPlural} ${filters.newClause}
+       ORDER BY RANDOM()
+       LIMIT ?`,
+      [...filters.params, newCardsLimit * PLURAL_CANDIDATE_OVERFETCH],
+    );
+
+    // A due card can stop classifying if a correction or sync later changed
+    // its stored plural, so due rows are filtered too, not just new ones.
+    const dueCards = classifyPluralCards(dueRows).slice(0, dueLimit);
+    const newCards = classifyPluralCards(newRows).slice(0, newCardsLimit);
+
+    return {
+      cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],
       dueCount: dueCards.length,
       newCount: newCards.length,
     };
