@@ -1,11 +1,4 @@
 import { PB_API_KEY, PB_URL } from '@/constants/pocketbase';
-import Constants from 'expo-constants';
-
-/**
- * `extra.appEnv` is set from `APP_ENV` in `app.config.js` (defaults to
- * 'production'). Development and preview builds must not pollute funnel data.
- */
-const IS_PRODUCTION_BUILD = Constants.expoConfig?.extra?.appEnv === 'production';
 
 /**
  * Steps in the Üben Pro purchase funnel, tracked so conversion can be
@@ -45,7 +38,7 @@ export function trackPurchaseFunnelEvent(
   event: PurchaseFunnelEvent,
   source?: string | null,
 ): void {
-  if (!PB_URL || !PB_API_KEY || __DEV__ || !IS_PRODUCTION_BUILD) return;
+  if (!PB_URL || !PB_API_KEY || __DEV__) return;
 
   fetch(`${PB_URL}/api/collections/purchase_events/records?key=${PB_API_KEY}`, {
     method: 'POST',
