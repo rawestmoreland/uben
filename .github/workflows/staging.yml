@@ -106,11 +106,21 @@ jobs:
             if [ "$PLATFORM" = ios ]; then SELECTED=$BUILD_IOS; else SELECTED=$BUILD_ANDROID; fi
             [ "$SELECTED" = true ] || continue
 
-            CURRENT=$(APP_ENV=preview npx expo-updates fingerprint:generate --platform "$PLATFORM" 2>/dev/null | jq -r '.hash')
-            LATEST_RV=$(eas build:list --channel staging --platform "$PLATFORM" --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
-            echo "$PLATFORM fingerprint: $CURRENT (latest build runtime version: $LATEST_RV)"
+            # Generate the fingerprint with eas-cli, not `expo-updates fingerprint:generate`:
+            # eas-cli resolves the same build profile env and EAS "preview" environment
+            # variables the builder uses, which feed into app.config.js. A bare local
+            # run produced a different hash than the builder, so it never matched.
+            # stderr is left visible so failures show up in the log.
+            CURRENT=$(eas fingerprint:generate --build-profile preview --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || CURRENT=""
 
-            if [ -z "$LATEST_RV" ] || [ "$CURRENT" != "$LATEST_RV" ]; then
+            # Ask EAS for a finished staging build with exactly this runtime version
+            MATCHING_BUILDS=0
+            if [ -n "$CURRENT" ]; then
+              MATCHING_BUILDS=$(eas build:list --channel staging --platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json | jq 'length') || MATCHING_BUILDS=0
+            fi
+            echo "$PLATFORM fingerprint: ${CURRENT:-<failed to generate>} (finished staging builds with this runtime version: $MATCHING_BUILDS)"
+
+            if [ "$MATCHING_BUILDS" -lt 1 ]; then
               OTA_OK=false
             fi
           done
