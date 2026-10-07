@@ -201,7 +201,8 @@
         "umlaut": "The stem vowel takes an umlaut: Haus → Häuser is ¨-er.",
         "suffix": "An ending is added: Hund → Hunde is -e.",
         "no_change": "No change at all: Lehrer → Lehrer.",
-        "dismiss": "Got it"
+        "dismiss": "Got it",
+        "show": "Show ending help"
       },
       "endings": {
         "none": "No change",
