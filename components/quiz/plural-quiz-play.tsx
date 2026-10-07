@@ -35,8 +35,11 @@ export function PluralQuizPlay({
   const { t } = useTranslation('app');
   const { currentCard, phase, selectedEnding, isCorrect, progress } = quiz;
   const { submitAnswer, nextCard, restartTimer } = quiz;
-  const { isVisible: isHintVisible, dismiss: dismissHint } =
-    usePluralNotationHint();
+  const {
+    isVisible: isHintVisible,
+    dismiss: dismissHint,
+    show: showHint,
+  } = usePluralNotationHint();
   const translation = useNounTranslation(
     currentCard?.remote_id ?? null,
     currentCard?.english ?? null,
@@ -79,6 +82,7 @@ export function PluralQuizPlay({
         badgeLabel={t('plural_quiz.badge')}
         current={progress.current}
         total={progress.total}
+        onShowHint={isHintVisible ? undefined : showHint}
       />
       <ScrollView
         contentContainerStyle={styles.content}

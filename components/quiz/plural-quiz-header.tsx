@@ -7,6 +7,8 @@ interface PluralQuizHeaderProps {
   badgeLabel: string;
   current: number;
   total: number;
+  /** Shown only while the notation hint is hidden. */
+  onShowHint?: () => void;
 }
 
 function exitQuiz() {
@@ -18,6 +20,7 @@ export function PluralQuizHeader({
   badgeLabel,
   current,
   total,
+  onShowHint,
 }: PluralQuizHeaderProps) {
   const { t } = useTranslation('app');
   const percent = total > 0 ? Math.round((current / total) * 100) : 0;
@@ -28,6 +31,17 @@ export function PluralQuizHeader({
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badgeLabel.toUpperCase()}</Text>
         </View>
+        {onShowHint && (
+          <Pressable
+            style={styles.helpButton}
+            onPress={onShowHint}
+            accessibilityRole="button"
+            accessibilityLabel={t('plural_quiz.hint.show')}
+            hitSlop={12}
+          >
+            <Text style={styles.closeButtonText}>?</Text>
+          </Pressable>
+        )}
         <Pressable
           style={styles.closeButton}
           onPress={exitQuiz}
@@ -79,6 +93,17 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.white,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  helpButton: {
+    width: 44,
+    height: 44,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.yellow,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    marginRight: Spacing.sm,
   },
   closeButtonText: {
     fontSize: Typography.body,

@@ -211,7 +211,8 @@
         "umlaut": "Samogłoska rdzenia dostaje umlaut: Haus → Häuser to ¨-er.",
         "suffix": "Dodaje się końcówkę: Hund → Hunde to -e.",
         "no_change": "Bez zmian: Lehrer → Lehrer.",
-        "dismiss": "Rozumiem"
+        "dismiss": "Rozumiem",
+        "show": "Pokaż pomoc do końcówek"
       },
       "endings": {
         "none": "Bez zmian",

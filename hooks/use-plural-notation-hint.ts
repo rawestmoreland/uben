@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 export function usePluralNotationHint(): {
   isVisible: boolean;
   dismiss: () => void;
+  show: () => void;
 } {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -37,5 +38,11 @@ export function usePluralNotationHint(): {
     });
   }, []);
 
-  return { isVisible, dismiss };
+  // Re-opens the hint on demand; the stored "seen" flag stays set, so it
+  // doesn't come back uninvited next session.
+  const show = useCallback(() => {
+    setIsVisible(true);
+  }, []);
+
+  return { isVisible, dismiss, show };
 }
