@@ -116,7 +116,7 @@ jobs:
             # Ask EAS for a finished staging build with exactly this runtime version
             MATCHING_BUILDS=0
             if [ -n "$CURRENT" ]; then
-              MATCHING_BUILDS=$(eas build:list --channel staging --platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json | jq 'length') || MATCHING_BUILDS=0
+              MATCHING_BUILDS=$(eas build:list --channel preview --platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json | jq 'length') || MATCHING_BUILDS=0
             fi
             echo "$PLATFORM fingerprint: ${CURRENT:-<failed to generate>} (finished staging builds with this runtime version: $MATCHING_BUILDS)"
 
