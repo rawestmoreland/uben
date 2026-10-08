@@ -35,7 +35,7 @@
     },
     "preview": {
       "environment": "preview",
-      "channel": "staging",
+      "channel": "preview",
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium"
@@ -51,7 +51,7 @@
     },
     "preview-store": {
       "environment": "preview",
-      "channel": "staging",
+      "channel": "preview",
       "distribution": "store",
       "autoIncrement": true,
       "ios": {
