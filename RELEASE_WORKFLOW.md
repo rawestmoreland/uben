@@ -109,7 +109,7 @@ Use this when a fix needs to go out immediately via Expo Updates, **without** ca
 
 > **Do not bump any version numbers for OTA hotfixes.**
 >
-> The runtime version policy is set to `appVersion`. Bumping `version` in `app.config.js` would generate a new runtime version, meaning the OTA update would only be delivered to users already on that new version — users on the current production version would never receive the fix. The only versioning artifact for an OTA hotfix is the git tag.
+> The runtime version policy is `fingerprint` (`app.config.js`): an update is delivered only to builds whose native fingerprint matches the update's. The app `version` plays no part in that, so a bump gains nothing and just makes `package.json` / `app.config.js` drift from the shipped store build. An OTA can only carry JS changes; if the native fingerprint has changed since the last production build, the hotfix workflow refuses to publish and you need a full store release instead. The only versioning artifact for an OTA hotfix is the git tag, which the workflow creates for you.
 
 **Always branch from `main`, not from `staging` or `develop`.**
 
@@ -140,21 +140,22 @@ git commit -m "fix: <description>"
 git push origin hotfix/fix-article-crash
 ```
 
-**3. Open a PR from hotfix → main, merge and tag**
+**3. Open a PR from hotfix → main and merge it**
 
-```bash
-# After PR is approved and merged:
-git checkout main
-git pull origin main
-git tag v1.2.1-ota
-git push origin main --tags
-```
+Do not tag by hand; the workflow in the next step does it.
 
-**4. Deploy the OTA update**
+**4. Run the "Production - OTA Hotfix" workflow**
 
-```bash
-eas update --branch production --message "fix: <description>"
-```
+Trigger `production-hotfix.yml` manually (Actions tab → Run workflow, ref `main`) with a short description. It will:
+
+1. Run lint and the TypeScript check
+2. Compare the current native fingerprint against the latest finished production iOS and Android builds, and fail if they differ
+3. Publish with `eas update --branch production`
+4. Create the `v<version>-hotfix.<run number>` tag and a pre-release recording the EAS update group ID
+
+The tag includes the run number because the app version doesn't change between OTAs, so a fixed tag would collide.
+
+If the fingerprint check fails, the fix touches native code (or a dependency that affects it) and can't go out over the air. Ship it through the standard release flow instead.
 
 **5. Back-merge into staging and develop**
 
@@ -184,7 +185,7 @@ git push origin --delete hotfix/fix-article-crash
 | Type              | Format       | Version bump                            | Trigger                                 |
 | ----------------- | ------------ | --------------------------------------- | --------------------------------------- |
 | Full native build | `v1.3.0`     | `version`, `buildNumber`, `versionCode` | EAS production build + store submission |
-| OTA hotfix        | `v1.2.1-ota` | None                                    | `eas update` only, no store submission  |
+| OTA hotfix        | `v1.3.0-hotfix.<run number>` | None                    | `eas update` only, no store submission (tag created by `production-hotfix.yml`) |
 
 ---
 
@@ -204,4 +205,4 @@ Release tickets are tracked on the release kanban board. Each week:
 - Always use `--no-ff` merges to preserve branch history and avoid ambiguous commit graphs
 - Never rebase branches that have already been merged — this generates duplicate commits with new SHAs on future merges
 - After a hotfix, confirm the fix is present in both `staging` and `develop` before closing the ticket
-- Never bump `version` in `app.config.js` for an OTA hotfix — doing so creates a new runtime version and the update won't reach current users
+- Never bump `version` in `app.config.js` for an OTA hotfix — it isn't needed (runtime compatibility comes from the native fingerprint, not the version) and it makes the repo version drift from the shipped store build
