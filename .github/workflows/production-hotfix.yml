@@ -9,9 +9,14 @@ on:
         description: 'Hotfix description'
         required: true
         type: string
+      issue:
+        description: 'Tracking issue number to comment on (optional)'
+        required: false
+        type: string
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: production-hotfix
@@ -86,13 +91,17 @@ jobs:
           OUTPUT=$(eas update --branch production --message "Hotfix: ${HOTFIX_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform all --json)
           echo "$OUTPUT"
           GROUP_ID=$(echo "$OUTPUT" | jq -r '.[0].group')
+          RUNTIME_VERSION=$(echo "$OUTPUT" | jq -r '.[0].runtimeVersion')
           echo "group_id=$GROUP_ID" >> "$GITHUB_OUTPUT"
+          echo "runtime_version=$RUNTIME_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Tag and release
         uses: actions/github-script@v7
         env:
           HOTFIX_MESSAGE: ${{ inputs.message }}
           UPDATE_GROUP_ID: ${{ steps.ota.outputs.group_id }}
+          RUNTIME_VERSION: ${{ steps.ota.outputs.runtime_version }}
+          ISSUE_NUMBER: ${{ inputs.issue }}
         with:
           script: |
             const { execSync } = require('child_process');
@@ -100,6 +109,8 @@ jobs:
             const version = execSync('node scripts/app-version.cjs').toString().trim();
             const message = process.env.HOTFIX_MESSAGE;
             const groupId = process.env.UPDATE_GROUP_ID;
+            const runtimeVersion = process.env.RUNTIME_VERSION;
+            const dashboardUrl = `https://expo.dev/accounts/rawestmoreland/projects/uben/updates/${groupId}`;
 
             // Unique per run: the app version doesn't change between OTAs
             const tag = `v${version}-hotfix.${process.env.GITHUB_RUN_NUMBER}`;
@@ -114,7 +125,24 @@ jobs:
               owner, repo,
               tag_name: tag,
               name: `v${version} Hotfix`,
-              body: `## Production OTA Hotfix\n\n${message}\n\nEAS update group: \`${groupId}\`\n\nDelivered over the air. No store update is required.`,
+              body: `## Production OTA Hotfix\n\n${message}\n\nEAS update group: [\`${groupId}\`](${dashboardUrl})\n\nRuntime version: \`${runtimeVersion}\`\n\nDelivered over the air. No store update is required.`,
               draft: false,
               prerelease: true,
             });
+
+            // Report back to the tracking issue so the release board reflects the OTA
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
+            if (issueNumber) {
+              await github.rest.issues.createComment({
+                owner, repo,
+                issue_number: issueNumber,
+                body: [
+                  `OTA published to \`production\` (${tag}).`,
+                  '',
+                  `- Update group: [\`${groupId}\`](${dashboardUrl})`,
+                  `- Runtime version: \`${runtimeVersion}\``,
+                  `- Commit: ${context.sha.slice(0, 7)}`,
+                  `- Rollback: \`eas update:republish --group <previous group id> --destination-branch production\``,
+                ].join('\n'),
+              });
+            }
