@@ -1,5 +1,6 @@
 import { getDatabase } from '@/database/db';
 import type { Setting } from '@/types/database';
+import { APP_LANGUAGES, type AppLanguage } from '@/types/language';
 
 // ── Settings Keys ─────────────────────────────────────────────────────
 
@@ -17,9 +18,12 @@ export const SETTINGS_KEYS = {
     'adjective_declension_trial_questions_used',
   ADJECTIVE_DECLENSION_DIFFICULTY: 'adjective_declension_difficulty',
   PRO_UNLOCKED: 'pro_unlocked',
+  PROMO_UNLOCKED: 'promo_unlocked',
+  PROMO_CODE_USED: 'promo_code_used',
   PRO_GRANDFATHER_MIGRATION_DONE: 'pro_grandfather_migration_done',
   GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
   GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
+  PLURAL_NOTATION_HINT_SEEN: 'plural_notation_hint_seen',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -121,13 +125,12 @@ class SettingsService {
   // ── Convenience: App Language ──────────────────────────────────────
 
   /** App display language. Default: 'en'. */
-  async getAppLanguage(): Promise<'en' | 'it' | 'pl'> {
+  async getAppLanguage(): Promise<AppLanguage> {
     const value = await this.getSetting(SETTINGS_KEYS.APP_LANGUAGE);
-    if (value === 'it' || value === 'pl') return value;
-    return 'en';
+    return APP_LANGUAGES.find((language) => language === value) ?? 'en';
   }
 
-  async setAppLanguage(language: 'en' | 'it' | 'pl'): Promise<void> {
+  async setAppLanguage(language: AppLanguage): Promise<void> {
     await this.setSetting(SETTINGS_KEYS.APP_LANGUAGE, language);
   }
 
@@ -168,6 +171,32 @@ class SettingsService {
       SETTINGS_KEYS.PRO_UNLOCKED,
       unlocked ? 'true' : 'false',
     );
+  }
+
+  // ── Convenience: Promo Code Unlock ─────────────────────────────────
+  // Deliberately separate from `pro_unlocked`: purchaseService overwrites
+  // that cache with RevenueCat's answer on every check, which would wipe a
+  // promo unlock back to false.
+
+  async getPromoUnlocked(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.PROMO_UNLOCKED);
+    return value === 'true';
+  }
+
+  async setPromoUnlocked(unlocked: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.PROMO_UNLOCKED,
+      unlocked ? 'true' : 'false',
+    );
+  }
+
+  /** The promo code that unlocked Pro on this device, if any (for display/support). */
+  async getPromoCodeUsed(): Promise<string | null> {
+    return this.getSetting(SETTINGS_KEYS.PROMO_CODE_USED);
+  }
+
+  async setPromoCodeUsed(code: string): Promise<void> {
+    await this.setSetting(SETTINGS_KEYS.PROMO_CODE_USED, code);
   }
 
   // ── Convenience: Pro Bundle Grandfathering ─────────────────────────
@@ -248,6 +277,21 @@ class SettingsService {
     await this.setSetting(
       SETTINGS_KEYS.ADJECTIVE_DECLENSION_DIFFICULTY,
       difficulty,
+    );
+  }
+
+  // ── Convenience: Plural Quiz Notation Hint ────────────────────────
+
+  /** Whether the learner has dismissed the one-time "how to read ¨-er" hint in the plural quiz. Default: false. */
+  async getPluralNotationHintSeen(): Promise<boolean> {
+    const value = await this.getSetting(SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN);
+    return value === 'true';
+  }
+
+  async setPluralNotationHintSeen(seen: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN,
+      seen ? 'true' : 'false',
     );
   }
 

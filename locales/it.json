@@ -185,6 +185,37 @@
       "check_button": "Controlla",
       "continue": "Continua"
     },
+    "plural_quiz": {
+      "badge": "Desinenze del plurale",
+      "prompt": "Quale desinenza al plurale?",
+      "question_a11y": "{{noun}}. Quale desinenza prende al plurale?",
+      "all_caught_up": "Tutto in regola",
+      "no_cards_due": "Nessun plurale da ripassare al momento.\n\nProva a selezionare categorie diverse o torna più tardi!",
+      "correct": "Corretto",
+      "incorrect": "Non proprio",
+      "you_picked": "Hai scelto {{ending}}",
+      "feedback_a11y": "{{verdict}}. Il plurale è die {{plural}}: {{ending}}.",
+      "continue": "Continua",
+      "hint": {
+        "title": "Come leggere i pulsanti",
+        "umlaut": "La vocale della radice prende l'Umlaut: Haus → Häuser è ¨-er.",
+        "suffix": "Si aggiunge una desinenza: Hund → Hunde è -e.",
+        "no_change": "Nessun cambiamento: Lehrer → Lehrer.",
+        "dismiss": "Ho capito",
+        "show": "Mostra aiuto sulle desinenze"
+      },
+      "endings": {
+        "none": "Nessun cambiamento",
+        "umlaut": "Solo Umlaut",
+        "e": "Più e",
+        "umlaut_e": "Umlaut più e",
+        "er": "Più e r",
+        "umlaut_er": "Umlaut più e r",
+        "n": "Più n",
+        "en": "Più e n",
+        "s": "Più s"
+      }
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Sblocca Üben Pro",
@@ -199,6 +230,17 @@
       "restore_button": "Ripristina acquisti",
       "restoring": "Ripristino in corso…",
       "restore_failed": "Nessun acquisto precedente trovato per questo account.",
+      "promo_button": "Inserisci codice promo",
+      "promo_title": "Codice promo",
+      "promo_placeholder": "CODICE",
+      "promo_redeem": "Riscatta",
+      "promo_redeeming": "Riscatto in corso…",
+      "promo_cancel": "Annulla",
+      "promo_error_invalid": "Questo codice non è valido.",
+      "promo_error_expired": "Questo codice è scaduto.",
+      "promo_error_exhausted": "Questo codice è già stato riscattato il numero massimo di volte.",
+      "promo_error_offline": "Nessuna connessione. Riprova online.",
+      "promo_error_not_configured": "I codici promo non sono disponibili al momento.",
       "close": "Chiudi",
       "success_title": "Ora sei Pro!",
       "success_subtitle": "Niente pubblicità, vocabolario B1+, parole aggiunte illimitate e pratica delle desinenze degli aggettivi sono tutti sbloccati.",
@@ -216,7 +258,7 @@
         },
         "plurals": {
           "title": "Plurali",
-          "subtitle": "Hund -> Hunde"
+          "subtitle": "Desinenze: Hund → Hunde"
         },
         "adjectives": {
           "title": "Aggettivi",

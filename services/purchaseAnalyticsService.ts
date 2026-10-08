@@ -31,7 +31,8 @@ export type PurchaseFunnelEvent =
  * ## Behaviour
  *   Fire-and-forget — errors are silently ignored so a failed submission
  *   never interrupts the purchase flow. Skipped automatically when
- *   PocketBase isn't configured (offline-only mode).
+ *   PocketBase isn't configured (offline-only mode) and in development and
+ *   preview builds.
  */
 export function trackPurchaseFunnelEvent(
   event: PurchaseFunnelEvent,

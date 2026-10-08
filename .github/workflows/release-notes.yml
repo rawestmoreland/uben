@@ -62,6 +62,7 @@ jobs:
             Do not modify any other files and do not commit.
           claude_args: |
             --allowedTools "Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(gh pr view:*),Bash(gh pr list:*),Write"
+            --model claude-sonnet-5-5
 
       - name: Verify notes were written
         run: |

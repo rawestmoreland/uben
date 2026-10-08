@@ -34,10 +34,11 @@ const EXERCISES: readonly ExerciseConfig[] = [
     status: 'available',
   },
   {
+    // Free for everyone; shares the article quiz's category picker
     id: 'plurals',
-    route: '/select-categories',
+    route: { pathname: '/select-categories', params: { exercise: 'plurals' } },
     accentColor: AppColors.green,
-    status: 'coming_soon',
+    status: 'available',
   },
   {
     id: 'adjectives',

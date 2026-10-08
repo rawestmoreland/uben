@@ -9,7 +9,7 @@ import { settingsService } from '@/services/settingsService';
 import { vocabularyService } from '@/services/vocabularyService';
 import type { Category } from '@/types/database';
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,6 +26,9 @@ type CategoryWithCount = Category & { wordCount: number };
 
 export default function SelectCategoriesScreen() {
   const { t } = useTranslation('app');
+  // Which quiz to launch: the article quiz unless a tile asks for another
+  // (the plurals tile passes exercise=plurals)
+  const { exercise } = useLocalSearchParams<{ exercise?: string }>();
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,8 +78,8 @@ export default function SelectCategoriesScreen() {
     await settingsService.setSelectedCategories(selectedIds);
 
     // Replace modal with quiz (so back button goes to home, not back to modal)
-    router.replace('/quiz');
-  }, [selectedIds]);
+    router.replace(exercise === 'plurals' ? '/plural-quiz' : '/quiz');
+  }, [selectedIds, exercise]);
 
   const canStart = isAllWords || selectedIds.length > 0;
 

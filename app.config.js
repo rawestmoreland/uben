@@ -29,7 +29,7 @@ export default {
   expo: {
     name: `üben${getAppVariant()}`,
     slug: 'uben',
-    version: '1.10.0',
+    version: '1.11.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: `germanpractice${getSchemeSuffix()}`,
@@ -127,7 +127,7 @@ export default {
     },
     owner: 'rawestmoreland',
     runtimeVersion: {
-      policy: 'appVersion',
+      policy: 'fingerprint',
     },
     updates: {
       url: 'https://u.expo.dev/a1b09294-f1e5-411b-8ba0-a710103aa648',

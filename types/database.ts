@@ -1,3 +1,5 @@
+import type { AppLanguage } from './language';
+
 // Database entity types for the German learning app
 
 /** A German noun stored in the local database */
@@ -20,7 +22,7 @@ export interface NounTranslation {
   id: number;
   remote_id: string;
   noun_id: string;
-  locale: 'en' | 'it' | 'pl';
+  locale: AppLanguage;
   translation: string;
   created_at: string;
   updated_at: string;
@@ -68,10 +70,16 @@ export interface Adjective {
   created_at: string;
 }
 
+/**
+ * What a card_progress row tracks. A noun has two independent cards: 'noun'
+ * for its article and 'noun_plural' for its plural ending (word_id = noun id).
+ */
+export type CardWordType = 'noun' | 'verb' | 'adjective' | 'noun_plural';
+
 /** SM-2 spaced repetition progress for a single card */
 export interface CardProgress {
   id: number;
-  word_type: 'noun' | 'verb' | 'adjective';
+  word_type: CardWordType;
   word_id: number;
   ease_factor: number;
   interval: number;
@@ -183,6 +191,18 @@ export interface VerbImperfectSession {
   cards: DueVerbCard[];
   dueCount: number;
   newCount: number;
+}
+
+/** A noun-plural card that is due for review, joined with its noun data.
+ * `plural` is guaranteed non-empty — the session query filters out nouns
+ * without one. */
+export interface DuePluralCard extends CardProgress {
+  german: string;
+  article: 'der' | 'die' | 'das';
+  plural: string;
+  english: string | null;
+  sense: string | null; // Disambiguation hint for homographs (die Bank: Bänke vs Banken)
+  remote_id: string | null;
 }
 
 // ── Input Types ───────────────────────────────────────────────────────

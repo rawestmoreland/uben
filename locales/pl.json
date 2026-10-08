@@ -195,6 +195,37 @@
       "check_button": "Sprawdź",
       "continue": "Dalej"
     },
+    "plural_quiz": {
+      "badge": "Liczba mnoga",
+      "prompt": "Jaka końcówka liczby mnogiej?",
+      "question_a11y": "{{noun}}. Jaką końcówkę ma w liczbie mnogiej?",
+      "all_caught_up": "Wszystko zrobione",
+      "no_cards_due": "Brak rzeczowników do powtórki.\n\nSpróbuj wybrać inne kategorie lub wróć później!",
+      "correct": "Dobrze",
+      "incorrect": "Nie całkiem",
+      "you_picked": "Twój wybór: {{ending}}",
+      "feedback_a11y": "{{verdict}}. Liczba mnoga to die {{plural}}: {{ending}}.",
+      "continue": "Dalej",
+      "hint": {
+        "title": "Jak czytać przyciski",
+        "umlaut": "Samogłoska rdzenia dostaje umlaut: Haus → Häuser to ¨-er.",
+        "suffix": "Dodaje się końcówkę: Hund → Hunde to -e.",
+        "no_change": "Bez zmian: Lehrer → Lehrer.",
+        "dismiss": "Rozumiem",
+        "show": "Pokaż pomoc do końcówek"
+      },
+      "endings": {
+        "none": "Bez zmian",
+        "umlaut": "Tylko umlaut",
+        "e": "Plus e",
+        "umlaut_e": "Umlaut plus e",
+        "er": "Plus e r",
+        "umlaut_er": "Umlaut plus e r",
+        "n": "Plus n",
+        "en": "Plus e n",
+        "s": "Plus s"
+      }
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Odblokuj Üben Pro",
@@ -209,6 +240,17 @@
       "restore_button": "Przywróć zakupy",
       "restoring": "Przywracanie…",
       "restore_failed": "Nie znaleziono wcześniejszego zakupu dla tego konta.",
+      "promo_button": "Wpisz kod promocyjny",
+      "promo_title": "Kod promocyjny",
+      "promo_placeholder": "KOD",
+      "promo_redeem": "Zrealizuj",
+      "promo_redeeming": "Realizowanie…",
+      "promo_cancel": "Anuluj",
+      "promo_error_invalid": "Ten kod jest nieprawidłowy.",
+      "promo_error_expired": "Ten kod wygasł.",
+      "promo_error_exhausted": "Ten kod został już w pełni wykorzystany.",
+      "promo_error_offline": "Brak połączenia. Spróbuj ponownie online.",
+      "promo_error_not_configured": "Kody promocyjne są obecnie niedostępne.",
       "close": "Zamknij",
       "success_title": "Masz teraz Pro!",
       "success_subtitle": "Brak reklam, słownictwo B1+, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników są odblokowane.",
@@ -226,7 +268,7 @@
         },
         "plurals": {
           "title": "Liczba mnoga",
-          "subtitle": "Hund -> Hunde"
+          "subtitle": "Końcówki: Hund → Hunde"
         },
         "adjectives": {
           "title": "Przymiotniki",

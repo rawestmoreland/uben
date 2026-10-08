@@ -183,6 +183,8 @@ export class VocabularyService {
 
   /**
    * Get aggregated statistics across all card progress records.
+   * Plural-ending cards are excluded so they don't inflate the article
+   * quiz's card and due counts on the home and progress screens.
    */
   async getUserStats(): Promise<UserStats> {
     const stats = await this.db.getFirstAsync<UserStats>(`
@@ -198,6 +200,7 @@ export class VocabularyService {
           CASE WHEN next_review_date <= date('now') THEN 1 END
         ) AS due_today
       FROM card_progress
+      WHERE word_type != 'noun_plural'
     `);
 
     return (
@@ -372,11 +375,12 @@ export class VocabularyService {
 
     await this.db.withTransactionAsync(async () => {
       // Delete review_history entries for this word's card_progress
+      // (both its article card and its plural-ending card)
       await this.db.runAsync(
         `DELETE FROM review_history
          WHERE card_progress_id IN (
            SELECT id FROM card_progress
-           WHERE word_type = 'noun' AND word_id = ?
+           WHERE word_type IN ('noun', 'noun_plural') AND word_id = ?
          )`,
         [id],
       );
@@ -384,7 +388,7 @@ export class VocabularyService {
       // Delete card_progress for this word
       await this.db.runAsync(
         `DELETE FROM card_progress
-         WHERE word_type = 'noun' AND word_id = ?`,
+         WHERE word_type IN ('noun', 'noun_plural') AND word_id = ?`,
         [id],
       );
 
