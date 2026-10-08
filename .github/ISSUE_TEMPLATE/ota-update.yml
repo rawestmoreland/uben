@@ -22,8 +22,8 @@ body:
       label: Channel
       options:
         - production
-        - staging
-        - develop
+        - preview
+        - development
     validations:
       required: true
   - type: input
