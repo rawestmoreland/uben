@@ -117,7 +117,13 @@ jobs:
             # Preview builds live on the "preview" channel, which the "staging" EAS branch feeds.
             MATCHING_BUILDS=0
             if [ -n "$CURRENT" ]; then
-              MATCHING_BUILDS=$(eas build:list --channel preview--platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json | jq 'length') || MATCHING_BUILDS=0
+              # Capture stdout separately so a failed lookup shows eas-cli's real error
+              # instead of a confusing jq parse error.
+              if BUILDS=$(eas build:list --channel preview --platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json); then
+                MATCHING_BUILDS=$(echo "$BUILDS" | jq 'length') || MATCHING_BUILDS=0
+              else
+                echo "::warning::eas build:list failed for $PLATFORM; treating as no matching build. Output: $BUILDS"
+              fi
             fi
             echo "$PLATFORM fingerprint: ${CURRENT:-<failed to generate>} (finished preview builds with this runtime version: $MATCHING_BUILDS)"
 
