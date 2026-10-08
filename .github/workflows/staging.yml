@@ -113,12 +113,13 @@ jobs:
             # stderr is left visible so failures show up in the log.
             CURRENT=$(eas fingerprint:generate --build-profile preview --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || CURRENT=""
 
-            # Ask EAS for a finished staging build with exactly this runtime version
+            # Ask EAS for a finished preview-channel build with exactly this runtime version.
+            # Preview builds live on the "preview" channel, which the "staging" EAS branch feeds.
             MATCHING_BUILDS=0
             if [ -n "$CURRENT" ]; then
-              MATCHING_BUILDS=$(eas build:list --channel preview --platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json | jq 'length') || MATCHING_BUILDS=0
+              MATCHING_BUILDS=$(eas build:list --channel preview--platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json | jq 'length') || MATCHING_BUILDS=0
             fi
-            echo "$PLATFORM fingerprint: ${CURRENT:-<failed to generate>} (finished staging builds with this runtime version: $MATCHING_BUILDS)"
+            echo "$PLATFORM fingerprint: ${CURRENT:-<failed to generate>} (finished preview builds with this runtime version: $MATCHING_BUILDS)"
 
             if [ "$MATCHING_BUILDS" -lt 1 ]; then
               OTA_OK=false
@@ -140,7 +141,7 @@ jobs:
         env:
           EAS_PLATFORM: ${{ needs.config.outputs.eas_platform }}
         run: |
-          echo "📡 Publishing OTA update to staging channel..."
+          echo "📡 Publishing OTA update to the staging branch (preview channel)..."
           OUTPUT=$(eas update --branch staging --message "Staging OTA update (${GITHUB_SHA::7})" --non-interactive --platform "$EAS_PLATFORM" --json)
           echo "$OUTPUT"
           # Selected platforms share one update group; record it so the git tag maps to the exact update
