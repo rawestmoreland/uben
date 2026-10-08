@@ -29,7 +29,7 @@ export default {
   expo: {
     name: `üben${getAppVariant()}`,
     slug: 'uben',
-    version: '1.10.0',
+    version: '1.11.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: `germanpractice${getSchemeSuffix()}`,
