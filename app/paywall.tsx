@@ -11,10 +11,13 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PromoCodeForm } from '@/components/promo-code-form';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -37,6 +40,7 @@ export default function PaywallScreen() {
   const [error, setError] = useState<string | null>(null);
   const [justUnlocked, setJustUnlocked] = useState(false);
   const [showPromoForm, setShowPromoForm] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
 
   // Falls back to redirectTo when no explicit source is given, so an entry
   // point that only sets redirectTo (the destination) still identifies itself.
@@ -46,6 +50,15 @@ export default function PaywallScreen() {
     purchaseService.trackPaywallViewed(funnelSource);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Once the keyboard is up, scroll the promo form into view above it.
+  useEffect(() => {
+    if (!showPromoForm) return;
+    const subscription = Keyboard.addListener('keyboardDidShow', () => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    });
+    return () => subscription.remove();
+  }, [showPromoForm]);
 
   function goToDestination() {
     if (redirectTo) {
@@ -154,88 +167,94 @@ export default function PaywallScreen() {
           <Text style={styles.closeButtonText}>X</Text>
         </Pressable>
 
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoider}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View style={styles.content}>
-            <View style={[styles.badgeCard, shadowStyle]}>
-              <Text style={styles.badgeText}>
-                {t('paywall.premium_badge').toUpperCase()}
-              </Text>
-            </View>
-
-            <Text style={styles.title}>{t('paywall.title')}</Text>
-            <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
-
-            <View style={styles.featureList}>
-              <FeatureRow text={t('paywall.feature_1')} />
-              <FeatureRow text={t('paywall.feature_2')} />
-              <FeatureRow text={t('paywall.feature_3')} />
-              <FeatureRow text={t('paywall.feature_4')} />
-            </View>
-
-            {error && <Text style={styles.errorText}>{error}</Text>}
-          </View>
-
-          <View style={styles.footer}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.unlockButton,
-                pressed && !isPurchasing && styles.unlockButtonPressed,
-              ]}
-              onPress={handleUnlock}
-              disabled={isPurchasing || isRestoring}
-              accessibilityRole="button"
-              accessibilityLabel={t('paywall.unlock_button')}
-            >
-              {isPurchasing ? (
-                <ActivityIndicator color={AppColors.black} />
-              ) : (
-                <Text style={styles.unlockButtonText}>
-                  {t('paywall.unlock_button').toUpperCase()}
+          <ScrollView
+            ref={scrollRef}
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.content}>
+              <View style={[styles.badgeCard, shadowStyle]}>
+                <Text style={styles.badgeText}>
+                  {t('paywall.premium_badge').toUpperCase()}
                 </Text>
-              )}
-            </Pressable>
-            <Text style={styles.footnote}>
-              {t('paywall.one_time_purchase')}
-            </Text>
-            <Pressable
-              onPress={handleRestore}
-              disabled={isPurchasing || isRestoring}
-              accessibilityRole="button"
-              accessibilityLabel={t('paywall.restore_button')}
-              hitSlop={8}
-            >
-              <Text style={styles.restoreText}>
-                {isRestoring
-                  ? t('paywall.restoring')
-                  : t('paywall.restore_button')}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setShowPromoForm(true)}
-              disabled={isPurchasing || isRestoring}
-              accessibilityRole="button"
-              accessibilityLabel={t('paywall.promo_button')}
-              hitSlop={8}
-            >
-              <Text style={styles.restoreText}>
-                {t('paywall.promo_button')}
-              </Text>
-            </Pressable>
-            {showPromoForm && (
-              <View style={styles.promoForm}>
-                <PromoCodeForm
-                  onRedeemed={handlePromoRedeemed}
-                  onCancel={() => setShowPromoForm(false)}
-                />
               </View>
-            )}
-          </View>
-        </ScrollView>
+
+              <Text style={styles.title}>{t('paywall.title')}</Text>
+              <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
+
+              <View style={styles.featureList}>
+                <FeatureRow text={t('paywall.feature_1')} />
+                <FeatureRow text={t('paywall.feature_2')} />
+                <FeatureRow text={t('paywall.feature_3')} />
+                <FeatureRow text={t('paywall.feature_4')} />
+              </View>
+
+              {error && <Text style={styles.errorText}>{error}</Text>}
+            </View>
+
+            <View style={styles.footer}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.unlockButton,
+                  pressed && !isPurchasing && styles.unlockButtonPressed,
+                ]}
+                onPress={handleUnlock}
+                disabled={isPurchasing || isRestoring}
+                accessibilityRole="button"
+                accessibilityLabel={t('paywall.unlock_button')}
+              >
+                {isPurchasing ? (
+                  <ActivityIndicator color={AppColors.black} />
+                ) : (
+                  <Text style={styles.unlockButtonText}>
+                    {t('paywall.unlock_button').toUpperCase()}
+                  </Text>
+                )}
+              </Pressable>
+              <Text style={styles.footnote}>
+                {t('paywall.one_time_purchase')}
+              </Text>
+              <Pressable
+                onPress={handleRestore}
+                disabled={isPurchasing || isRestoring}
+                accessibilityRole="button"
+                accessibilityLabel={t('paywall.restore_button')}
+                hitSlop={8}
+              >
+                <Text style={styles.restoreText}>
+                  {isRestoring
+                    ? t('paywall.restoring')
+                    : t('paywall.restore_button')}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setShowPromoForm(true)}
+                disabled={isPurchasing || isRestoring}
+                accessibilityRole="button"
+                accessibilityLabel={t('paywall.promo_button')}
+                hitSlop={8}
+              >
+                <Text style={styles.restoreText}>
+                  {t('paywall.promo_button')}
+                </Text>
+              </Pressable>
+              {showPromoForm && (
+                <View style={styles.promoForm}>
+                  <PromoCodeForm
+                    onRedeemed={handlePromoRedeemed}
+                    onCancel={() => setShowPromoForm(false)}
+                  />
+                </View>
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </SafeAreaView>
   );
@@ -275,6 +294,9 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.bold,
     color: AppColors.black,
+  },
+  keyboardAvoider: {
+    flex: 1,
   },
   scroll: {
     flex: 1,
