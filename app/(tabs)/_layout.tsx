@@ -6,6 +6,7 @@ import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { AppColors, Layout, Typography } from '@/constants/design';
 import { useTranslation } from 'react-i18next';
+import { uiUpperCase } from '@/utils/uiText';
 
 export default function TabLayout() {
   const { t } = useTranslation('app');
@@ -25,7 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t('practice').toUpperCase(),
+          title: uiUpperCase(t('practice')),
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="book.fill" color={color} />
@@ -37,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="progress"
         options={{
-          title: t('progress_screen.tab_label').toUpperCase(),
+          title: uiUpperCase(t('progress_screen.tab_label')),
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="chart.bar.fill" color={color} />
@@ -49,7 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: t('about').toUpperCase(),
+          title: uiUpperCase(t('about')),
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="info.circle.fill" color={color} />
@@ -61,7 +62,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: t('settings_title').toUpperCase(),
+          title: uiUpperCase(t('settings_title')),
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
               <IconSymbol size={26} name="gearshape.fill" color={color} />

@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── About Screen ─────────────────────────────────────────────────────
 
@@ -23,17 +24,17 @@ export default function AboutScreen() {
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>
-            {t('how_it_works.title').toUpperCase()}
+            {uiUpperCase(t('how_it_works.title'))}
           </Text>
           <Text style={styles.headerSubtitle}>
-            {t('how_it_works.subtitle').toUpperCase()}
+            {uiUpperCase(t('how_it_works.subtitle'))}
           </Text>
         </View>
 
         {/* ── Section 1: What is Spaced Repetition? ───────────── */}
         <View style={[styles.card, shadowStyle]}>
           <Text style={styles.cardTitle}>
-            {t('how_it_works.what_is_spaced_repetition').toUpperCase()}
+            {uiUpperCase(t('how_it_works.what_is_spaced_repetition'))}
           </Text>
           <Text style={styles.cardBody}>{t('how_it_works.sr_definition')}</Text>
 
@@ -60,7 +61,7 @@ export default function AboutScreen() {
         {/* ── Section 2: How We Score Your Answers ────────────── */}
         <View style={[styles.card, shadowStyle]}>
           <Text style={styles.cardTitle}>
-            {t('how_it_works.how_we_score_your_answers').toUpperCase()}
+            {uiUpperCase(t('how_it_works.how_we_score_your_answers'))}
           </Text>
           <Text style={styles.cardBody}>
             {t('how_it_works.we_measure_both')}
@@ -109,7 +110,7 @@ export default function AboutScreen() {
             />
             <View style={styles.scoreTextGroup}>
               <Text style={styles.scoreLabel}>
-                {t('how_it_works.wrong_answer').toUpperCase()}
+                {uiUpperCase(t('how_it_works.wrong_answer'))}
               </Text>
               <Text style={styles.scoreDescription}>
                 {t('how_it_works.wrong_answer_description')}
@@ -121,7 +122,7 @@ export default function AboutScreen() {
         {/* ── Section 3: The SM-2 Algorithm ───────────────────── */}
         <View style={[styles.card, shadowStyle]}>
           <Text style={styles.cardTitle}>
-            {t('how_it_works.the_sm_2_algorithm').toUpperCase()}
+            {uiUpperCase(t('how_it_works.the_sm_2_algorithm'))}
           </Text>
           <Text style={styles.cardBody}>
             {t('how_it_works.sm_2_definition')}
@@ -131,7 +132,7 @@ export default function AboutScreen() {
         {/* ── Section 4: Tips for Best Results ────────────────── */}
         <View style={[styles.card, shadowStyle]}>
           <Text style={styles.cardTitle}>
-            {t('how_it_works.tips_for_best_results').toUpperCase()}
+            {uiUpperCase(t('how_it_works.tips_for_best_results'))}
           </Text>
 
           <View style={styles.tipRow}>
