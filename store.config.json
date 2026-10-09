@@ -69,7 +69,25 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Neu: Präteritum-Quiz für Pro-Nutzer. Fünf Minuten pro Tag, um bei der, die, das nicht mehr zu raten - kostenlos, offline, ohne Konto, ohne Werbung.",
-        "releaseNotes": "Wir haben ein Präteritum-Quiz für Pro-Nutzer hinzugefügt. Viel Spaß!"
+        "releaseNotes": "Wir haben ein Präteritum-Quiz für Pro-Nutzer hinzugefügt. Viel Spaß!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "pl": {
         "title": "Üben - Niemieckie rodzajniki",
@@ -90,7 +108,25 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Nowość: quiz Präteritum dla Pro. Pięć minut dziennie, by przestać zgadywać der, die, das - za darmo, offline, bez konta i bez reklam.",
-        "releaseNotes": "Dodaliśmy quiz Präteritum dla użytkowników Pro. Miłej nauki!"
+        "releaseNotes": "Dodaliśmy quiz Präteritum dla użytkowników Pro. Miłej nauki!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/pl/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "fr-FR": {
         "title": "Üben - Articles allemands",
@@ -111,7 +147,25 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Nouveau : quiz de Präteritum pour les utilisateurs Pro. Cinq minutes par jour pour ne plus deviner der, die, das - gratuit, hors ligne, sans compte ni pub.",
-        "releaseNotes": "Nous avons ajouté un quiz de Präteritum pour les utilisateurs Pro. Bon apprentissage !"
+        "releaseNotes": "Nous avons ajouté un quiz de Präteritum pour les utilisateurs Pro. Bon apprentissage !",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "es-ES": {
         "title": "Üben - Artículos alemanes",
@@ -132,7 +186,25 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Nuevo: quiz de Präteritum para usuarios Pro. Cinco minutos al día para dejar de adivinar der, die, das - gratis, sin conexión, sin cuenta ni anuncios.",
-        "releaseNotes": "Hemos añadido un quiz de Präteritum para usuarios Pro. ¡Disfrútalo!"
+        "releaseNotes": "Hemos añadido un quiz de Präteritum para usuarios Pro. ¡Disfrútalo!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "tr": {
         "title": "Üben - Almanca Artikeller",
@@ -153,7 +225,25 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Yeni: Pro kullanıcılar için Präteritum sınavı. der, die, das tahmin etmeyi bırakmak için günde beş dakika - ücretsiz, çevrimdışı, hesapsız, reklamsız.",
-        "releaseNotes": "Pro kullanıcılar için Präteritum sınavı ekledik. İyi çalışmalar!"
+        "releaseNotes": "Pro kullanıcılar için Präteritum sınavı ekledik. İyi çalışmalar!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/tr/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       }
     },
     "categories": ["EDUCATION"],
