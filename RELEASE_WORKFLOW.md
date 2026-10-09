@@ -65,12 +65,11 @@ git push origin develop
 
 **Files to update:**
 
-| File            | Field                 | Notes                                  |
-| --------------- | --------------------- | -------------------------------------- |
-| `package.json`  | `version`             | Semantic version e.g. `1.3.0`          |
-| `app.config.js` | `version`             | Must match `package.json`              |
-| `app.config.js` | `ios.buildNumber`     | Increment by 1, required by App Store  |
-| `app.config.js` | `android.versionCode` | Increment by 1, required by Play Store |
+| File              | Field     | Notes                         |
+| ----------------- | --------- | ----------------------------- |
+| `package.json`    | `version` | Semantic version e.g. `1.3.0` |
+| `app.config.js`   | `version` | Must match `package.json`     |
+| `store.config.js` | `version` | Must match `package.json`     |
 
 ### 4. Open a PR from staging → main
 
@@ -182,10 +181,10 @@ git push origin --delete hotfix/fix-article-crash
 
 ## Tag Naming Convention
 
-| Type              | Format       | Version bump                            | Trigger                                 |
-| ----------------- | ------------ | --------------------------------------- | --------------------------------------- |
-| Full native build | `v1.3.0`     | `version`, `buildNumber`, `versionCode` | EAS production build + store submission |
-| OTA hotfix        | `v1.3.0-hotfix.<run number>` | None                    | `eas update` only, no store submission (tag created by `production-hotfix.yml`) |
+| Type              | Format                       | Version bump                            | Trigger                                                                         |
+| ----------------- | ---------------------------- | --------------------------------------- | ------------------------------------------------------------------------------- |
+| Full native build | `v1.3.0`                     | `version`, `buildNumber`, `versionCode` | EAS production build + store submission                                         |
+| OTA hotfix        | `v1.3.0-hotfix.<run number>` | None                                    | `eas update` only, no store submission (tag created by `production-hotfix.yml`) |
 
 ---
 
