@@ -1,0 +1,14 @@
+{
+  "name": "uben-store-screenshots",
+  "private": true,
+  "description": "Generates localized App Store screenshots from the en-US originals",
+  "scripts": {
+    "generate": "node render.js",
+    "validate": "node render.js --validate"
+  },
+  "dependencies": {
+    "@fontsource/work-sans": "^5.2.0",
+    "playwright-core": "^1.50.0",
+    "pngjs": "^7.0.0"
+  }
+}
