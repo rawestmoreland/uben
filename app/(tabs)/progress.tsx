@@ -19,6 +19,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Heatmap constants ────────────────────────────────────────────────
 
@@ -162,10 +163,10 @@ function HeatmapSection({ activityData }: HeatmapSectionProps) {
   return (
     <View style={[styles.card, shadowStyle]}>
       <Text style={styles.cardTitle}>
-        {t('progress_screen.activity_title').toUpperCase()}
+        {uiUpperCase(t('progress_screen.activity_title'))}
       </Text>
       <Text style={styles.cardSubtitle}>
-        {t('progress_screen.activity_subtitle').toUpperCase()}
+        {uiUpperCase(t('progress_screen.activity_subtitle'))}
       </Text>
 
       {/* Month labels row */}
@@ -217,7 +218,7 @@ function HeatmapSection({ activityData }: HeatmapSectionProps) {
       {/* Legend */}
       <View style={styles.legendRow}>
         <Text style={styles.legendLabel}>
-          {t('progress_screen.legend_less').toUpperCase()}
+          {uiUpperCase(t('progress_screen.legend_less'))}
         </Text>
         {['#E8E8E8', '#B3EDCE', '#4DB87A', AppColors.green].map((color, i) => (
           <View
@@ -226,7 +227,7 @@ function HeatmapSection({ activityData }: HeatmapSectionProps) {
           />
         ))}
         <Text style={styles.legendLabel}>
-          {t('progress_screen.legend_more').toUpperCase()}
+          {uiUpperCase(t('progress_screen.legend_more'))}
         </Text>
       </View>
     </View>
@@ -245,10 +246,10 @@ function HardestWordsSection({ words }: HardestWordsSectionProps) {
   return (
     <View style={[styles.card, shadowStyle]}>
       <Text style={styles.cardTitle}>
-        {t('progress_screen.hardest_words_title').toUpperCase()}
+        {uiUpperCase(t('progress_screen.hardest_words_title'))}
       </Text>
       <Text style={styles.cardSubtitle}>
-        {t('progress_screen.hardest_words_subtitle').toUpperCase()}
+        {uiUpperCase(t('progress_screen.hardest_words_subtitle'))}
       </Text>
 
       {words.length === 0 ? (
@@ -345,10 +346,10 @@ export default function ProgressScreen() {
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>
-            {t('progress_screen.title').toUpperCase()}
+            {uiUpperCase(t('progress_screen.title'))}
           </Text>
           <Text style={styles.headerSubtitle}>
-            {t('progress_screen.subtitle').toUpperCase()}
+            {uiUpperCase(t('progress_screen.subtitle'))}
           </Text>
         </View>
 
@@ -356,34 +357,34 @@ export default function ProgressScreen() {
         <View style={styles.overviewGrid}>
           <OverviewStat
             value={isLoading ? '-' : String(stats.total_reviews)}
-            label={t('progress_screen.total_reviews').toUpperCase()}
+            label={uiUpperCase(t('progress_screen.total_reviews'))}
             accentColor={AppColors.blue}
           />
           <OverviewStat
             value={isLoading ? '-' : accuracyText}
-            label={t('progress_screen.accuracy').toUpperCase()}
+            label={uiUpperCase(t('progress_screen.accuracy'))}
             accentColor={
               stats.success_rate != null ? AppColors.green : AppColors.lightGray
             }
           />
           <OverviewStat
             value={isLoading ? '-' : String(stats.total_cards)}
-            label={t('progress_screen.words_started').toUpperCase()}
+            label={uiUpperCase(t('progress_screen.words_started'))}
             accentColor={AppColors.yellow}
           />
           <OverviewStat
             value={isLoading ? '-' : String(streak)}
-            label={t('progress_screen.current_streak').toUpperCase()}
+            label={uiUpperCase(t('progress_screen.current_streak'))}
             accentColor={streak > 0 ? AppColors.yellow : AppColors.lightGray}
           />
           <OverviewStat
             value={isLoading ? '-' : String(longestStreak)}
-            label={t('progress_screen.longest_streak').toUpperCase()}
+            label={uiUpperCase(t('progress_screen.longest_streak'))}
             accentColor={longestStreak > 0 ? AppColors.purple : AppColors.lightGray}
           />
           <OverviewStat
             value={isLoading ? '-' : String(masteredCount)}
-            label={t('progress_screen.mastered').toUpperCase()}
+            label={uiUpperCase(t('progress_screen.mastered'))}
             accentColor={masteredCount > 0 ? AppColors.green : AppColors.lightGray}
           />
         </View>

@@ -7,6 +7,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { ExerciseTile, type ExerciseTileBadge } from './exercise-tile';
+import { uiUpperCase } from '@/utils/uiText';
 
 type ExerciseId = 'articles' | 'plurals' | 'adjectives' | 'verbs';
 
@@ -101,24 +102,24 @@ export function ExerciseTileGrid({
       EXERCISES.map((exercise) => {
         let badge: ExerciseTileBadge | undefined;
         if (exercise.status === 'coming_soon') {
-          badge = { kind: 'soon', label: t('home_screen.soon_badge').toUpperCase() };
+          badge = { kind: 'soon', label: uiUpperCase(t('home_screen.soon_badge')) };
         } else if (exercise.entitlement === 'adjective_declension' && !isUnlocked) {
           badge =
             trialQuestionsRemaining > 0
               ? {
                   kind: 'trial',
-                  label: t('adjective_quiz.trial_badge', {
+                  label: uiUpperCase(t('adjective_quiz.trial_badge', {
                     count: trialQuestionsRemaining,
-                  }).toUpperCase(),
+                  })),
                 }
               : {
                   kind: 'locked',
-                  label: t('paywall.premium_badge').toUpperCase(),
+                  label: uiUpperCase(t('paywall.premium_badge')),
                 };
         } else if (exercise.entitlement === 'pro_only' && !isPro) {
           badge = {
             kind: 'locked',
-            label: t('paywall.premium_badge').toUpperCase(),
+            label: uiUpperCase(t('paywall.premium_badge')),
           };
         }
 
@@ -147,7 +148,7 @@ export function ExerciseTileGrid({
           <ExerciseTile
             key={exercise.id}
             id={exercise.id}
-            title={title.toUpperCase()}
+            title={uiUpperCase(title)}
             subtitle={subtitle}
             accentColor={exercise.accentColor}
             accessibilityLabel={title}

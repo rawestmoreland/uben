@@ -30,6 +30,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Quiz Screen ──────────────────────────────────────────────────────
 //
@@ -81,7 +82,7 @@ function EmptyState({ t }: { t: TFunction }) {
     <View style={styles.centeredContainer}>
       <View style={[styles.emptyCard, shadowStyle]}>
         <Text style={styles.emptyTitle}>
-          {t('verb_quiz.all_caught_up').toUpperCase()}
+          {uiUpperCase(t('verb_quiz.all_caught_up'))}
         </Text>
         <Text style={styles.emptySubtext}>{t('verb_quiz.no_verbs_due')}</Text>
       </View>
@@ -95,7 +96,7 @@ function EmptyState({ t }: { t: TFunction }) {
         accessibilityLabel={t('back_to_home')}
       >
         <Text style={styles.backButtonText}>
-          {t('back_to_home').toUpperCase()}
+          {uiUpperCase(t('back_to_home'))}
         </Text>
       </Pressable>
     </View>
@@ -163,7 +164,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
       <View style={styles.topRow}>
         <View style={styles.modeBadge}>
           <Text style={styles.modeBadgeText}>
-            {t('verb_quiz.badge').toUpperCase()}
+            {uiUpperCase(t('verb_quiz.badge'))}
           </Text>
         </View>
         <Pressable
@@ -264,7 +265,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
               accessibilityLabel={t('verb_quiz.check_button')}
             >
               <Text style={styles.checkButtonText}>
-                {t('verb_quiz.check_button').toUpperCase()}
+                {uiUpperCase(t('verb_quiz.check_button'))}
               </Text>
             </Pressable>
           </View>
@@ -283,7 +284,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
             accessibilityLabel={t('verb_quiz.continue')}
           >
             <Text style={styles.continueButtonText}>
-              {t('verb_quiz.continue').toUpperCase()}
+              {uiUpperCase(t('verb_quiz.continue'))}
             </Text>
           </Pressable>
         )}
@@ -325,26 +326,26 @@ function CompleteState({ results, t }: CompleteStateProps) {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.completeTitle}>
-          {t('quiz_mode.session_complete').toUpperCase()}
+          {uiUpperCase(t('quiz_mode.session_complete'))}
         </Text>
 
         <View style={styles.summaryRow}>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{totalCount}</Text>
             <Text style={styles.summaryLabel}>
-              {t('quiz_mode.reviewed').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.reviewed'))}
             </Text>
           </View>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{correctCount}</Text>
             <Text style={styles.summaryLabel}>
-              {t('quiz_mode.correct').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.correct'))}
             </Text>
           </View>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{accuracy}%</Text>
             <Text style={styles.summaryLabel}>
-              {t('quiz_mode.accuracy').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.accuracy'))}
             </Text>
           </View>
         </View>
@@ -389,7 +390,7 @@ function CompleteState({ results, t }: CompleteStateProps) {
           accessibilityLabel={t('back_to_home')}
         >
           <Text style={styles.backButtonText}>
-            {t('back_to_home').toUpperCase()}
+            {uiUpperCase(t('back_to_home'))}
           </Text>
         </Pressable>
       </View>

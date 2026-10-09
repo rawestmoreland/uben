@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Plural Ending Quiz ───────────────────────────────────────────────
 //
@@ -45,7 +46,7 @@ export default function PluralQuizScreen() {
         <View style={styles.centered}>
           <View style={[styles.emptyCard, shadowStyle]}>
             <Text style={styles.emptyTitle}>
-              {t('plural_quiz.all_caught_up').toUpperCase()}
+              {uiUpperCase(t('plural_quiz.all_caught_up'))}
             </Text>
             <Text style={styles.emptyText}>{t('plural_quiz.no_cards_due')}</Text>
           </View>

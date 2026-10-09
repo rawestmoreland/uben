@@ -13,6 +13,7 @@ import {
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 interface PluralFeedbackPanelProps {
   article: string;
@@ -72,7 +73,7 @@ export function PluralFeedbackPanel({
           isCorrect ? styles.verdictCorrect : styles.verdictWrong,
         ]}
       >
-        <Text style={styles.verdictText}>{verdict.toUpperCase()}</Text>
+        <Text style={styles.verdictText}>{uiUpperCase(verdict)}</Text>
       </View>
       <View style={styles.body}>
         <Text style={styles.singular}>

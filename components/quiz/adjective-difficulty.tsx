@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Difficulty Control ───────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ export function AdjectiveDifficultyControl({
   return (
     <View>
       <Text style={styles.label}>
-        {t('adjective_quiz.difficulty_label').toUpperCase()}
+        {uiUpperCase(t('adjective_quiz.difficulty_label'))}
       </Text>
       <View style={styles.segmentedControl}>
         {OPTIONS.map((option, index) => {
@@ -54,7 +55,7 @@ export function AdjectiveDifficultyControl({
                   isActive && styles.segmentTextActive,
                 ]}
               >
-                {t(`adjective_quiz.difficulty_${option}`).toUpperCase()}
+                {uiUpperCase(t(`adjective_quiz.difficulty_${option}`))}
               </Text>
               <Text
                 style={[styles.segmentHint, isActive && styles.segmentTextActive]}
@@ -106,7 +107,7 @@ export function AdvancedEndingsPrompt({
   return (
     <View style={[styles.promptCard, shadowStyleSmall]}>
       <Text style={styles.promptTitle}>
-        {t('adjective_quiz.advanced_prompt_title').toUpperCase()}
+        {uiUpperCase(t('adjective_quiz.advanced_prompt_title'))}
       </Text>
       <Text style={styles.promptBody}>
         {t('adjective_quiz.advanced_prompt_body')}
@@ -121,7 +122,7 @@ export function AdvancedEndingsPrompt({
         accessibilityLabel={t('adjective_quiz.advanced_prompt_button')}
       >
         <Text style={styles.promptButtonText}>
-          {t('adjective_quiz.advanced_prompt_button').toUpperCase()}
+          {uiUpperCase(t('adjective_quiz.advanced_prompt_button'))}
         </Text>
       </Pressable>
     </View>

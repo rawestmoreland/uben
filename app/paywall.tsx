@@ -25,6 +25,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Paywall Screen ───────────────────────────────────────────────────
 
@@ -146,7 +147,7 @@ export default function PaywallScreen() {
             accessibilityLabel={t('paywall.success_continue')}
           >
             <Text style={styles.unlockButtonText}>
-              {t('paywall.success_continue').toUpperCase()}
+              {uiUpperCase(t('paywall.success_continue'))}
             </Text>
           </Pressable>
         </View>
@@ -181,7 +182,7 @@ export default function PaywallScreen() {
             <View style={styles.content}>
               <View style={[styles.badgeCard, shadowStyle]}>
                 <Text style={styles.badgeText}>
-                  {t('paywall.premium_badge').toUpperCase()}
+                  {uiUpperCase(t('paywall.premium_badge'))}
                 </Text>
               </View>
 
@@ -213,7 +214,7 @@ export default function PaywallScreen() {
                   <ActivityIndicator color={AppColors.black} />
                 ) : (
                   <Text style={styles.unlockButtonText}>
-                    {t('paywall.unlock_button').toUpperCase()}
+                    {uiUpperCase(t('paywall.unlock_button'))}
                   </Text>
                 )}
               </Pressable>

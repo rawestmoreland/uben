@@ -34,6 +34,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Quiz Screen ──────────────────────────────────────────────────────
 //
@@ -133,7 +134,7 @@ function ReadyState({
       <View style={styles.readyContent}>
         <View style={styles.modeBadge}>
           <Text style={styles.modeBadgeText}>
-            {t('adjective_quiz.badge').toUpperCase()}
+            {uiUpperCase(t('adjective_quiz.badge'))}
           </Text>
         </View>
         <View style={styles.readyControl}>
@@ -152,7 +153,7 @@ function ReadyState({
           accessibilityLabel={t('adjective_quiz.start')}
         >
           <Text style={styles.backButtonText}>
-            {t('adjective_quiz.start').toUpperCase()}
+            {uiUpperCase(t('adjective_quiz.start'))}
           </Text>
         </Pressable>
         <Pressable
@@ -162,7 +163,7 @@ function ReadyState({
           accessibilityLabel={t('back_to_home')}
         >
           <Text style={styles.readyCancelText}>
-            {t('back_to_home').toUpperCase()}
+            {uiUpperCase(t('back_to_home'))}
           </Text>
         </Pressable>
       </View>
@@ -183,7 +184,7 @@ function EmptyState({ t, difficulty, onEnableAdvanced }: EmptyStateProps) {
     <View style={styles.centeredContainer}>
       <View style={[styles.emptyCard, shadowStyle]}>
         <Text style={styles.emptyTitle}>
-          {t('adjective_quiz.all_caught_up').toUpperCase()}
+          {uiUpperCase(t('adjective_quiz.all_caught_up'))}
         </Text>
         <Text style={styles.emptySubtext}>
           {t('adjective_quiz.no_cards_due')}
@@ -203,7 +204,7 @@ function EmptyState({ t, difficulty, onEnableAdvanced }: EmptyStateProps) {
         accessibilityLabel={t('back_to_home')}
       >
         <Text style={styles.backButtonText}>
-          {t('back_to_home').toUpperCase()}
+          {uiUpperCase(t('back_to_home'))}
         </Text>
       </Pressable>
     </View>
@@ -252,7 +253,7 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
       <View style={styles.topRow}>
         <View style={styles.modeBadge}>
           <Text style={styles.modeBadgeText}>
-            {t('adjective_quiz.badge').toUpperCase()}
+            {uiUpperCase(t('adjective_quiz.badge'))}
           </Text>
         </View>
         <Pressable
@@ -332,7 +333,7 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
         {isFeedback && (
           <View style={[styles.explanationCard, shadowStyleSmall]}>
             <Text style={styles.explanationLabel}>
-              {t('adjective_quiz.why_label').toUpperCase()}
+              {uiUpperCase(t('adjective_quiz.why_label'))}
             </Text>
             <Text style={styles.explanationText}>
               {currentQuestion.explanation}
@@ -396,7 +397,7 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
             accessibilityLabel={t('adjective_quiz.continue')}
           >
             <Text style={styles.continueButtonText}>
-              {t('adjective_quiz.continue').toUpperCase()}
+              {uiUpperCase(t('adjective_quiz.continue'))}
             </Text>
           </Pressable>
         )}
@@ -463,26 +464,26 @@ function CompleteState({
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.completeTitle}>
-          {t('quiz_mode.session_complete').toUpperCase()}
+          {uiUpperCase(t('quiz_mode.session_complete'))}
         </Text>
 
         <View style={styles.summaryRow}>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{totalCount}</Text>
             <Text style={styles.summaryLabel}>
-              {t('quiz_mode.reviewed').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.reviewed'))}
             </Text>
           </View>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{correctCount}</Text>
             <Text style={styles.summaryLabel}>
-              {t('quiz_mode.correct').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.correct'))}
             </Text>
           </View>
           <View style={[styles.summaryCard, shadowStyleSmall]}>
             <Text style={styles.summaryValue}>{accuracy}%</Text>
             <Text style={styles.summaryLabel}>
-              {t('quiz_mode.accuracy').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.accuracy'))}
             </Text>
           </View>
         </View>
@@ -490,7 +491,7 @@ function CompleteState({
         {trialExhausted && !isPro && (
           <View style={[styles.trialUpsellCard, shadowStyle]}>
             <Text style={styles.trialUpsellTitle}>
-              {t('adjective_quiz.trial_used_up_title').toUpperCase()}
+              {uiUpperCase(t('adjective_quiz.trial_used_up_title'))}
             </Text>
             <Text style={styles.trialUpsellText}>
               {t('adjective_quiz.trial_used_up_subtitle')}
@@ -506,7 +507,7 @@ function CompleteState({
               accessibilityLabel={t('paywall.unlock_button')}
             >
               <Text style={styles.trialUpsellButtonText}>
-                {t('paywall.unlock_button').toUpperCase()}
+                {uiUpperCase(t('paywall.unlock_button'))}
               </Text>
             </Pressable>
           </View>
@@ -569,7 +570,7 @@ function CompleteState({
           accessibilityLabel={t('back_to_home')}
         >
           <Text style={styles.backButtonText}>
-            {t('back_to_home').toUpperCase()}
+            {uiUpperCase(t('back_to_home'))}
           </Text>
         </Pressable>
       </View>
