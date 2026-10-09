@@ -91,16 +91,20 @@ jobs:
           OUTPUT=$(eas update --branch production --message "Hotfix: ${HOTFIX_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform all --json)
           echo "$OUTPUT"
           GROUP_ID=$(echo "$OUTPUT" | jq -r '.[0].group')
-          RUNTIME_VERSION=$(echo "$OUTPUT" | jq -r '.[0].runtimeVersion')
+          # iOS and Android fingerprints differ, so record both
+          IOS_RV=$(echo "$OUTPUT" | jq -r '[.[] | select(.platform == "ios")][0].runtimeVersion // "n/a"')
+          ANDROID_RV=$(echo "$OUTPUT" | jq -r '[.[] | select(.platform == "android")][0].runtimeVersion // "n/a"')
           echo "group_id=$GROUP_ID" >> "$GITHUB_OUTPUT"
-          echo "runtime_version=$RUNTIME_VERSION" >> "$GITHUB_OUTPUT"
+          echo "ios_runtime_version=$IOS_RV" >> "$GITHUB_OUTPUT"
+          echo "android_runtime_version=$ANDROID_RV" >> "$GITHUB_OUTPUT"
 
       - name: Tag and release
         uses: actions/github-script@v7
         env:
           HOTFIX_MESSAGE: ${{ inputs.message }}
           UPDATE_GROUP_ID: ${{ steps.ota.outputs.group_id }}
-          RUNTIME_VERSION: ${{ steps.ota.outputs.runtime_version }}
+          IOS_RUNTIME_VERSION: ${{ steps.ota.outputs.ios_runtime_version }}
+          ANDROID_RUNTIME_VERSION: ${{ steps.ota.outputs.android_runtime_version }}
           ISSUE_NUMBER: ${{ inputs.issue }}
         with:
           script: |
@@ -109,7 +113,10 @@ jobs:
             const version = execSync('node scripts/app-version.cjs').toString().trim();
             const message = process.env.HOTFIX_MESSAGE;
             const groupId = process.env.UPDATE_GROUP_ID;
-            const runtimeVersion = process.env.RUNTIME_VERSION;
+            const iosRv = process.env.IOS_RUNTIME_VERSION;
+            const androidRv = process.env.ANDROID_RUNTIME_VERSION;
+            // Short form (first 8 chars) is what goes in the project board's Runtime version field
+            const short = (rv) => (rv && rv !== 'n/a' ? rv.slice(0, 8) : rv);
             const dashboardUrl = `https://expo.dev/accounts/rawestmoreland/projects/uben/updates/${groupId}`;
 
             // Unique per run: the app version doesn't change between OTAs
@@ -125,7 +132,7 @@ jobs:
               owner, repo,
               tag_name: tag,
               name: `v${version} Hotfix`,
-              body: `## Production OTA Hotfix\n\n${message}\n\nEAS update group: [\`${groupId}\`](${dashboardUrl})\n\nRuntime version: \`${runtimeVersion}\`\n\nDelivered over the air. No store update is required.`,
+              body: `## Production OTA Hotfix\n\n${message}\n\nEAS update group: [\`${groupId}\`](${dashboardUrl})\n\nRuntime version: iOS \`${iosRv}\`, Android \`${androidRv}\`\n\nDelivered over the air. No store update is required.`,
               draft: false,
               prerelease: true,
             });
@@ -140,7 +147,9 @@ jobs:
                   `OTA published to \`production\` (${tag}).`,
                   '',
                   `- Update group: [\`${groupId}\`](${dashboardUrl})`,
-                  `- Runtime version: \`${runtimeVersion}\``,
+                  `- Runtime version (iOS): \`${short(iosRv)}\` (full: \`${iosRv}\`)`,
+                  `- Runtime version (Android): \`${short(androidRv)}\` (full: \`${androidRv}\`)`,
+                  `- Board field: enter the 8-character form above`,
                   `- Commit: ${context.sha.slice(0, 7)}`,
                   `- Rollback: \`eas update:republish --group <previous group id> --destination-branch production\``,
                 ].join('\n'),
