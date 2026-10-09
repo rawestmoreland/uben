@@ -1,6 +1,6 @@
 # Privacy Policy for Üben
 
-**Last Updated: March 9, 2026**
+**Last Updated: October 9, 2026**
 
 ## Introduction
 
@@ -15,7 +15,7 @@ Westmoreland Creative, LLC ("we," "our," or "us") operates the Üben mobile appl
 Üben is designed with privacy as a core principle. We do not collect:
 
 - Personal identification information (name, email, phone number, etc.)
-- Device identifiers or advertising IDs
+- Device identifiers or advertising IDs ourselves (our advertising and purchase partners, described below, may process them)
 - Location data
 - Your individual learning progress or review history
 - Any information that can be used to identify you personally
@@ -60,6 +60,20 @@ Anonymous quiz results are stored on our own server (PocketBase, hosted on Fly.i
 
 Like any HTTP request, your device's IP address appears in our server's access log. It is not stored in the quiz result record and is not associated with your answers. Access logs are retained for 30 days and then deleted automatically.
 
+### Purchases (Üben Pro)
+
+Üben Pro is a one-time in-app purchase. Payment is handled entirely by Apple (App Store) or Google (Google Play); we never see your payment details, name, or email address. To confirm that a purchase is valid and to let you restore it, we use RevenueCat, a purchase-management service. RevenueCat assigns your installation a random, anonymous app user ID and receives your purchase receipt and Pro entitlement status. We do not link this ID to your name or learning data.
+
+Your Pro status is also cached on your device so Pro features keep working offline. RevenueCat's data practices are governed by their Privacy Policy: https://www.revenuecat.com/privacy
+
+### Anonymous Purchase Analytics
+
+To understand whether the Pro upgrade is clear and working, the App sends an anonymous event to our server when you view the upgrade screen or attempt, complete, cancel, or restore a purchase. Each event contains only the step (for example, "paywall viewed") and the part of the App that led you there (for example, "adjective quiz"), plus a timestamp. No user ID, device ID, or location is included.
+
+### Promo Codes
+
+If you enter a promo code, the code is sent to our server to check that it is valid and has not been used up. If it is accepted, Pro is unlocked on your device and the code is stored locally. Codes are not linked to you or your device.
+
 ### Advertising (AdMob)
 
 Our App displays advertisements through Google AdMob. AdMob may collect certain information for the purpose of serving ads. This includes:
@@ -77,6 +91,8 @@ You can opt out of personalized advertising through your device settings:
 
 We do not have access to any data collected by AdMob.
 
+Ads are shown in the free version. Purchasing Üben Pro removes ads.
+
 ### Expo Platform
 
 Our App is built using Expo, a React Native framework. Expo may collect minimal technical information for crash reporting and app updates:
@@ -91,16 +107,16 @@ Expo's privacy practices are governed by their Privacy Policy: https://expo.dev/
 
 - **On-device data**: Controlled entirely by you. Deleting the App removes all local data permanently.
 - **Device backups**: Your local data may be included in device backups (iCloud, iTunes, etc.) per your device settings.
-- **Analytics server**: Anonymous quiz records are stored on Fly.io servers in the United States. Records contain no personal data.
+- **Analytics server**: Anonymous quiz records, purchase events, and promo code redemption counts are stored on Fly.io servers in the United States. Records contain no personal data.
 - **Server access logs**: Retained for 30 days, then deleted. Not linked to quiz result records.
 
 ## Children's Privacy
 
-Our App does not knowingly collect any personal information from anyone, including children under 13. The anonymous quiz analytics we collect contain no personally identifiable information. The App is designed to be used by language learners of all ages.
+Our App does not knowingly collect any personal information from anyone, including children under 13. The anonymous analytics we collect contain no personally identifiable information. The App is designed to be used by language learners of all ages.
 
 ## Data Sharing
 
-We do not sell or share personal data because we do not collect personal data. Aggregated, anonymised quiz statistics (e.g., "the ten hardest nouns for learners") may be published in blog posts or shown inside the App.
+We do not sell personal data, and we do not collect personal data ourselves. Our service providers (Google AdMob, RevenueCat, Apple, and Google) process the limited data described above to provide ads and purchases. Aggregated, anonymised quiz statistics (e.g., "the ten hardest nouns for learners") may be published in blog posts or shown inside the App.
 
 ## Your Rights
 
@@ -124,7 +140,7 @@ We encourage you to review this Privacy Policy periodically.
 
 ## International Users
 
-The App can be used anywhere in the world. Your personal learning data is stored locally on your device. Anonymous quiz analytics are transmitted to and stored on servers located in the United States (Fly.io). No personal data is included in these transfers.
+The App can be used anywhere in the world. Your personal learning data is stored locally on your device. Anonymous quiz and purchase analytics are transmitted to and stored on servers located in the United States (Fly.io). No personal data is included in these transfers. Purchase processing by RevenueCat, Apple, and Google may also occur in the United States and other countries.
 
 ## California Privacy Rights (CCPA)
 
@@ -138,7 +154,7 @@ Under the General Data Protection Regulation (GDPR), EU residents have certain r
 
 **Server access logs**: Our server's HTTP access logs contain IP addresses, which are personal data under GDPR. We process these on the basis of **legitimate interest** (Article 6(1)(f)) for server security, abuse detection, and technical debugging. Logs are retained for 30 days. This processing is necessary and proportionate to our operational needs.
 
-**Advertising**: AdMob's GDPR compliance is governed by Google's privacy practices.
+**Advertising and purchases**: AdMob's and RevenueCat's GDPR compliance is governed by Google's and RevenueCat's privacy practices. RevenueCat's anonymous app user ID is processed on the basis of our legitimate interest (Article 6(1)(f)) in validating purchases and restoring access to what you bought.
 
 For any GDPR enquiries, contact us at richard@westmorelandcreative.com.
 
@@ -149,7 +165,7 @@ If you have any questions about this Privacy Policy or our privacy practices, pl
 **Westmoreland Creative, LLC**
 Email: richard@westmorelandcreative.com
 
-For questions about AdMob's data practices, please refer to Google's Privacy Policy: https://policies.google.com/privacy
+For questions about AdMob's data practices, please refer to Google's Privacy Policy: https://policies.google.com/privacy. For questions about purchases, see RevenueCat's Privacy Policy: https://www.revenuecat.com/privacy. Our Terms of Service (https://ubenapp.com/terms) also apply.
 
 ## Legal Compliance
 
@@ -170,6 +186,8 @@ This Privacy Policy is designed to comply with:
 - ✅ No account required, no login
 - ✅ Anonymous quiz results (no name, no location, no device ID) are sent to our server to identify hard words
 - ✅ User-added words are never sent to our server
+- ✅ Pro is a one-time purchase handled by Apple or Google; RevenueCat sees an anonymous ID and your receipt, never your name or email
+- ✅ Pro removes ads
 - ⚠️ Ads are shown through Google AdMob (they may collect device/ad data)
 - ✅ Delete the app = delete all your on-device data permanently
 - ✅ Works completely offline (analytics are sent when online, silently skipped when offline)
@@ -178,6 +196,6 @@ This Privacy Policy is designed to comply with:
 
 ---
 
-**Effective Date**: This Privacy Policy is effective as of March 9, 2026.
+**Effective Date**: This Privacy Policy is effective as of October 9, 2026.
 
 **Questions?** Email us at richard@westmorelandcreative.com
