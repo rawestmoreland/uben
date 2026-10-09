@@ -44,7 +44,7 @@
         <a href="index.html" class="back-link">&larr; Back to Home</a>
 
         <h1>Privacy Policy for Üben</h1>
-        <p class="policy-date"><strong>Last Updated:</strong> March 9, 2026</p>
+        <p class="policy-date"><strong>Last Updated:</strong> October 9, 2026</p>
 
         <!-- ── Introduction ──────────────────────────────────────── -->
         <h2>Introduction</h2>
@@ -73,7 +73,10 @@
             Personal identification information (name, email, phone number,
             etc.)
           </li>
-          <li>Device identifiers or advertising IDs</li>
+          <li>
+            Device identifiers or advertising IDs ourselves (our advertising
+            and purchase partners, described below, may process them)
+          </li>
           <li>Location data</li>
           <li>Your individual learning progress or review history</li>
           <li>Any information that can be used to identify you personally</li>
@@ -173,6 +176,45 @@
           and then deleted automatically.
         </p>
 
+        <h3>Purchases (Üben Pro)</h3>
+        <p>
+          Üben Pro is a one-time in-app purchase. Payment is handled entirely by
+          Apple (App Store) or Google (Google Play); we never see your payment
+          details, name, or email address. To confirm that a purchase is valid
+          and to let you restore it, we use RevenueCat, a purchase-management
+          service. RevenueCat assigns your installation a random, anonymous
+          app user ID and receives your purchase receipt and Pro entitlement
+          status. We do not link this ID to your name or learning data.
+        </p>
+        <p>
+          Your Pro status is also cached on your device so Pro features keep
+          working offline. RevenueCat's data practices are governed by
+          <a
+            href="https://www.revenuecat.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            >RevenueCat's Privacy Policy</a
+          >.
+        </p>
+
+        <h3>Anonymous Purchase Analytics</h3>
+        <p>
+          To understand whether the Pro upgrade is clear and working, the App
+          sends an anonymous event to our server when you view the upgrade
+          screen or attempt, complete, cancel, or restore a purchase. Each event
+          contains only the step (for example, "paywall viewed") and the part of
+          the App that led you there (for example, "adjective quiz"), plus a
+          timestamp. No user ID, device ID, or location is included.
+        </p>
+
+        <h3>Promo Codes</h3>
+        <p>
+          If you enter a promo code, the code is sent to our server to check
+          that it is valid and has not been used up. If it is accepted, Pro is
+          unlocked on your device and the code is stored locally. Codes are not
+          linked to you or your device.
+        </p>
+
         <h3>Advertising (AdMob)</h3>
         <p>
           Our App displays advertisements through Google AdMob. AdMob may
@@ -208,6 +250,9 @@
           </li>
         </ul>
         <p>We do not have access to any data collected by AdMob.</p>
+        <p>
+          Ads are shown in the free version. Purchasing Üben Pro removes ads.
+        </p>
 
         <h3>Expo Platform</h3>
         <p>
@@ -242,9 +287,9 @@
             device backups (iCloud, iTunes, etc.) per your device settings.
           </li>
           <li>
-            <strong>Analytics server:</strong> Anonymous quiz records are stored
-            on Fly.io servers in the United States. Records contain no personal
-            data.
+            <strong>Analytics server:</strong> Anonymous quiz records, purchase
+            events, and promo code redemption counts are stored on Fly.io
+            servers in the United States. Records contain no personal data.
           </li>
           <li>
             <strong>Server access logs:</strong> Retained for 30 days, then
@@ -256,7 +301,7 @@
         <h2>Children's Privacy</h2>
         <p>
           Our App does not knowingly collect any personal information from
-          anyone, including children under 13. The anonymous quiz analytics we
+          anyone, including children under 13. The anonymous analytics we
           collect contain no personally identifiable information. The App is
           designed to be used by language learners of all ages.
         </p>
@@ -264,8 +309,10 @@
         <!-- ── Data Sharing ─────────────────────────────────────── -->
         <h2>Data Sharing</h2>
         <p>
-          We do not sell or share personal data because we do not collect
-          personal data. Aggregated, anonymised quiz statistics (e.g., "the ten
+          We do not sell personal data, and we do not collect personal data
+          ourselves. Our service providers (Google AdMob, RevenueCat, Apple,
+          and Google) process the limited data described above to provide ads
+          and purchases. Aggregated, anonymised quiz statistics (e.g., "the ten
           hardest nouns for learners") may be published in blog posts or shown
           inside the App.
         </p>
@@ -309,9 +356,11 @@
         <h2>International Users</h2>
         <p>
           The App can be used anywhere in the world. Your personal learning data
-          is stored locally on your device. Anonymous quiz analytics are
-          transmitted to and stored on servers located in the United States
-          (Fly.io). No personal data is included in these transfers.
+          is stored locally on your device. Anonymous quiz and purchase
+          analytics are transmitted to and stored on servers located in the
+          United States (Fly.io). No personal data is included in these
+          transfers. Purchase processing by RevenueCat, Apple, and Google may
+          also occur in the United States and other countries.
         </p>
 
         <!-- ── CCPA ─────────────────────────────────────────────── -->
@@ -344,8 +393,11 @@
           and proportionate to our operational needs.
         </p>
         <p>
-          <strong>Advertising:</strong> AdMob's GDPR compliance is governed by
-          Google's privacy practices.
+          <strong>Advertising and purchases:</strong> AdMob's and RevenueCat's
+          GDPR compliance is governed by Google's and RevenueCat's privacy
+          practices. RevenueCat's anonymous app user ID is processed on the
+          basis of our legitimate interest (Article 6(1)(f)) in validating
+          purchases and restoring access to what you bought.
         </p>
         <p>
           For any GDPR enquiries, contact us at
@@ -374,7 +426,13 @@
             target="_blank"
             rel="noopener noreferrer"
             >Google's Privacy Policy</a
-          >.
+          >. For questions about purchases, see
+          <a
+            href="https://www.revenuecat.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            >RevenueCat's Privacy Policy</a
+          >. Our <a href="terms.html">Terms of Service</a> also apply.
         </p>
 
         <!-- ── Legal Compliance ─────────────────────────────────── -->
@@ -405,6 +463,11 @@
             </li>
             <li>Words you add yourself are never sent to our server</li>
             <li>
+              Pro is a one-time purchase handled by Apple or Google; RevenueCat
+              sees an anonymous ID and your receipt, never your name or email
+            </li>
+            <li>Pro removes ads</li>
+            <li>
               Ads are shown through Google AdMob (they may collect device/ad
               data)
             </li>
@@ -433,7 +496,7 @@
 
         <p>
           <strong>Effective Date:</strong> This Privacy Policy is effective as
-          of March 9, 2026.
+          of October 9, 2026.
         </p>
         <p>
           <strong>Questions?</strong> Email us at
@@ -450,6 +513,7 @@
         <span class="footer-brand">Üben</span>
         <ul class="footer-links">
           <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
           <li>
             <a href="mailto:richard@westmorelandcreative.com">Contact Us</a>
           </li>
