@@ -145,12 +145,13 @@ Do not tag by hand; the workflow in the next step does it.
 
 **4. Run the "Production - OTA Hotfix" workflow**
 
-Trigger `production-hotfix.yml` manually (Actions tab → Run workflow, ref `main`) with a short description. It will:
+Trigger `production-hotfix.yml` manually (Actions tab → Run workflow, ref `main`) with a short description and, optionally, the number of the OTA tracking issue (create one from the "OTA update" issue template and add it as a sub-issue of the store release it rides on). It will:
 
 1. Run lint and the TypeScript check
 2. Compare the current native fingerprint against the latest finished production iOS and Android builds, and fail if they differ
 3. Publish with `eas update --branch production`
-4. Create the `v<version>-hotfix.<run number>` tag and a pre-release recording the EAS update group ID
+4. Create the `v<version>-hotfix.<run number>` tag and a pre-release recording the EAS update group ID and runtime version
+5. Comment the update group, runtime version and rollback command on the tracking issue, if one was given
 
 The tag includes the run number because the app version doesn't change between OTAs, so a fixed tag would collide.
 
