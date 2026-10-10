@@ -66,8 +66,13 @@ jobs:
         env:
           SKIP_BUILD_CHECK: ${{ inputs.skip_build_check }}
         run: |
-          CURRENT_IOS=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | jq -r '.hash')
-          CURRENT_ANDROID=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | jq -r '.hash')
+          # Generate fingerprints with eas-cli, not `expo-updates fingerprint:generate`: eas-cli
+          # resolves the same build profile env and EAS "production" environment variables the
+          # builder uses, which feed into app.config.js. A bare local run produces a different
+          # hash than the builder, so it would never match the store builds. (staging.yml does
+          # the same.) stderr is left visible so failures show up in the log.
+          CURRENT_IOS=$(eas fingerprint:generate --build-profile production --platform ios --json --non-interactive | jq -r '.hash // empty') || CURRENT_IOS=""
+          CURRENT_ANDROID=$(eas fingerprint:generate --build-profile production --platform android --json --non-interactive | jq -r '.hash // empty') || CURRENT_ANDROID=""
           echo "iOS fingerprint:     $CURRENT_IOS"
           echo "Android fingerprint: $CURRENT_ANDROID"
 
@@ -82,16 +87,15 @@ jobs:
           fi
 
           # The update is only delivered to builds with the same runtime version, so look for a
-          # finished build with exactly the current fingerprint. The lookup does not filter by
-          # channel: builds made locally and added with `eas upload` have no channel recorded.
+          # finished production-channel build with exactly the current fingerprint.
           check_platform() {
             local platform="$1" current="$2" builds
-            if ! builds=$(eas build:list --platform "$platform" --status finished --runtime-version "$current" --limit 1 --non-interactive --json); then
+            if ! builds=$(eas build:list --channel production --platform "$platform" --status finished --runtime-version "$current" --limit 1 --non-interactive --json); then
               echo "::error::eas build:list failed for $platform (see output above)."
               return 1
             fi
             if [ "$(echo "$builds" | jq 'length')" -eq 0 ]; then
-              echo "::error::No finished $platform build in EAS has runtime version $current. Either the native fingerprint changed since the last build (do a full store release), the build was uploaded without runtime version metadata (re-run with skip_build_check after confirming the binary's runtime version), or the project is not using runtimeVersion.policy 'fingerprint'."
+              echo "::error::No finished $platform build on the production channel has runtime version $current. Either the native fingerprint changed since the last store build (do a full store release), the build was uploaded without channel/runtime metadata (re-run with skip_build_check after confirming the binary's runtime version), or the project is not using runtimeVersion.policy 'fingerprint'."
               return 1
             fi
             echo "$platform: found a finished build with runtime version $current"
