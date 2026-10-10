@@ -5,6 +5,10 @@ name: Production - OTA
 on:
   workflow_dispatch:
     inputs:
+      platforms:
+        description: 'Platforms to update, e.g. "ios", "android" or "ios,android". Blank = BUILD_PLATFORMS repo variable (default ios)'
+        required: false
+        default: ''
       message:
         description: 'Update description'
         required: true
@@ -28,8 +32,38 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  config:
+    name: Resolve Platforms
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      ios: ${{ steps.resolve.outputs.ios }}
+      android: ${{ steps.resolve.outputs.android }}
+      eas_platform: ${{ steps.resolve.outputs.eas_platform }}
+    steps:
+      - name: Resolve platforms
+        id: resolve
+        env:
+          RAW: ${{ inputs.platforms || vars.BUILD_PLATFORMS || 'ios' }}
+        run: |
+          IOS=false; ANDROID=false
+          case "$RAW" in *ios*) IOS=true ;; esac
+          case "$RAW" in *android*) ANDROID=true ;; esac
+          if [ "$IOS" = false ] && [ "$ANDROID" = false ]; then
+            echo "::error::No valid platform in '$RAW'. Use ios, android, or both."
+            exit 1
+          fi
+          if [ "$IOS" = true ] && [ "$ANDROID" = true ]; then PLATFORM=all
+          elif [ "$IOS" = true ]; then PLATFORM=ios
+          else PLATFORM=android; fi
+          echo "Platforms: $RAW -> ios=$IOS android=$ANDROID"
+          echo "ios=$IOS" >> "$GITHUB_OUTPUT"
+          echo "android=$ANDROID" >> "$GITHUB_OUTPUT"
+          echo "eas_platform=$PLATFORM" >> "$GITHUB_OUTPUT"
+
   ota:
     name: Publish OTA
+    needs: config
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -65,21 +99,29 @@ jobs:
       - name: Verify OTA compatibility
         env:
           SKIP_BUILD_CHECK: ${{ inputs.skip_build_check }}
+          IOS: ${{ needs.config.outputs.ios }}
+          ANDROID: ${{ needs.config.outputs.android }}
         run: |
           # Generate fingerprints with eas-cli, not `expo-updates fingerprint:generate`: eas-cli
           # resolves the same build profile env and EAS "production" environment variables the
           # builder uses, which feed into app.config.js. A bare local run produces a different
           # hash than the builder, so it would never match the store builds. (staging.yml does
-          # the same.) stderr is left visible so failures show up in the log.
-          CURRENT_IOS=$(eas fingerprint:generate --build-profile production --platform ios --json --non-interactive | jq -r '.hash // empty') || CURRENT_IOS=""
-          CURRENT_ANDROID=$(eas fingerprint:generate --build-profile production --platform android --json --non-interactive | jq -r '.hash // empty') || CURRENT_ANDROID=""
-          echo "iOS fingerprint:     $CURRENT_IOS"
-          echo "Android fingerprint: $CURRENT_ANDROID"
+          # the same.) stderr is left visible so failures show up in the log. Only the platforms
+          # selected for this run are checked.
+          PLATFORMS=()
+          if [ "$IOS" = "true" ]; then PLATFORMS+=(ios); fi
+          if [ "$ANDROID" = "true" ]; then PLATFORMS+=(android); fi
 
-          if [ -z "$CURRENT_IOS" ] || [ -z "$CURRENT_ANDROID" ]; then
-            echo "::error::Could not generate the native fingerprints."
-            exit 1
-          fi
+          declare -A FINGERPRINTS
+          for PLATFORM in "${PLATFORMS[@]}"; do
+            HASH=$(eas fingerprint:generate --build-profile production --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || HASH=""
+            echo "$PLATFORM fingerprint: $HASH"
+            if [ -z "$HASH" ]; then
+              echo "::error::Could not generate the $PLATFORM native fingerprint."
+              exit 1
+            fi
+            FINGERPRINTS[$PLATFORM]="$HASH"
+          done
 
           if [ "$SKIP_BUILD_CHECK" = "true" ]; then
             echo "::warning::Skipping the EAS build lookup. Make sure the fingerprints above match the production binaries' runtime versions, or users will not receive this update."
@@ -102,8 +144,9 @@ jobs:
           }
 
           status=0
-          check_platform ios "$CURRENT_IOS" || status=1
-          check_platform android "$CURRENT_ANDROID" || status=1
+          for PLATFORM in "${PLATFORMS[@]}"; do
+            check_platform "$PLATFORM" "${FINGERPRINTS[$PLATFORM]}" || status=1
+          done
           if [ "$status" -ne 0 ]; then exit 1; fi
           echo "Fingerprints match - OTA update is safe to publish"
 
@@ -111,11 +154,12 @@ jobs:
         id: ota
         env:
           UPDATE_MESSAGE: ${{ inputs.message }}
+          EAS_PLATFORM: ${{ needs.config.outputs.eas_platform }}
         run: |
-          OUTPUT=$(eas update --branch production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform all --json)
+          OUTPUT=$(eas update --branch production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$EAS_PLATFORM" --json)
           echo "$OUTPUT"
           GROUP_ID=$(echo "$OUTPUT" | jq -r '.[0].group')
-          # iOS and Android fingerprints differ, so record both
+          # iOS and Android fingerprints differ, so record both (n/a for a platform that wasn't updated)
           IOS_RV=$(echo "$OUTPUT" | jq -r '[.[] | select(.platform == "ios")][0].runtimeVersion // "n/a"')
           ANDROID_RV=$(echo "$OUTPUT" | jq -r '[.[] | select(.platform == "android")][0].runtimeVersion // "n/a"')
           echo "group_id=$GROUP_ID" >> "$GITHUB_OUTPUT"

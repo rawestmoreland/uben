@@ -45,15 +45,16 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 
 ### 3b. `production-ota.yml` - Production OTA
 
-**Trigger:** Manual (`workflow_dispatch`), from `main` only.
+**Trigger:** Manual (`workflow_dispatch`), from `main` only. The optional `platforms` input (`ios`, `android` or `ios,android`) picks which platforms to update; blank falls back to the `BUILD_PLATFORMS` repo variable (default `ios`).
 
 **Purpose:** Publish a JS-only fix to the `production` channel without a store release.
 
 **Steps:**
-1. Lint and TypeScript checks
-2. Verify the native fingerprint matches the latest production builds (requires `runtimeVersion.policy: 'fingerprint'`)
-3. `eas update --branch production`
-4. Tag `v<version>-ota.<run number>` and create a pre-release recording the EAS update group ID
+1. Resolve the target platforms
+2. Lint and TypeScript checks
+3. Verify the native fingerprint of each selected platform matches the latest production build (requires `runtimeVersion.policy: 'fingerprint'`)
+4. `eas update --branch production --platform <selected>`
+5. Tag `v<version>-ota.<run number>` and create a pre-release recording the EAS update group ID
 
 ### 4. `release-notes.yml` - Claude Release Notes
 
