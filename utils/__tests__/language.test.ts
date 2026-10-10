@@ -1,4 +1,5 @@
 import en from '@/locales/en.json';
+import hu from '@/locales/hu.json';
 import pt from '@/locales/pt.json';
 import ru from '@/locales/ru.json';
 import tr from '@/locales/tr.json';
@@ -116,5 +117,36 @@ describe('ru locale', () => {
       new Intl.PluralRules('ru').select(count),
     );
     expect(forms).toEqual(['one', 'few', 'many', 'many', 'one', 'few']);
+  });
+});
+
+describe('hu locale', () => {
+  it('selects Hungarian for hu and hu-HU', () => {
+    expect(resolveAppLanguage('hu')).toBe('hu');
+    expect(resolveAppLanguage('hu-HU')).toBe('hu');
+    expect(resolveAppLanguage('hu_hu')).toBe('hu');
+  });
+
+  it('has a translation for every key in en.json', () => {
+    const huKeys = new Set(leafKeys(hu));
+    const missing = leafKeys(en).filter((key) => !huKeys.has(key));
+    expect(missing).toEqual([]);
+  });
+
+  it('does not define keys that en.json lacks', () => {
+    const enKeys = new Set(leafKeys(en));
+    const extra = leafKeys(hu).filter((key) => !enKeys.has(key));
+    expect(extra).toEqual([]);
+  });
+
+  it('uses one and other plural forms for 0, 1, 2 and 21', () => {
+    const forms = [0, 1, 2, 21].map((count) =>
+      new Intl.PluralRules('hu').select(count),
+    );
+    expect(forms).toEqual(['other', 'one', 'other', 'other']);
+  });
+
+  it('upper-cases accented letters correctly with the default mapping', () => {
+    expect('áéíóöőúüű'.toUpperCase()).toBe('ÁÉÍÓÖŐÚÜŰ');
   });
 });
