@@ -1,4 +1,5 @@
 import en from '@/locales/en.json';
+import ru from '@/locales/ru.json';
 import tr from '@/locales/tr.json';
 import { resolveAppLanguage } from '@/types/language';
 
@@ -41,5 +42,41 @@ describe('tr locale', () => {
     const enKeys = new Set(leafKeys(en));
     const extra = leafKeys(tr).filter((key) => !enKeys.has(key));
     expect(extra).toEqual([]);
+  });
+});
+
+describe('ru locale', () => {
+  it('selects Russian for ru and regional variants', () => {
+    expect(resolveAppLanguage('ru')).toBe('ru');
+    expect(resolveAppLanguage('ru-RU')).toBe('ru');
+  });
+
+  it('has every non-plural key from en.json', () => {
+    const ruKeys = new Set(leafKeys(ru));
+    const pluralSuffix = /_(one|few|many|other)$/;
+    const missing = leafKeys(en)
+      .filter((key) => !pluralSuffix.test(key))
+      .filter((key) => !ruKeys.has(key));
+    expect(missing).toEqual([]);
+  });
+
+  it('defines all four plural forms wherever en.json is pluralised', () => {
+    const ruKeys = new Set(leafKeys(ru));
+    const bases = leafKeys(en)
+      .filter((key) => key.endsWith('_other'))
+      .map((key) => key.slice(0, -'_other'.length));
+    const missing = bases.flatMap((base) =>
+      ['one', 'few', 'many', 'other']
+        .map((form) => `${base}_${form}`)
+        .filter((key) => !ruKeys.has(key)),
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it('picks the right plural form for 1, 2, 5, 11, 21 and 22', () => {
+    const forms = [1, 2, 5, 11, 21, 22].map((count) =>
+      new Intl.PluralRules('ru').select(count),
+    );
+    expect(forms).toEqual(['one', 'few', 'many', 'many', 'one', 'few']);
   });
 });

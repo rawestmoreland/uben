@@ -209,7 +209,7 @@ export default function SettingsScreen() {
                 style={({ pressed }) => [
                   styles.segmentButton,
                   styles.segmentButtonFlex,
-                  styles.segmentButtonRight,
+                  styles.segmentButtonMiddle,
                   appLanguage === 'tr' && styles.segmentButtonActive,
                   pressed && styles.segmentButtonPressed,
                 ]}
@@ -225,6 +225,28 @@ export default function SettingsScreen() {
                   ]}
                 >
                   TR
+                </Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.segmentButton,
+                  styles.segmentButtonFlex,
+                  styles.segmentButtonRight,
+                  appLanguage === 'ru' && styles.segmentButtonActive,
+                  pressed && styles.segmentButtonPressed,
+                ]}
+                onPress={() => setAppLanguage('ru')}
+                disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="Русский"
+              >
+                <Text
+                  style={[
+                    styles.segmentButtonText,
+                    appLanguage === 'ru' && styles.segmentButtonTextActive,
+                  ]}
+                >
+                  RU
                 </Text>
               </Pressable>
             </View>
