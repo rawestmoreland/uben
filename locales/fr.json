@@ -67,6 +67,8 @@
       "use_swiss_german_with_ss": "Utiliser l'orthographe suisse allemande avec ss",
       "language": "Langue",
       "choose_app_language": "Choisissez la langue d'affichage de l'application.",
+      "select_language": "Choisir la langue",
+      "close_picker": "Fermer",
       "adjective_difficulty_advanced": "Terminaisons d'adjectifs avancées",
       "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs."
     },
