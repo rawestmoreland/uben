@@ -21,6 +21,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 type CategoryWithCount = Category & { wordCount: number };
 
@@ -99,7 +100,7 @@ export default function SelectCategoriesScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>
-            {t('categories.title').toUpperCase()}
+            {uiUpperCase(t('categories.title'))}
           </Text>
           <Text style={styles.headerSubtitle}>{t('categories.subtitle')}</Text>
         </View>
@@ -122,7 +123,7 @@ export default function SelectCategoriesScreen() {
               isAllWords && styles.allWordsTextSelected,
             ]}
           >
-            {t('categories.all_words').toUpperCase()}
+            {uiUpperCase(t('categories.all_words'))}
           </Text>
         </Pressable>
 

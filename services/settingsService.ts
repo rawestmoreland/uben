@@ -124,10 +124,13 @@ class SettingsService {
 
   // ── Convenience: App Language ──────────────────────────────────────
 
-  /** App display language. Default: 'en'. */
-  async getAppLanguage(): Promise<AppLanguage> {
+  /**
+   * App display language. Returns `fallback` (default 'en') when the user has
+   * never picked one, so callers can pass the device-derived language.
+   */
+  async getAppLanguage(fallback: AppLanguage = 'en'): Promise<AppLanguage> {
     const value = await this.getSetting(SETTINGS_KEYS.APP_LANGUAGE);
-    return APP_LANGUAGES.find((language) => language === value) ?? 'en';
+    return APP_LANGUAGES.find((language) => language === value) ?? fallback;
   }
 
   async setAppLanguage(language: AppLanguage): Promise<void> {

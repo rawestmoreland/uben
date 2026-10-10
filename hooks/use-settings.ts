@@ -1,6 +1,6 @@
 import i18n from '@/constants/i18n';
 import { settingsService } from '@/services/settingsService';
-import type { AppLanguage } from '@/types/language';
+import { resolveAppLanguage, type AppLanguage } from '@/types/language';
 import { useCallback, useEffect, useState } from 'react';
 
 /**
@@ -30,7 +30,9 @@ export function useSettings() {
           await Promise.all([
             settingsService.getShowEnglishHint(),
             settingsService.getEszettPreference(),
-            settingsService.getAppLanguage(),
+            settingsService.getAppLanguage(
+              resolveAppLanguage(i18n.language),
+            ),
             settingsService.getAdjectiveDeclensionDifficulty(),
           ]);
         if (!cancelled) {

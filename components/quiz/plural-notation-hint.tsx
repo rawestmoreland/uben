@@ -7,6 +7,7 @@ import {
 } from '@/constants/design';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 interface PluralNotationHintProps {
   onDismiss: () => void;
@@ -18,7 +19,7 @@ export function PluralNotationHint({ onDismiss }: PluralNotationHintProps) {
 
   return (
     <View style={styles.hint}>
-      <Text style={styles.title}>{t('plural_quiz.hint.title').toUpperCase()}</Text>
+      <Text style={styles.title}>{uiUpperCase(t('plural_quiz.hint.title'))}</Text>
       <HintLine symbol="¨" text={t('plural_quiz.hint.umlaut')} />
       <HintLine symbol="-e" text={t('plural_quiz.hint.suffix')} />
       <HintLine symbol="-" text={t('plural_quiz.hint.no_change')} />
@@ -33,7 +34,7 @@ export function PluralNotationHint({ onDismiss }: PluralNotationHintProps) {
         accessibilityLabel={t('plural_quiz.hint.dismiss')}
       >
         <Text style={styles.dismissText}>
-          {t('plural_quiz.hint.dismiss').toUpperCase()}
+          {uiUpperCase(t('plural_quiz.hint.dismiss'))}
         </Text>
       </Pressable>
     </View>

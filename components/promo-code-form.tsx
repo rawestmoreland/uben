@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 interface PromoCodeFormProps {
   /** Called after a successful redemption (Pro is already unlocked locally). */
@@ -42,7 +43,7 @@ export function PromoCodeForm({ onRedeemed, onCancel }: PromoCodeFormProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{t('paywall.promo_title').toUpperCase()}</Text>
+      <Text style={styles.label}>{uiUpperCase(t('paywall.promo_title'))}</Text>
       <TextInput
         style={styles.input}
         value={code}
@@ -65,7 +66,7 @@ export function PromoCodeForm({ onRedeemed, onCancel }: PromoCodeFormProps) {
           accessibilityLabel={t('paywall.promo_cancel')}
         >
           <Text style={styles.buttonText}>
-            {t('paywall.promo_cancel').toUpperCase()}
+            {uiUpperCase(t('paywall.promo_cancel'))}
           </Text>
         </Pressable>
         <Pressable
@@ -79,7 +80,7 @@ export function PromoCodeForm({ onRedeemed, onCancel }: PromoCodeFormProps) {
             <ActivityIndicator color={AppColors.black} />
           ) : (
             <Text style={styles.buttonText}>
-              {t('paywall.promo_redeem').toUpperCase()}
+              {uiUpperCase(t('paywall.promo_redeem'))}
             </Text>
           )}
         </Pressable>

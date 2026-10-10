@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "v1.10.0",
+    "version": "v1.11.0",
     "copyright": "2026",
     "release": {
       "automaticRelease": false
@@ -67,12 +67,32 @@
         ],
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
-        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "promoText": "Neu: Präteritum-Quiz für Pro-Nutzer. Fünf Minuten pro Tag, um bei der, die, das nicht mehr zu raten - kostenlos, offline, ohne Konto, ohne Werbung.",
+        "releaseNotes": "Wir haben ein Präteritum-Quiz für Pro-Nutzer hinzugefügt. Viel Spaß!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/de-DE/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "pl": {
         "title": "Üben - Niemieckie rodzajniki",
         "subtitle": "der, die, das bez zgadywania",
-        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "description": "Koniec ze zgadywaniem der, die, das.\n\nÜben trenuje rodzaj niemieckich rzeczowników metodą powtórek w odstępach (spaced repetition) - sprawdzoną naukowo metodą, dzięki której powtarzasz każde słowo tuż przed tym, zanim je zapomnisz. Aplikacja skupia się wyłącznie na tym, z czym zmaga się każdy uczący się niemieckiego.\n\nJAK TO DZIAŁA\n- Widzisz rzeczownik i wybierasz der, die lub das. Natychmiastowa informacja zwrotna.\n- Algorytm SM-2 planuje każde słowo tuż przed zapomnieniem. Słowa, w których popełniasz błędy, wracają szybciej.\n- Pięć minut dziennie buduje nawyk: serie dni, statystyki skuteczności i prognoza powtórek trzymają cię w ryzach.\n\nCO DOSTAJESZ ZA DARMO\n- Słownictwo A1 z rodzajnikami i formami liczby mnogiej\n- Codzienne powtórki, w pełni offline\n- Statystyki postępów i serie dni\n- Bez konta, bez reklam, bez śledzenia - twoje dane zostają na twoim urządzeniu\n\nPRO - jednorazowy zakup, bez subskrypcji\n- Słownictwo B1+\n- Ćwiczenia końcówek przymiotników (deklinacja der/die/das)\n- Dodawanie i zapisywanie własnych słów\n- Quiz Präteritum (czas przeszły prosty)\n\nStworzone przez uczącego się niemieckiego w Zurychu, który miał dość zgadywania. Idealne dla samouków, uczestników kursów językowych i wszystkich, którzy przygotowują się do egzaminów Goethe, telc, TestDaF lub szwajcarskiego testu fide.\n\n\"Üben\" znaczy \"ćwiczyć\" - na tym polega cały pomysł.",
         "keywords": [
           "der die das",
           "rodzajniki",
@@ -86,12 +106,32 @@
         ],
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
-        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "promoText": "Nowość: quiz Präteritum dla Pro. Pięć minut dziennie, by przestać zgadywać der, die, das - za darmo, offline, bez konta i bez reklam.",
+        "releaseNotes": "Dodaliśmy quiz Präteritum dla użytkowników Pro. Miłej nauki!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/pl/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/pl/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "fr-FR": {
         "title": "Üben - Articles allemands",
         "subtitle": "der, die, das enfin mémorisés",
-        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "description": "Arrêtez de deviner der, die, das.\n\nÜben entraîne le genre des noms allemands grâce à la répétition espacée - la méthode scientifiquement éprouvée qui vous fait réviser chaque mot juste avant de l'oublier, centrée sur la seule difficulté que rencontre tout apprenant d'allemand.\n\nCOMMENT ÇA MARCHE\n- Vous voyez un nom, vous choisissez der, die ou das. Retour immédiat.\n- L'algorithme SM-2 programme chaque mot juste avant que vous ne l'oubliiez. Les mots ratés reviennent plus vite.\n- Cinq minutes par jour pour créer l'habitude : séries, statistiques de réussite et prévisions de révision vous gardent motivé.\n\nGRATUIT\n- Vocabulaire A1 avec articles et pluriels\n- Révisions quotidiennes, entièrement hors ligne\n- Statistiques de progression et suivi des séries\n- Sans compte, sans publicité, sans suivi - vos données restent sur votre appareil\n\nPRO - achat unique, sans abonnement\n- Vocabulaire B1+\n- Exercices sur les terminaisons des adjectifs (déclinaison der/die/das)\n- Ajoutez et enregistrez vos propres mots\n- Quiz de Präteritum (prétérit)\n\nCréée par un apprenant d'allemand à Zurich, lassé de deviner. Idéale pour les autodidactes, les élèves de cours de langue et tous ceux qui préparent le Goethe, le telc, le TestDaF ou le test suisse fide.\n\n\"Üben\" signifie \"s'exercer\" - c'est toute l'idée.",
         "keywords": [
           "der die das",
           "articles allemands",
@@ -105,12 +145,32 @@
         ],
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
-        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "promoText": "Nouveau : quiz de Präteritum pour les utilisateurs Pro. Cinq minutes par jour pour ne plus deviner der, die, das - gratuit, hors ligne, sans compte ni pub.",
+        "releaseNotes": "Nous avons ajouté un quiz de Präteritum pour les utilisateurs Pro. Bon apprentissage !",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/fr-FR/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "es-ES": {
         "title": "Üben - Artículos alemanes",
         "subtitle": "der, die, das sin adivinar",
-        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "description": "Deja de adivinar der, die, das.\n\nÜben entrena el género de los sustantivos alemanes con repetición espaciada - el método con base científica que te hace repasar cada palabra justo antes de olvidarla, centrado en lo único con lo que todo estudiante de alemán tiene problemas.\n\nCÓMO FUNCIONA\n- Ves un sustantivo y eliges der, die o das. Respuesta inmediata.\n- El algoritmo SM-2 programa cada palabra justo antes de que la olvides. Las palabras que fallas vuelven antes.\n- Cinco minutos al día crean el hábito: rachas, estadísticas de aciertos y previsión de repasos te mantienen constante.\n\nGRATIS\n- Vocabulario A1 con artículos y plurales\n- Repasos diarios, totalmente sin conexión\n- Estadísticas de progreso y seguimiento de rachas\n- Sin cuenta, sin anuncios, sin seguimiento - tus datos se quedan en tu dispositivo\n\nPRO - compra única, sin suscripción\n- Vocabulario B1+\n- Ejercicios de terminaciones de adjetivos (declinación der/die/das)\n- Añade y guarda tus propias palabras\n- Quiz de Präteritum (pretérito)\n\nCreada por un estudiante de alemán en Zúrich que se cansó de adivinar. Ideal para autodidactas, alumnos de cursos de idiomas y cualquiera que se prepare para el Goethe, telc, TestDaF o el test suizo fide.\n\n\"Üben\" significa \"practicar\" - esa es toda la idea.",
         "keywords": [
           "der die das",
           "articulos alemanes",
@@ -124,12 +184,32 @@
         ],
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
-        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "promoText": "Nuevo: quiz de Präteritum para usuarios Pro. Cinco minutos al día para dejar de adivinar der, die, das - gratis, sin conexión, sin cuenta ni anuncios.",
+        "releaseNotes": "Hemos añadido un quiz de Präteritum para usuarios Pro. ¡Disfrútalo!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/es-ES/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       },
       "tr": {
         "title": "Üben - Almanca Artikeller",
         "subtitle": "der, die, das artık ezberde",
-        "description": "Stop guessing der, die, das.\n\nÜben drills German noun genders with spaced repetition - the same science-backed method used by serious vocabulary apps, focused entirely on the one thing every German learner struggles with.\n\nHOW IT WORKS\n- See a noun, pick der, die, or das. Instant feedback.\n- The SM-2 algorithm schedules each word right before you'd forget it. Words you miss come back sooner.\n- Five minutes a day builds the habit: streaks, accuracy stats, and a review forecast keep you honest.\n\nWHAT YOU GET FREE\n- A1 vocabulary with articles and plural forms\n- Daily review sessions, fully offline\n- Progress statistics and streak tracking\n- No account, no ads, no tracking - your data stays on your device\n\nPRO - one-time purchase, $7.99, yours forever\n- B1+ vocabulary\n- Adjective-ending exercises (der/die/das declension)\n- Add and store your own words\n- Präteritum (simple past) quiz\n\nBuilt by a German learner in Zurich who got tired of guessing. Perfect for self-learners, language-course students, and anyone preparing for Goethe, telc, TestDaF, or the Swiss fide test.\n\n\"Üben\" means \"to practice\" - that's the whole idea.",
+        "description": "der, die, das tahmin etmeyi bırak.\n\nÜben, Almanca isimlerin cinsiyetini aralıklı tekrar yöntemiyle çalıştırır - her kelimeyi unutmadan hemen önce tekrar etmeni sağlayan, bilimsel olarak kanıtlanmış yöntem. Her Almanca öğrenenin zorlandığı tek konuya odaklanır.\n\nNASIL ÇALIŞIR\n- Bir isim görürsün, der, die veya das seçersin. Anında geri bildirim.\n- SM-2 algoritması her kelimeyi unutmadan hemen önce karşına çıkarır. Yanlış yaptığın kelimeler daha erken geri gelir.\n- Günde beş dakika alışkanlık oluşturur: seriler, doğruluk istatistikleri ve tekrar tahmini seni düzenli tutar.\n\nÜCRETSİZ\n- Artikel ve çoğul biçimleriyle A1 kelime hazinesi\n- Günlük tekrar oturumları, tamamen çevrimdışı\n- İlerleme istatistikleri ve seri takibi\n- Hesap yok, reklam yok, takip yok - verilerin cihazında kalır\n\nPRO - tek seferlik satın alma, abonelik yok\n- B1+ kelime hazinesi\n- Sıfat eki alıştırmaları (der/die/das çekimi)\n- Kendi kelimelerini ekle ve kaydet\n- Präteritum (geçmiş zaman) sınavı\n\nZürih'te tahmin etmekten bıkmış bir Almanca öğrencisi tarafından geliştirildi. Kendi kendine öğrenenler, dil kursu öğrencileri ve Goethe, telc, TestDaF veya İsviçre fide testine hazırlananlar için ideal.\n\n\"Üben\" \"alıştırma yapmak\" demektir - tüm fikir bu.",
         "keywords": [
           "der die das",
           "artikel",
@@ -143,7 +223,27 @@
         ],
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
-        "privacyPolicyUrl": "https://ubenapp.com/privacy"
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "promoText": "Yeni: Pro kullanıcılar için Präteritum sınavı. der, die, das tahmin etmeyi bırakmak için günde beş dakika - ücretsiz, çevrimdışı, hesapsız, reklamsız.",
+        "releaseNotes": "Pro kullanıcılar için Präteritum sınavı ekledik. İyi çalışmalar!",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/03-streak.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/05-offline.png",
+            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/06-daily.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/tr/APP_IPHONE_65/01-master-articles.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/02-spaced-repetition.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/03-streak.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/04-vocabulary.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/05-offline.png",
+            "store/apple/screenshot/tr/APP_IPHONE_65/06-daily.png"
+          ]
+        }
       }
     },
     "categories": ["EDUCATION"],

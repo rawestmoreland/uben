@@ -3,6 +3,7 @@ import { initializeDatabase } from '@/database/db';
 import { purchaseService } from '@/services/purchaseService';
 import { settingsService } from '@/services/settingsService';
 import { syncService } from '@/services/syncService';
+import { resolveAppLanguage } from '@/types/language';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
@@ -32,7 +33,9 @@ export function useDatabase() {
     (async () => {
       try {
         await initializeDatabase();
-        const savedLanguage = await settingsService.getAppLanguage();
+        const savedLanguage = await settingsService.getAppLanguage(
+          resolveAppLanguage(i18n.language),
+        );
         await i18n.changeLanguage(savedLanguage);
         await purchaseService.runProGrandfatherMigration();
         if (!cancelled) {

@@ -2,6 +2,7 @@ import { AppColors, Layout, Spacing, Typography } from '@/constants/design';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 interface PluralQuizHeaderProps {
   badgeLabel: string;
@@ -29,7 +30,7 @@ export function PluralQuizHeader({
     <View>
       <View style={styles.topRow}>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{badgeLabel.toUpperCase()}</Text>
+          <Text style={styles.badgeText}>{uiUpperCase(badgeLabel)}</Text>
         </View>
         {onShowHint && (
           <Pressable

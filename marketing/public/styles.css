@@ -121,7 +121,8 @@ img {
 
 .nav-links {
   display: flex;
-  gap: var(--sp-lg);
+  flex-wrap: wrap;
+  gap: var(--sp-sm) var(--sp-lg);
   list-style: none;
 }
 
@@ -132,6 +133,7 @@ img {
   text-transform: uppercase;
   letter-spacing: 1px;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -392,6 +394,106 @@ img {
   font-weight: var(--weight-regular);
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+/* ── Exercises ─────────────────────────────────────────────────────── */
+
+.exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-md);
+}
+
+.exercise-card {
+  position: relative;
+}
+
+.exercise-card--anchor {
+  margin-bottom: var(--sp-lg);
+}
+
+.exercise-title {
+  font-size: var(--font-heading);
+  font-weight: var(--weight-bold);
+  color: var(--black);
+  margin-bottom: var(--sp-xs);
+}
+
+.exercise-example {
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  color: var(--black);
+  margin-bottom: var(--sp-sm);
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px var(--sp-sm);
+  margin-bottom: var(--sp-sm);
+  border: var(--border-width-thin) solid var(--black);
+  font-size: var(--font-tiny);
+  font-weight: var(--weight-bold);
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tag--free {
+  background-color: var(--green);
+}
+
+.tag--pro {
+  background-color: var(--yellow);
+}
+
+/* ── Pricing ───────────────────────────────────────────────────────── */
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-lg);
+}
+
+.pricing-card {
+  margin-bottom: 0;
+}
+
+.pricing-card--pro {
+  background-color: var(--yellow);
+}
+
+.price {
+  font-size: var(--font-huge);
+  font-weight: var(--weight-bold);
+  color: var(--black);
+  margin: var(--sp-sm) 0 var(--sp-md);
+}
+
+.price-note {
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.check-list {
+  list-style: none;
+}
+
+.check-list li {
+  padding: var(--sp-sm) 0 var(--sp-sm) var(--sp-lg);
+  border-top: var(--border-width-thin) solid var(--black);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  color: var(--black);
+  position: relative;
+}
+
+.check-list li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  font-weight: var(--weight-bold);
 }
 
 /* ── Intervals Visual ──────────────────────────────────────────────── */
@@ -732,9 +834,11 @@ img {
     font-size: var(--font-body);
   }
 
-  .features-grid {
+  .features-grid,
+  .exercise-grid,
+  .pricing-grid {
     grid-template-columns: 1fr;
-    gap: var(--sp-sm);
+    gap: var(--sp-md);
   }
 
   .demo-word {

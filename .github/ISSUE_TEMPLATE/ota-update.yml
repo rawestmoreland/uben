@@ -1,0 +1,49 @@
+name: OTA update
+description: Track a JS-only update delivered over the air (EAS Update)
+title: 'OTA: '
+labels: ['ota']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for changes that ship via `eas update` without a store release.
+        Open it as a sub-issue of the store release it targets (the binary that defines the runtime version).
+        The "Production - OTA Hotfix" workflow comments the update group ID and runtime version back here when you enter this issue's number.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What is changing
+      description: User-visible effect of this update.
+    validations:
+      required: true
+  - type: dropdown
+    id: channel
+    attributes:
+      label: Channel
+      options:
+        - production
+        - preview
+        - development
+    validations:
+      required: true
+  - type: input
+    id: target-release
+    attributes:
+      label: Target store release
+      description: Version of the binary this rides on, e.g. v1.10.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: ota-safe
+    attributes:
+      label: OTA safety
+      options:
+        - label: JS/assets only. No native modules, config plugins, `app.config.js` native settings, or AdMob/RevenueCat config changed.
+          required: true
+        - label: Native fingerprint is unchanged (the hotfix workflow checks this and refuses otherwise).
+          required: true
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback plan
+      description: e.g. republish the previous update group with `eas update:republish`.
