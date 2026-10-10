@@ -7,6 +7,7 @@ import {
 } from '@/constants/design';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 /** Singulars longer than this drop to a smaller size so the blank still fits. */
 const LONG_NOUN_LENGTH = 12;
@@ -31,7 +32,7 @@ export function PluralQuestionCard({
 
   return (
     <View style={[styles.card, shadowStyle]}>
-      <Text style={styles.prompt}>{t('plural_quiz.prompt').toUpperCase()}</Text>
+      <Text style={styles.prompt}>{uiUpperCase(t('plural_quiz.prompt'))}</Text>
       <Text
         style={[
           styles.noun,

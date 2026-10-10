@@ -1,3 +1,4 @@
+import { LanguagePicker } from '@/components/settings/language-picker';
 import {
   AppColors,
   Layout,
@@ -21,6 +22,7 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Settings Screen ──────────────────────────────────────────────────
 
@@ -85,10 +87,10 @@ export default function SettingsScreen() {
         {/* Tap 7 times to reveal database diagnostics */}
         <Pressable style={styles.header} onPress={handleHeaderTap}>
           <Text style={styles.headerTitle}>
-            {t('settings.title').toUpperCase()}
+            {uiUpperCase(t('settings.title'))}
           </Text>
           <Text style={styles.headerSubtitle}>
-            {t('settings.customize_your_experience').toUpperCase()}
+            {uiUpperCase(t('settings.customize_your_experience'))}
           </Text>
           {tapCount > 0 && !showDiagnostics && (
             <View style={styles.tapProgress}>
@@ -105,118 +107,30 @@ export default function SettingsScreen() {
         {/* ── Language Card ───────────────────────────────────── */}
         <View style={[styles.card, shadowStyle]}>
           <Text style={styles.cardTitle}>
-            {t('settings.language').toUpperCase()}
+            {uiUpperCase(t('settings.language'))}
           </Text>
 
           <View style={styles.settingRowStacked}>
-            <Text style={styles.settingLabel}>
-              {t('settings.language').toUpperCase()}
-            </Text>
             <Text style={styles.settingDescription}>
               {t('settings.choose_app_language')}
             </Text>
-            <View style={styles.segmentedControlFull}>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonLeft,
-                  appLanguage === 'en' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('en')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="English"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'en' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  EN
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonMiddle,
-                  appLanguage === 'it' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('it')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Italiano"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'it' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  IT
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonMiddle,
-                  appLanguage === 'pl' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('pl')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Polski"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'pl' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  PL
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonRight,
-                  appLanguage === 'fr' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('fr')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Français"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'fr' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  FR
-                </Text>
-              </Pressable>
-            </View>
+            <LanguagePicker
+              value={appLanguage}
+              onChange={setAppLanguage}
+              disabled={isLoading}
+            />
           </View>
         </View>
 
         {/* ── Quiz Settings Card ──────────────────────────────── */}
         <View style={[styles.card, shadowStyle]}>
-          <Text style={styles.cardTitle}>{t('quiz').toUpperCase()}</Text>
+          <Text style={styles.cardTitle}>{uiUpperCase(t('quiz'))}</Text>
 
           {/* Show English Hint Toggle */}
           <View style={styles.settingRow}>
             <View style={styles.settingTextGroup}>
               <Text style={styles.settingLabel}>
-                {t('settings.show_english_hint').toUpperCase()}
+                {uiUpperCase(t('settings.show_english_hint'))}
               </Text>
               <Text style={styles.settingDescription}>
                 {t('settings.display_english_translation')}
@@ -239,7 +153,7 @@ export default function SettingsScreen() {
           <View style={styles.settingRow}>
             <View style={styles.settingTextGroup}>
               <Text style={styles.settingLabel}>
-                {t('settings.german_spelling').toUpperCase()}
+                {uiUpperCase(t('settings.german_spelling'))}
               </Text>
               <Text style={styles.settingDescription}>
                 {t('settings.choose_between_standard_german_and_swiss_german')}
@@ -298,7 +212,7 @@ export default function SettingsScreen() {
           <View style={styles.settingRow}>
             <View style={styles.settingTextGroup}>
               <Text style={styles.settingLabel}>
-                {t('settings.adjective_difficulty_advanced').toUpperCase()}
+                {uiUpperCase(t('settings.adjective_difficulty_advanced'))}
               </Text>
               <Text style={styles.settingDescription}>
                 {t('settings.adjective_difficulty_advanced_description')}
@@ -510,13 +424,6 @@ const styles = StyleSheet.create({
     borderColor: AppColors.black,
     overflow: 'hidden',
   },
-  segmentedControlFull: {
-    flexDirection: 'row',
-    borderWidth: Layout.borderWidth,
-    borderColor: AppColors.black,
-    overflow: 'hidden',
-    marginTop: Spacing.md,
-  },
   segmentButton: {
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
@@ -525,15 +432,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.white,
     minWidth: 56,
   },
-  segmentButtonFlex: {
-    flex: 1,
-    minWidth: 0,
-  },
   segmentButtonLeft: {
-    borderRightWidth: Layout.borderWidthThin,
-    borderRightColor: AppColors.black,
-  },
-  segmentButtonMiddle: {
     borderRightWidth: Layout.borderWidthThin,
     borderRightColor: AppColors.black,
   },

@@ -6,6 +6,7 @@ import {
   Typography,
 } from '@/constants/design';
 import { Pressable, StyleSheet, Text } from 'react-native';
+import { uiUpperCase } from '@/utils/uiText';
 
 interface QuizActionButtonProps {
   label: string;
@@ -25,7 +26,7 @@ export function QuizActionButton({ label, onPress }: QuizActionButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <Text style={styles.text}>{label.toUpperCase()}</Text>
+      <Text style={styles.text}>{uiUpperCase(label)}</Text>
     </Pressable>
   );
 }

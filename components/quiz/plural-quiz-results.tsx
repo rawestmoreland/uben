@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { PluralResultRow } from './plural-result-row';
 import { QuizActionButton } from './quiz-action-button';
+import { uiUpperCase } from '@/utils/uiText';
 
 function resultKey(result: PluralQuizResult): string {
   return String(result.card.word_id);
@@ -70,13 +71,13 @@ export function PluralQuizResults({
         ListHeaderComponent={
           <>
             <Text style={styles.title}>
-              {t('quiz_mode.session_complete').toUpperCase()}
+              {uiUpperCase(t('quiz_mode.session_complete'))}
             </Text>
             <View style={styles.summaryRow}>
               {summary.map(({ label, value }) => (
                 <View key={label} style={[styles.summaryCard, shadowStyleSmall]}>
                   <Text style={styles.summaryValue}>{value}</Text>
-                  <Text style={styles.summaryLabel}>{label.toUpperCase()}</Text>
+                  <Text style={styles.summaryLabel}>{uiUpperCase(label)}</Text>
                 </View>
               ))}
             </View>

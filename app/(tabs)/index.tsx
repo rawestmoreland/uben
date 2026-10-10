@@ -17,6 +17,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Home Screen ──────────────────────────────────────────────────────
 
@@ -92,20 +93,20 @@ export default function HomeScreen() {
         <View style={styles.statsRow}>
           <StatCard
             value={isLoading ? '-' : String(stats.due_today)}
-            label={t('to_review').toUpperCase()}
+            label={uiUpperCase(t('to_review'))}
             accentColor={
               stats.due_today > 0 ? AppColors.blue : AppColors.lightGray
             }
           />
           <StatCard
             value={isLoading ? '-' : String(streak)}
-            label={t('streak').toUpperCase()}
+            label={uiUpperCase(t('streak'))}
             accentColor={streak > 0 ? AppColors.yellow : AppColors.lightGray}
             showIndicator={!isLoading && streak > 0 && !hasReviewedToday}
           />
           <StatCard
             value={isLoading ? '-' : accuracyText}
-            label={t('accuracy').toUpperCase()}
+            label={uiUpperCase(t('accuracy'))}
             accentColor={
               stats.success_rate != null ? AppColors.green : AppColors.lightGray
             }
@@ -146,8 +147,8 @@ export default function HomeScreen() {
         >
           <Text style={styles.ctaText}>
             {isFirstTime
-              ? t('learn_your_first_words').toUpperCase()
-              : t('start_practice').toUpperCase()}
+              ? uiUpperCase(t('learn_your_first_words'))
+              : uiUpperCase(t('start_practice'))}
           </Text>
         </Pressable>
         <Text style={styles.ctaSubtext}>
@@ -179,7 +180,7 @@ export default function HomeScreen() {
             accessibilityLabel={t('add_word')}
           >
             <Text style={styles.addWordButtonText}>
-              + {t('add_word').toUpperCase()}
+              + {uiUpperCase(t('add_word'))}
             </Text>
           </Pressable>
           {!isLoading && userNounCount > 0 && (
@@ -216,7 +217,7 @@ export default function HomeScreen() {
           >
             <View style={styles.strugglingButtonInner}>
               <Text style={styles.strugglingButtonText}>
-                {t('struggling_words_button', { count: strugglingCount }).toUpperCase()}
+                {uiUpperCase(t('struggling_words_button', { count: strugglingCount }))}
               </Text>
               <Text style={styles.strugglingButtonSub}>
                 {t('struggling_words_label')}
@@ -434,7 +435,7 @@ function MasteryLegendItem({ color, label, count }: MasteryLegendItemProps) {
     <View style={styles.masteryLegendItem}>
       <View style={[styles.masteryLegendDot, { backgroundColor: color }]} />
       <Text style={styles.masteryLegendCount}>{count}</Text>
-      <Text style={styles.masteryLegendLabel}>{label.toUpperCase()}</Text>
+      <Text style={styles.masteryLegendLabel}>{uiUpperCase(label)}</Text>
     </View>
   );
 }
