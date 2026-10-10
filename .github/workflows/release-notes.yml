@@ -31,7 +31,7 @@ jobs:
         run: |
           VERSION=$(node scripts/app-version.cjs)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          # Previous production release tag (excluding hotfix/staging tags)
+          # Previous production release tag (excluding ota/staging tags)
           PREV_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "v$VERSION" | head -n 1 || true)
           echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
 
