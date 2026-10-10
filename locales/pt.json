@@ -59,8 +59,8 @@
     "settings": {
       "title": "Definições",
       "customize_your_experience": "Personaliza a tua experiência",
-      "show_english_hint": "Mostrar dica em inglês",
-      "display_english_translation": "Mostra a tradução em inglês por baixo do substantivo alemão durante a prática.",
+      "show_english_hint": "Mostrar dica ({{language}})",
+      "display_english_translation": "Mostra a tradução ({{language}}) por baixo do substantivo alemão durante a prática.",
       "german_spelling": "Ortografia alemã",
       "choose_between_standard_german_and_swiss_german": "Escolhe entre o alemão padrão (ß) e o alemão suíço (ss).",
       "use_standard_german_with_eszett": "Usar a ortografia alemã padrão com eszett",

@@ -63,8 +63,8 @@
     "settings": {
       "title": "Настройки",
       "customize_your_experience": "Настройте приложение под себя",
-      "show_english_hint": "Показывать подсказку на английском",
-      "display_english_translation": "Показывать английский перевод под немецким существительным во время практики.",
+      "show_english_hint": "Показывать подсказку ({{language}})",
+      "display_english_translation": "Показывать перевод ({{language}}) под немецким существительным во время практики.",
       "german_spelling": "Немецкая орфография",
       "choose_between_standard_german_and_swiss_german": "Выберите между стандартным немецким (ß) и швейцарским немецким (ss).",
       "use_standard_german_with_eszett": "Использовать стандартную немецкую орфографию с эсцет",

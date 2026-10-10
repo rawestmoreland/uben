@@ -55,8 +55,8 @@
     "settings": {
       "title": "Beállítások",
       "customize_your_experience": "Szabd személyre az élményt",
-      "show_english_hint": "Angol segítség megjelenítése",
-      "display_english_translation": "Az angol fordítás megjelenítése a német főnév alatt gyakorlás közben.",
+      "show_english_hint": "Segítség megjelenítése ({{language}})",
+      "display_english_translation": "A fordítás ({{language}}) megjelenítése a német főnév alatt gyakorlás közben.",
       "german_spelling": "Német helyesírás",
       "choose_between_standard_german_and_swiss_german": "Válassz a standard német (ß) és a svájci német (ss) között.",
       "use_standard_german_with_eszett": "Standard német helyesírás használata eszett-tel",

@@ -59,8 +59,8 @@
     "settings": {
       "title": "Réglages",
       "customize_your_experience": "Personnalisez votre expérience",
-      "show_english_hint": "Afficher l'indice en anglais",
-      "display_english_translation": "Afficher la traduction anglaise sous le nom allemand pendant l'entraînement.",
+      "show_english_hint": "Afficher l'indice ({{language}})",
+      "display_english_translation": "Afficher la traduction ({{language}}) sous le nom allemand pendant l'entraînement.",
       "german_spelling": "Orthographe allemande",
       "choose_between_standard_german_and_swiss_german": "Choisissez entre l'allemand standard (ß) et l'allemand suisse (ss).",
       "use_standard_german_with_eszett": "Utiliser l'orthographe allemande standard avec eszett",

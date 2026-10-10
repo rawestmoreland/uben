@@ -63,8 +63,8 @@
     "settings": {
       "title": "Ustawienia",
       "customize_your_experience": "Dostosuj swoje doświadczenie",
-      "show_english_hint": "Pokaż podpowiedź po polsku",
-      "display_english_translation": "Wyświetlaj polskie tłumaczenie niemieckiego rzeczownika podczas ćwiczeń.",
+      "show_english_hint": "Pokaż podpowiedź ({{language}})",
+      "display_english_translation": "Wyświetlaj tłumaczenie ({{language}}) niemieckiego rzeczownika podczas ćwiczeń.",
       "german_spelling": "Ortografia niemiecka",
       "choose_between_standard_german_and_swiss_german": "Wybierz między standardowym niemieckim (ß) a szwajcarskim (ss).",
       "use_standard_german_with_eszett": "Używaj standardowej pisowni z eszett",
