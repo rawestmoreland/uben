@@ -1,4 +1,5 @@
 import en from '@/locales/en.json';
+import pt from '@/locales/pt.json';
 import ru from '@/locales/ru.json';
 import tr from '@/locales/tr.json';
 import { resolveAppLanguage } from '@/types/language';
@@ -42,6 +43,43 @@ describe('tr locale', () => {
     const enKeys = new Set(leafKeys(en));
     const extra = leafKeys(tr).filter((key) => !enKeys.has(key));
     expect(extra).toEqual([]);
+  });
+});
+
+describe('pt locale', () => {
+  it('selects European Portuguese for pt, pt-PT and pt-BR', () => {
+    expect(resolveAppLanguage('pt')).toBe('pt');
+    expect(resolveAppLanguage('pt-PT')).toBe('pt');
+    expect(resolveAppLanguage('pt-BR')).toBe('pt');
+  });
+
+  it('has every non-plural key from en.json', () => {
+    const ptKeys = new Set(leafKeys(pt));
+    const pluralSuffix = /_(one|many|other)$/;
+    const missing = leafKeys(en)
+      .filter((key) => !pluralSuffix.test(key))
+      .filter((key) => !ptKeys.has(key));
+    expect(missing).toEqual([]);
+  });
+
+  it('defines one, many and other wherever en.json is pluralised', () => {
+    const ptKeys = new Set(leafKeys(pt));
+    const bases = leafKeys(en)
+      .filter((key) => key.endsWith('_other'))
+      .map((key) => key.slice(0, -'_other'.length));
+    const missing = bases.flatMap((base) =>
+      ['one', 'many', 'other']
+        .map((form) => `${base}_${form}`)
+        .filter((key) => !ptKeys.has(key)),
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it('treats 0 and 1 as singular and 2 and 21 as plural', () => {
+    const forms = [0, 1, 2, 21].map((count) =>
+      new Intl.PluralRules('pt').select(count),
+    );
+    expect(forms).toEqual(['one', 'one', 'other', 'other']);
   });
 });
 
