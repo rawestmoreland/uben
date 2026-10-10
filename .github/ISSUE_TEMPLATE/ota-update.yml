@@ -8,7 +8,7 @@ body:
       value: |
         Use this for changes that ship via `eas update` without a store release.
         Open it as a sub-issue of the store release it targets (the binary that defines the runtime version).
-        The "Production - OTA Hotfix" workflow comments the update group ID and runtime version back here when you enter this issue's number.
+        The "Production - OTA" workflow comments the update group ID and runtime version back here when you enter this issue's number.
   - type: textarea
     id: summary
     attributes:
@@ -40,7 +40,7 @@ body:
       options:
         - label: JS/assets only. No native modules, config plugins, `app.config.js` native settings, or AdMob/RevenueCat config changed.
           required: true
-        - label: Native fingerprint is unchanged (the hotfix workflow checks this and refuses otherwise).
+        - label: Native fingerprint is unchanged (the OTA workflow checks this and refuses otherwise).
           required: true
   - type: textarea
     id: rollback

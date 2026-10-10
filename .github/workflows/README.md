@@ -33,7 +33,7 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 
 ### 3. `production.yml` - Production App Store Release
 
-**Trigger:** Push of an exact semver tag (`v1.9.1`). Staging and hotfix tags do not match.
+**Trigger:** Push of an exact semver tag (`v1.9.1`). Staging and OTA tags do not match.
 
 **Purpose:** Store builds and submissions for iOS and Android.
 
@@ -43,7 +43,7 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 3. Per platform: build with `--wait`, then submit that exact build (a failed build or submission fails the run)
 4. Publish the `v<version>` GitHub Release (the draft from `release-notes.yml`, or a git-log changelog since the previous release tag)
 
-### 3b. `production-hotfix.yml` - Production OTA Hotfix
+### 3b. `production-ota.yml` - Production OTA
 
 **Trigger:** Manual (`workflow_dispatch`), from `main` only.
 
@@ -53,7 +53,7 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 1. Lint and TypeScript checks
 2. Verify the native fingerprint matches the latest production builds (requires `runtimeVersion.policy: 'fingerprint'`)
 3. `eas update --branch production`
-4. Tag `v<version>-hotfix.<run number>` and create a pre-release recording the EAS update group ID
+4. Tag `v<version>-ota.<run number>` and create a pre-release recording the EAS update group ID
 
 ### 4. `release-notes.yml` - Claude Release Notes
 

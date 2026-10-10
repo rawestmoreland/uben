@@ -1,11 +1,11 @@
 name: Production - App Store Release
 
 # Full store release. Push a semver tag (v1.9.1) from a commit on main.
-# OTA hotfixes live in production-hotfix.yml.
+# OTA updates live in production-ota.yml.
 on:
   push:
     tags:
-      # Exact semver only. Does not match v1.9.1-staging.4 or v1.9.1-hotfix.2
+      # Exact semver only. Does not match v1.9.1-staging.4 or v1.9.1-ota.2
       - 'v[0-9]+.[0-9]+.[0-9]+'
   # Manual run: pick the semver tag as the ref. A non-tag ref fails validation.
   workflow_dispatch:

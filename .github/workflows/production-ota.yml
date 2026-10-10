@@ -1,12 +1,12 @@
-name: Production - OTA Hotfix
+name: Production - OTA
 
-# Manual OTA hotfix to the production channel. Run it from main.
+# Manual OTA (JS-only update) to the production channel. Run it from main.
 # Store releases live in production.yml.
 on:
   workflow_dispatch:
     inputs:
       message:
-        description: 'Hotfix description'
+        description: 'Update description'
         required: true
         type: string
       issue:
@@ -19,12 +19,12 @@ permissions:
   issues: write
 
 concurrency:
-  group: production-hotfix
+  group: production-ota
   cancel-in-progress: false
 
 jobs:
-  hotfix:
-    name: OTA Hotfix
+  ota:
+    name: Publish OTA
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -73,7 +73,7 @@ jobs:
 
           # A semver-looking runtime version means the project still uses the appVersion policy
           if echo "$LATEST_IOS_RV $LATEST_ANDROID_RV" | grep -Eq '(^| )[0-9]+\.[0-9]+'; then
-            echo "::error::Latest production builds use an app-version runtime version. Switch runtimeVersion.policy to 'fingerprint' and ship a store release before using OTA hotfixes."
+            echo "::error::Latest production builds use an app-version runtime version. Switch runtimeVersion.policy to 'fingerprint' and ship a store release before using OTA updates."
             exit 1
           fi
 
@@ -81,39 +81,46 @@ jobs:
             echo "::error::Native fingerprint changed since the last production build. An OTA would not reach users; do a full store release instead."
             exit 1
           fi
-          echo "Fingerprints match - OTA hotfix is safe to publish"
+          echo "Fingerprints match - OTA update is safe to publish"
 
-      - name: Publish OTA hotfix
+      - name: Publish OTA update
         id: ota
         env:
-          HOTFIX_MESSAGE: ${{ inputs.message }}
+          UPDATE_MESSAGE: ${{ inputs.message }}
         run: |
-          OUTPUT=$(eas update --branch production --message "Hotfix: ${HOTFIX_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform all --json)
+          OUTPUT=$(eas update --branch production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform all --json)
           echo "$OUTPUT"
           GROUP_ID=$(echo "$OUTPUT" | jq -r '.[0].group')
-          RUNTIME_VERSION=$(echo "$OUTPUT" | jq -r '.[0].runtimeVersion')
+          # iOS and Android fingerprints differ, so record both
+          IOS_RV=$(echo "$OUTPUT" | jq -r '[.[] | select(.platform == "ios")][0].runtimeVersion // "n/a"')
+          ANDROID_RV=$(echo "$OUTPUT" | jq -r '[.[] | select(.platform == "android")][0].runtimeVersion // "n/a"')
           echo "group_id=$GROUP_ID" >> "$GITHUB_OUTPUT"
-          echo "runtime_version=$RUNTIME_VERSION" >> "$GITHUB_OUTPUT"
+          echo "ios_runtime_version=$IOS_RV" >> "$GITHUB_OUTPUT"
+          echo "android_runtime_version=$ANDROID_RV" >> "$GITHUB_OUTPUT"
 
       - name: Tag and release
         uses: actions/github-script@v7
         env:
-          HOTFIX_MESSAGE: ${{ inputs.message }}
+          UPDATE_MESSAGE: ${{ inputs.message }}
           UPDATE_GROUP_ID: ${{ steps.ota.outputs.group_id }}
-          RUNTIME_VERSION: ${{ steps.ota.outputs.runtime_version }}
+          IOS_RUNTIME_VERSION: ${{ steps.ota.outputs.ios_runtime_version }}
+          ANDROID_RUNTIME_VERSION: ${{ steps.ota.outputs.android_runtime_version }}
           ISSUE_NUMBER: ${{ inputs.issue }}
         with:
           script: |
             const { execSync } = require('child_process');
             const { owner, repo } = context.repo;
             const version = execSync('node scripts/app-version.cjs').toString().trim();
-            const message = process.env.HOTFIX_MESSAGE;
+            const message = process.env.UPDATE_MESSAGE;
             const groupId = process.env.UPDATE_GROUP_ID;
-            const runtimeVersion = process.env.RUNTIME_VERSION;
+            const iosRv = process.env.IOS_RUNTIME_VERSION;
+            const androidRv = process.env.ANDROID_RUNTIME_VERSION;
+            // Short form (first 8 chars) is what goes in the project board's Runtime version field
+            const short = (rv) => (rv && rv !== 'n/a' ? rv.slice(0, 8) : rv);
             const dashboardUrl = `https://expo.dev/accounts/rawestmoreland/projects/uben/updates/${groupId}`;
 
             // Unique per run: the app version doesn't change between OTAs
-            const tag = `v${version}-hotfix.${process.env.GITHUB_RUN_NUMBER}`;
+            const tag = `v${version}-ota.${process.env.GITHUB_RUN_NUMBER}`;
 
             await github.rest.git.createRef({
               owner, repo,
@@ -124,8 +131,8 @@ jobs:
             await github.rest.repos.createRelease({
               owner, repo,
               tag_name: tag,
-              name: `v${version} Hotfix`,
-              body: `## Production OTA Hotfix\n\n${message}\n\nEAS update group: [\`${groupId}\`](${dashboardUrl})\n\nRuntime version: \`${runtimeVersion}\`\n\nDelivered over the air. No store update is required.`,
+              name: `v${version} OTA`,
+              body: `## Production OTA\n\n${message}\n\nEAS update group: [\`${groupId}\`](${dashboardUrl})\n\nRuntime version: iOS \`${iosRv}\`, Android \`${androidRv}\`\n\nDelivered over the air. No store update is required.`,
               draft: false,
               prerelease: true,
             });
@@ -140,7 +147,9 @@ jobs:
                   `OTA published to \`production\` (${tag}).`,
                   '',
                   `- Update group: [\`${groupId}\`](${dashboardUrl})`,
-                  `- Runtime version: \`${runtimeVersion}\``,
+                  `- Runtime version (iOS): \`${short(iosRv)}\` (full: \`${iosRv}\`)`,
+                  `- Runtime version (Android): \`${short(androidRv)}\` (full: \`${androidRv}\`)`,
+                  `- Board field: enter the 8-character form above`,
                   `- Commit: ${context.sha.slice(0, 7)}`,
                   `- Rollback: \`eas update:republish --group <previous group id> --destination-branch production\``,
                 ].join('\n'),

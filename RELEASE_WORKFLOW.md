@@ -102,13 +102,13 @@ eas build --platform all --profile production
 
 ---
 
-## OTA Hotfix Flow
+## OTA Flow
 
-Use this when a fix needs to go out immediately via Expo Updates, **without** carrying unfinished staging work into main.
+Use this when a JS-only fix or feature needs to go out via Expo Updates, **without** carrying unfinished staging work into main.
 
-> **Do not bump any version numbers for OTA hotfixes.**
+> **Do not bump any version numbers for OTA updates.**
 >
-> The runtime version policy is `fingerprint` (`app.config.js`): an update is delivered only to builds whose native fingerprint matches the update's. The app `version` plays no part in that, so a bump gains nothing and just makes `package.json` / `app.config.js` drift from the shipped store build. An OTA can only carry JS changes; if the native fingerprint has changed since the last production build, the hotfix workflow refuses to publish and you need a full store release instead. The only versioning artifact for an OTA hotfix is the git tag, which the workflow creates for you.
+> The runtime version policy is `fingerprint` (`app.config.js`): an update is delivered only to builds whose native fingerprint matches the update's. The app `version` plays no part in that, so a bump gains nothing and just makes `package.json` / `app.config.js` drift from the shipped store build. An OTA can only carry JS changes; if the native fingerprint has changed since the last production build, the OTA workflow refuses to publish and you need a full store release instead. The only versioning artifact for an OTA is the git tag, which the workflow creates for you.
 
 **Always branch from `main`, not from `staging` or `develop`.**
 
@@ -143,14 +143,14 @@ git push origin hotfix/fix-article-crash
 
 Do not tag by hand; the workflow in the next step does it.
 
-**4. Run the "Production - OTA Hotfix" workflow**
+**4. Run the "Production - OTA" workflow**
 
-Trigger `production-hotfix.yml` manually (Actions tab → Run workflow, ref `main`) with a short description and, optionally, the number of the OTA tracking issue (create one from the "OTA update" issue template and add it as a sub-issue of the store release it rides on). It will:
+Trigger `production-ota.yml` manually (Actions tab → Run workflow, ref `main`) with a short description and, optionally, the number of the OTA tracking issue (create one from the "OTA update" issue template and add it as a sub-issue of the store release it rides on). It will:
 
 1. Run lint and the TypeScript check
 2. Compare the current native fingerprint against the latest finished production iOS and Android builds, and fail if they differ
 3. Publish with `eas update --branch production`
-4. Create the `v<version>-hotfix.<run number>` tag and a pre-release recording the EAS update group ID and runtime version
+4. Create the `v<version>-ota.<run number>` tag and a pre-release recording the EAS update group ID and runtime version
 5. Comment the update group, runtime version and rollback command on the tracking issue, if one was given
 
 The tag includes the run number because the app version doesn't change between OTAs, so a fixed tag would collide.
@@ -182,10 +182,10 @@ git push origin --delete hotfix/fix-article-crash
 
 ## Tag Naming Convention
 
-| Type              | Format                       | Version bump                            | Trigger                                                                         |
-| ----------------- | ---------------------------- | --------------------------------------- | ------------------------------------------------------------------------------- |
-| Full native build | `v1.3.0`                     | `version`, `buildNumber`, `versionCode` | EAS production build + store submission                                         |
-| OTA hotfix        | `v1.3.0-hotfix.<run number>` | None                                    | `eas update` only, no store submission (tag created by `production-hotfix.yml`) |
+| Type              | Format                    | Version bump                            | Trigger                                                                      |
+| ----------------- | ------------------------- | --------------------------------------- | ---------------------------------------------------------------------------- |
+| Full native build | `v1.3.0`                  | `version`, `buildNumber`, `versionCode` | EAS production build + store submission                                      |
+| OTA update        | `v1.3.0-ota.<run number>` | None                                    | `eas update` only, no store submission (tag created by `production-ota.yml`) |
 
 ---
 
@@ -204,5 +204,5 @@ Release tickets are tracked on the release kanban board. Each week:
 
 - Always use `--no-ff` merges to preserve branch history and avoid ambiguous commit graphs
 - Never rebase branches that have already been merged — this generates duplicate commits with new SHAs on future merges
-- After a hotfix, confirm the fix is present in both `staging` and `develop` before closing the ticket
-- Never bump `version` in `app.config.js` for an OTA hotfix — it isn't needed (runtime compatibility comes from the native fingerprint, not the version) and it makes the repo version drift from the shipped store build
+- After an OTA, confirm the fix is present in both `staging` and `develop` before closing the ticket
+- Never bump `version` in `app.config.js` for an OTA — it isn't needed (runtime compatibility comes from the native fingerprint, not the version) and it makes the repo version drift from the shipped store build
