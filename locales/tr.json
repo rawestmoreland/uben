@@ -63,6 +63,8 @@
       "use_swiss_german_with_ss": "İsviçre Almancası yazımını ss ile kullan",
       "language": "Dil",
       "choose_app_language": "Uygulamanın görüntüleme dilini seçin.",
+      "select_language": "Dil seçin",
+      "close_picker": "Kapat",
       "adjective_difficulty_advanced": "Gelişmiş sıfat çekimleri",
       "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et."
     },

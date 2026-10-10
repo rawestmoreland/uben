@@ -71,6 +71,8 @@
       "use_swiss_german_with_ss": "Używaj szwajcarskiej pisowni z ss",
       "language": "Język",
       "choose_app_language": "Wybierz język aplikacji.",
+      "select_language": "Wybierz język",
+      "close_picker": "Zamknij",
       "adjective_difficulty_advanced": "Zaawansowane końcówki",
       "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników."
     },

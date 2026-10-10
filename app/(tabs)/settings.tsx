@@ -1,3 +1,4 @@
+import { LanguagePicker } from '@/components/settings/language-picker';
 import {
   AppColors,
   Layout,
@@ -110,146 +111,14 @@ export default function SettingsScreen() {
           </Text>
 
           <View style={styles.settingRowStacked}>
-            <Text style={styles.settingLabel}>
-              {uiUpperCase(t('settings.language'))}
-            </Text>
             <Text style={styles.settingDescription}>
               {t('settings.choose_app_language')}
             </Text>
-            <View style={styles.segmentedControlFull}>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonLeft,
-                  appLanguage === 'en' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('en')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="English"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'en' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  EN
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonMiddle,
-                  appLanguage === 'it' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('it')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Italiano"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'it' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  IT
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonMiddle,
-                  appLanguage === 'pl' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('pl')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Polski"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'pl' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  PL
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonMiddle,
-                  appLanguage === 'fr' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('fr')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Français"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'fr' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  FR
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonMiddle,
-                  appLanguage === 'tr' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('tr')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Türkçe"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'tr' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  TR
-                </Text>
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.segmentButton,
-                  styles.segmentButtonFlex,
-                  styles.segmentButtonRight,
-                  appLanguage === 'ru' && styles.segmentButtonActive,
-                  pressed && styles.segmentButtonPressed,
-                ]}
-                onPress={() => setAppLanguage('ru')}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Русский"
-              >
-                <Text
-                  style={[
-                    styles.segmentButtonText,
-                    appLanguage === 'ru' && styles.segmentButtonTextActive,
-                  ]}
-                >
-                  RU
-                </Text>
-              </Pressable>
-            </View>
+            <LanguagePicker
+              value={appLanguage}
+              onChange={setAppLanguage}
+              disabled={isLoading}
+            />
           </View>
         </View>
 
@@ -555,13 +424,6 @@ const styles = StyleSheet.create({
     borderColor: AppColors.black,
     overflow: 'hidden',
   },
-  segmentedControlFull: {
-    flexDirection: 'row',
-    borderWidth: Layout.borderWidth,
-    borderColor: AppColors.black,
-    overflow: 'hidden',
-    marginTop: Spacing.md,
-  },
   segmentButton: {
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
@@ -570,15 +432,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.white,
     minWidth: 56,
   },
-  segmentButtonFlex: {
-    flex: 1,
-    minWidth: 0,
-  },
   segmentButtonLeft: {
-    borderRightWidth: Layout.borderWidthThin,
-    borderRightColor: AppColors.black,
-  },
-  segmentButtonMiddle: {
     borderRightWidth: Layout.borderWidthThin,
     borderRightColor: AppColors.black,
   },

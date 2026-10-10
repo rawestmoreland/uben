@@ -71,6 +71,8 @@
       "use_swiss_german_with_ss": "Использовать швейцарскую орфографию с ss",
       "language": "Язык",
       "choose_app_language": "Выберите язык интерфейса приложения.",
+      "select_language": "Выберите язык",
+      "close_picker": "Закрыть",
       "adjective_difficulty_advanced": "Расширенные окончания прилагательных",
       "adjective_difficulty_advanced_description": "Добавить дательный падеж (косвенное дополнение) в тренировку окончаний прилагательных."
     },
