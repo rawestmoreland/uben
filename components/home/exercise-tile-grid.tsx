@@ -35,11 +35,15 @@ const EXERCISES: readonly ExerciseConfig[] = [
     status: 'available',
   },
   {
-    // Free for everyone; shares the article quiz's category picker
+    // Pro only; shares the article quiz's category picker. The route is a
+    // string (not a pathname/params object) so the paywall can replay it
+    // as its redirectTo after a purchase.
     id: 'plurals',
-    route: { pathname: '/select-categories', params: { exercise: 'plurals' } },
+    route: '/select-categories?exercise=plurals',
     accentColor: AppColors.green,
     status: 'available',
+    entitlement: 'pro_only',
+    paywallSource: 'plural_quiz_entry',
   },
   {
     id: 'adjectives',
