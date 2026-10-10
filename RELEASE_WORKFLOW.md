@@ -148,7 +148,7 @@ Do not tag by hand; the workflow in the next step does it.
 Trigger `production-ota.yml` manually (Actions tab → Run workflow, ref `main`) with a short description and, optionally, the number of the OTA tracking issue (create one from the "OTA update" issue template and add it as a sub-issue of the store release it rides on). It will:
 
 1. Run lint and the TypeScript check
-2. Compare the current native fingerprint against the latest finished production iOS and Android builds, and fail if they differ
+2. Generate the native fingerprint with `eas fingerprint:generate --build-profile production` (the same inputs the EAS builder uses) and check that EAS has a finished iOS build and a finished Android build on the `production` channel with that runtime version, and fail if not. Builds added with `eas upload` count only if they have channel and runtime version metadata; if yours don't, confirm the binary's runtime version (`Expo.plist` / `AndroidManifest.xml`) and re-run with `skip_build_check`
 3. Publish with `eas update --branch production`
 4. Create the `v<version>-ota.<run number>` tag and a pre-release recording the EAS update group ID and runtime version
 5. Comment the update group, runtime version and rollback command on the tracking issue, if one was given
