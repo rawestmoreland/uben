@@ -9,6 +9,11 @@ on:
         description: 'Update description'
         required: true
         type: string
+      skip_build_check:
+        description: 'Skip the EAS build lookup (for builds uploaded without runtime metadata)'
+        required: false
+        default: false
+        type: boolean
       issue:
         description: 'Tracking issue number to comment on (optional)'
         required: false
@@ -58,29 +63,44 @@ jobs:
       # runtimeVersion.policy = 'fingerprint' in app.config.js; with 'appVersion' the
       # build's runtime version is "1.9.1", which can never equal a fingerprint hash.
       - name: Verify OTA compatibility
+        env:
+          SKIP_BUILD_CHECK: ${{ inputs.skip_build_check }}
         run: |
           CURRENT_IOS=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | jq -r '.hash')
           CURRENT_ANDROID=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | jq -r '.hash')
-          LATEST_IOS_RV=$(eas build:list --channel production --platform ios --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
-          LATEST_ANDROID_RV=$(eas build:list --channel production --platform android --status finished --limit 1 --non-interactive --json 2>/dev/null | jq -r '.[0].runtimeVersion // empty')
-          echo "iOS:     current=$CURRENT_IOS latest-build=$LATEST_IOS_RV"
-          echo "Android: current=$CURRENT_ANDROID latest-build=$LATEST_ANDROID_RV"
+          echo "iOS fingerprint:     $CURRENT_IOS"
+          echo "Android fingerprint: $CURRENT_ANDROID"
 
-          if [ -z "$CURRENT_IOS" ] || [ -z "$CURRENT_ANDROID" ] || [ -z "$LATEST_IOS_RV" ] || [ -z "$LATEST_ANDROID_RV" ]; then
-            echo "::error::Could not read fingerprints or the latest production builds' runtime versions."
+          if [ -z "$CURRENT_IOS" ] || [ -z "$CURRENT_ANDROID" ]; then
+            echo "::error::Could not generate the native fingerprints."
             exit 1
           fi
 
-          # A semver-looking runtime version means the project still uses the appVersion policy
-          if echo "$LATEST_IOS_RV $LATEST_ANDROID_RV" | grep -Eq '(^| )[0-9]+\.[0-9]+'; then
-            echo "::error::Latest production builds use an app-version runtime version. Switch runtimeVersion.policy to 'fingerprint' and ship a store release before using OTA updates."
-            exit 1
+          if [ "$SKIP_BUILD_CHECK" = "true" ]; then
+            echo "::warning::Skipping the EAS build lookup. Make sure the fingerprints above match the production binaries' runtime versions, or users will not receive this update."
+            exit 0
           fi
 
-          if [ "$CURRENT_IOS" != "$LATEST_IOS_RV" ] || [ "$CURRENT_ANDROID" != "$LATEST_ANDROID_RV" ]; then
-            echo "::error::Native fingerprint changed since the last production build. An OTA would not reach users; do a full store release instead."
-            exit 1
-          fi
+          # The update is only delivered to builds with the same runtime version, so look for a
+          # finished build with exactly the current fingerprint. The lookup does not filter by
+          # channel: builds made locally and added with `eas upload` have no channel recorded.
+          check_platform() {
+            local platform="$1" current="$2" builds
+            if ! builds=$(eas build:list --platform "$platform" --status finished --runtime-version "$current" --limit 1 --non-interactive --json); then
+              echo "::error::eas build:list failed for $platform (see output above)."
+              return 1
+            fi
+            if [ "$(echo "$builds" | jq 'length')" -eq 0 ]; then
+              echo "::error::No finished $platform build in EAS has runtime version $current. Either the native fingerprint changed since the last build (do a full store release), the build was uploaded without runtime version metadata (re-run with skip_build_check after confirming the binary's runtime version), or the project is not using runtimeVersion.policy 'fingerprint'."
+              return 1
+            fi
+            echo "$platform: found a finished build with runtime version $current"
+          }
+
+          status=0
+          check_platform ios "$CURRENT_IOS" || status=1
+          check_platform android "$CURRENT_ANDROID" || status=1
+          if [ "$status" -ne 0 ]; then exit 1; fi
           echo "Fingerprints match - OTA update is safe to publish"
 
       - name: Publish OTA update
