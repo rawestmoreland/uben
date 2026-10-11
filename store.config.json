@@ -244,6 +244,29 @@
             "store/apple/screenshot/tr/APP_IPHONE_65/06-daily.png"
           ]
         }
+      },
+      "zh-Hans": {
+        "title": "Üben - 德语冠词",
+        "subtitle": "告别猜测 der, die, das",
+        "description": "别再猜 der、die、das 了。\n\nÜben 用间隔重复法训练德语名词的词性——这是经科学验证的方法，让你在即将遗忘每个单词之前复习它，并且只专注于每个德语学习者都头疼的那一件事。\n\n使用方法\n- 看到一个名词，选择 der、die 或 das，立即获得反馈。\n- SM-2 算法会在你快要忘记之前安排每个单词的复习。答错的单词会更早重现。\n- 每天五分钟即可养成习惯：连续打卡、正确率统计和复习预测帮你坚持下去。\n\n免费功能\n- 含冠词和复数形式的 A1 词汇\n- 每日复习，完全离线使用\n- 学习进度统计和连续打卡记录\n- 无需账号，无广告，无追踪——数据只保存在你的设备上\n\nPRO - 一次性购买，无需订阅\n- B1+ 词汇\n- 形容词词尾练习（der/die/das 变格）\n- 添加并保存你自己的单词\n- Präteritum（简单过去时）测验\n\n由一位住在苏黎世、厌倦了瞎猜的德语学习者开发。适合自学者、语言课程学员，以及备考 Goethe、telc、TestDaF 或瑞士 fide 考试的所有人。\n\n“Üben”的意思是“练习”——这就是全部理念。",
+        "keywords": [
+          "der die das",
+          "德语",
+          "冠词",
+          "语法",
+          "名词",
+          "词性",
+          "deutsch A1",
+          "goethe",
+          "telc",
+          "单词",
+          "测验"
+        ],
+        "marketingUrl": "https://ubenapp.com",
+        "supportUrl": "https://ubenapp.com",
+        "privacyPolicyUrl": "https://ubenapp.com/privacy",
+        "promoText": "新增：Pro 用户专享 Präteritum 测验。每天五分钟，告别猜测 der、die、das——免费、离线、无需账号、无广告。",
+        "releaseNotes": "我们为 Pro 用户新增了 Präteritum 测验。祝学习愉快！"
       }
     },
     "categories": ["EDUCATION"],
