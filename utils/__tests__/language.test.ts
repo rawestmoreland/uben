@@ -3,6 +3,7 @@ import hu from '@/locales/hu.json';
 import pt from '@/locales/pt.json';
 import ru from '@/locales/ru.json';
 import tr from '@/locales/tr.json';
+import zh from '@/locales/zh.json';
 import { resolveAppLanguage } from '@/types/language';
 
 function leafKeys(node: Record<string, unknown>, prefix = ''): string[] {
@@ -148,5 +149,25 @@ describe('hu locale', () => {
 
   it('upper-cases accented letters correctly with the default mapping', () => {
     expect('áéíóöőúüű'.toUpperCase()).toBe('ÁÉÍÓÖŐÚÜŰ');
+  });
+});
+
+describe('zh locale', () => {
+  it('selects Chinese for zh and regional or script variants', () => {
+    expect(resolveAppLanguage('zh')).toBe('zh');
+    expect(resolveAppLanguage('zh-Hans-CN')).toBe('zh');
+    expect(resolveAppLanguage('zh_TW')).toBe('zh');
+  });
+
+  it('has a translation for every key in en.json', () => {
+    const zhKeys = new Set(leafKeys(zh));
+    const missing = leafKeys(en).filter((key) => !zhKeys.has(key));
+    expect(missing).toEqual([]);
+  });
+
+  it('does not define keys that en.json lacks', () => {
+    const enKeys = new Set(leafKeys(en));
+    const extra = leafKeys(zh).filter((key) => !enKeys.has(key));
+    expect(extra).toEqual([]);
   });
 });
