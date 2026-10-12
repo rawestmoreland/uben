@@ -113,6 +113,16 @@ jobs:
             # stderr is left visible so failures show up in the log.
             CURRENT=$(eas fingerprint:generate --build-profile preview --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || CURRENT=""
 
+            # `eas update` doesn't apply the preview profile's `env` (APP_ENV changes the app
+            # name, bundle id and scheme), so it would compute a different runtime version than
+            # the preview builds. Run it through the wrapper that reproduces the builder's
+            # environment, and bail out to a full build if the hashes still differ.
+            UPDATE_FP=$(scripts/eas-with-profile-env.sh preview eas fingerprint:generate --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || UPDATE_FP=""
+            if [ "$UPDATE_FP" != "$CURRENT" ]; then
+              echo "::warning::$PLATFORM: an update would get runtime version ${UPDATE_FP:-<failed>}, not ${CURRENT:-<failed>}; falling back to a full build."
+              CURRENT=""
+            fi
+
             # Ask EAS for a finished preview-channel build with exactly this runtime version.
             # Preview builds live on the "preview" channel, which the "staging" EAS branch feeds.
             MATCHING_BUILDS=0
@@ -155,7 +165,7 @@ jobs:
           for PLATFORM in ios android; do
             if [ "$PLATFORM" = ios ] && [ "$BUILD_IOS" != true ]; then continue; fi
             if [ "$PLATFORM" = android ] && [ "$BUILD_ANDROID" != true ]; then continue; fi
-            OUTPUT=$(eas update --branch staging --message "Staging OTA update (${GITHUB_SHA::7})" --non-interactive --platform "$PLATFORM" --json)
+            OUTPUT=$(scripts/eas-with-profile-env.sh preview eas update --branch staging --message "Staging OTA update (${GITHUB_SHA::7})" --non-interactive --platform "$PLATFORM" --json)
             echo "$OUTPUT"
             GROUP_IDS+=("$(echo "$OUTPUT" | jq -r '.[0].group')")
           done

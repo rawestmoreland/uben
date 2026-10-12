@@ -63,6 +63,7 @@ jobs:
       # runtimeVersion.policy = 'fingerprint' in app.config.js; with 'appVersion' the
       # build's runtime version is "1.9.1", which can never equal a fingerprint hash.
       - name: Verify OTA compatibility
+        id: verify
         env:
           SKIP_BUILD_CHECK: ${{ inputs.skip_build_check }}
         run: |
@@ -75,9 +76,24 @@ jobs:
           CURRENT_ANDROID=$(eas fingerprint:generate --build-profile production --platform android --json --non-interactive | jq -r '.hash // empty') || CURRENT_ANDROID=""
           echo "iOS fingerprint:     $CURRENT_IOS"
           echo "Android fingerprint: $CURRENT_ANDROID"
+          echo "ios_fingerprint=$CURRENT_IOS" >> "$GITHUB_OUTPUT"
+          echo "android_fingerprint=$CURRENT_ANDROID" >> "$GITHUB_OUTPUT"
 
           if [ -z "$CURRENT_IOS" ] || [ -z "$CURRENT_ANDROID" ]; then
             echo "::error::Could not generate the native fingerprints."
+            exit 1
+          fi
+
+          # `eas update` doesn't apply the build profile's `env` block, so run it (and this
+          # check) through the wrapper that reproduces the builder's environment. Abort now,
+          # before publishing, if the update would get a different runtime version than the
+          # builds we just verified.
+          UPDATE_IOS=$(scripts/eas-with-profile-env.sh production eas fingerprint:generate --platform ios --json --non-interactive | jq -r '.hash // empty') || UPDATE_IOS=""
+          UPDATE_ANDROID=$(scripts/eas-with-profile-env.sh production eas fingerprint:generate --platform android --json --non-interactive | jq -r '.hash // empty') || UPDATE_ANDROID=""
+          echo "iOS update fingerprint:     $UPDATE_IOS"
+          echo "Android update fingerprint: $UPDATE_ANDROID"
+          if [ "$UPDATE_IOS" != "$CURRENT_IOS" ] || [ "$UPDATE_ANDROID" != "$CURRENT_ANDROID" ]; then
+            echo "::error::The update would be published with a different runtime version than the production build profile (iOS $UPDATE_IOS vs $CURRENT_IOS, Android $UPDATE_ANDROID vs $CURRENT_ANDROID). No device would receive it."
             exit 1
           fi
 
@@ -111,17 +127,29 @@ jobs:
         id: ota
         env:
           UPDATE_MESSAGE: ${{ inputs.message }}
+          EXPECTED_IOS_RV: ${{ steps.verify.outputs.ios_fingerprint }}
+          EXPECTED_ANDROID_RV: ${{ steps.verify.outputs.android_fingerprint }}
         run: |
           # Publish each platform separately: `--platform all` also exports a web
           # bundle, which this native-only app can't build. Each platform gets its
           # own update group.
+          # It runs through the wrapper so the update sees the same environment (EAS
+          # "production" variables + the profile's `env`) as the store builds; plain
+          # `eas update` computes a different runtime version and reaches no one.
           publish() {
-            eas update --branch production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$1" --json
+            scripts/eas-with-profile-env.sh production eas update --branch production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$1" --json
           }
           IOS_OUTPUT=$(publish ios)
           echo "$IOS_OUTPUT"
           ANDROID_OUTPUT=$(publish android)
           echo "$ANDROID_OUTPUT"
+          # Last line of defense: the update must carry the runtime version of the verified builds
+          IOS_RV=$(echo "$IOS_OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')
+          ANDROID_RV=$(echo "$ANDROID_OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')
+          if [ "$IOS_RV" != "$EXPECTED_IOS_RV" ] || [ "$ANDROID_RV" != "$EXPECTED_ANDROID_RV" ]; then
+            echo "::error::Published runtime versions (iOS $IOS_RV, Android $ANDROID_RV) differ from the verified builds (iOS $EXPECTED_IOS_RV, Android $EXPECTED_ANDROID_RV). These updates will not reach production devices; delete them from the production branch in the EAS dashboard."
+            exit 1
+          fi
           # iOS and Android fingerprints differ, so record both
           echo "ios_group_id=$(echo "$IOS_OUTPUT" | jq -r '.[0].group')" >> "$GITHUB_OUTPUT"
           echo "android_group_id=$(echo "$ANDROID_OUTPUT" | jq -r '.[0].group')" >> "$GITHUB_OUTPUT"
