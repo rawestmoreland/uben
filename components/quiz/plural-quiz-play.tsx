@@ -100,7 +100,6 @@ export function PluralQuizPlay({
           />
         ) : (
           <PluralQuestionCard
-            article={currentCard.article}
             singular={applyGermanTextPreference(
               currentCard.german,
               eszettPreference,
