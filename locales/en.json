@@ -55,8 +55,8 @@
     "settings": {
       "title": "Settings",
       "customize_your_experience": "Customize your experience",
-      "show_english_hint": "Show English hint",
-      "display_english_translation": "Display the English translation beneath the German noun during practice.",
+      "show_english_hint": "Show hint ({{language}})",
+      "display_english_translation": "Display the {{language}} translation beneath the German noun during practice.",
       "german_spelling": "German spelling",
       "choose_between_standard_german_and_swiss_german": "Choose between Standard German (ß) and Swiss German (ss).",
       "use_standard_german_with_eszett": "Use standard German spelling with eszett",

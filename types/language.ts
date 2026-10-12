@@ -1,4 +1,14 @@
-export const APP_LANGUAGES = ['en', 'it', 'pl', 'fr', 'tr', 'ru'] as const;
+export const APP_LANGUAGES = [
+  'en',
+  'it',
+  'pl',
+  'fr',
+  'tr',
+  'ru',
+  'pt',
+  'hu',
+  'zh',
+] as const;
 
 export type AppLanguage = (typeof APP_LANGUAGES)[number];
 
@@ -13,6 +23,9 @@ export const APP_LANGUAGE_NAMES: Record<AppLanguage, string> = {
   fr: 'Français',
   tr: 'Türkçe',
   ru: 'Русский',
+  pt: 'Português (Portugal)',
+  hu: 'Magyar',
+  zh: '中文',
 };
 
 /**

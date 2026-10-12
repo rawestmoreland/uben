@@ -9,6 +9,7 @@ import {
 import { getMigrationDiagnostics } from '@/database/db';
 import { useSettings } from '@/hooks/use-settings';
 import type { MigrationDiagnostics } from '@/types/database';
+import { APP_LANGUAGE_NAMES } from '@/types/language';
 import Constants from 'expo-constants';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -130,10 +131,16 @@ export default function SettingsScreen() {
           <View style={styles.settingRow}>
             <View style={styles.settingTextGroup}>
               <Text style={styles.settingLabel}>
-                {uiUpperCase(t('settings.show_english_hint'))}
+                {uiUpperCase(
+                  t('settings.show_english_hint', {
+                    language: APP_LANGUAGE_NAMES[appLanguage],
+                  }),
+                )}
               </Text>
               <Text style={styles.settingDescription}>
-                {t('settings.display_english_translation')}
+                {t('settings.display_english_translation', {
+                  language: APP_LANGUAGE_NAMES[appLanguage],
+                })}
               </Text>
             </View>
             <Switch

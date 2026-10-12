@@ -55,8 +55,8 @@
     "settings": {
       "title": "Ayarlar",
       "customize_your_experience": "Deneyiminizi özelleştirin",
-      "show_english_hint": "İngilizce ipucunu göster",
-      "display_english_translation": "Alıştırma sırasında Almanca ismin altında İngilizce çevirisini göster.",
+      "show_english_hint": "İpucunu göster ({{language}})",
+      "display_english_translation": "Alıştırma sırasında Almanca ismin altında çevirisini ({{language}}) göster.",
       "german_spelling": "Almanca yazım",
       "choose_between_standard_german_and_swiss_german": "Standart Almanca (ß) ile İsviçre Almancası (ss) arasında seçim yapın.",
       "use_standard_german_with_eszett": "Standart Almanca yazımı eszett ile kullan",
