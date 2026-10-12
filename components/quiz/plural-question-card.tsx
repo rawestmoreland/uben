@@ -12,8 +12,10 @@ import { uiUpperCase } from '@/utils/uiText';
 /** Singulars longer than this drop to a smaller size so the blank still fits. */
 const LONG_NOUN_LENGTH = 12;
 
+/** Every German plural takes "die", so the question shows it instead of the singular's article. */
+const PLURAL_ARTICLE = 'die';
+
 interface PluralQuestionCardProps {
-  article: string;
   /** The singular, already adjusted for the learner's ß/ss preference. */
   singular: string;
   /** Homograph hint, e.g. "bench" for die Bank (Bänke) vs "bank" (Banken). */
@@ -21,9 +23,8 @@ interface PluralQuestionCardProps {
   translation: string | null;
 }
 
-/** The question: the singular with its article and a blank for the ending, e.g. "das Kind ___". */
+/** The question: the singular with the plural article and a blank for the ending, e.g. "die Kind ___". */
 export function PluralQuestionCard({
-  article,
   singular,
   sense,
   translation,
@@ -39,10 +40,10 @@ export function PluralQuestionCard({
           singular.length > LONG_NOUN_LENGTH && styles.nounLong,
         ]}
         accessibilityLabel={t('plural_quiz.question_a11y', {
-          noun: `${article} ${singular}`,
+          noun: `${PLURAL_ARTICLE} ${singular}`,
         })}
       >
-        <Text style={styles.article}>{article} </Text>
+        <Text style={styles.article}>{PLURAL_ARTICLE} </Text>
         {singular} <Text style={styles.blank}>___</Text>
       </Text>
       {/* Always shown: a homograph's sense can change the plural */}
