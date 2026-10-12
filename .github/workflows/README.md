@@ -52,7 +52,7 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 **Steps:**
 1. Lint and TypeScript checks
 2. Verify the native fingerprint matches the latest production builds (requires `runtimeVersion.policy: 'fingerprint'`)
-3. `eas update --branch production`
+3. `eas update --branch production` (once per platform; web is never published)
 4. Tag `v<version>-ota.<run number>` and create a pre-release recording the EAS update group ID
 
 ### 4. `release-notes.yml` - Claude Release Notes

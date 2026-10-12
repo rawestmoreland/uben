@@ -145,14 +145,22 @@ jobs:
         id: ota
         if: steps.fingerprint.outputs.deploy_type == 'ota'
         env:
-          EAS_PLATFORM: ${{ needs.config.outputs.eas_platform }}
+          BUILD_IOS: ${{ needs.config.outputs.ios }}
+          BUILD_ANDROID: ${{ needs.config.outputs.android }}
         run: |
           echo "📡 Publishing OTA update to the staging branch (preview channel)..."
-          OUTPUT=$(eas update --branch staging --message "Staging OTA update (${GITHUB_SHA::7})" --non-interactive --platform "$EAS_PLATFORM" --json)
-          echo "$OUTPUT"
-          # Selected platforms share one update group; record it so the git tag maps to the exact update
-          GROUP_ID=$(echo "$OUTPUT" | jq -r '.[0].group')
-          echo "group_id=$GROUP_ID" >> $GITHUB_OUTPUT
+          # Publish each selected platform separately: `--platform all` also exports
+          # a web bundle, which this native-only app can't build.
+          GROUP_IDS=()
+          for PLATFORM in ios android; do
+            if [ "$PLATFORM" = ios ] && [ "$BUILD_IOS" != true ]; then continue; fi
+            if [ "$PLATFORM" = android ] && [ "$BUILD_ANDROID" != true ]; then continue; fi
+            OUTPUT=$(eas update --branch staging --message "Staging OTA update (${GITHUB_SHA::7})" --non-interactive --platform "$PLATFORM" --json)
+            echo "$OUTPUT"
+            GROUP_IDS+=("$(echo "$OUTPUT" | jq -r '.[0].group')")
+          done
+          # Record the update group(s) so the git tag maps to the exact update
+          echo "group_id=$(IFS=,; echo "${GROUP_IDS[*]}")" >> $GITHUB_OUTPUT
 
       - name: Build iOS (internal)
         if: steps.fingerprint.outputs.deploy_type == 'build' && needs.config.outputs.ios == 'true'
@@ -174,7 +182,7 @@ jobs:
           TAG="v${VERSION}-staging.${GITHUB_RUN_NUMBER}"
           MESSAGE="Staging ${DEPLOY_TYPE} for v${VERSION}"
           if [ -n "$UPDATE_GROUP_ID" ]; then
-            MESSAGE="${MESSAGE} (EAS update group ${UPDATE_GROUP_ID})"
+            MESSAGE="${MESSAGE} (EAS update group(s) ${UPDATE_GROUP_ID})"
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
