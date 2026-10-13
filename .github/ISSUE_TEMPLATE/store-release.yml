@@ -1,0 +1,80 @@
+name: Store release
+description: Track a new App Store / Google Play release (the binary that ships via the production workflow)
+title: 'Release: v'
+labels: ['release']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One card per store release. OTA updates for this release are opened as sub-issues using the "OTA update" template.
+
+        Flow: `develop` -> `staging` -> `main`, then push the exact semver tag (e.g. `v1.13.0`) from a commit on `main`.
+        The tag triggers "Production - App Store Release", which builds and submits each platform and publishes the GitHub Release.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Must match `version` in `app.config.js`, with a leading `v`, e.g. v1.13.0
+      placeholder: v1.13.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Platforms
+      options:
+        - label: iOS (App Store / TestFlight)
+        - label: Android (Google Play)
+  - type: textarea
+    id: scope
+    attributes:
+      label: What's in this release
+      description: Headline changes and the issues or PRs included. Release notes are drafted by Claude when `staging` is merged into `main`, so this is a summary, not the final copy.
+      placeholder: |
+        - Closes #
+        - Closes #
+    validations:
+      required: true
+  - type: checkboxes
+    id: native-changes
+    attributes:
+      label: Native changes
+      description: Anything that changes the native fingerprint means this must ship as a store build, not an OTA.
+      options:
+        - label: Native modules, config plugins, or native `app.config.js` settings changed
+        - label: AdMob or other SDK configuration changed
+        - label: SQLite schema or migration changed (verify upgrading from the previous release, not just a clean install)
+        - label: PocketBase schema or vocabulary changed (backend deployed before release)
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Release checklist
+      value: |
+        **Before staging**
+        - [ ] All included PRs merged into `develop`
+        - [ ] `version` bumped in `app.config.js`
+        - [ ] `develop` -> `staging` PR merged; staging build tested on iOS
+        - [ ] Staging build tested on Android
+        - [ ] Upgrade tested from the previous production release (existing progress data intact)
+        - [ ] Offline behaviour checked
+
+        **Release**
+        - [ ] `staging` -> `main` PR merged
+        - [ ] Draft release notes reviewed and edited (`release-notes.yml` posts them on the PR and drafts the GitHub Release)
+        - [ ] Semver tag pushed from a commit on `main`
+        - [ ] "Production - App Store Release" run succeeded (all platforms built and submitted)
+
+        **After submission**
+        - [ ] App Store Connect: release notes added, build selected, submitted for review
+        - [ ] Google Play: release notes added, rollout started
+        - [ ] Store review approved and release live
+        - [ ] GitHub Release published for the tag
+        - [ ] Smoke test of the live build
+        - [ ] This issue closed
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and risks
+      description: Known issues, review risks, rollback considerations, or anything else to remember.
