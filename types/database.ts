@@ -70,11 +70,39 @@ export interface Adjective {
   created_at: string;
 }
 
+/** Case governed by a verb's preposition (e.g. warten auf + Akkusativ) */
+export type VerbPrepositionCase = 'akk' | 'dat' | 'gen';
+
+/**
+ * A verb + preposition pattern with its cloze sentence. A verb that takes
+ * several prepositions (sich freuen auf / über) has one row per pattern.
+ */
+export interface VerbPreposition {
+  id: number;
+  verb: string; // infinitive, without "sich" (e.g. "freuen")
+  is_reflexive: number; // 0 or 1 (SQLite boolean)
+  preposition: string; // the primary answer, e.g. "auf"
+  alt_prepositions: string | null; // JSON array of also-correct prepositions, or null
+  case_governed: VerbPrepositionCase;
+  sentence: string; // contains a "____" blank where the preposition goes
+  translation: string; // English gloss of the sense being tested
+  english_trap: string | null; // optional note on a common English-speaker mistake
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null;
+  remote_id: string | null;
+  created_at: string;
+}
+
 /**
  * What a card_progress row tracks. A noun has two independent cards: 'noun'
  * for its article and 'noun_plural' for its plural ending (word_id = noun id).
+ * 'verb_prep' tracks a verb preposition pattern (word_id = verb_prepositions.id).
  */
-export type CardWordType = 'noun' | 'verb' | 'adjective' | 'noun_plural';
+export type CardWordType =
+  | 'noun'
+  | 'verb'
+  | 'adjective'
+  | 'noun_plural'
+  | 'verb_prep';
 
 /** SM-2 spaced repetition progress for a single card */
 export interface CardProgress {
@@ -205,6 +233,19 @@ export interface DuePluralCard extends CardProgress {
   remote_id: string | null;
 }
 
+/** A verb preposition card that is due for review, joined with its pattern data */
+export interface DueVerbPrepCard extends CardProgress {
+  verb: string;
+  is_reflexive: number; // 0 or 1 (SQLite boolean)
+  preposition: string;
+  alt_prepositions: string | null; // JSON array, parsed by verbPrepositionService
+  case_governed: VerbPrepositionCase;
+  sentence: string;
+  translation: string;
+  english_trap: string | null;
+  remote_id: string | null;
+}
+
 // ── Input Types ───────────────────────────────────────────────────────
 
 /** A user-added noun joined with its category display name */
@@ -300,6 +341,27 @@ export interface SeedVerb {
   past_participle?: string;
   english: string;
   is_separable?: boolean;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/** Shape for seed verb preposition data. One entry per (verb, preposition,
+ * sense): a verb with several prepositions is several entries, each with a
+ * sentence that only its own preposition fits. */
+export interface SeedVerbPreposition {
+  /** Infinitive without "sich", e.g. "freuen" */
+  verb: string;
+  is_reflexive?: boolean;
+  /** The primary answer, e.g. "auf" */
+  preposition: string;
+  /** Prepositions also graded correct for this sentence (genuine synonyms) */
+  alt_prepositions?: string[];
+  case_governed: VerbPrepositionCase;
+  /** Cloze sentence with a "____" blank, e.g. "Ich warte ____ meine Frau." */
+  sentence: string;
+  /** English gloss of the sense being tested */
+  translation: string;
+  /** Optional note on a common English-speaker mistake, shown in feedback */
+  english_trap?: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 }
 
