@@ -18,6 +18,9 @@ export const SYNC_CONFIG = {
    * Using separate keys means a newly-added collection starts with no lastSync
    * and always does a full fetch on first sync, even if other collections have
    * already been synced before.
+   *
+   * `noun_translations` is a key prefix: translations are only downloaded for
+   * the selected language, so each language gets its own `<prefix>_<locale>`.
    */
   LAST_SYNC_KEYS: {
     categories: 'last_sync_categories',

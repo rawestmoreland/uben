@@ -73,6 +73,8 @@
       "choose_app_language": "Wybierz język aplikacji.",
       "select_language": "Wybierz język",
       "close_picker": "Zamknij",
+      "translations_downloading": "Pobieranie tłumaczeń…",
+      "translations_download_failed": "Nie udało się pobrać tłumaczeń. Podpowiedzi będą po angielsku, dopóki nie wrócisz online.",
       "adjective_difficulty_advanced": "Zaawansowane końcówki",
       "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników."
     },

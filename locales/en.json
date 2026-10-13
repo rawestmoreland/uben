@@ -65,6 +65,8 @@
       "choose_app_language": "Choose the app display language.",
       "select_language": "Select language",
       "close_picker": "Close",
+      "translations_downloading": "Downloading translations…",
+      "translations_download_failed": "Couldn't download translations. Hints will show in English until you're online again.",
       "adjective_difficulty_advanced": "Advanced adjective endings",
       "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice."
     },
