@@ -1,4 +1,5 @@
 import { LanguagePicker } from '@/components/settings/language-picker';
+import { TranslationSyncOverlay } from '@/components/settings/translation-sync-overlay';
 import {
   AppColors,
   Layout,
@@ -38,6 +39,8 @@ export default function SettingsScreen() {
     setEszettPreference,
     appLanguage,
     setAppLanguage,
+    syncingLanguage,
+    translationSyncFailed,
     adjectiveDeclensionDifficulty,
     setAdjectiveDeclensionDifficulty,
     isLoading,
@@ -118,8 +121,13 @@ export default function SettingsScreen() {
             <LanguagePicker
               value={appLanguage}
               onChange={setAppLanguage}
-              disabled={isLoading}
+              disabled={isLoading || syncingLanguage !== null}
             />
+            {translationSyncFailed && (
+              <Text style={styles.syncError}>
+                {t('settings.translations_download_failed')}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -332,6 +340,7 @@ export default function SettingsScreen() {
           v{Constants.expoConfig?.version ?? '—'}
         </Text>
       </KeyboardAwareScrollView>
+      <TranslationSyncOverlay language={syncingLanguage} />
     </SafeAreaView>
   );
 }
@@ -417,6 +426,13 @@ const styles = StyleSheet.create({
     fontWeight: Typography.regular,
     color: AppColors.textSecondary,
     lineHeight: 20,
+  },
+  syncError: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.red,
+    lineHeight: 20,
+    marginTop: Spacing.sm,
   },
   switch: {
     borderWidth: Layout.borderWidthThin,

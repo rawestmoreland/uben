@@ -196,7 +196,7 @@ describe('syncService.syncIfOnline()', () => {
     });
 
     it('calls getSetting with per-collection keys at start', async () => {
-      await syncService.syncIfOnline();
+      await syncService.syncIfOnline('it');
 
       expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
         'last_sync_categories',
@@ -205,12 +205,12 @@ describe('syncService.syncIfOnline()', () => {
         'last_sync_nouns',
       );
       expect(mockSettingsService.getSetting).toHaveBeenCalledWith(
-        'last_sync_noun_translations',
+        'last_sync_noun_translations_it',
       );
     });
 
     it('calls setSetting with per-collection keys after successful sync', async () => {
-      await syncService.syncIfOnline();
+      await syncService.syncIfOnline('it');
 
       expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
         'last_sync_categories',
@@ -221,7 +221,7 @@ describe('syncService.syncIfOnline()', () => {
         expect.any(String),
       );
       expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
-        'last_sync_noun_translations',
+        'last_sync_noun_translations_it',
         expect.any(String),
       );
     });
@@ -524,6 +524,205 @@ describe('syncService.syncIfOnline()', () => {
 
       // One transaction for nouns (categories were empty → no transaction there)
       expect(mockDb.withTransactionAsync).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+// ── Per-language noun translations ─────────────────────────────────────────
+
+describe('noun translation sync (selected language only)', () => {
+  const sampleTranslation = {
+    id: 'tr1',
+    noun_id: 'noun456',
+    locale: 'it' as const,
+    translation: 'cane',
+    created: '2026-01-01 00:00:00.000Z',
+    updated: '2026-01-01 00:00:00.000Z',
+  };
+
+  function fetchedUrls(): string[] {
+    return (global.fetch as jest.Mock).mock.calls.map(
+      ([url]: [string]) => decodeURIComponent(url).replace(/\+/g, ' '),
+    );
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPbUrl = 'http://test.example.com';
+    mockPbApiKey = 'test-api-key';
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    mockDb.withTransactionAsync.mockImplementation(
+      async (cb: () => Promise<void>) => cb(),
+    );
+    mockDb.runAsync.mockResolvedValue({ changes: 1, lastInsertRowId: 1 });
+    mockDb.getAllAsync.mockResolvedValue([]);
+    mockDb.getFirstAsync.mockResolvedValue(null);
+    mockSettingsService.getSetting.mockResolvedValue(null);
+    mockSettingsService.setSetting.mockResolvedValue(undefined);
+
+    // Any URL: translations list returns one row; everything else is empty
+    global.fetch = jest.fn((url: string) =>
+      makeFetchOk(
+        url.includes('/noun_translations/')
+          ? makeListResponse([sampleTranslation])
+          : emptyListResponse,
+      ),
+    );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe('syncIfOnline(locale)', () => {
+    it('never touches noun_translations for English', async () => {
+      await syncService.syncIfOnline('en');
+      await syncService.syncIfOnline();
+
+      expect(fetchedUrls().some((u) => u.includes('noun_translations'))).toBe(
+        false,
+      );
+      expect(mockSettingsService.getSetting).not.toHaveBeenCalledWith(
+        expect.stringContaining('noun_translations'),
+      );
+    });
+
+    it('filters the translations fetch to the selected language', async () => {
+      await syncService.syncIfOnline('it');
+
+      const translationUrls = fetchedUrls().filter((u) =>
+        u.includes('/api/collections/noun_translations/records'),
+      );
+      expect(translationUrls.length).toBeGreaterThan(0);
+      for (const url of translationUrls) {
+        expect(url).toContain("locale = 'it'");
+      }
+    });
+
+    it('does not expand the noun relation on translations', async () => {
+      await syncService.syncIfOnline('it');
+
+      const listUrl = fetchedUrls().find(
+        (u) =>
+          u.includes('/api/collections/noun_translations/records') &&
+          u.includes('perPage=200'),
+      );
+      expect(listUrl).toBeDefined();
+      expect(listUrl).not.toContain('expand=');
+    });
+
+    it('combines the incremental timestamp with the locale filter', async () => {
+      mockSettingsService.getSetting.mockResolvedValue(
+        '2026-01-01T00:00:00.000Z',
+      );
+
+      await syncService.syncIfOnline('pl');
+
+      const listUrl = fetchedUrls().find(
+        (u) =>
+          u.includes('/api/collections/noun_translations/records') &&
+          u.includes('perPage=200'),
+      );
+      expect(listUrl).toContain("updated > '2026-01-01 00:00:00.000Z'");
+      expect(listUrl).toContain("locale = 'pl'");
+    });
+
+    it('stores a separate timestamp per language', async () => {
+      await syncService.syncIfOnline('fr');
+
+      expect(mockSettingsService.setSetting).toHaveBeenCalledWith(
+        'last_sync_noun_translations_fr',
+        expect.any(String),
+      );
+      expect(mockSettingsService.setSetting).not.toHaveBeenCalledWith(
+        'last_sync_noun_translations',
+        expect.any(String),
+      );
+    });
+
+    it('reports how many translations were synced', async () => {
+      const result = await syncService.syncIfOnline('it');
+
+      expect(result).toMatchObject({
+        status: 'synced',
+        nounTranslationsSynced: 1,
+      });
+    });
+
+    it('scopes the count integrity check to the language', async () => {
+      await syncService.syncIfOnline('it');
+
+      const countUrl = fetchedUrls().find(
+        (u) =>
+          u.includes('/api/collections/noun_translations/records') &&
+          u.includes('perPage=1&'),
+      );
+      expect(countUrl).toContain("locale = 'it'");
+
+      const countQuery = (mockDb.getFirstAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) => sql.includes('FROM noun_translations'),
+      );
+      expect(countQuery[0]).toContain('WHERE locale = ?');
+      expect(countQuery[1]).toEqual(['it']);
+    });
+
+    it('only prunes rows of the selected language on a count mismatch', async () => {
+      // Remote has 1 italian translation, local has 5 -> mismatch -> patch + prune
+      mockDb.getFirstAsync.mockImplementation((sql: string) =>
+        Promise.resolve(
+          sql.includes('FROM noun_translations') ? { count: 5 } : null,
+        ),
+      );
+
+      const result = await syncService.syncIfOnline('it');
+
+      expect(result.patchedCollections).toContain('noun_translations');
+      const pruneCall = (mockDb.runAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) => sql.includes('DELETE FROM noun_translations'),
+      );
+      expect(pruneCall[0]).toContain('locale = ?');
+      expect(pruneCall[1]).toEqual(['it', 'tr1']);
+    });
+  });
+
+  describe('syncNounTranslations(locale)', () => {
+    it('downloads only the requested language', async () => {
+      const result = await syncService.syncNounTranslations('it');
+
+      expect(result).toMatchObject({
+        status: 'synced',
+        nounTranslationsSynced: 1,
+      });
+      const urls = fetchedUrls();
+      expect(urls.every((u) => u.includes('noun_translations'))).toBe(true);
+      expect(urls.every((u) => u.includes("locale = 'it'"))).toBe(true);
+    });
+
+    it('skips English without any request', async () => {
+      const result = await syncService.syncNounTranslations('en');
+
+      expect(result).toEqual({ status: 'skipped' });
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('skips when PocketBase is not configured', async () => {
+      mockPbApiKey = undefined;
+
+      const result = await syncService.syncNounTranslations('it');
+
+      expect(result).toEqual({ status: 'skipped' });
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('returns an error (without throwing) when offline, and keeps the timestamp unset', async () => {
+      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+      const result = await syncService.syncNounTranslations('it');
+
+      expect(result).toEqual({ status: 'error', error: 'Network error' });
+      expect(mockSettingsService.setSetting).not.toHaveBeenCalled();
     });
   });
 });

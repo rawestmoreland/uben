@@ -1,13 +1,16 @@
 import i18n from '@/constants/i18n';
 import { settingsService } from '@/services/settingsService';
+import { syncService } from '@/services/syncService';
 import { resolveAppLanguage, type AppLanguage } from '@/types/language';
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * Hook to read and toggle the "Show English Hint" setting.
+ * Hook to read and toggle the user's settings.
  *
- * - Loads the persisted value on mount.
- * - `setShowEnglishHint` writes to the database immediately.
+ * - Loads the persisted values on mount.
+ * - Setters write to the database immediately.
+ * - `setAppLanguage` also downloads the noun translations for the new language;
+ *   `syncingLanguage` is set while that download runs so the UI can block on it.
  */
 export function useSettings() {
   const [showEnglishHint, setShowEnglishHintState] = useState(true);
@@ -18,6 +21,10 @@ export function useSettings() {
   const [adjectiveDeclensionDifficulty, setAdjectiveDeclensionDifficultyState] =
     useState<'standard' | 'advanced'>('standard');
   const [isLoading, setIsLoading] = useState(true);
+  const [syncingLanguage, setSyncingLanguage] = useState<AppLanguage | null>(
+    null,
+  );
+  const [translationSyncFailed, setTranslationSyncFailed] = useState(false);
 
   // ── Load on mount ──────────────────────────────────────────────────
 
@@ -86,13 +93,26 @@ export function useSettings() {
     async (language: AppLanguage) => {
       const previous = appLanguage;
       setAppLanguageState(language);
+      setTranslationSyncFailed(false);
       try {
         await settingsService.setAppLanguage(language);
+
+        // Download this language's translations BEFORE switching the UI so the
+        // hints are already in SQLite when screens re-read them. A failed
+        // download (offline) is not fatal: hints fall back to English and the
+        // next launch's sync retries, since the per-language timestamp is only
+        // stored after a successful pull.
+        setSyncingLanguage(language);
+        const result = await syncService.syncNounTranslations(language);
+        setTranslationSyncFailed(result.status === 'error');
+
         await i18n.changeLanguage(language);
       } catch (error) {
         console.error('[Settings] Failed to save app language:', error);
         // Revert optimistic update on failure
         setAppLanguageState(previous);
+      } finally {
+        setSyncingLanguage(null);
       }
     },
     [appLanguage],
@@ -123,6 +143,8 @@ export function useSettings() {
     setEszettPreference,
     appLanguage,
     setAppLanguage,
+    syncingLanguage,
+    translationSyncFailed,
     adjectiveDeclensionDifficulty,
     setAdjectiveDeclensionDifficulty,
     isLoading,

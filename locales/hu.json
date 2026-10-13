@@ -65,6 +65,8 @@
       "choose_app_language": "Válaszd ki az alkalmazás megjelenítési nyelvét.",
       "select_language": "Nyelv kiválasztása",
       "close_picker": "Bezárás",
+      "translations_downloading": "Fordítások letöltése…",
+      "translations_download_failed": "A fordításokat nem sikerült letölteni. A tippek angolul jelennek meg, amíg újra online nem leszel.",
       "adjective_difficulty_advanced": "Haladó melléknévragok",
       "adjective_difficulty_advanced_description": "A részes esetet (távolabbi tárgy) is felveszi a melléknévragok gyakorlásába."
     },
