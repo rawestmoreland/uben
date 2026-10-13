@@ -7,6 +7,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useNounTranslation } from '@/hooks/use-noun-translation';
 import { useProgressData } from '@/hooks/use-progress-data';
 import type { DailyActivity, HardWord } from '@/services/statisticsService';
 import { useTranslation } from 'react-i18next';
@@ -236,6 +237,19 @@ function HeatmapSection({ activityData }: HeatmapSectionProps) {
 
 // ── Hardest words section ────────────────────────────────────────────
 
+interface HardWordTranslationProps {
+  remoteId: string | null;
+  english: string | null;
+}
+
+/** Shows the translation in the app language, falling back to English. */
+function HardWordTranslation({ remoteId, english }: HardWordTranslationProps) {
+  const translation = useNounTranslation(remoteId, english);
+  return translation ? (
+    <Text style={styles.englishWord}>{translation}</Text>
+  ) : null;
+}
+
 interface HardestWordsSectionProps {
   words: HardWord[];
 }
@@ -281,9 +295,10 @@ function HardestWordsSection({ words }: HardestWordsSectionProps) {
               <View style={styles.wordInfo}>
                 <View style={styles.wordNameRow}>
                   <Text style={styles.germanWord}>{word.german}</Text>
-                  {word.english ? (
-                    <Text style={styles.englishWord}>{word.english}</Text>
-                  ) : null}
+                  <HardWordTranslation
+                    remoteId={word.remote_id}
+                    english={word.english}
+                  />
                 </View>
 
                 {/* Success rate bar */}

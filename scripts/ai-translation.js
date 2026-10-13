@@ -7,8 +7,27 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
 
 const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
-const LANGUAGE = 'Italian';
-const LOCALE = 'it';
+
+// Usage: node scripts/ai-translation.js <locale>   (e.g. zh, it, fr)
+// Locales must match APP_LANGUAGES in types/language.ts.
+const LANGUAGE_NAMES = {
+  it: 'Italian',
+  pl: 'Polish',
+  fr: 'French',
+  tr: 'Turkish',
+  ru: 'Russian',
+  pt: 'European Portuguese',
+  hu: 'Hungarian',
+  zh: 'Simplified Chinese (Mandarin)',
+};
+const LOCALE = process.argv[2];
+const LANGUAGE = LANGUAGE_NAMES[LOCALE];
+if (!LANGUAGE) {
+  console.error(
+    `Usage: node scripts/ai-translation.js <locale>\nSupported locales: ${Object.keys(LANGUAGE_NAMES).join(', ')}`,
+  );
+  process.exit(1);
+}
 
 const TranslationResponseSchema = z.array(
   z.object({

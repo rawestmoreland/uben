@@ -13,6 +13,8 @@ export interface HardWord {
   german: string;
   article: 'der' | 'die' | 'das';
   english: string | null;
+  /** PocketBase id used to look up localized translations; null for user-added words */
+  remote_id: string | null;
   total_reviews: number;
   correct_reviews: number;
   success_rate: number | null;
@@ -61,6 +63,7 @@ export class StatisticsService {
          n.german,
          n.article,
          n.english,
+         n.remote_id,
          cp.total_reviews,
          cp.correct_reviews,
          ROUND(100.0 * cp.correct_reviews / NULLIF(cp.total_reviews, 0), 1) AS success_rate
