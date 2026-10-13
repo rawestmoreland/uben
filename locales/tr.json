@@ -65,6 +65,8 @@
       "choose_app_language": "Uygulamanın görüntüleme dilini seçin.",
       "select_language": "Dil seçin",
       "close_picker": "Kapat",
+      "translations_downloading": "Çeviriler indiriliyor…",
+      "translations_download_failed": "Çeviriler indirilemedi. Tekrar çevrimiçi olana kadar ipuçları İngilizce gösterilecek.",
       "adjective_difficulty_advanced": "Gelişmiş sıfat çekimleri",
       "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et."
     },
