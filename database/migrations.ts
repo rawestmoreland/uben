@@ -717,6 +717,80 @@ export const migrations: Migration[] = [
       await rebuildCardProgress(db, ['noun', 'verb', 'adjective']);
     },
   },
+  {
+    version: '011',
+    name: 'add_verb_prepositions',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 011] Adding verb_prepositions and widening card_progress.word_type to allow verb_prep...',
+      );
+
+      // One row per (verb, preposition, sense) pattern, each with its own
+      // cloze sentence, so a verb that takes several prepositions
+      // (sich freuen auf / über) is several rows. The blank in `sentence`
+      // is "____"; `alt_prepositions` is a JSON array of prepositions that
+      // are also accepted as correct for that sentence, or NULL.
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS verb_prepositions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verb TEXT NOT NULL,
+          is_reflexive BOOLEAN NOT NULL DEFAULT 0,
+          preposition TEXT NOT NULL,
+          alt_prepositions TEXT,
+          case_governed TEXT NOT NULL CHECK(case_governed IN ('akk', 'dat', 'gen')),
+          sentence TEXT NOT NULL,
+          translation TEXT NOT NULL,
+          english_trap TEXT,
+          level TEXT CHECK(level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+          remote_id TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(verb, is_reflexive, preposition, sentence)
+        );
+      `);
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_verb_prepositions_level ON verb_prepositions(level);',
+      );
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_verb_prepositions_verb ON verb_prepositions(verb);',
+      );
+      await db.execAsync(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_verb_prepositions_remote_id ON verb_prepositions(remote_id) WHERE remote_id IS NOT NULL;',
+      );
+
+      // A pattern's progress is its own card: word_type 'verb_prep',
+      // word_id = verb_prepositions.id.
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+        'verb_prep',
+      ]);
+
+      console.log('[Migration 011] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove verb_prep cards (and their history) before restoring the
+      // narrower CHECK constraint
+      await db.execAsync(`
+        DELETE FROM review_history WHERE card_progress_id IN (
+          SELECT id FROM card_progress WHERE word_type = 'verb_prep'
+        );
+      `);
+      await db.execAsync(
+        "DELETE FROM card_progress WHERE word_type = 'verb_prep';",
+      );
+
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+      ]);
+
+      await db.execAsync('DROP TABLE IF EXISTS verb_prepositions;');
+    },
+  },
 ];
 
 /**
