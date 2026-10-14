@@ -149,6 +149,7 @@ Business logic abstracted from UI components:
 - **vocabularyService.ts** - CRUD operations for nouns/verbs (SQLite)
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
 - **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
+- **wordTranslationService.ts** - Verb/adjective hints in the app language, from bundled `database/seeds/translations/` (not synced); falls back to `english`
 - **statisticsService.ts** - User progress, streaks, forecasting
 - **syncService.ts** - Optional PocketBase vocabulary sync
 
