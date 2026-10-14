@@ -7,6 +7,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useNounTranslation } from '@/hooks/use-noun-translation';
 import { useProgressData } from '@/hooks/use-progress-data';
 import type { DailyActivity, HardWord } from '@/services/statisticsService';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { applyGermanTextPreference } from '@/utils/germanText';
 import { uiUpperCase } from '@/utils/uiText';
 
 // ── Heatmap constants ────────────────────────────────────────────────
@@ -236,11 +238,71 @@ function HeatmapSection({ activityData }: HeatmapSectionProps) {
 
 // ── Hardest words section ────────────────────────────────────────────
 
-interface HardestWordsSectionProps {
-  words: HardWord[];
+interface HardWordRowProps {
+  word: HardWord;
+  isLast: boolean;
+  eszettPreference: 'eszett' | 'ss';
 }
 
-function HardestWordsSection({ words }: HardestWordsSectionProps) {
+function HardWordRow({ word, isLast, eszettPreference }: HardWordRowProps) {
+  const { t } = useTranslation('app');
+  // Translation in the app language; falls back to `english` for English,
+  // user-added words, and nouns with no translation row.
+  const translation = useNounTranslation(word.remote_id, word.english);
+  const rate = word.success_rate ?? 0;
+  const articleColor = getArticleColor(word.article);
+
+  return (
+    <View style={[styles.hardWordRow, !isLast && styles.hardWordRowBorder]}>
+      {/* Article badge */}
+      <View style={[styles.articleBadge, { backgroundColor: articleColor }]}>
+        <Text style={styles.articleBadgeText}>{word.article.toUpperCase()}</Text>
+      </View>
+
+      {/* Word info */}
+      <View style={styles.wordInfo}>
+        <View style={styles.wordNameRow}>
+          <Text style={styles.germanWord}>
+            {applyGermanTextPreference(word.german, eszettPreference)}
+          </Text>
+          {translation ? (
+            <Text style={styles.englishWord}>{translation}</Text>
+          ) : null}
+        </View>
+
+        {/* Success rate bar */}
+        <View style={styles.rateBarOuter}>
+          <View
+            style={[
+              styles.rateBarFill,
+              {
+                width: `${rate}%`,
+                backgroundColor: rate < 50 ? AppColors.red : AppColors.yellow,
+              },
+            ]}
+          />
+        </View>
+
+        <Text style={styles.rateText}>
+          {t('progress_screen.success_rate', {
+            rate: Math.round(rate),
+            count: word.total_reviews,
+          })}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+interface HardestWordsSectionProps {
+  words: HardWord[];
+  eszettPreference: 'eszett' | 'ss';
+}
+
+function HardestWordsSection({
+  words,
+  eszettPreference,
+}: HardestWordsSectionProps) {
   const { t } = useTranslation('app');
 
   return (
@@ -257,59 +319,14 @@ function HardestWordsSection({ words }: HardestWordsSectionProps) {
           {t('progress_screen.hardest_words_empty')}
         </Text>
       ) : (
-        words.map((word, idx) => {
-          const rate = word.success_rate ?? 0;
-          const articleColor = getArticleColor(word.article);
-          return (
-            <View
-              key={`${word.german}-${idx}`}
-              style={[
-                styles.hardWordRow,
-                idx < words.length - 1 && styles.hardWordRowBorder,
-              ]}
-            >
-              {/* Article badge */}
-              <View
-                style={[styles.articleBadge, { backgroundColor: articleColor }]}
-              >
-                <Text style={styles.articleBadgeText}>
-                  {word.article.toUpperCase()}
-                </Text>
-              </View>
-
-              {/* Word info */}
-              <View style={styles.wordInfo}>
-                <View style={styles.wordNameRow}>
-                  <Text style={styles.germanWord}>{word.german}</Text>
-                  {word.english ? (
-                    <Text style={styles.englishWord}>{word.english}</Text>
-                  ) : null}
-                </View>
-
-                {/* Success rate bar */}
-                <View style={styles.rateBarOuter}>
-                  <View
-                    style={[
-                      styles.rateBarFill,
-                      {
-                        width: `${rate}%`,
-                        backgroundColor:
-                          rate < 50 ? AppColors.red : AppColors.yellow,
-                      },
-                    ]}
-                  />
-                </View>
-
-                <Text style={styles.rateText}>
-                  {t('progress_screen.success_rate', {
-                    rate: Math.round(rate),
-                    count: word.total_reviews,
-                  })}
-                </Text>
-              </View>
-            </View>
-          );
-        })
+        words.map((word, idx) => (
+          <HardWordRow
+            key={`${word.german}-${idx}`}
+            word={word}
+            isLast={idx === words.length - 1}
+            eszettPreference={eszettPreference}
+          />
+        ))
       )}
     </View>
   );
@@ -326,6 +343,7 @@ export default function ProgressScreen() {
     masteredCount,
     activityData,
     hardestWords,
+    eszettPreference,
     isLoading,
   } = useProgressData();
 
@@ -396,7 +414,10 @@ export default function ProgressScreen() {
 
         {/* ── Hardest Words ────────────────────────────────────── */}
         {!isLoading && hasAnyData && (
-          <HardestWordsSection words={hardestWords} />
+          <HardestWordsSection
+            words={hardestWords}
+            eszettPreference={eszettPreference}
+          />
         )}
 
         {/* ── Empty state ───────────────────────────────────────── */}
