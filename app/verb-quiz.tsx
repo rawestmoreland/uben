@@ -13,6 +13,7 @@ import {
 } from '@/hooks/use-verb-quiz-session';
 import { PRONOUN_LABELS } from '@/services/verbImperfectService';
 import { useStoreReview } from '@/hooks/use-store-review';
+import { useWordTranslation } from '@/hooks/use-word-translation';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -114,6 +115,11 @@ function PlayingState({ quiz }: PlayingStateProps) {
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
+  const translation = useWordTranslation(
+    'verb',
+    currentQuestion?.infinitive ?? null,
+    currentQuestion?.english ?? null,
+  );
 
   const isFeedback = phase === 'feedback';
 
@@ -222,9 +228,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
               {isFeedback ? selectedAnswer : '____'}
             </Text>
           </Text>
-          {currentQuestion.english && (
-            <Text style={styles.englishHint}>{currentQuestion.english}</Text>
-          )}
+          {translation && <Text style={styles.englishHint}>{translation}</Text>}
           {isFeedback && !isCorrect && (
             <Text style={styles.correctAnswerNote}>
               {t('verb_quiz.correct_answer_was', {
