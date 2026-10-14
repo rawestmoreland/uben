@@ -16,7 +16,7 @@ import {
 import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
-import { getNounFontSize } from '@/utils/typography';
+import { getNounFontSize, NOUN_SINGLE_LINE_PROPS } from '@/utils/typography';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -235,6 +235,7 @@ function PlayingState({
         <View style={[styles.wordCard, shadowStyle]}>
           {isFeedback ? (
             <Text
+              {...NOUN_SINGLE_LINE_PROPS}
               style={[
                 styles.wordText,
                 { fontSize: getNounFontSize(currentCard.word) },
@@ -255,6 +256,7 @@ function PlayingState({
             </Text>
           ) : (
             <Text
+              {...NOUN_SINGLE_LINE_PROPS}
               style={[
                 styles.wordText,
                 { fontSize: getNounFontSize(currentCard.word) },
@@ -572,6 +574,8 @@ const styles = StyleSheet.create({
     fontWeight: Typography.bold,
     color: AppColors.black,
     textAlign: 'center',
+    // Fill the card's inner width so adjustsFontSizeToFit has a bound to fit to.
+    alignSelf: 'stretch',
   },
   articleReveal: {
     fontSize: Typography.huge,
