@@ -1,0 +1,84 @@
+name: Bug report
+description: Something in Üben isn't working as expected
+title: 'Bug: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. The more detail you give, the faster it can be fixed.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+      description: A short description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Quiz tab
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Article quiz
+        - Plural ending quiz
+        - Spaced repetition / scheduling
+        - Progress / stats
+        - Words / user-added words
+        - Settings / language
+        - Vocabulary sync (PocketBase)
+        - Ads
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - iOS
+        - Android
+        - Web
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: e.g. v1.10.0 (Settings screen, or the TestFlight/Play Store build).
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS version
+      description: e.g. iPhone 15, iOS 18.2
+  - type: checkboxes
+    id: conditions
+    attributes:
+      label: Conditions
+      description: Check any that apply.
+      options:
+        - label: Happens while offline
+        - label: Happens after a vocabulary sync
+        - label: Happens in dark mode only
+        - label: Affects existing progress data (card progress or review history)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Screenshots and logs
+      description: Attach screenshots, screen recordings, or console output if you have them.

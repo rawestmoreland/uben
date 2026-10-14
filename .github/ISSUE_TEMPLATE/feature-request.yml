@@ -1,0 +1,60 @@
+name: Feature request
+description: Suggest a new feature or an improvement to Üben
+title: 'Feature: '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Üben is offline-first and focused on mastering German noun articles and plurals, so mention how your idea fits that.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What should the app do? Sketches or mockups are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches or workarounds you thought about.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Article quiz
+        - Plural ending quiz
+        - Spaced repetition / scheduling
+        - Progress / stats
+        - Words / user-added words
+        - Vocabulary content (new words, levels, categories)
+        - Settings / language
+        - Vocabulary sync (PocketBase)
+        - UI / design
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Considerations
+      description: Check any that apply.
+      options:
+        - label: Needs a SQLite schema change or migration
+        - label: Needs a PocketBase backend change
+        - label: Needs new UI screens or components
+        - label: Should work fully offline
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, screenshots, or anything else that helps.
