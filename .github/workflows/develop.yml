@@ -59,8 +59,8 @@ jobs:
         id: ota
         continue-on-error: true
         run: |
-          eas update --auto --branch develop --non-interactive --platform ios
-          eas update --auto --branch develop --non-interactive --platform android
+          eas update --auto --branch develop --environment development --non-interactive --platform ios
+          eas update --auto --branch develop --environment development --non-interactive --platform android
 
       - name: Trigger development build if OTA failed
         id: build

@@ -24,9 +24,9 @@ This directory contains CI/CD workflows for the üben release train.
 
 **Steps:**
 1. Lint and TypeScript checks
-2. Compare native fingerprints against the latest finished staging builds
-3. If they match: publish an OTA update to the `staging` branch
-4. If they differ: build for iOS and Android (`preview` profile, internal distribution; no store submission)
+2. Compare native fingerprints against the latest finished staging builds, per selected platform
+3. Platforms whose fingerprint matches an existing build: publish an OTA update to the `staging` branch
+4. Platforms whose fingerprint differs or have no existing build: build only that platform (`preview` profile, internal distribution; no store submission)
 5. Create a unique pre-release tag, `v<version>-staging.<run number>` (for OTAs, the tag message includes the EAS update group ID)
 
 The app version is not bumped here; an OTA reaches every build with a matching runtime version.
