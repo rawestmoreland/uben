@@ -15,9 +15,9 @@
     "pb:import": "node scripts/generate-pb-import.js",
     "store:screenshots": "npm --prefix scripts/store-screenshots run generate",
     "version:bump": "node scripts/bump-version.js",
-    "update:dev": "eas update --branch develop --environment development",
-    "update:staging": "eas update --branch staging --environment preview",
-    "update:prod": "eas update --branch production --environment production",
+    "update:dev": "eas update --branch develop",
+    "update:staging": "eas update --branch staging",
+    "update:prod": "eas update --branch production",
     "build:dev": "eas build --profile development --platform all",
     "build:staging": "eas build --profile preview --platform all",
     "build:prod": "eas build --profile production --platform all"
