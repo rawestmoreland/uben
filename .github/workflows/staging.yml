@@ -103,6 +103,22 @@ jobs:
           # would otherwise drift and force a full build on every push.
           OTA_PLATFORMS=""
           BUILD_PLATFORMS=""
+
+          # Print the fingerprint hash from `eas fingerprint:generate --json`. eas-cli can
+          # write status lines (e.g. "Environment variables ... loaded from ...") to stdout
+          # ahead of the JSON when run in CI, which breaks a plain `jq`. Keep everything
+          # from the first line that starts the JSON document, and show the raw output if
+          # no hash can be read so the real cause is visible in the log.
+          fingerprint_hash() {
+            local raw hash
+            raw=$("$@") || true
+            hash=$(printf '%s\n' "$raw" | sed -n '/^[[{]/,$p' | jq -r '.hash // empty' 2>/dev/null) || hash=""
+            if [ -z "$hash" ]; then
+              echo "::warning::could not read a fingerprint hash from: $*. Output: $raw" >&2
+            fi
+            printf '%s' "$hash"
+          }
+
           for PLATFORM in ios android; do
             if [ "$PLATFORM" = ios ]; then SELECTED=$BUILD_IOS; else SELECTED=$BUILD_ANDROID; fi
             [ "$SELECTED" = true ] || continue
@@ -112,14 +128,14 @@ jobs:
             # variables the builder uses, which feed into app.config.js. A bare local
             # run produced a different hash than the builder, so it never matched.
             # stderr is left visible so failures show up in the log.
-            CURRENT=$(eas fingerprint:generate --build-profile preview --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || CURRENT=""
+            CURRENT=$(fingerprint_hash eas fingerprint:generate --build-profile preview --platform "$PLATFORM" --json --non-interactive)
 
             # `eas update` doesn't apply the preview profile's `env` block, but it does load
             # the server-side EAS "preview" environment via `--environment`. APP_ENV (which
             # changes the app name, bundle id and scheme) must be defined there, or the update
             # would get a different runtime version than the preview builds. Check with the same
             # flag the publish step uses, and bail out to a full build if the hashes differ.
-            UPDATE_FP=$(eas fingerprint:generate --environment preview --platform "$PLATFORM" --json --non-interactive | jq -r '.hash // empty') || UPDATE_FP=""
+            UPDATE_FP=$(fingerprint_hash eas fingerprint:generate --environment preview --platform "$PLATFORM" --json --non-interactive)
             if [ "$UPDATE_FP" != "$CURRENT" ]; then
               echo "::warning::$PLATFORM: an update would get runtime version ${UPDATE_FP:-<failed>}, not ${CURRENT:-<failed>}; falling back to a full build."
               CURRENT=""
