@@ -71,9 +71,25 @@ jobs:
           # resolves the same build profile env and EAS "production" environment variables the
           # builder uses, which feed into app.config.js. A bare local run produces a different
           # hash than the builder, so it would never match the store builds. (staging.yml does
-          # the same.) stderr is left visible so failures show up in the log.
-          CURRENT_IOS=$(eas fingerprint:generate --build-profile production --platform ios --json --non-interactive | jq -r '.hash // empty') || CURRENT_IOS=""
-          CURRENT_ANDROID=$(eas fingerprint:generate --build-profile production --platform android --json --non-interactive | jq -r '.hash // empty') || CURRENT_ANDROID=""
+          # the same.)
+
+          # Print the fingerprint hash from `eas fingerprint:generate --json`. eas-cli can
+          # write status lines (e.g. "Environment variables ... loaded from ...") to stdout
+          # ahead of the JSON when run in CI, which breaks a plain `jq`. Keep everything
+          # from the first line that starts the JSON document, and show the raw output if
+          # no hash can be read so the real cause is visible in the log.
+          fingerprint_hash() {
+            local raw hash
+            raw=$("$@") || true
+            hash=$(printf '%s\n' "$raw" | sed -n '/^[[{]/,$p' | jq -r '.hash // empty' 2>/dev/null) || hash=""
+            if [ -z "$hash" ]; then
+              echo "::warning::could not read a fingerprint hash from: $*. Output: $raw" >&2
+            fi
+            printf '%s' "$hash"
+          }
+
+          CURRENT_IOS=$(fingerprint_hash eas fingerprint:generate --build-profile production --platform ios --json --non-interactive)
+          CURRENT_ANDROID=$(fingerprint_hash eas fingerprint:generate --build-profile production --platform android --json --non-interactive)
           echo "iOS fingerprint:     $CURRENT_IOS"
           echo "Android fingerprint: $CURRENT_ANDROID"
           echo "ios_fingerprint=$CURRENT_IOS" >> "$GITHUB_OUTPUT"
@@ -88,8 +104,8 @@ jobs:
           # server-side EAS "production" environment via `--environment`; APP_ENV must be
           # defined there. Abort now, before publishing, if an update run that way would get a
           # different runtime version than the builds we just verified.
-          UPDATE_IOS=$(eas fingerprint:generate --environment production --platform ios --json --non-interactive | jq -r '.hash // empty') || UPDATE_IOS=""
-          UPDATE_ANDROID=$(eas fingerprint:generate --environment production --platform android --json --non-interactive | jq -r '.hash // empty') || UPDATE_ANDROID=""
+          UPDATE_IOS=$(fingerprint_hash eas fingerprint:generate --environment production --platform ios --json --non-interactive)
+          UPDATE_ANDROID=$(fingerprint_hash eas fingerprint:generate --environment production --platform android --json --non-interactive)
           echo "iOS update fingerprint:     $UPDATE_IOS"
           echo "Android update fingerprint: $UPDATE_ANDROID"
           if [ "$UPDATE_IOS" != "$CURRENT_IOS" ] || [ "$UPDATE_ANDROID" != "$CURRENT_ANDROID" ]; then
