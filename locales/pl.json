@@ -217,6 +217,24 @@
       "case_prompt": "Jaki przypadek rządzi?",
       "case_you_picked": "Wybrano {{picked}} (rządzi: {{correct}})"
     },
+    "verb_preposition_patterns": {
+      "title": "Wzorce według przyimka",
+      "open": "Wzorce",
+      "open_a11y": "Przeglądaj wzorce pogrupowane według przyimka",
+      "close": "Zamknij wzorce",
+      "summary": "Przećwiczono {{started}} z {{total}} wzorców",
+      "summary_empty": "Wzorców: {{total}}. Rozpocznij quiz, aby śledzić postępy.",
+      "empty_title": "Brak wzorców",
+      "empty": "Na tym urządzeniu nie ma jeszcze wzorców czasowników. Wróć po następnej aktualizacji słownictwa.",
+      "error": "Nie udało się wczytać wzorców.",
+      "also_with": "Akceptowane także dla: {{preposition}}",
+      "contrast": "Porównaj: {{patterns}}",
+      "mastery": {
+        "new": "Nowy",
+        "learning": "W nauce",
+        "mastered": "Opanowany"
+      }
+    },
     "plural_quiz": {
       "badge": "Liczba mnoga",
       "prompt": "Jaka końcówka liczby mnogiej?",

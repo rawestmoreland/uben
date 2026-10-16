@@ -212,6 +212,24 @@
       "case_prompt": "Qual caso ela rege?",
       "case_you_picked": "Você escolheu {{picked}} (rege {{correct}})"
     },
+    "verb_preposition_patterns": {
+      "title": "Padrões por preposição",
+      "open": "Padrões",
+      "open_a11y": "Ver padrões agrupados por preposição",
+      "close": "Fechar padrões",
+      "summary": "{{started}} de {{total}} padrões praticados",
+      "summary_empty": "{{total}} padrões. Inicie o quiz para acompanhar seu progresso.",
+      "empty_title": "Nenhum padrão",
+      "empty": "Ainda não há padrões de verbos neste dispositivo. Volte após a próxima atualização de vocabulário.",
+      "error": "Não foi possível carregar os padrões.",
+      "also_with": "Também aceito para: {{preposition}}",
+      "contrast": "Compare: {{patterns}}",
+      "mastery": {
+        "new": "Novo",
+        "learning": "Aprendendo",
+        "mastered": "Dominado"
+      }
+    },
     "plural_quiz": {
       "badge": "Terminações do plural",
       "prompt": "Que terminação de plural?",

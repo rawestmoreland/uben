@@ -207,6 +207,24 @@
       "case_prompt": "它要求哪个格？",
       "case_you_picked": "你选了 {{picked}}（应为 {{correct}}）"
     },
+    "verb_preposition_patterns": {
+      "title": "按介词分类的搭配",
+      "open": "搭配",
+      "open_a11y": "按介词分组浏览搭配",
+      "close": "关闭搭配",
+      "summary": "已练习 {{started}} / {{total}} 个搭配",
+      "summary_empty": "共 {{total}} 个搭配。开始测验以记录进度。",
+      "empty_title": "暂无搭配",
+      "empty": "此设备上还没有动词搭配。请在下次词汇更新后再来看看。",
+      "error": "无法加载搭配。",
+      "also_with": "也适用于：{{preposition}}",
+      "contrast": "对比：{{patterns}}",
+      "mastery": {
+        "new": "新",
+        "learning": "学习中",
+        "mastered": "已掌握"
+      }
+    },
     "plural_quiz": {
       "badge": "复数词尾",
       "prompt": "复数词尾是什么?",

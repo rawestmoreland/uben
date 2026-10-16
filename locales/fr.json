@@ -212,6 +212,24 @@
       "case_prompt": "Quel cas régit-elle ?",
       "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})"
     },
+    "verb_preposition_patterns": {
+      "title": "Modèles par préposition",
+      "open": "Modèles",
+      "open_a11y": "Parcourir les modèles regroupés par préposition",
+      "close": "Fermer les modèles",
+      "summary": "{{started}} modèles sur {{total}} pratiqués",
+      "summary_empty": "{{total}} modèles. Lancez le quiz pour suivre vos progrès.",
+      "empty_title": "Aucun modèle",
+      "empty": "Aucun modèle de verbe n'est disponible sur cet appareil. Revenez après la prochaine mise à jour du vocabulaire.",
+      "error": "Impossible de charger les modèles.",
+      "also_with": "Aussi accepté pour : {{preposition}}",
+      "contrast": "Comparer : {{patterns}}",
+      "mastery": {
+        "new": "Nouveau",
+        "learning": "En cours",
+        "mastered": "Maîtrisé"
+      }
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Débloquez Üben Pro",
