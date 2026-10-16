@@ -207,6 +207,24 @@
       "case_prompt": "Which case does it take?",
       "case_you_picked": "You picked {{picked}} (it takes {{correct}})"
     },
+    "verb_preposition_patterns": {
+      "title": "Patterns by preposition",
+      "open": "Patterns",
+      "open_a11y": "Browse patterns grouped by preposition",
+      "close": "Close patterns",
+      "summary": "{{started}} of {{total}} patterns practised",
+      "summary_empty": "{{total}} patterns. Start the quiz to track your progress.",
+      "empty_title": "No patterns yet",
+      "empty": "There are no verb patterns on this device yet. Check back after the next vocabulary update.",
+      "error": "Could not load the patterns.",
+      "also_with": "Also accepted for: {{preposition}}",
+      "contrast": "Compare: {{patterns}}",
+      "mastery": {
+        "new": "New",
+        "learning": "Learning",
+        "mastered": "Mastered"
+      }
+    },
     "plural_quiz": {
       "badge": "Plural Endings",
       "prompt": "Which plural ending?",

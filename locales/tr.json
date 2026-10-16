@@ -207,6 +207,24 @@
       "case_prompt": "Hangi hâli alır?",
       "case_you_picked": "{{picked}} seçtin ({{correct}} alıyor)"
     },
+    "verb_preposition_patterns": {
+      "title": "Edata göre kalıplar",
+      "open": "Kalıplar",
+      "open_a11y": "Kalıpları edata göre gruplanmış şekilde göz at",
+      "close": "Kalıpları kapat",
+      "summary": "{{total}} kalıptan {{started}} tanesi çalışıldı",
+      "summary_empty": "{{total}} kalıp. İlerlemeni takip etmek için testi başlat.",
+      "empty_title": "Henüz kalıp yok",
+      "empty": "Bu cihazda henüz fiil kalıbı yok. Bir sonraki kelime güncellemesinden sonra tekrar bak.",
+      "error": "Kalıplar yüklenemedi.",
+      "also_with": "Şunun için de kabul edilir: {{preposition}}",
+      "contrast": "Karşılaştır: {{patterns}}",
+      "mastery": {
+        "new": "Yeni",
+        "learning": "Öğreniliyor",
+        "mastered": "Öğrenildi"
+      }
+    },
     "plural_quiz": {
       "badge": "Çoğul ekleri",
       "prompt": "Hangi çoğul eki?",
