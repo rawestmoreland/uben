@@ -149,6 +149,7 @@ Business logic abstracted from UI components:
 - **vocabularyService.ts** - CRUD operations for nouns/verbs (SQLite)
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
 - **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
+- **verbPrepositionService.ts** - Builds verb + preposition cloze questions (fixed button grid, confusion-based distractors, alternates graded correct) from stored `verb_prepositions` patterns
 - **statisticsService.ts** - User progress, streaks, forecasting
 - **syncService.ts** - Optional PocketBase vocabulary sync
 

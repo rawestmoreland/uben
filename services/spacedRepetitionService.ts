@@ -3,6 +3,11 @@ import {
   classifyPluralCards,
   type PluralQuizSession,
 } from '@/services/pluralService';
+import {
+  buildVerbPrepositionCards,
+  type VerbPrepositionCardRow,
+  type VerbPrepositionQuizSession,
+} from '@/services/verbPrepositionService';
 import type {
   AdjectiveReviewSession,
   CardReview,
@@ -94,6 +99,34 @@ function buildNounFilters(
  * so 3x keeps a session full even if two in three candidates are dropped.
  */
 const PLURAL_CANDIDATE_OVERFETCH = 3;
+
+/**
+ * Same idea for the verb preposition quiz: a pattern is only dropped after
+ * the fetch if its sentence has no blank or its preposition has no button.
+ * Seeded data should almost never hit that, so a small margin is enough.
+ */
+const VERB_PREP_CANDIDATE_OVERFETCH = 2;
+
+/**
+ * Columns shared by the due and new verb preposition queries. The
+ * correlated subquery collects the primary prepositions of the verb's other
+ * patterns (same verb and reflexivity) as a JSON array for distractors.
+ */
+const VERB_PREP_COLUMNS = `
+  vp.verb,
+  vp.is_reflexive,
+  vp.preposition,
+  vp.alt_prepositions,
+  vp.case_governed,
+  vp.sentence,
+  vp.translation,
+  vp.english_trap,
+  vp.remote_id,
+  (SELECT json_group_array(DISTINCT sibling.preposition)
+     FROM verb_prepositions sibling
+     WHERE sibling.verb = vp.verb
+       AND sibling.is_reflexive = vp.is_reflexive
+       AND sibling.id != vp.id) AS sibling_prepositions`;
 
 // ── SM-2 Core Algorithm ───────────────────────────────────────────────
 
@@ -538,6 +571,65 @@ export class SpacedRepetitionService {
     // its stored plural, so due rows are filtered too, not just new ones.
     const dueCards = classifyPluralCards(dueRows).slice(0, dueLimit);
     const newCards = classifyPluralCards(newRows).slice(0, newCardsLimit);
+
+    return {
+      cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],
+      dueCount: dueCards.length,
+      newCount: newCards.length,
+    };
+  }
+
+  /**
+   * Build a review session for the verb preposition quiz. Each pattern
+   * (verb + preposition + sense) is its own card: word_type 'verb_prep',
+   * word_id = verb_prepositions.id, so progress is independent of the verb
+   * Präteritum quiz and excluded from article stats.
+   *
+   * Like the plural quiz, due cards come first (most overdue first) and new
+   * cards follow, each group shuffled. Patterns that can't produce a sound
+   * question are dropped (see verbPrepositionService). There's no
+   * category/level filter yet: v1 is one flat pool.
+   */
+  async getVerbPrepositionSession(
+    maxCards: number = 20,
+    newCardsLimit: number = 5,
+  ): Promise<VerbPrepositionQuizSession> {
+    const dueLimit = maxCards - newCardsLimit;
+
+    const dueRows = await this.db.getAllAsync<VerbPrepositionCardRow>(
+      `SELECT cp.*, ${VERB_PREP_COLUMNS}
+       FROM card_progress cp
+       JOIN verb_prepositions vp ON cp.word_type = 'verb_prep' AND cp.word_id = vp.id
+       WHERE cp.next_review_date <= date('now')
+       ORDER BY cp.next_review_date ASC
+       LIMIT ?`,
+      [dueLimit * VERB_PREP_CANDIDATE_OVERFETCH],
+    );
+
+    const newRows = await this.db.getAllAsync<VerbPrepositionCardRow>(
+      `SELECT
+         0 AS id,
+         'verb_prep' AS word_type,
+         vp.id AS word_id,
+         2.5 AS ease_factor,
+         0 AS interval,
+         0 AS repetitions,
+         date('now') AS next_review_date,
+         0 AS total_reviews,
+         0 AS correct_reviews,
+         NULL AS last_reviewed_at,
+         vp.created_at,
+         ${VERB_PREP_COLUMNS}
+       FROM verb_prepositions vp
+       LEFT JOIN card_progress cp ON cp.word_type = 'verb_prep' AND cp.word_id = vp.id
+       WHERE cp.id IS NULL
+       ORDER BY RANDOM()
+       LIMIT ?`,
+      [newCardsLimit * VERB_PREP_CANDIDATE_OVERFETCH],
+    );
+
+    const dueCards = buildVerbPrepositionCards(dueRows).slice(0, dueLimit);
+    const newCards = buildVerbPrepositionCards(newRows).slice(0, newCardsLimit);
 
     return {
       cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],
