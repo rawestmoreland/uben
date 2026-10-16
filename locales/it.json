@@ -68,7 +68,9 @@
       "translations_downloading": "Download delle traduzioni in corso…",
       "translations_download_failed": "Impossibile scaricare le traduzioni. I suggerimenti saranno in inglese finché non sarai di nuovo online.",
       "adjective_difficulty_advanced": "Desinenze avanzate",
-      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
+      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi.",
+      "verb_preposition_case_step": "Verifica il caso delle preposizioni miste",
+      "verb_preposition_case_step_description": "Dopo una risposta corretta con an, auf, in, über o vor nel quiz delle preposizioni, scegli anche Akkusativ o Dativ."
     },
     "level_filter": {
       "label": "LIVELLO DI STUDIO",
@@ -201,7 +203,9 @@
       "you_picked": "Hai scelto {{preposition}}",
       "also_accepted": "Accettato anche: {{prepositions}}",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Continua"
+      "continue": "Continua",
+      "case_prompt": "Quale caso regge?",
+      "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})"
     },
     "plural_quiz": {
       "badge": "Desinenze del plurale",

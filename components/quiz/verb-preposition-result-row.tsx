@@ -1,5 +1,9 @@
 import { AppColors, Layout, Spacing, Typography } from '@/constants/design';
 import type { VerbPrepositionQuizResult } from '@/hooks/use-verb-preposition-quiz-session';
+import {
+  formatCaseName,
+  isCorrectPreposition,
+} from '@/services/verbPrepositionService';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -26,13 +30,22 @@ export const VerbPrepositionResultRow = memo(function VerbPrepositionResultRow({
       <View style={styles.body}>
         <Text style={styles.pattern}>{question.patternLabel}</Text>
         <Text style={styles.sentence}>{question.completedSentence}</Text>
-        {!result.isCorrect && (
+        {!isCorrectPreposition(question, result.selectedPreposition) && (
           <Text style={styles.picked}>
             {t('verb_preposition_quiz.you_picked', {
               preposition: result.selectedPreposition,
             })}
           </Text>
         )}
+        {result.selectedCase !== null &&
+          result.selectedCase !== question.caseGoverned && (
+            <Text style={styles.picked}>
+              {t('verb_preposition_quiz.case_you_picked', {
+                picked: formatCaseName(result.selectedCase),
+                correct: formatCaseName(question.caseGoverned),
+              })}
+            </Text>
+          )}
       </View>
     </View>
   );

@@ -6,9 +6,12 @@ import {
   Typography,
 } from '@/constants/design';
 import {
+  formatCaseName,
+  isCorrectPreposition,
   splitSentenceAtBlank,
   type VerbPrepositionQuestion,
 } from '@/services/verbPrepositionService';
+import type { VerbPrepositionCase } from '@/types/database';
 import { uiUpperCase } from '@/utils/uiText';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -16,6 +19,8 @@ import { StyleSheet, Text, View } from 'react-native';
 interface VerbPrepositionFeedbackPanelProps {
   question: VerbPrepositionQuestion;
   selectedPreposition: string;
+  /** The case tapped in the case step; null when that step did not apply. */
+  selectedCase: VerbPrepositionCase | null;
   isCorrect: boolean;
 }
 
@@ -23,10 +28,13 @@ interface VerbPrepositionFeedbackPanelProps {
  * Takes the question card's place once the learner answers: the full pattern
  * with its case ("warten auf + Akk."), the completed sentence with the
  * preposition highlighted, the gloss, and any other accepted prepositions.
+ * The pattern (with its case) is shown whether or not the case step was asked
+ * or answered correctly.
  */
 export function VerbPrepositionFeedbackPanel({
   question,
   selectedPreposition,
+  selectedCase,
   isCorrect,
 }: VerbPrepositionFeedbackPanelProps) {
   const { t } = useTranslation('app');
@@ -35,6 +43,17 @@ export function VerbPrepositionFeedbackPanel({
       ? 'verb_preposition_quiz.correct'
       : 'verb_preposition_quiz.incorrect',
   );
+  // The two ways to miss: a wrong preposition, or the right preposition
+  // with the wrong case (only possible when the case step was asked).
+  const wrongPreposition = !isCorrectPreposition(question, selectedPreposition);
+  const wrongCase =
+    selectedCase !== null && selectedCase !== question.caseGoverned;
+  const caseMissText = wrongCase
+    ? t('verb_preposition_quiz.case_you_picked', {
+        picked: formatCaseName(selectedCase),
+        correct: formatCaseName(question.caseGoverned),
+      })
+    : null;
   const alternates = question.acceptedAnswers.filter(
     (answer) => answer !== question.primaryAnswer,
   );
@@ -55,10 +74,11 @@ export function VerbPrepositionFeedbackPanel({
       pattern: question.patternLabel,
       sentence: question.completedSentence,
     }),
-    !isCorrect &&
+    wrongPreposition &&
       t('verb_preposition_quiz.you_picked', {
         preposition: selectedPreposition,
       }),
+    caseMissText,
   ]
     .filter(Boolean)
     .join(' ');
@@ -99,13 +119,14 @@ export function VerbPrepositionFeedbackPanel({
             })}
           </Text>
         )}
-        {!isCorrect && (
+        {wrongPreposition && (
           <Text style={styles.picked}>
             {t('verb_preposition_quiz.you_picked', {
               preposition: selectedPreposition,
             })}
           </Text>
         )}
+        {caseMissText && <Text style={styles.picked}>{caseMissText}</Text>}
       </View>
     </View>
   );

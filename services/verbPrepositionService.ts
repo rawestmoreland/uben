@@ -342,6 +342,86 @@ export function isCorrectPreposition(
   return question.acceptedAnswers.includes(normalizePreposition(selected));
 }
 
+// ── Case step (two-way prepositions) ─────────────────────────────────
+
+/**
+ * Two-way (Wechsel-) prepositions: they take the accusative or the dative
+ * depending on the verb, so for these the case has to be memorised per
+ * pattern (denken an + Akk. versus teilnehmen an + Dat.). Every other
+ * preposition has one fixed case, so there is nothing to test.
+ */
+export const TWO_WAY_PREPOSITIONS: readonly string[] = [
+  'an',
+  'auf',
+  'hinter',
+  'in',
+  'neben',
+  'über',
+  'unter',
+  'vor',
+  'zwischen',
+];
+
+/** The cases offered on the second tap, in button order. */
+export const CASE_STEP_CHOICES: readonly VerbPrepositionCase[] = ['akk', 'dat'];
+
+const CASE_NAMES: Record<VerbPrepositionCase, string> = {
+  akk: 'Akkusativ',
+  dat: 'Dativ',
+  gen: 'Genitiv',
+};
+
+/** Full case name for buttons and prose, e.g. 'akk' -> 'Akkusativ'. */
+export function formatCaseName(caseGoverned: VerbPrepositionCase): string {
+  return CASE_NAMES[caseGoverned] ?? caseGoverned;
+}
+
+export function isTwoWayPreposition(preposition: string): boolean {
+  return TWO_WAY_PREPOSITIONS.includes(normalizePreposition(preposition));
+}
+
+/**
+ * Whether answering `selected` correctly should be followed by the
+ * Akkusativ/Dativ tap: the pick is a two-way preposition and the pattern's
+ * stored case is one of the two buttons. Checks the preposition the learner
+ * actually picked, so an accepted alternate that is not two-way (or a
+ * pattern that governs the genitive) skips the step.
+ */
+export function needsCaseStep(
+  question: Pick<VerbPrepositionQuestion, 'acceptedAnswers' | 'caseGoverned'>,
+  selected: string,
+): boolean {
+  return (
+    isCorrectPreposition(question, selected) &&
+    isTwoWayPreposition(selected) &&
+    CASE_STEP_CHOICES.includes(question.caseGoverned)
+  );
+}
+
+export function isCorrectCase(
+  question: Pick<VerbPrepositionQuestion, 'caseGoverned'>,
+  selectedCase: VerbPrepositionCase,
+): boolean {
+  return question.caseGoverned === selectedCase;
+}
+
+/** SM-2 treats quality below 3 as a failed review that resets the card. */
+const MIN_PASSING_QUALITY = 3;
+
+/**
+ * The SM-2 quality of a card whose case step was answered. A wrong case
+ * caps the quality at the lowest passing grade (3) rather than failing it:
+ * the learner knew the preposition, so the card keeps its repetitions and
+ * interval but earns a smaller ease boost. A right case leaves the quality
+ * from the preposition answer untouched.
+ */
+export function applyCaseStepToQuality(
+  quality: number,
+  caseCorrect: boolean,
+): number {
+  return caseCorrect ? quality : Math.min(quality, MIN_PASSING_QUALITY);
+}
+
 // ── Session types ────────────────────────────────────────────────────
 
 /**

@@ -72,7 +72,9 @@
       "translations_downloading": "Téléchargement des traductions…",
       "translations_download_failed": "Impossible de télécharger les traductions. Les indices s'afficheront en anglais jusqu'à votre retour en ligne.",
       "adjective_difficulty_advanced": "Terminaisons d'adjectifs avancées",
-      "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs."
+      "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs.",
+      "verb_preposition_case_step": "Tester le cas des prépositions mixtes",
+      "verb_preposition_case_step_description": "Après une bonne réponse avec an, auf, in, über ou vor dans le quiz des prépositions, choisis aussi Akkusativ ou Dativ."
     },
     "level_filter": {
       "label": "NIVEAU D'ÉTUDE",
@@ -206,7 +208,9 @@
       "you_picked": "Tu as choisi {{preposition}}",
       "also_accepted": "Également accepté : {{prepositions}}",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Continuer"
+      "continue": "Continuer",
+      "case_prompt": "Quel cas régit-elle ?",
+      "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})"
     },
     "paywall": {
       "premium_badge": "Üben Pro",

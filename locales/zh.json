@@ -68,7 +68,9 @@
       "translations_downloading": "正在下载翻译…",
       "translations_download_failed": "无法下载翻译。在重新联网之前，提示将以英文显示。",
       "adjective_difficulty_advanced": "进阶形容词词尾",
-      "adjective_difficulty_advanced_description": "在形容词词尾练习中加入与格(间接宾语)。"
+      "adjective_difficulty_advanced_description": "在形容词词尾练习中加入与格(间接宾语)。",
+      "verb_preposition_case_step": "测试二格介词的格",
+      "verb_preposition_case_step_description": "在介词测验中答对 an、auf、in、über 或 vor 后，还要选择 Akkusativ 或 Dativ。"
     },
     "level_filter": {
       "label": "学习级别",
@@ -201,7 +203,9 @@
       "you_picked": "你选了 {{preposition}}",
       "also_accepted": "也可接受:{{prepositions}}",
       "feedback_a11y": "{{verdict}}。{{pattern}}。{{sentence}}",
-      "continue": "继续"
+      "continue": "继续",
+      "case_prompt": "它要求哪个格？",
+      "case_you_picked": "你选了 {{picked}}（应为 {{correct}}）"
     },
     "plural_quiz": {
       "badge": "复数词尾",

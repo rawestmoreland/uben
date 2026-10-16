@@ -43,6 +43,8 @@ export default function SettingsScreen() {
     translationSyncFailed,
     adjectiveDeclensionDifficulty,
     setAdjectiveDeclensionDifficulty,
+    verbPrepositionCaseStep,
+    setVerbPrepositionCaseStep,
     isLoading,
   } = useSettings();
 
@@ -240,6 +242,29 @@ export default function SettingsScreen() {
                   enabled ? 'advanced' : 'standard',
                 )
               }
+              disabled={isLoading}
+              trackColor={{
+                false: AppColors.lightGray,
+                true: AppColors.yellow,
+              }}
+              thumbColor={AppColors.white}
+              style={styles.switch}
+            />
+          </View>
+
+          {/* Verb Preposition Case Step Toggle */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingTextGroup}>
+              <Text style={styles.settingLabel}>
+                {uiUpperCase(t('settings.verb_preposition_case_step'))}
+              </Text>
+              <Text style={styles.settingDescription}>
+                {t('settings.verb_preposition_case_step_description')}
+              </Text>
+            </View>
+            <Switch
+              value={verbPrepositionCaseStep}
+              onValueChange={setVerbPrepositionCaseStep}
               disabled={isLoading}
               trackColor={{
                 false: AppColors.lightGray,
