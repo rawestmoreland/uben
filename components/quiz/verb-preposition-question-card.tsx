@@ -14,7 +14,7 @@ interface VerbPrepositionQuestionCardProps {
   /** Cloze sentence containing the "____" blank. */
   sentence: string;
   /** English gloss of the sense being tested; it is what disambiguates verbs with several prepositions. */
-  translation: string;
+  translation: string | null;
 }
 
 /** The question: a cloze sentence with the preposition blanked out, plus its English gloss. */
@@ -49,7 +49,7 @@ export function VerbPrepositionQuestionCard({
           sentence
         )}
       </Text>
-      <Text style={styles.translation}>{translation}</Text>
+      {translation && <Text style={styles.translation}>{translation}</Text>}
     </View>
   );
 }
