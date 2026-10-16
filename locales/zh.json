@@ -189,6 +189,20 @@
       "check_button": "检查",
       "continue": "继续"
     },
+    "verb_preposition_quiz": {
+      "badge": "动词 + 介词",
+      "prompt": "选哪个介词?",
+      "blank_a11y": "空格",
+      "question_a11y": "{{sentence}}。哪个介词适合填入空格?",
+      "all_caught_up": "已全部完成",
+      "no_cards_due": "目前没有需要复习的动词搭配。\n\n请稍后再来!",
+      "correct": "正确",
+      "incorrect": "不太对",
+      "you_picked": "你选了 {{preposition}}",
+      "also_accepted": "也可接受:{{prepositions}}",
+      "feedback_a11y": "{{verdict}}。{{pattern}}。{{sentence}}",
+      "continue": "继续"
+    },
     "plural_quiz": {
       "badge": "复数词尾",
       "prompt": "复数词尾是什么?",
@@ -271,6 +285,10 @@
         "verbs": {
           "title": "动词",
           "subtitle": "过去式(Präteritum)"
+        },
+        "prepositions": {
+          "title": "介词",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

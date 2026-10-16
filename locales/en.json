@@ -189,6 +189,20 @@
       "check_button": "Check",
       "continue": "Continue"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verb + Preposition",
+      "prompt": "Which preposition?",
+      "blank_a11y": "blank",
+      "question_a11y": "{{sentence}}. Which preposition fits the blank?",
+      "all_caught_up": "All caught up",
+      "no_cards_due": "No verb patterns due for review right now.\n\nCome back later!",
+      "correct": "Correct",
+      "incorrect": "Not quite",
+      "you_picked": "You picked {{preposition}}",
+      "also_accepted": "Also accepted: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continue"
+    },
     "plural_quiz": {
       "badge": "Plural Endings",
       "prompt": "Which plural ending?",
@@ -271,6 +285,10 @@
         "verbs": {
           "title": "Verbs",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Prepositions",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

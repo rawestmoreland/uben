@@ -199,6 +199,20 @@
       "check_button": "Проверить",
       "continue": "Продолжить"
     },
+    "verb_preposition_quiz": {
+      "badge": "Глагол + предлог",
+      "prompt": "Какой предлог?",
+      "blank_a11y": "пропуск",
+      "question_a11y": "{{sentence}}. Какой предлог подходит к пропуску?",
+      "all_caught_up": "Всё повторено",
+      "no_cards_due": "Сейчас нет глагольных конструкций для повторения.\n\nВозвращайтесь позже!",
+      "correct": "Верно",
+      "incorrect": "Не совсем",
+      "you_picked": "Вы выбрали {{preposition}}",
+      "also_accepted": "Также допустимо: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Далее"
+    },
     "plural_quiz": {
       "badge": "Окончания множественного числа",
       "prompt": "Какое окончание множественного числа?",
@@ -281,6 +295,10 @@
         "verbs": {
           "title": "Глаголы",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Предлоги",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

@@ -7,6 +7,7 @@ import {
   formatPatternLabel,
   isCorrectPreposition,
   parsePrepositionList,
+  splitSentenceAtBlank,
   type VerbPrepositionCardRow,
   type VerbPrepositionPattern,
 } from '../verbPrepositionService';
@@ -22,7 +23,6 @@ function pattern(
     case_governed: 'akk',
     sentence: 'Ich warte ____ meine Frau.',
     translation: "I'm waiting for my wife.",
-    english_trap: null,
     ...overrides,
   };
 }
@@ -83,6 +83,39 @@ describe('parsePrepositionList()', () => {
   });
 });
 
+describe('splitSentenceAtBlank()', () => {
+  it('splits the sentence around the blank', () => {
+    expect(splitSentenceAtBlank('Ich warte ____ meine Frau.')).toEqual({
+      before: 'Ich warte ',
+      after: ' meine Frau.',
+    });
+  });
+
+  it('handles a blank at the start of the sentence', () => {
+    expect(splitSentenceAtBlank('____ wen wartest du?')).toEqual({
+      before: '',
+      after: ' wen wartest du?',
+    });
+  });
+
+  it('returns null when there is no blank', () => {
+    expect(splitSentenceAtBlank('Ich warte auf meine Frau.')).toBeNull();
+  });
+
+  it('lines up with the completed sentence so the filled word can be located', () => {
+    const question = buildVerbPrepositionQuestion(
+      pattern({ sentence: '____ wen wartest du?' }),
+    )!;
+    const { before, after } = splitSentenceAtBlank(question.sentence)!;
+    expect(
+      question.completedSentence.slice(
+        before.length,
+        question.completedSentence.length - after.length,
+      ),
+    ).toBe('Auf');
+  });
+});
+
 describe('buildVerbPrepositionQuestion()', () => {
   it('carries the sentence, translation, case and completed sentence', () => {
     const question = buildVerbPrepositionQuestion(pattern())!;
@@ -96,7 +129,6 @@ describe('buildVerbPrepositionQuestion()', () => {
       caseLabel: '+ Akk.',
       patternLabel: 'warten auf + Akk.',
       completedSentence: 'Ich warte auf meine Frau.',
-      englishTrap: null,
     });
   });
 
@@ -106,18 +138,6 @@ describe('buildVerbPrepositionQuestion()', () => {
     )!;
 
     expect(question.completedSentence).toBe('Auf wen wartest du?');
-  });
-
-  it('passes the English trap through, treating blank notes as none', () => {
-    expect(
-      buildVerbPrepositionQuestion(
-        pattern({ english_trap: 'English "wait for" pulls toward für.' }),
-      )!.englishTrap,
-    ).toBe('English "wait for" pulls toward für.');
-    expect(
-      buildVerbPrepositionQuestion(pattern({ english_trap: '  ' }))!
-        .englishTrap,
-    ).toBeNull();
   });
 
   it('excludes patterns it cannot ask reliably', () => {

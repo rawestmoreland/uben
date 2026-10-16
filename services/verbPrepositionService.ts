@@ -174,8 +174,6 @@ export interface VerbPrepositionQuestion {
   patternLabel: string;
   /** The sentence with the primary answer filled in. */
   completedSentence: string;
-  /** Optional note on a common English-speaker mistake, shown in feedback. */
-  englishTrap: string | null;
 }
 
 /** The stored pattern fields a question is built from. */
@@ -188,7 +186,6 @@ export type VerbPrepositionPattern = Pick<
   | 'case_governed'
   | 'sentence'
   | 'translation'
-  | 'english_trap'
 >;
 
 export interface BuildQuestionOptions {
@@ -201,6 +198,24 @@ export interface BuildQuestionOptions {
   siblingPrepositions?: readonly string[];
   /** Random source in [0, 1), injectable for deterministic tests. */
   random?: () => number;
+}
+
+/**
+ * Split a cloze sentence around its blank, e.g. "Ich warte ____ meine Frau."
+ * -> { before: "Ich warte ", after: " meine Frau." }. Returns null when the
+ * sentence has no blank. The UI uses it to render the blank and, in
+ * feedback, to highlight the filled-in preposition within the completed
+ * sentence (before + filled + after).
+ */
+export function splitSentenceAtBlank(
+  sentence: string,
+): { before: string; after: string } | null {
+  const blank = BLANK_PATTERN.exec(sentence);
+  if (!blank) return null;
+  return {
+    before: sentence.slice(0, blank.index),
+    after: sentence.slice(blank.index + blank[0].length),
+  };
 }
 
 function fillBlank(sentence: string, preposition: string): string {
@@ -314,7 +329,6 @@ export function buildVerbPrepositionQuestion(
       preposition: primaryAnswer,
     }),
     completedSentence: fillBlank(pattern.sentence, primaryAnswer),
-    englishTrap: pattern.english_trap?.trim() || null,
   };
 }
 
