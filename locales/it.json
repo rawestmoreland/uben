@@ -189,6 +189,21 @@
       "check_button": "Controlla",
       "continue": "Continua"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verbo + Preposizione",
+      "prompt": "Quale preposizione?",
+      "blank_a11y": "spazio vuoto",
+      "question_a11y": "{{sentence}}. Quale preposizione completa lo spazio vuoto?",
+      "all_caught_up": "Tutto in regola",
+      "no_cards_due": "Nessun costrutto verbale da ripassare al momento.\n\nTorna più tardi!",
+      "correct": "Corretto",
+      "incorrect": "Non proprio",
+      "you_picked": "Hai scelto {{preposition}}",
+      "also_accepted": "Accettato anche: {{prepositions}}",
+      "english_trap": "Trappola dell'inglese",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continua"
+    },
     "plural_quiz": {
       "badge": "Desinenze del plurale",
       "prompt": "Quale desinenza al plurale?",
@@ -271,6 +286,10 @@
         "verbs": {
           "title": "Verbi",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Preposizioni",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

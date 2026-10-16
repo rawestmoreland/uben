@@ -199,6 +199,21 @@
       "check_button": "Sprawdź",
       "continue": "Dalej"
     },
+    "verb_preposition_quiz": {
+      "badge": "Czasownik + przyimek",
+      "prompt": "Jaki przyimek?",
+      "blank_a11y": "luka",
+      "question_a11y": "{{sentence}}. Jaki przyimek pasuje do luki?",
+      "all_caught_up": "Wszystko gotowe",
+      "no_cards_due": "Brak połączeń czasowników do powtórki.\n\nWróć później!",
+      "correct": "Dobrze",
+      "incorrect": "Nie do końca",
+      "you_picked": "Wybrano {{preposition}}",
+      "also_accepted": "Dopuszczalne także: {{prepositions}}",
+      "english_trap": "Pułapka angielskiego",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Dalej"
+    },
     "plural_quiz": {
       "badge": "Liczba mnoga",
       "prompt": "Jaka końcówka liczby mnogiej?",
@@ -281,6 +296,10 @@
         "verbs": {
           "title": "Czasowniki",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Przyimki",
+          "subtitle": "warten auf + Akk."
         }
       }
     }
