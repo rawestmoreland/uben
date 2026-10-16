@@ -68,7 +68,9 @@
       "translations_downloading": "Downloading translations…",
       "translations_download_failed": "Couldn't download translations. Hints will show in English until you're online again.",
       "adjective_difficulty_advanced": "Advanced adjective endings",
-      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice."
+      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice.",
+      "verb_preposition_case_step": "Test the case on two-way prepositions",
+      "verb_preposition_case_step_description": "After a correct an, auf, in, über or vor in the preposition quiz, also choose Akkusativ or Dativ."
     },
     "level_filter": {
       "label": "STUDY LEVEL",
@@ -201,7 +203,9 @@
       "you_picked": "You picked {{preposition}}",
       "also_accepted": "Also accepted: {{prepositions}}",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Continue"
+      "continue": "Continue",
+      "case_prompt": "Which case does it take?",
+      "case_you_picked": "You picked {{picked}} (it takes {{correct}})"
     },
     "plural_quiz": {
       "badge": "Plural Endings",

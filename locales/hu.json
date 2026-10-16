@@ -68,7 +68,9 @@
       "translations_downloading": "Fordítások letöltése…",
       "translations_download_failed": "A fordításokat nem sikerült letölteni. A tippek angolul jelennek meg, amíg újra online nem leszel.",
       "adjective_difficulty_advanced": "Haladó melléknévragok",
-      "adjective_difficulty_advanced_description": "A részes esetet (távolabbi tárgy) is felveszi a melléknévragok gyakorlásába."
+      "adjective_difficulty_advanced_description": "A részes esetet (távolabbi tárgy) is felveszi a melléknévragok gyakorlásába.",
+      "verb_preposition_case_step": "Eset ellenőrzése kétirányú elöljárószóknál",
+      "verb_preposition_case_step_description": "Az elöljárószó-kvíz an, auf, in, über vagy vor helyes választása után válaszd ki az Akkusativ vagy Dativ esetet is."
     },
     "level_filter": {
       "label": "TANULÁSI SZINT",
@@ -201,7 +203,9 @@
       "you_picked": "Ezt választottad: {{preposition}}",
       "also_accepted": "Szintén elfogadott: {{prepositions}}",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Tovább"
+      "continue": "Tovább",
+      "case_prompt": "Melyik esetet vonzza?",
+      "case_you_picked": "Ezt választottad: {{picked}} (ez vonzza: {{correct}})"
     },
     "plural_quiz": {
       "badge": "Többesszám-képzők",

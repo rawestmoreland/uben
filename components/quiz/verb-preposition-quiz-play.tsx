@@ -1,11 +1,13 @@
 import { Layout, Spacing } from '@/constants/design';
 import type { VerbPrepositionQuizSessionData } from '@/hooks/use-verb-preposition-quiz-session';
 import { useSettings } from '@/hooks/use-settings';
+import type { VerbPrepositionCase } from '@/types/database';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { QuizActionButton } from './quiz-action-button';
+import { VerbPrepositionCaseStep } from './verb-preposition-case-step';
 import { VerbPrepositionFeedbackPanel } from './verb-preposition-feedback-panel';
 import { VerbPrepositionGrid } from './verb-preposition-grid';
 import { VerbPrepositionQuestionCard } from './verb-preposition-question-card';
@@ -19,7 +21,9 @@ interface VerbPrepositionQuizPlayProps {
  * The playing and feedback phases of the preposition quiz. The feedback
  * panel takes the question card's place so the button grid never moves, and
  * feedback doesn't auto-advance: the learner reads the full pattern, then
- * taps Continue (as in the plural quiz).
+ * taps Continue (as in the plural quiz). A correct two-way preposition first
+ * goes through the case step: the grid locks with the answer revealed and the
+ * Akkusativ/Dativ buttons appear where Continue will be.
  */
 export function VerbPrepositionQuizPlay({
   quiz,
@@ -27,8 +31,9 @@ export function VerbPrepositionQuizPlay({
   const { t } = useTranslation('app');
   const { showEnglishHint } = useSettings();
   const { currentCard, phase, selectedPreposition, isCorrect, progress } = quiz;
-  const { submitAnswer, nextCard } = quiz;
+  const { selectedCase, submitAnswer, submitCase, nextCard } = quiz;
   const isFeedback = phase === 'feedback';
+  const isCaseStep = phase === 'case';
 
   useEffect(() => {
     if (!isFeedback) return;
@@ -45,6 +50,14 @@ export function VerbPrepositionQuizPlay({
       submitAnswer(preposition);
     },
     [submitAnswer],
+  );
+
+  const handleSelectCase = useCallback(
+    (chosenCase: VerbPrepositionCase) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      submitCase(chosenCase);
+    },
+    [submitCase],
   );
 
   const handleContinue = useCallback(() => {
@@ -69,6 +82,7 @@ export function VerbPrepositionQuizPlay({
           <VerbPrepositionFeedbackPanel
             question={question}
             selectedPreposition={selectedPreposition}
+            selectedCase={selectedCase}
             isCorrect={isCorrect}
           />
         ) : (
@@ -82,10 +96,15 @@ export function VerbPrepositionQuizPlay({
             buttons={question.buttons}
             selectedPreposition={selectedPreposition}
             acceptedAnswers={question.acceptedAnswers}
-            isFeedback={isFeedback}
+            isFeedback={isFeedback || isCaseStep}
             onSelect={handleSelect}
           />
         </View>
+        {isCaseStep && (
+          <View style={styles.section}>
+            <VerbPrepositionCaseStep onSelect={handleSelectCase} />
+          </View>
+        )}
         {isFeedback && (
           <View style={styles.section}>
             <QuizActionButton

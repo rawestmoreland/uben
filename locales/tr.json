@@ -68,7 +68,9 @@
       "translations_downloading": "Çeviriler indiriliyor…",
       "translations_download_failed": "Çeviriler indirilemedi. Tekrar çevrimiçi olana kadar ipuçları İngilizce gösterilecek.",
       "adjective_difficulty_advanced": "Gelişmiş sıfat çekimleri",
-      "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et."
+      "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et.",
+      "verb_preposition_case_step": "İki halli edatlarda hâli sına",
+      "verb_preposition_case_step_description": "Edat testinde an, auf, in, über veya vor doğru seçildikten sonra Akkusativ ya da Dativ'i de seç."
     },
     "level_filter": {
       "label": "ÇALIŞMA SEVİYESİ",
@@ -201,7 +203,9 @@
       "you_picked": "{{preposition}} seçtin",
       "also_accepted": "Şu da kabul edilir: {{prepositions}}",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Devam"
+      "continue": "Devam",
+      "case_prompt": "Hangi hâli alır?",
+      "case_you_picked": "{{picked}} seçtin ({{correct}} alıyor)"
     },
     "plural_quiz": {
       "badge": "Çoğul ekleri",

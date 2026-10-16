@@ -66,7 +66,7 @@ export default function VerbPrepositionQuizScreen() {
           <QuizActionButton label={t('back_to_home')} onPress={goBack} />
         </View>
       )}
-      {(phase === 'playing' || phase === 'feedback') && (
+      {(phase === 'playing' || phase === 'case' || phase === 'feedback') && (
         <VerbPrepositionQuizPlay quiz={quiz} />
       )}
       {phase === 'complete' && (

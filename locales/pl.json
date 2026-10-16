@@ -76,7 +76,9 @@
       "translations_downloading": "Pobieranie tłumaczeń…",
       "translations_download_failed": "Nie udało się pobrać tłumaczeń. Podpowiedzi będą po angielsku, dopóki nie wrócisz online.",
       "adjective_difficulty_advanced": "Zaawansowane końcówki",
-      "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników."
+      "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników.",
+      "verb_preposition_case_step": "Sprawdzaj przypadek po przyimkach dwuprzypadkowych",
+      "verb_preposition_case_step_description": "Po poprawnym an, auf, in, über lub vor w quizie przyimków wybierz też Akkusativ lub Dativ."
     },
     "level_filter": {
       "label": "POZIOM NAUKI",
@@ -211,7 +213,9 @@
       "you_picked": "Wybrano {{preposition}}",
       "also_accepted": "Dopuszczalne także: {{prepositions}}",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Dalej"
+      "continue": "Dalej",
+      "case_prompt": "Jaki przypadek rządzi?",
+      "case_you_picked": "Wybrano {{picked}} (rządzi: {{correct}})"
     },
     "plural_quiz": {
       "badge": "Liczba mnoga",
