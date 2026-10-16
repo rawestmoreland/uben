@@ -194,6 +194,21 @@
       "check_button": "Vérifier",
       "continue": "Continuer"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verbe + Préposition",
+      "prompt": "Quelle préposition ?",
+      "blank_a11y": "blanc",
+      "question_a11y": "{{sentence}}. Quelle préposition complète le blanc ?",
+      "all_caught_up": "Tout est à jour",
+      "no_cards_due": "Aucune construction verbale à réviser pour le moment.\n\nReviens plus tard !",
+      "correct": "Correct",
+      "incorrect": "Pas tout à fait",
+      "you_picked": "Tu as choisi {{preposition}}",
+      "also_accepted": "Également accepté : {{prepositions}}",
+      "english_trap": "Piège de l'anglais",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continuer"
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Débloquez Üben Pro",
@@ -245,6 +260,10 @@
         "verbs": {
           "title": "Verbes",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Prépositions",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

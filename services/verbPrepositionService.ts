@@ -203,6 +203,24 @@ export interface BuildQuestionOptions {
   random?: () => number;
 }
 
+/**
+ * Split a cloze sentence around its blank, e.g. "Ich warte ____ meine Frau."
+ * -> { before: "Ich warte ", after: " meine Frau." }. Returns null when the
+ * sentence has no blank. The UI uses it to render the blank and, in
+ * feedback, to highlight the filled-in preposition within the completed
+ * sentence (before + filled + after).
+ */
+export function splitSentenceAtBlank(
+  sentence: string,
+): { before: string; after: string } | null {
+  const blank = BLANK_PATTERN.exec(sentence);
+  if (!blank) return null;
+  return {
+    before: sentence.slice(0, blank.index),
+    after: sentence.slice(blank.index + blank[0].length),
+  };
+}
+
 function fillBlank(sentence: string, preposition: string): string {
   const blank = BLANK_PATTERN.exec(sentence);
   // A blank that opens the sentence is capitalised: "Auf wen wartest du?"

@@ -7,6 +7,7 @@ import {
   formatPatternLabel,
   isCorrectPreposition,
   parsePrepositionList,
+  splitSentenceAtBlank,
   type VerbPrepositionCardRow,
   type VerbPrepositionPattern,
 } from '../verbPrepositionService';
@@ -80,6 +81,39 @@ describe('parsePrepositionList()', () => {
 
   it('ignores non-string entries', () => {
     expect(parsePrepositionList('["auf", 3, null]')).toEqual(['auf']);
+  });
+});
+
+describe('splitSentenceAtBlank()', () => {
+  it('splits the sentence around the blank', () => {
+    expect(splitSentenceAtBlank('Ich warte ____ meine Frau.')).toEqual({
+      before: 'Ich warte ',
+      after: ' meine Frau.',
+    });
+  });
+
+  it('handles a blank at the start of the sentence', () => {
+    expect(splitSentenceAtBlank('____ wen wartest du?')).toEqual({
+      before: '',
+      after: ' wen wartest du?',
+    });
+  });
+
+  it('returns null when there is no blank', () => {
+    expect(splitSentenceAtBlank('Ich warte auf meine Frau.')).toBeNull();
+  });
+
+  it('lines up with the completed sentence so the filled word can be located', () => {
+    const question = buildVerbPrepositionQuestion(
+      pattern({ sentence: '____ wen wartest du?' }),
+    )!;
+    const { before, after } = splitSentenceAtBlank(question.sentence)!;
+    expect(
+      question.completedSentence.slice(
+        before.length,
+        question.completedSentence.length - after.length,
+      ),
+    ).toBe('Auf');
   });
 });
 

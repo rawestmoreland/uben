@@ -189,6 +189,21 @@
       "check_button": "Ellenőrzés",
       "continue": "Tovább"
     },
+    "verb_preposition_quiz": {
+      "badge": "Ige + elöljárószó",
+      "prompt": "Melyik elöljárószó?",
+      "blank_a11y": "üres hely",
+      "question_a11y": "{{sentence}}. Melyik elöljárószó illik az üres helyre?",
+      "all_caught_up": "Minden kész",
+      "no_cards_due": "Jelenleg nincs ismétlésre váró igei szerkezet.\n\nTérj vissza később!",
+      "correct": "Helyes",
+      "incorrect": "Nem egészen",
+      "you_picked": "Ezt választottad: {{preposition}}",
+      "also_accepted": "Szintén elfogadott: {{prepositions}}",
+      "english_trap": "Angol csapda",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Tovább"
+    },
     "plural_quiz": {
       "badge": "Többesszám-képzők",
       "prompt": "Melyik többesszám-képző?",
@@ -271,6 +286,10 @@
         "verbs": {
           "title": "Igék",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Elöljárószók",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

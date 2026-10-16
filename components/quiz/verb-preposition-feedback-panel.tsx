@@ -1,0 +1,183 @@
+import {
+  AppColors,
+  Layout,
+  shadowStyle,
+  Spacing,
+  Typography,
+} from '@/constants/design';
+import {
+  splitSentenceAtBlank,
+  type VerbPrepositionQuestion,
+} from '@/services/verbPrepositionService';
+import { uiUpperCase } from '@/utils/uiText';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View } from 'react-native';
+import { VerbPrepositionTrapNote } from './verb-preposition-trap-note';
+
+interface VerbPrepositionFeedbackPanelProps {
+  question: VerbPrepositionQuestion;
+  selectedPreposition: string;
+  isCorrect: boolean;
+}
+
+/**
+ * Takes the question card's place once the learner answers: the full pattern
+ * with its case ("warten auf + Akk."), the completed sentence with the
+ * preposition highlighted, the gloss, any other accepted prepositions, and
+ * the English-trap note when the pattern has one.
+ */
+export function VerbPrepositionFeedbackPanel({
+  question,
+  selectedPreposition,
+  isCorrect,
+}: VerbPrepositionFeedbackPanelProps) {
+  const { t } = useTranslation('app');
+  const verdict = t(
+    isCorrect
+      ? 'verb_preposition_quiz.correct'
+      : 'verb_preposition_quiz.incorrect',
+  );
+  const alternates = question.acceptedAnswers.filter(
+    (answer) => answer !== question.primaryAnswer,
+  );
+
+  // completedSentence = before + filled word + after, so the filled word
+  // (which is capitalised at the start of a sentence) is whatever lies between.
+  const parts = splitSentenceAtBlank(question.sentence);
+  const filled = parts
+    ? question.completedSentence.slice(
+        parts.before.length,
+        question.completedSentence.length - parts.after.length,
+      )
+    : null;
+
+  const spokenSummary = [
+    t('verb_preposition_quiz.feedback_a11y', {
+      verdict,
+      pattern: question.patternLabel,
+      sentence: question.completedSentence,
+    }),
+    !isCorrect &&
+      t('verb_preposition_quiz.you_picked', {
+        preposition: selectedPreposition,
+      }),
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <View
+      style={[styles.panel, shadowStyle]}
+      accessible
+      accessibilityLabel={spokenSummary}
+      accessibilityLiveRegion="polite"
+    >
+      <View
+        style={[
+          styles.verdictStrip,
+          isCorrect ? styles.verdictCorrect : styles.verdictWrong,
+        ]}
+      >
+        <Text style={styles.verdictText}>{uiUpperCase(verdict)}</Text>
+      </View>
+      <View style={styles.body}>
+        <Text style={styles.pattern}>{question.patternLabel}</Text>
+        <Text style={styles.sentence}>
+          {parts && filled !== null ? (
+            <>
+              {parts.before}
+              <Text style={styles.highlight}>{filled}</Text>
+              {parts.after}
+            </>
+          ) : (
+            question.completedSentence
+          )}
+        </Text>
+        <Text style={styles.translation}>{question.translation}</Text>
+        {alternates.length > 0 && (
+          <Text style={styles.note}>
+            {t('verb_preposition_quiz.also_accepted', {
+              prepositions: alternates.join(', '),
+            })}
+          </Text>
+        )}
+        {!isCorrect && (
+          <Text style={styles.picked}>
+            {t('verb_preposition_quiz.you_picked', {
+              preposition: selectedPreposition,
+            })}
+          </Text>
+        )}
+        {question.englishTrap && (
+          <VerbPrepositionTrapNote note={question.englishTrap} />
+        )}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  panel: {
+    backgroundColor: AppColors.white,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+  },
+  verdictStrip: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    borderBottomWidth: Layout.borderWidth,
+    borderBottomColor: AppColors.black,
+  },
+  verdictCorrect: {
+    backgroundColor: AppColors.green,
+  },
+  verdictWrong: {
+    backgroundColor: AppColors.red,
+  },
+  verdictText: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1.5,
+  },
+  body: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+  },
+  pattern: {
+    fontSize: Typography.heading,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    textAlign: 'center',
+  },
+  sentence: {
+    fontSize: Typography.body + 2,
+    fontWeight: Typography.semibold,
+    color: AppColors.black,
+    textAlign: 'center',
+    marginTop: Spacing.md,
+  },
+  highlight: {
+    backgroundColor: AppColors.yellow,
+    textDecorationLine: 'underline',
+  },
+  translation: {
+    fontSize: Typography.small,
+    color: AppColors.textSecondary,
+    textAlign: 'center',
+    marginTop: Spacing.xs,
+  },
+  note: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.textSecondary,
+    marginTop: Spacing.sm,
+  },
+  picked: {
+    fontSize: Typography.small,
+    fontWeight: Typography.semibold,
+    color: AppColors.black,
+    marginTop: Spacing.sm,
+  },
+});

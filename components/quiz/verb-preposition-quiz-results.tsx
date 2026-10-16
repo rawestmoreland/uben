@@ -1,0 +1,141 @@
+import {
+  AppColors,
+  Layout,
+  shadowStyleSmall,
+  Spacing,
+  Typography,
+} from '@/constants/design';
+import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
+import { useStoreReview } from '@/hooks/use-store-review';
+import type { VerbPrepositionQuizResult } from '@/hooks/use-verb-preposition-quiz-session';
+import { uiUpperCase } from '@/utils/uiText';
+import { router } from 'expo-router';
+import { useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { QuizActionButton } from './quiz-action-button';
+import { VerbPrepositionResultRow } from './verb-preposition-result-row';
+
+function resultKey(result: VerbPrepositionQuizResult): string {
+  return String(result.card.word_id);
+}
+
+function renderResult({ item }: { item: VerbPrepositionQuizResult }) {
+  return <VerbPrepositionResultRow result={item} />;
+}
+
+interface VerbPrepositionQuizResultsProps {
+  results: VerbPrepositionQuizResult[];
+}
+
+/** End-of-session summary: totals, then every pattern with its completed sentence. */
+export function VerbPrepositionQuizResults({
+  results,
+}: VerbPrepositionQuizResultsProps) {
+  const { t } = useTranslation('app');
+  const { handleSessionComplete } = useStoreReview();
+  const { maybeShowInterstitial } = useQuizInterstitialAd();
+
+  useEffect(() => {
+    handleSessionComplete();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Interstitials only ever show between sessions, never mid-quiz (and
+  // maybeShowInterstitial is a no-op for Pro users, who are the only ones here)
+  const handleBackToHome = useCallback(() => {
+    maybeShowInterstitial();
+    router.back();
+  }, [maybeShowInterstitial]);
+
+  const correctCount = results.filter((result) => result.isCorrect).length;
+  const accuracy =
+    results.length > 0 ? Math.round((correctCount / results.length) * 100) : 0;
+
+  const summary = [
+    { label: t('quiz_mode.reviewed'), value: String(results.length) },
+    { label: t('quiz_mode.correct'), value: String(correctCount) },
+    { label: t('quiz_mode.accuracy'), value: `${accuracy}%` },
+  ];
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={results}
+        keyExtractor={resultKey}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>
+              {uiUpperCase(t('quiz_mode.session_complete'))}
+            </Text>
+            <View style={styles.summaryRow}>
+              {summary.map(({ label, value }) => (
+                <View
+                  key={label}
+                  style={[styles.summaryCard, shadowStyleSmall]}
+                >
+                  <Text style={styles.summaryValue}>{value}</Text>
+                  <Text style={styles.summaryLabel}>{uiUpperCase(label)}</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        }
+        renderItem={renderResult}
+      />
+
+      <View style={styles.footer}>
+        <QuizActionButton
+          label={t('back_to_home')}
+          onPress={handleBackToHome}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  content: { padding: Layout.screenPadding, paddingBottom: Spacing.xl },
+  title: {
+    fontSize: Typography.title,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+    marginBottom: Spacing.lg,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
+  },
+  summaryCard: {
+    flex: 1,
+    backgroundColor: AppColors.white,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    alignItems: 'center',
+  },
+  summaryValue: {
+    fontSize: Typography.heading,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+  },
+  summaryLabel: {
+    fontSize: Typography.tiny,
+    fontWeight: Typography.semibold,
+    color: AppColors.textSecondary,
+    letterSpacing: 1,
+    marginTop: Spacing.xs,
+  },
+  footer: {
+    backgroundColor: AppColors.cream,
+    paddingHorizontal: Layout.screenPadding,
+    paddingVertical: Spacing.md,
+    borderTopWidth: Layout.borderWidthThin,
+    borderTopColor: AppColors.black,
+  },
+});
