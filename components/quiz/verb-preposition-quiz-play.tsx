@@ -1,5 +1,6 @@
 import { Layout, Spacing } from '@/constants/design';
 import type { VerbPrepositionQuizSessionData } from '@/hooks/use-verb-preposition-quiz-session';
+import { useSettings } from '@/hooks/use-settings';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,7 @@ export function VerbPrepositionQuizPlay({
   quiz,
 }: VerbPrepositionQuizPlayProps) {
   const { t } = useTranslation('app');
+  const { showEnglishHint } = useSettings();
   const { currentCard, phase, selectedPreposition, isCorrect, progress } = quiz;
   const { submitAnswer, nextCard } = quiz;
   const isFeedback = phase === 'feedback';
@@ -72,7 +74,7 @@ export function VerbPrepositionQuizPlay({
         ) : (
           <VerbPrepositionQuestionCard
             sentence={question.sentence}
-            translation={question.translation}
+            translation={showEnglishHint ? question.translation : null}
           />
         )}
         <View style={styles.section}>
