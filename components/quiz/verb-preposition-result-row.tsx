@@ -4,17 +4,20 @@ import {
   formatCaseName,
   isCorrectPreposition,
 } from '@/services/verbPrepositionService';
+import { applyGermanTextPreference } from '@/utils/germanText';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface VerbPrepositionResultRowProps {
   result: VerbPrepositionQuizResult;
+  eszettPreference: 'eszett' | 'ss';
 }
 
 /** One reviewed pattern on the results screen, e.g. "warten auf + Akk." over its completed sentence. */
 export const VerbPrepositionResultRow = memo(function VerbPrepositionResultRow({
   result,
+  eszettPreference,
 }: VerbPrepositionResultRowProps) {
   const { t } = useTranslation('app');
   const { question } = result.card;
@@ -28,8 +31,15 @@ export const VerbPrepositionResultRow = memo(function VerbPrepositionResultRow({
         ]}
       />
       <View style={styles.body}>
-        <Text style={styles.pattern}>{question.patternLabel}</Text>
-        <Text style={styles.sentence}>{question.completedSentence}</Text>
+        <Text style={styles.pattern}>
+          {applyGermanTextPreference(question.patternLabel, eszettPreference)}
+        </Text>
+        <Text style={styles.sentence}>
+          {applyGermanTextPreference(
+            question.completedSentence,
+            eszettPreference,
+          )}
+        </Text>
         {!isCorrectPreposition(question, result.selectedPreposition) && (
           <Text style={styles.picked}>
             {t('verb_preposition_quiz.you_picked', {

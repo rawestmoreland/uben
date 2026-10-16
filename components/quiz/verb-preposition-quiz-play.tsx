@@ -29,7 +29,7 @@ export function VerbPrepositionQuizPlay({
   quiz,
 }: VerbPrepositionQuizPlayProps) {
   const { t } = useTranslation('app');
-  const { showEnglishHint } = useSettings();
+  const { showEnglishHint, eszettPreference } = useSettings();
   const { currentCard, phase, selectedPreposition, isCorrect, progress } = quiz;
   const { selectedCase, submitAnswer, submitCase, nextCard } = quiz;
   const isFeedback = phase === 'feedback';
@@ -84,11 +84,13 @@ export function VerbPrepositionQuizPlay({
             selectedPreposition={selectedPreposition}
             selectedCase={selectedCase}
             isCorrect={isCorrect}
+            eszettPreference={eszettPreference}
           />
         ) : (
           <VerbPrepositionQuestionCard
             sentence={question.sentence}
             translation={showEnglishHint ? question.translation : null}
+            eszettPreference={eszettPreference}
           />
         )}
         <View style={styles.section}>

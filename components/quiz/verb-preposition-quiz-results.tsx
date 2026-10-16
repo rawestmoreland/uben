@@ -5,6 +5,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useSettings } from '@/hooks/use-settings';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
 import { useStoreReview } from '@/hooks/use-store-review';
 import type { VerbPrepositionQuizResult } from '@/hooks/use-verb-preposition-quiz-session';
@@ -20,10 +21,6 @@ function resultKey(result: VerbPrepositionQuizResult): string {
   return String(result.card.word_id);
 }
 
-function renderResult({ item }: { item: VerbPrepositionQuizResult }) {
-  return <VerbPrepositionResultRow result={item} />;
-}
-
 interface VerbPrepositionQuizResultsProps {
   results: VerbPrepositionQuizResult[];
 }
@@ -33,6 +30,7 @@ export function VerbPrepositionQuizResults({
   results,
 }: VerbPrepositionQuizResultsProps) {
   const { t } = useTranslation('app');
+  const { eszettPreference } = useSettings();
   const { handleSessionComplete } = useStoreReview();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
@@ -46,6 +44,16 @@ export function VerbPrepositionQuizResults({
     maybeShowInterstitial();
     router.back();
   }, [maybeShowInterstitial]);
+
+  const renderResult = useCallback(
+    ({ item }: { item: VerbPrepositionQuizResult }) => (
+      <VerbPrepositionResultRow
+        result={item}
+        eszettPreference={eszettPreference}
+      />
+    ),
+    [eszettPreference],
+  );
 
   const correctCount = results.filter((result) => result.isCorrect).length;
   const accuracy =

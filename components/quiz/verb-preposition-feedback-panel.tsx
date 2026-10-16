@@ -12,6 +12,7 @@ import {
   type VerbPrepositionQuestion,
 } from '@/services/verbPrepositionService';
 import type { VerbPrepositionCase } from '@/types/database';
+import { applyGermanTextPreference } from '@/utils/germanText';
 import { uiUpperCase } from '@/utils/uiText';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -22,6 +23,7 @@ interface VerbPrepositionFeedbackPanelProps {
   /** The case tapped in the case step; null when that step did not apply. */
   selectedCase: VerbPrepositionCase | null;
   isCorrect: boolean;
+  eszettPreference: 'eszett' | 'ss';
 }
 
 /**
@@ -36,8 +38,11 @@ export function VerbPrepositionFeedbackPanel({
   selectedPreposition,
   selectedCase,
   isCorrect,
+  eszettPreference,
 }: VerbPrepositionFeedbackPanelProps) {
   const { t } = useTranslation('app');
+  const display = (text: string) =>
+    applyGermanTextPreference(text, eszettPreference);
   const verdict = t(
     isCorrect
       ? 'verb_preposition_quiz.correct'
@@ -71,8 +76,8 @@ export function VerbPrepositionFeedbackPanel({
   const spokenSummary = [
     t('verb_preposition_quiz.feedback_a11y', {
       verdict,
-      pattern: question.patternLabel,
-      sentence: question.completedSentence,
+      pattern: display(question.patternLabel),
+      sentence: display(question.completedSentence),
     }),
     wrongPreposition &&
       t('verb_preposition_quiz.you_picked', {
@@ -99,16 +104,16 @@ export function VerbPrepositionFeedbackPanel({
         <Text style={styles.verdictText}>{uiUpperCase(verdict)}</Text>
       </View>
       <View style={styles.body}>
-        <Text style={styles.pattern}>{question.patternLabel}</Text>
+        <Text style={styles.pattern}>{display(question.patternLabel)}</Text>
         <Text style={styles.sentence}>
           {parts && filled !== null ? (
             <>
-              {parts.before}
-              <Text style={styles.highlight}>{filled}</Text>
-              {parts.after}
+              {display(parts.before)}
+              <Text style={styles.highlight}>{display(filled)}</Text>
+              {display(parts.after)}
             </>
           ) : (
-            question.completedSentence
+            display(question.completedSentence)
           )}
         </Text>
         <Text style={styles.translation}>{question.translation}</Text>
