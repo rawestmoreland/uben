@@ -6,6 +6,7 @@ import {
   Typography,
 } from '@/constants/design';
 import { splitSentenceAtBlank } from '@/services/verbPrepositionService';
+import { applyGermanTextPreference } from '@/utils/germanText';
 import { uiUpperCase } from '@/utils/uiText';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -15,15 +16,21 @@ interface VerbPrepositionQuestionCardProps {
   sentence: string;
   /** English gloss of the sense being tested; it is what disambiguates verbs with several prepositions. */
   translation: string | null;
+  eszettPreference: 'eszett' | 'ss';
 }
 
 /** The question: a cloze sentence with the preposition blanked out, plus its English gloss. */
 export function VerbPrepositionQuestionCard({
   sentence,
   translation,
+  eszettPreference,
 }: VerbPrepositionQuestionCardProps) {
   const { t } = useTranslation('app');
-  const parts = splitSentenceAtBlank(sentence);
+  const displaySentence = applyGermanTextPreference(
+    sentence,
+    eszettPreference,
+  );
+  const parts = splitSentenceAtBlank(displaySentence);
 
   return (
     <View style={[styles.card, shadowStyle]}>
@@ -33,7 +40,7 @@ export function VerbPrepositionQuestionCard({
       <Text
         style={styles.sentence}
         accessibilityLabel={t('verb_preposition_quiz.question_a11y', {
-          sentence: sentence.replace(
+          sentence: displaySentence.replace(
             /_{2,}/,
             t('verb_preposition_quiz.blank_a11y'),
           ),
@@ -46,7 +53,7 @@ export function VerbPrepositionQuestionCard({
             {parts.after}
           </>
         ) : (
-          sentence
+          displaySentence
         )}
       </Text>
       {translation && <Text style={styles.translation}>{translation}</Text>}
