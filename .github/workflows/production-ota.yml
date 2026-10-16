@@ -84,12 +84,12 @@ jobs:
             exit 1
           fi
 
-          # `eas update` doesn't apply the build profile's `env` block, so run it (and this
-          # check) through the wrapper that reproduces the builder's environment. Abort now,
-          # before publishing, if the update would get a different runtime version than the
-          # builds we just verified.
-          UPDATE_IOS=$(scripts/eas-with-profile-env.sh production eas fingerprint:generate --platform ios --json --non-interactive | jq -r '.hash // empty') || UPDATE_IOS=""
-          UPDATE_ANDROID=$(scripts/eas-with-profile-env.sh production eas fingerprint:generate --platform android --json --non-interactive | jq -r '.hash // empty') || UPDATE_ANDROID=""
+          # `eas update` doesn't apply the build profile's `env` block, but it does load the
+          # server-side EAS "production" environment via `--environment`; APP_ENV must be
+          # defined there. Abort now, before publishing, if an update run that way would get a
+          # different runtime version than the builds we just verified.
+          UPDATE_IOS=$(eas fingerprint:generate --environment production --platform ios --json --non-interactive | jq -r '.hash // empty') || UPDATE_IOS=""
+          UPDATE_ANDROID=$(eas fingerprint:generate --environment production --platform android --json --non-interactive | jq -r '.hash // empty') || UPDATE_ANDROID=""
           echo "iOS update fingerprint:     $UPDATE_IOS"
           echo "Android update fingerprint: $UPDATE_ANDROID"
           if [ "$UPDATE_IOS" != "$CURRENT_IOS" ] || [ "$UPDATE_ANDROID" != "$CURRENT_ANDROID" ]; then
@@ -133,11 +133,11 @@ jobs:
           # Publish each platform separately: `--platform all` also exports a web
           # bundle, which this native-only app can't build. Each platform gets its
           # own update group.
-          # It runs through the wrapper so the update sees the same environment (EAS
-          # "production" variables + the profile's `env`) as the store builds; plain
-          # `eas update` computes a different runtime version and reaches no one.
+          # `--environment production` loads the EAS "production" variables (incl. APP_ENV)
+          # so the update sees the same config as the store builds; without it `eas update`
+          # computes a different runtime version and reaches no one.
           publish() {
-            scripts/eas-with-profile-env.sh production eas update --branch production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$1" --json
+            eas update --branch production --environment production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$1" --json
           }
           IOS_OUTPUT=$(publish ios)
           echo "$IOS_OUTPUT"

@@ -69,6 +69,8 @@
       "choose_app_language": "Choisissez la langue d'affichage de l'application.",
       "select_language": "Choisir la langue",
       "close_picker": "Fermer",
+      "translations_downloading": "Téléchargement des traductions…",
+      "translations_download_failed": "Impossible de télécharger les traductions. Les indices s'afficheront en anglais jusqu'à votre retour en ligne.",
       "adjective_difficulty_advanced": "Terminaisons d'adjectifs avancées",
       "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs."
     },

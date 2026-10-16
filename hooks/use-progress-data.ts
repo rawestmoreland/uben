@@ -1,3 +1,4 @@
+import { settingsService } from '@/services/settingsService';
 import { spacedRepetitionService } from '@/services/spacedRepetitionService';
 import {
   statisticsService,
@@ -18,6 +19,7 @@ export interface ProgressData {
   masteredCount: number;
   activityData: DailyActivity[];
   hardestWords: HardWord[];
+  eszettPreference: 'eszett' | 'ss';
   isLoading: boolean;
 }
 
@@ -42,6 +44,9 @@ export function useProgressData(): ProgressData {
   const [masteredCount, setMasteredCount] = useState(0);
   const [activityData, setActivityData] = useState<DailyActivity[]>([]);
   const [hardestWords, setHardestWords] = useState<HardWord[]>([]);
+  const [eszettPreference, setEszettPreference] = useState<'eszett' | 'ss'>(
+    'eszett',
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
@@ -57,6 +62,7 @@ export function useProgressData(): ProgressData {
             fetchedMastered,
             fetchedActivity,
             fetchedHardest,
+            fetchedEszett,
           ] = await Promise.all([
             vocabularyService.getUserStats(),
             spacedRepetitionService.getStudyStreak(),
@@ -64,6 +70,9 @@ export function useProgressData(): ProgressData {
             statisticsService.getMasteredCount(),
             statisticsService.getActivityData(91),
             statisticsService.getHardestWords(3, 8),
+            // Re-read on every focus: this tab stays mounted while the
+            // preference is changed on the Settings tab.
+            settingsService.getEszettPreference(),
           ]);
 
           if (!cancelled) {
@@ -73,6 +82,7 @@ export function useProgressData(): ProgressData {
             setMasteredCount(fetchedMastered);
             setActivityData(fetchedActivity);
             setHardestWords(fetchedHardest);
+            setEszettPreference(fetchedEszett);
           }
         } catch (error) {
           console.error('[ProgressData] Failed to load:', error);
@@ -98,6 +108,7 @@ export function useProgressData(): ProgressData {
     masteredCount,
     activityData,
     hardestWords,
+    eszettPreference,
     isLoading,
   };
 }

@@ -59,9 +59,22 @@ export interface SyncResult {
   status: 'synced' | 'skipped' | 'error';
   categoriesSynced?: number;
   nounsSynced?: number;
+  nounTranslationsSynced?: number;
   /** Collections that had a count mismatch and required a full re-fetch. */
   patchedCollections?: string[];
   error?: string;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
+/** Settings key holding the last successful translation pull for a language. */
+function nounTranslationsSyncKey(locale: AppLanguage): string {
+  return `${SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations}_${locale}`;
+}
+
+/** PocketBase filter limiting `noun_translations` to one language. */
+function localeFilter(locale: AppLanguage): string {
+  return `locale = '${locale}'`;
 }
 
 // ── Service ──────────────────────────────────────────────────────────
@@ -77,8 +90,10 @@ class SyncService {
    * - Returns `'skipped'` immediately when PB_URL is not configured.
    * - Never throws — all errors are caught and returned in the result.
    * - Safe to call on every app launch (non-blocking, idempotent).
+   * - Only noun translations for `locale` are downloaded. English needs none
+   *   (the `english` column is canonical), so the default downloads none.
    */
-  async syncIfOnline(): Promise<SyncResult> {
+  async syncIfOnline(locale: AppLanguage = 'en'): Promise<SyncResult> {
     if (!PB_URL || !PB_API_KEY) {
       return { status: 'skipped' };
     }
@@ -87,14 +102,10 @@ class SyncService {
       // Read per-collection timestamps so that newly-added collections (which
       // have no stored timestamp yet) always do a full fetch, even when other
       // collections have already been synced before.
-      const [lastSyncCategories, lastSyncNouns, lastSyncTranslations] =
-        await Promise.all([
-          settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.categories),
-          settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.nouns),
-          settingsService.getSetting(
-            SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
-          ),
-        ]);
+      const [lastSyncCategories, lastSyncNouns] = await Promise.all([
+        settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.categories),
+        settingsService.getSetting(SYNC_CONFIG.LAST_SYNC_KEYS.nouns),
+      ]);
 
       const syncedAt = new Date().toISOString();
 
@@ -121,37 +132,96 @@ class SyncService {
         syncedAt,
       );
 
-      // Pull noun translations
-      const remoteNounTranslations = await this.fetchRecords<PBNounTranslation>(
-        'noun_translations',
-        lastSyncTranslations,
-        'noun_id',
-      );
-      const nounTranslationsSynced = await this.upsertNounTranslations(
-        remoteNounTranslations,
-      );
-      await settingsService.setSetting(
-        SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
-        syncedAt,
-      );
-
-      if (categoriesSynced > 0 || nounsSynced > 0) {
-        console.log(
-          `[Sync] Complete: ${categoriesSynced} categories, ${nounsSynced} nouns, ${nounTranslationsSynced} noun translations`,
-        );
-      }
-
       // Integrity check: if local counts don't match remote after incremental
       // sync, some records were silently missed (e.g. network dropped mid-page).
       // Re-fetch the entire collection without a timestamp filter to patch gaps.
-      const patchedCollections = await this.patchSyncIfCountMismatch();
+      const patchedCollections = await this.patchNounsIfCountMismatch();
 
-      return { status: 'synced', categoriesSynced, nounsSynced, patchedCollections };
+      // Pull translations for the selected language only
+      const nounTranslationsSynced = await this.pullNounTranslations(
+        locale,
+        patchedCollections,
+      );
+
+      if (categoriesSynced > 0 || nounsSynced > 0 || nounTranslationsSynced > 0) {
+        console.log(
+          `[Sync] Complete: ${categoriesSynced} categories, ${nounsSynced} nouns, ${nounTranslationsSynced} noun translations (${locale})`,
+        );
+      }
+
+      return {
+        status: 'synced',
+        categoriesSynced,
+        nounsSynced,
+        nounTranslationsSynced,
+        patchedCollections,
+      };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.warn('[Sync] Failed:', message);
       return { status: 'error', error: message };
     }
+  }
+
+  /**
+   * Download the noun translations for a single language.
+   *
+   * Called when the user picks a new app language so the hints are available
+   * before the UI switches over. Never throws — failures are returned in the
+   * result and the next `syncIfOnline()` retries (the per-language timestamp is
+   * only stored after a successful pull).
+   *
+   * - `'en'` returns `'skipped'`: the `english` column is canonical.
+   * - Returns `'skipped'` when PB_URL / PB_API_KEY are not configured.
+   */
+  async syncNounTranslations(locale: AppLanguage): Promise<SyncResult> {
+    if (!PB_URL || !PB_API_KEY || locale === 'en') {
+      return { status: 'skipped' };
+    }
+
+    try {
+      const patchedCollections: string[] = [];
+      const nounTranslationsSynced = await this.pullNounTranslations(
+        locale,
+        patchedCollections,
+      );
+      return { status: 'synced', nounTranslationsSynced, patchedCollections };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`[Sync] Noun translations (${locale}) failed:`, message);
+      return { status: 'error', error: message };
+    }
+  }
+
+  /**
+   * Incremental pull + integrity check for one language's translations.
+   * Pushes `'noun_translations'` onto `patchedCollections` if a full re-fetch
+   * was needed. Throws on network errors (callers catch).
+   */
+  private async pullNounTranslations(
+    locale: AppLanguage,
+    patchedCollections: string[],
+  ): Promise<number> {
+    if (locale === 'en') return 0;
+
+    const syncKey = nounTranslationsSyncKey(locale);
+    const lastSync = await settingsService.getSetting(syncKey);
+    const syncedAt = new Date().toISOString();
+
+    const remoteTranslations = await this.fetchRecords<PBNounTranslation>(
+      'noun_translations',
+      lastSync,
+      undefined,
+      localeFilter(locale),
+    );
+    const synced = await this.upsertNounTranslations(remoteTranslations);
+    await settingsService.setSetting(syncKey, syncedAt);
+
+    if (await this.patchNounTranslationsIfCountMismatch(locale)) {
+      patchedCollections.push('noun_translations');
+    }
+
+    return synced;
   }
 
   // ── Fetching ─────────────────────────────────────────────────────
@@ -164,6 +234,7 @@ class SyncService {
     collection: string,
     since: string | null,
     expand?: string,
+    extraFilter?: string,
   ): Promise<T[]> {
     const allItems: T[] = [];
     let page = 1;
@@ -180,9 +251,15 @@ class SyncService {
         params.set('expand', expand);
       }
 
+      const filters: string[] = [];
       if (since) {
-        const pbTimestamp = formatPocketBaseTimestamp(since);
-        params.set('filter', `(updated > '${pbTimestamp}')`);
+        filters.push(`(updated > '${formatPocketBaseTimestamp(since)}')`);
+      }
+      if (extraFilter) {
+        filters.push(`(${extraFilter})`);
+      }
+      if (filters.length > 0) {
+        params.set('filter', filters.join(' && '));
       }
 
       const url = `${PB_URL}/api/collections/${collection}/records?${params}`;
@@ -418,10 +495,9 @@ class SyncService {
    *
    * Returns the list of collections that were patched.
    */
-  private async patchSyncIfCountMismatch(): Promise<string[]> {
+  private async patchNounsIfCountMismatch(): Promise<string[]> {
     const patched: string[] = [];
 
-    // ── Nouns ──────────────────────────────────────────────────────
     const [remoteNounCount, localNounCount] = await Promise.all([
       this.fetchRemoteCount('nouns'),
       this.db
@@ -453,51 +529,68 @@ class SyncService {
       patched.push('nouns');
     }
 
-    // ── Noun translations ──────────────────────────────────────────
-    const [remoteTranslationCount, localTranslationCount] = await Promise.all([
-      this.fetchRemoteCount('noun_translations'),
+    return patched;
+  }
+
+  /**
+   * Same integrity check for one language's translations. Only that language is
+   * compared and re-fetched — rows for other languages are never touched.
+   *
+   * Returns `true` if a full re-fetch was needed.
+   */
+  private async patchNounTranslationsIfCountMismatch(
+    locale: AppLanguage,
+  ): Promise<boolean> {
+    const [remoteCount, localCount] = await Promise.all([
+      this.fetchRemoteCount('noun_translations', localeFilter(locale)),
       this.db
         .getFirstAsync<{ count: number }>(
-          'SELECT COUNT(*) as count FROM noun_translations',
+          'SELECT COUNT(*) as count FROM noun_translations WHERE locale = ?',
+          [locale],
         )
         .then((r) => r?.count ?? 0),
     ]);
 
-    if (remoteTranslationCount !== localTranslationCount) {
-      console.log(
-        `[Sync] Noun translation count mismatch (remote=${remoteTranslationCount}, local=${localTranslationCount}). Running patch sync…`,
-      );
-      const allTranslations = await this.fetchRecords<PBNounTranslation>(
-        'noun_translations',
-        null,
-        'noun_id',
-      );
-      await this.upsertNounTranslations(allTranslations);
-      // Prune translations deleted from PocketBase (local > remote case)
-      if (allTranslations.length > 0) {
-        const remoteIds = allTranslations.map((t) => t.id);
-        const placeholders = remoteIds.map(() => '?').join(',');
-        await this.db.runAsync(
-          `DELETE FROM noun_translations WHERE remote_id NOT IN (${placeholders})`,
-          remoteIds,
-        );
-      }
-      await settingsService.setSetting(
-        SYNC_CONFIG.LAST_SYNC_KEYS.noun_translations,
-        new Date().toISOString(),
-      );
-      patched.push('noun_translations');
-    }
+    if (remoteCount === localCount) return false;
 
-    return patched;
+    console.log(
+      `[Sync] Noun translation (${locale}) count mismatch (remote=${remoteCount}, local=${localCount}). Running patch sync…`,
+    );
+    const allTranslations = await this.fetchRecords<PBNounTranslation>(
+      'noun_translations',
+      null,
+      undefined,
+      localeFilter(locale),
+    );
+    await this.upsertNounTranslations(allTranslations);
+    // Prune translations deleted from PocketBase (local > remote case)
+    if (allTranslations.length > 0) {
+      const remoteIds = allTranslations.map((t) => t.id);
+      const placeholders = remoteIds.map(() => '?').join(',');
+      await this.db.runAsync(
+        `DELETE FROM noun_translations WHERE locale = ? AND remote_id NOT IN (${placeholders})`,
+        [locale, ...remoteIds],
+      );
+    }
+    await settingsService.setSetting(
+      nounTranslationsSyncKey(locale),
+      new Date().toISOString(),
+    );
+    return true;
   }
 
   /**
    * Fetch only the first page (perPage=1) from a PocketBase collection
    * to cheaply read the `totalItems` count.
    */
-  private async fetchRemoteCount(collection: string): Promise<number> {
+  private async fetchRemoteCount(
+    collection: string,
+    filter?: string,
+  ): Promise<number> {
     const params = new URLSearchParams({ perPage: '1', key: PB_API_KEY! });
+    if (filter) {
+      params.set('filter', `(${filter})`);
+    }
     const url = `${PB_URL}/api/collections/${collection}/records?${params}`;
     const response = await fetch(url);
     if (!response.ok) {

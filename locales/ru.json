@@ -73,6 +73,8 @@
       "choose_app_language": "Выберите язык интерфейса приложения.",
       "select_language": "Выберите язык",
       "close_picker": "Закрыть",
+      "translations_downloading": "Загрузка переводов…",
+      "translations_download_failed": "Не удалось загрузить переводы. Подсказки будут на английском, пока вы не подключитесь к сети.",
       "adjective_difficulty_advanced": "Расширенные окончания прилагательных",
       "adjective_difficulty_advanced_description": "Добавить дательный падеж (косвенное дополнение) в тренировку окончаний прилагательных."
     },

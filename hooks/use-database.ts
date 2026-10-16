@@ -58,7 +58,9 @@ export function useDatabase() {
   useEffect(() => {
     if (!isReady) return;
 
-    syncService.syncIfOnline().then((result) => {
+    // Translations are downloaded for the selected language only
+    // (i18n.language was set from the saved preference during init).
+    syncService.syncIfOnline(resolveAppLanguage(i18n.language)).then((result) => {
       if (result.status === 'synced') {
         const { categoriesSynced = 0, nounsSynced = 0 } = result;
         if (categoriesSynced > 0 || nounsSynced > 0) {

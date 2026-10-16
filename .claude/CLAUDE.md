@@ -149,6 +149,7 @@ Business logic abstracted from UI components:
 - **vocabularyService.ts** - CRUD operations for nouns/verbs (SQLite)
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
 - **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
+- **wordTranslationService.ts** - Verb/adjective hints in the app language, from bundled `database/seeds/translations/` (not synced); falls back to `english`
 - **statisticsService.ts** - User progress, streaks, forecasting
 - **syncService.ts** - Optional PocketBase vocabulary sync
 
@@ -159,6 +160,7 @@ Services use the database singleton and provide clean APIs to components.
 `services/syncService.ts` handles optional vocabulary sync from PocketBase:
 
 - Fetches categories and nouns from PocketBase API
+- Fetches `noun_translations` for the **selected app language only** (English needs none — `nouns.english` is canonical). Each language has its own `last_sync_noun_translations_<locale>` timestamp, and `syncNounTranslations(locale)` is called when the user switches language in Settings (a blocking loading overlay is shown while it downloads)
 - Upserts into local SQLite by matching `remote_id`
 - Gracefully handles network errors (app continues offline)
 - Tracks last sync timestamp in settings

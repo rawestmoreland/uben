@@ -65,6 +65,8 @@
       "choose_app_language": "Scegli la lingua dell'app.",
       "select_language": "Seleziona la lingua",
       "close_picker": "Chiudi",
+      "translations_downloading": "Download delle traduzioni in corso…",
+      "translations_download_failed": "Impossibile scaricare le traduzioni. I suggerimenti saranno in inglese finché non sarai di nuovo online.",
       "adjective_difficulty_advanced": "Desinenze avanzate",
       "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
     },

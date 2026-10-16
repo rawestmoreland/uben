@@ -69,6 +69,8 @@
       "choose_app_language": "Escolhe o idioma da aplicação.",
       "select_language": "Selecionar idioma",
       "close_picker": "Fechar",
+      "translations_downloading": "A transferir traduções…",
+      "translations_download_failed": "Não foi possível transferir as traduções. As dicas serão apresentadas em inglês até voltar a estar online.",
       "adjective_difficulty_advanced": "Terminações de adjetivos avançadas",
       "adjective_difficulty_advanced_description": "Inclui também o dativo (complemento indireto) na prática de terminações de adjetivos."
     },

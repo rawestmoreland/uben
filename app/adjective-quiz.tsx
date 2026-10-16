@@ -19,6 +19,7 @@ import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
 import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
+import { useWordTranslation } from '@/hooks/use-word-translation';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -221,6 +222,11 @@ interface PlayingStateProps {
 function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
   const { t } = useTranslation('app');
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
+  const translation = useWordTranslation(
+    'adjective',
+    currentQuestion?.adjectiveBase ?? null,
+    currentQuestion?.english ?? null,
+  );
 
   const isFeedback = phase === 'feedback';
 
@@ -316,7 +322,7 @@ function PlayingState({ quiz, eszettPreference }: PlayingStateProps) {
             </Text>{' '}
             {applyGermanTextPreference(currentQuestion.after, eszettPreference)}
           </Text>
-          <Text style={styles.englishHint}>{currentQuestion.english}</Text>
+          <Text style={styles.englishHint}>{translation}</Text>
           {isFeedback && !isCorrect && (
             <Text style={styles.correctAnswerNote}>
               {t('adjective_quiz.correct_answer_was', {
