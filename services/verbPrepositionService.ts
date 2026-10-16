@@ -174,8 +174,6 @@ export interface VerbPrepositionQuestion {
   patternLabel: string;
   /** The sentence with the primary answer filled in. */
   completedSentence: string;
-  /** Optional note on a common English-speaker mistake, shown in feedback. */
-  englishTrap: string | null;
 }
 
 /** The stored pattern fields a question is built from. */
@@ -188,7 +186,6 @@ export type VerbPrepositionPattern = Pick<
   | 'case_governed'
   | 'sentence'
   | 'translation'
-  | 'english_trap'
 >;
 
 export interface BuildQuestionOptions {
@@ -332,7 +329,6 @@ export function buildVerbPrepositionQuestion(
       preposition: primaryAnswer,
     }),
     completedSentence: fillBlank(pattern.sentence, primaryAnswer),
-    englishTrap: pattern.english_trap?.trim() || null,
   };
 }
 

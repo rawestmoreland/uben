@@ -200,7 +200,6 @@
       "incorrect": "Not quite",
       "you_picked": "You picked {{preposition}}",
       "also_accepted": "Also accepted: {{prepositions}}",
-      "english_trap": "English trap",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continue"
     },

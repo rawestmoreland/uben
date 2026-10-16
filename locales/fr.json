@@ -205,7 +205,6 @@
       "incorrect": "Pas tout à fait",
       "you_picked": "Tu as choisi {{preposition}}",
       "also_accepted": "Également accepté : {{prepositions}}",
-      "english_trap": "Piège de l'anglais",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continuer"
     },

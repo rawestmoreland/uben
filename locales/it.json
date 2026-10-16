@@ -200,7 +200,6 @@
       "incorrect": "Non proprio",
       "you_picked": "Hai scelto {{preposition}}",
       "also_accepted": "Accettato anche: {{prepositions}}",
-      "english_trap": "Trappola dell'inglese",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continua"
     },

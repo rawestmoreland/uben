@@ -200,7 +200,6 @@
       "incorrect": "不太对",
       "you_picked": "你选了 {{preposition}}",
       "also_accepted": "也可接受:{{prepositions}}",
-      "english_trap": "英语陷阱",
       "feedback_a11y": "{{verdict}}。{{pattern}}。{{sentence}}",
       "continue": "继续"
     },

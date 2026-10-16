@@ -12,7 +12,6 @@ import {
 import { uiUpperCase } from '@/utils/uiText';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
-import { VerbPrepositionTrapNote } from './verb-preposition-trap-note';
 
 interface VerbPrepositionFeedbackPanelProps {
   question: VerbPrepositionQuestion;
@@ -23,8 +22,7 @@ interface VerbPrepositionFeedbackPanelProps {
 /**
  * Takes the question card's place once the learner answers: the full pattern
  * with its case ("warten auf + Akk."), the completed sentence with the
- * preposition highlighted, the gloss, any other accepted prepositions, and
- * the English-trap note when the pattern has one.
+ * preposition highlighted, the gloss, and any other accepted prepositions.
  */
 export function VerbPrepositionFeedbackPanel({
   question,
@@ -107,9 +105,6 @@ export function VerbPrepositionFeedbackPanel({
               preposition: selectedPreposition,
             })}
           </Text>
-        )}
-        {question.englishTrap && (
-          <VerbPrepositionTrapNote note={question.englishTrap} />
         )}
       </View>
     </View>

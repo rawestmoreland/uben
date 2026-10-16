@@ -23,7 +23,6 @@ function pattern(
     case_governed: 'akk',
     sentence: 'Ich warte ____ meine Frau.',
     translation: "I'm waiting for my wife.",
-    english_trap: null,
     ...overrides,
   };
 }
@@ -130,7 +129,6 @@ describe('buildVerbPrepositionQuestion()', () => {
       caseLabel: '+ Akk.',
       patternLabel: 'warten auf + Akk.',
       completedSentence: 'Ich warte auf meine Frau.',
-      englishTrap: null,
     });
   });
 
@@ -140,18 +138,6 @@ describe('buildVerbPrepositionQuestion()', () => {
     )!;
 
     expect(question.completedSentence).toBe('Auf wen wartest du?');
-  });
-
-  it('passes the English trap through, treating blank notes as none', () => {
-    expect(
-      buildVerbPrepositionQuestion(
-        pattern({ english_trap: 'English "wait for" pulls toward für.' }),
-      )!.englishTrap,
-    ).toBe('English "wait for" pulls toward für.');
-    expect(
-      buildVerbPrepositionQuestion(pattern({ english_trap: '  ' }))!
-        .englishTrap,
-    ).toBeNull();
   });
 
   it('excludes patterns it cannot ask reliably', () => {
