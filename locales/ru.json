@@ -210,7 +210,6 @@
       "incorrect": "Не совсем",
       "you_picked": "Вы выбрали {{preposition}}",
       "also_accepted": "Также допустимо: {{prepositions}}",
-      "english_trap": "Ловушка английского",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Далее"
     },

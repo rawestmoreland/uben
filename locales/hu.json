@@ -200,7 +200,6 @@
       "incorrect": "Nem egészen",
       "you_picked": "Ezt választottad: {{preposition}}",
       "also_accepted": "Szintén elfogadott: {{prepositions}}",
-      "english_trap": "Angol csapda",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Tovább"
     },

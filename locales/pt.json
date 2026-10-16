@@ -205,7 +205,6 @@
       "incorrect": "Quase",
       "you_picked": "Você escolheu {{preposition}}",
       "also_accepted": "Também aceito: {{prepositions}}",
-      "english_trap": "Armadilha do inglês",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continuar"
     },

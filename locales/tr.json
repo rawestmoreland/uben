@@ -200,7 +200,6 @@
       "incorrect": "Tam değil",
       "you_picked": "{{preposition}} seçtin",
       "also_accepted": "Şu da kabul edilir: {{prepositions}}",
-      "english_trap": "İngilizce tuzağı",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Devam"
     },

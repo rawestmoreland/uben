@@ -210,7 +210,6 @@
       "incorrect": "Nie do końca",
       "you_picked": "Wybrano {{preposition}}",
       "also_accepted": "Dopuszczalne także: {{prepositions}}",
-      "english_trap": "Pułapka angielskiego",
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Dalej"
     },
