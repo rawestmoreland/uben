@@ -151,9 +151,21 @@ Business logic abstracted from UI components:
 - **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
 - **wordTranslationService.ts** - Verb/adjective hints in the app language, from bundled `database/seeds/translations/` (not synced); falls back to `english`
 - **statisticsService.ts** - User progress, streaks, forecasting
+- **notificationService.ts** - Local practice reminders (expo-notifications; no remote push). Re-plans pending reminders from card/streak data via the pure `reminderPlanner.ts`
 - **syncService.ts** - Optional PocketBase vocabulary sync
 
 Services use the database singleton and provide clean APIs to components.
+
+#### Practice Reminders
+
+`services/notificationService.ts` + `services/reminderPlanner.ts` schedule **local** notifications only (free for everyone, opt-in):
+
+- At most one reminder per day, only on days with due cards, never for a day already practiced
+- Back-off while ignored: 3 daily, 2 every other day, 2 weekly, then stop. Opening the app re-plans from scratch (resets the ladder)
+- Optional streak reminder (off by default) replaces — never adds to — the day's reminder when a 3+ day streak is at risk
+- Rescheduled on app foreground/background (`hooks/use-reminder-scheduler.ts`), after a finished session and when settings change; one-time opt-in prompt after the first finished session (`hooks/use-reminder-prompt.ts`)
+- Tapping a reminder opens `/quiz`
+- Keep scheduling rules in `reminderPlanner.ts` (pure, unit tested); `notificationService.ts` owns scheduling and permissions (the tap handler lives in `use-reminder-scheduler.ts`); keep expo-notifications calls out of components
 
 #### Sync Service
 

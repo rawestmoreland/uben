@@ -7,6 +7,7 @@ import {
 } from '@/constants/design';
 import type { PluralQuizResult } from '@/hooks/use-plural-quiz-session';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
+import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { router } from 'expo-router';
 import { useCallback, useEffect } from 'react';
@@ -32,6 +33,7 @@ export function PluralQuizResults({
 }: PluralQuizResultsProps) {
   const { t } = useTranslation('app');
   const { handleSessionComplete } = useStoreReview();
+  useReminderPrompt();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
   useEffect(() => {

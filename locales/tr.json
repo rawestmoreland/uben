@@ -68,7 +68,18 @@
       "translations_downloading": "Çeviriler indiriliyor…",
       "translations_download_failed": "Çeviriler indirilemedi. Tekrar çevrimiçi olana kadar ipuçları İngilizce gösterilecek.",
       "adjective_difficulty_advanced": "Gelişmiş sıfat çekimleri",
-      "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et."
+      "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et.",
+      "reminders_title": "Hatırlatıcılar",
+      "reminders_enable": "Pratik hatırlatıcıları",
+      "reminders_enable_description": "Tekrar edilecek kelimeler olduğunda bir bildirim. Günde en fazla bir tane ve yalnızca tekrar edilecek bir şey varsa.",
+      "reminders_time": "Hatırlatma saati",
+      "reminders_time_description": "Hatırlatmanın geleceği saat.",
+      "reminders_time_earlier": "Bir saat önce",
+      "reminders_time_later": "Bir saat sonra",
+      "reminders_streak": "Seri hatırlatıcısı",
+      "reminders_streak_description": "3 veya daha fazla günlük bir seri bozulmadan önce hatırlatma al.",
+      "reminders_denied": "Üben için bildirimler cihaz ayarlarında kapalı.",
+      "reminders_open_settings": "Ayarları aç"
     },
     "level_filter": {
       "label": "ÇALIŞMA SEVİYESİ",
@@ -273,6 +284,22 @@
           "subtitle": "Präteritum"
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Pratik hatırlatıcıları",
+      "due_title": "Pratik zamanı",
+      "streak_title": "Serini sürdür",
+      "streak_body": "Serin {{streak}} gün oldu. Bozulmaması için bugün pratik yap.",
+      "prompt_title": "Pratik hatırlatıcıları?",
+      "prompt_body": "Tekrar edilecek kelimeler olduğunda hatırlatma ister misin? Günde en fazla bir tane ve yalnızca tekrar edilecek bir şey varsa. Bunu istediğin zaman Ayarlar'dan değiştirebilirsin.",
+      "prompt_not_now": "Şimdi değil",
+      "prompt_accept": "Hatırlat",
+      "due_body_a_one": "{{count}} kelime tekrar bekliyor. Kısa bir seans hepsini taze tutar.",
+      "due_body_a_other": "{{count}} kelime tekrar bekliyor. Kısa bir seans hepsini taze tutar.",
+      "due_body_b_one": "{{count}} kelime tekrara hazır. Birkaç dakika yeter.",
+      "due_body_b_other": "{{count}} kelime tekrara hazır. Birkaç dakika yeter.",
+      "due_body_c_one": "Hızlı bir tur? {{count}} kelime tekrar bekliyor.",
+      "due_body_c_other": "Hızlı bir tur? {{count}} kelime tekrar bekliyor."
     }
   }
 }
