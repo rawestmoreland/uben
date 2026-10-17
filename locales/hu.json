@@ -207,6 +207,24 @@
       "case_prompt": "Melyik esetet vonzza?",
       "case_you_picked": "Ezt választottad: {{picked}} (ez vonzza: {{correct}})"
     },
+    "verb_preposition_patterns": {
+      "title": "Minták elöljárószavanként",
+      "open": "Minták",
+      "open_a11y": "Minták böngészése elöljárószavak szerint csoportosítva",
+      "close": "Minták bezárása",
+      "summary": "{{started}} / {{total}} minta gyakorolva",
+      "summary_empty": "{{total}} minta. Indítsd el a kvízt a haladásod követéséhez.",
+      "empty_title": "Még nincs minta",
+      "empty": "Ezen az eszközön még nincsenek igeminták. Nézz vissza a következő szókincsfrissítés után.",
+      "error": "A minták betöltése sikertelen.",
+      "also_with": "Elfogadott még ennél: {{preposition}}",
+      "contrast": "Hasonlítsd össze: {{patterns}}",
+      "mastery": {
+        "new": "Új",
+        "learning": "Tanulás",
+        "mastered": "Elsajátítva"
+      }
+    },
     "plural_quiz": {
       "badge": "Többesszám-képzők",
       "prompt": "Melyik többesszám-képző?",

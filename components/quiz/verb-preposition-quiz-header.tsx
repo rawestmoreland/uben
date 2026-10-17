@@ -13,6 +13,10 @@ function exitQuiz() {
   router.back();
 }
 
+function openPatterns() {
+  router.push('/verb-preposition-patterns');
+}
+
 /** Mode badge, exit button and "3 of 20" progress bar along the top of the preposition quiz. */
 export function VerbPrepositionQuizHeader({
   current,
@@ -29,6 +33,17 @@ export function VerbPrepositionQuizHeader({
             {uiUpperCase(t('verb_preposition_quiz.badge'))}
           </Text>
         </View>
+        <Pressable
+          style={styles.patternsButton}
+          onPress={openPatterns}
+          accessibilityRole="button"
+          accessibilityLabel={t('verb_preposition_patterns.open_a11y')}
+          hitSlop={12}
+        >
+          <Text style={styles.patternsButtonText}>
+            {uiUpperCase(t('verb_preposition_patterns.open'))}
+          </Text>
+        </Pressable>
         <Pressable
           style={styles.closeButton}
           onPress={exitQuiz}
@@ -68,6 +83,22 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: Typography.tiny,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
+    letterSpacing: 1,
+  },
+  patternsButton: {
+    flex: 1,
+    height: 44,
+    marginHorizontal: Spacing.sm,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.yellow,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  patternsButtonText: {
+    fontSize: Typography.small,
     fontWeight: Typography.bold,
     color: AppColors.black,
     letterSpacing: 1,

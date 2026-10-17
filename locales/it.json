@@ -207,6 +207,24 @@
       "case_prompt": "Quale caso regge?",
       "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})"
     },
+    "verb_preposition_patterns": {
+      "title": "Schemi per preposizione",
+      "open": "Schemi",
+      "open_a11y": "Sfoglia gli schemi raggruppati per preposizione",
+      "close": "Chiudi gli schemi",
+      "summary": "{{started}} schemi su {{total}} esercitati",
+      "summary_empty": "{{total}} schemi. Avvia il quiz per tenere traccia dei progressi.",
+      "empty_title": "Nessuno schema",
+      "empty": "Non ci sono ancora schemi verbali su questo dispositivo. Riprova dopo il prossimo aggiornamento del vocabolario.",
+      "error": "Impossibile caricare gli schemi.",
+      "also_with": "Accettato anche per: {{preposition}}",
+      "contrast": "Confronta: {{patterns}}",
+      "mastery": {
+        "new": "Nuovo",
+        "learning": "In corso",
+        "mastered": "Padroneggiato"
+      }
+    },
     "plural_quiz": {
       "badge": "Desinenze del plurale",
       "prompt": "Quale desinenza al plurale?",

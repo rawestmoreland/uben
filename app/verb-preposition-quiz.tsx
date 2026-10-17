@@ -28,6 +28,10 @@ function goBack() {
   router.back();
 }
 
+function openPatterns() {
+  router.push('/verb-preposition-patterns');
+}
+
 export default function VerbPrepositionQuizScreen() {
   const { t } = useTranslation('app');
   const quiz = useVerbPrepositionQuizSession();
@@ -63,6 +67,12 @@ export default function VerbPrepositionQuizScreen() {
               {t('verb_preposition_quiz.no_cards_due')}
             </Text>
           </View>
+          <View style={styles.buttonGap}>
+            <QuizActionButton
+              label={t('verb_preposition_patterns.open')}
+              onPress={openPatterns}
+            />
+          </View>
           <QuizActionButton label={t('back_to_home')} onPress={goBack} />
         </View>
       )}
@@ -92,6 +102,10 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.semibold,
     color: AppColors.textSecondary,
+  },
+  buttonGap: {
+    alignSelf: 'stretch',
+    marginBottom: Spacing.md,
   },
   emptyCard: {
     backgroundColor: AppColors.white,
