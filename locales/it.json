@@ -68,7 +68,18 @@
       "translations_downloading": "Download delle traduzioni in corso…",
       "translations_download_failed": "Impossibile scaricare le traduzioni. I suggerimenti saranno in inglese finché non sarai di nuovo online.",
       "adjective_difficulty_advanced": "Desinenze avanzate",
-      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
+      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi.",
+      "reminders_title": "Promemoria",
+      "reminders_enable": "Promemoria di studio",
+      "reminders_enable_description": "Un avviso quando ci sono parole da ripassare. Al massimo uno al giorno, e solo se c'è qualcosa da ripassare.",
+      "reminders_time": "Orario del promemoria",
+      "reminders_time_description": "Quando arriva il promemoria.",
+      "reminders_time_earlier": "Un'ora prima",
+      "reminders_time_later": "Un'ora dopo",
+      "reminders_streak": "Promemoria serie",
+      "reminders_streak_description": "Ricevi un promemoria prima che una serie di 3 o più giorni si interrompa.",
+      "reminders_denied": "Le notifiche sono disattivate per Üben nelle impostazioni del dispositivo.",
+      "reminders_open_settings": "Apri impostazioni"
     },
     "level_filter": {
       "label": "LIVELLO DI STUDIO",
@@ -273,6 +284,22 @@
           "subtitle": "Präteritum"
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Promemoria di studio",
+      "due_title": "È ora di esercitarsi",
+      "streak_title": "Mantieni la serie",
+      "streak_body": "La tua serie è a {{streak}}. Esercitati oggi per mantenerla.",
+      "prompt_title": "Promemoria di studio?",
+      "prompt_body": "Vuoi un promemoria quando ci sono parole da ripassare? Al massimo uno al giorno, e solo se c'è qualcosa da ripassare. Puoi cambiarlo in qualsiasi momento nelle Impostazioni.",
+      "prompt_not_now": "Non ora",
+      "prompt_accept": "Ricordamelo",
+      "due_body_a_one": "{{count}} parola da ripassare. Una sessione breve la mantiene fresca.",
+      "due_body_a_other": "{{count}} parole da ripassare. Una sessione breve le mantiene fresche.",
+      "due_body_b_one": "{{count}} parola pronta da ripassare. Bastano pochi minuti.",
+      "due_body_b_other": "{{count}} parole pronte da ripassare. Bastano pochi minuti.",
+      "due_body_c_one": "Un giro veloce? {{count}} parola da ripassare.",
+      "due_body_c_other": "Un giro veloce? {{count}} parole da ripassare."
     }
   }
 }

@@ -68,7 +68,18 @@
       "translations_downloading": "Downloading translations…",
       "translations_download_failed": "Couldn't download translations. Hints will show in English until you're online again.",
       "adjective_difficulty_advanced": "Advanced adjective endings",
-      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice."
+      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice.",
+      "reminders_title": "Reminders",
+      "reminders_enable": "Practice reminders",
+      "reminders_enable_description": "A nudge when words are due. At most one a day, and only when there's something to review.",
+      "reminders_time": "Reminder time",
+      "reminders_time_description": "When the reminder arrives.",
+      "reminders_time_earlier": "One hour earlier",
+      "reminders_time_later": "One hour later",
+      "reminders_streak": "Streak reminder",
+      "reminders_streak_description": "Get a reminder before a streak of 3 or more days would break.",
+      "reminders_denied": "Notifications are turned off for Üben in your device settings.",
+      "reminders_open_settings": "Open settings"
     },
     "level_filter": {
       "label": "STUDY LEVEL",
@@ -273,6 +284,22 @@
           "subtitle": "Präteritum"
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Practice reminders",
+      "due_title": "Time to practice",
+      "streak_title": "Keep your streak going",
+      "streak_body": "Your streak is at {{streak}}. Practice today to keep it alive.",
+      "prompt_title": "Practice reminders?",
+      "prompt_body": "Want a nudge when words are due? At most one a day, and only when there's something to review. You can change this any time in Settings.",
+      "prompt_not_now": "Not now",
+      "prompt_accept": "Remind me",
+      "due_body_a_one": "{{count}} word is due for review. A short session keeps it fresh.",
+      "due_body_a_other": "{{count}} words are due for review. A short session keeps them fresh.",
+      "due_body_b_one": "{{count}} word is ready to review. A few minutes is enough.",
+      "due_body_b_other": "{{count}} words are ready to review. A few minutes is enough.",
+      "due_body_c_one": "Quick round? {{count}} word is due.",
+      "due_body_c_other": "Quick round? {{count}} words are due."
     }
   }
 }

@@ -12,6 +12,7 @@ import {
   type VerbQuizResult,
 } from '@/hooks/use-verb-quiz-session';
 import { PRONOUN_LABELS } from '@/services/verbImperfectService';
+import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { useWordTranslation } from '@/hooks/use-word-translation';
 import * as Haptics from 'expo-haptics';
@@ -306,6 +307,7 @@ interface CompleteStateProps {
 
 function CompleteState({ results, t }: CompleteStateProps) {
   const { handleSessionComplete } = useStoreReview();
+  useReminderPrompt();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
   useEffect(() => {

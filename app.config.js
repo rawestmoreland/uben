@@ -101,6 +101,15 @@ export default {
         },
       ],
       [
+        'expo-notifications',
+        {
+          // Local practice reminders only (no remote push). The monochrome
+          // adaptive icon doubles as the Android status-bar glyph.
+          icon: './assets/images/android-icon-monochrome.png',
+          color: '#FFE500',
+        },
+      ],
+      [
         'react-native-google-mobile-ads',
         {
           // Google's sample App IDs, used until real AdMob app IDs are issued.
