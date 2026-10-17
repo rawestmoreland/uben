@@ -9,7 +9,12 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ExerciseTile, type ExerciseTileBadge } from './exercise-tile';
 import { uiUpperCase } from '@/utils/uiText';
 
-type ExerciseId = 'articles' | 'plurals' | 'adjectives' | 'verbs';
+type ExerciseId =
+  | 'articles'
+  | 'plurals'
+  | 'adjectives'
+  | 'verbs'
+  | 'prepositions';
 
 interface ExerciseConfig {
   id: ExerciseId;
@@ -60,6 +65,16 @@ const EXERCISES: readonly ExerciseConfig[] = [
     status: 'available',
     entitlement: 'pro_only',
     paywallSource: 'verb_quiz_entry',
+  },
+  {
+    // Pro only, no free trial. The route is a plain string so the paywall
+    // can replay it as its redirectTo after a purchase.
+    id: 'prepositions',
+    route: '/verb-preposition-quiz',
+    accentColor: AppColors.pink,
+    status: 'available',
+    entitlement: 'pro_only',
+    paywallSource: 'verb_preposition_quiz_entry',
   },
 ];
 

@@ -68,7 +68,9 @@
       "translations_downloading": "Çeviriler indiriliyor…",
       "translations_download_failed": "Çeviriler indirilemedi. Tekrar çevrimiçi olana kadar ipuçları İngilizce gösterilecek.",
       "adjective_difficulty_advanced": "Gelişmiş sıfat çekimleri",
-      "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et."
+      "adjective_difficulty_advanced_description": "Sıfat çekimi alıştırmasına yönelme (-e) halini (dolaylı nesne) de dahil et.",
+      "verb_preposition_case_step": "İki halli edatlarda hâli sına",
+      "verb_preposition_case_step_description": "Edat testinde an, auf, in, über veya vor doğru seçildikten sonra Akkusativ ya da Dativ'i de seç."
     },
     "level_filter": {
       "label": "ÇALIŞMA SEVİYESİ",
@@ -189,6 +191,40 @@
       "check_button": "Kontrol et",
       "continue": "Devam"
     },
+    "verb_preposition_quiz": {
+      "badge": "Fiil + Edat",
+      "prompt": "Hangi edat?",
+      "blank_a11y": "boşluk",
+      "question_a11y": "{{sentence}}. Boşluğa hangi edat uyar?",
+      "all_caught_up": "Hepsi tamam",
+      "no_cards_due": "Şu anda tekrar edilecek fiil kalıbı yok.\n\nDaha sonra tekrar gel!",
+      "correct": "Doğru",
+      "incorrect": "Tam değil",
+      "you_picked": "{{preposition}} seçtin",
+      "also_accepted": "Şu da kabul edilir: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Devam",
+      "case_prompt": "Hangi hâli alır?",
+      "case_you_picked": "{{picked}} seçtin ({{correct}} alıyor)"
+    },
+    "verb_preposition_patterns": {
+      "title": "Edata göre kalıplar",
+      "open": "Kalıplar",
+      "open_a11y": "Kalıpları edata göre gruplanmış şekilde göz at",
+      "close": "Kalıpları kapat",
+      "summary": "{{total}} kalıptan {{started}} tanesi çalışıldı",
+      "summary_empty": "{{total}} kalıp. İlerlemeni takip etmek için testi başlat.",
+      "empty_title": "Henüz kalıp yok",
+      "empty": "Bu cihazda henüz fiil kalıbı yok. Bir sonraki kelime güncellemesinden sonra tekrar bak.",
+      "error": "Kalıplar yüklenemedi.",
+      "also_with": "Şunun için de kabul edilir: {{preposition}}",
+      "contrast": "Karşılaştır: {{patterns}}",
+      "mastery": {
+        "new": "Yeni",
+        "learning": "Öğreniliyor",
+        "mastered": "Öğrenildi"
+      }
+    },
     "plural_quiz": {
       "badge": "Çoğul ekleri",
       "prompt": "Hangi çoğul eki?",
@@ -271,6 +307,10 @@
         "verbs": {
           "title": "Fiiller",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Edatlar",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

@@ -24,6 +24,7 @@ export const SETTINGS_KEYS = {
   GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
   GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
   PLURAL_NOTATION_HINT_SEEN: 'plural_notation_hint_seen',
+  VERB_PREPOSITION_CASE_STEP: 'verb_preposition_case_step',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -298,6 +299,23 @@ class SettingsService {
     );
   }
 
+  // ── Convenience: Verb Preposition Case Step ────────────────────────
+
+  /** Whether the preposition quiz follows a correct two-way preposition with an Akkusativ/Dativ tap. Default: true. */
+  async getVerbPrepositionCaseStep(): Promise<boolean> {
+    const value = await this.getSetting(
+      SETTINGS_KEYS.VERB_PREPOSITION_CASE_STEP,
+    );
+    // Default to true if never set
+    return value !== 'false';
+  }
+
+  async setVerbPrepositionCaseStep(enabled: boolean): Promise<void> {
+    await this.setSetting(
+      SETTINGS_KEYS.VERB_PREPOSITION_CASE_STEP,
+      enabled ? 'true' : 'false',
+    );
+  }
 }
 
 export const settingsService = new SettingsService();

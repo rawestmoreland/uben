@@ -23,6 +23,7 @@ The app uses a tab-based navigation structure and supports iOS, Android, and web
 
 1. **Article Quiz** - Users practice identifying the correct article (der/die/das) for German nouns
    - **Plural Ending Quiz** - Users pick a noun's plural ending from nine fixed textbook buttons (`-`, `¨-`, `-e`, `¨-e`, `-er`, `¨-er`, `-n`, `-en`, `-s`). The answer is derived from the stored `nouns.plural` (`services/pluralService.ts`), never predicted; nouns whose plural fits no button are excluded. Progress uses separate `card_progress` rows with `word_type = 'noun_plural'` and is excluded from article stats.
+   - **Verb Preposition Quiz (Pro)** - Cloze sentence (`Ich warte ____ meine Frau.`) with a fixed grid of 13 preposition buttons; feedback shows the full pattern with its case (`warten auf + Akk.`), the completed sentence and an optional English-trap note. Cards are `(verb, preposition, case)` patterns from `verb_prepositions`, tracked with `word_type = 'verb_prep'` (excluded from article stats). Pro-only with no free trial, same gating as the Präteritum quiz (`purchaseService.isProUnlocked`, `locked` phase, paywall redirect). Screen: `app/verb-preposition-quiz.tsx`; hook: `hooks/use-verb-preposition-quiz-session.ts`.
 2. **Spaced Repetition** - SM-2 algorithm schedules optimal review times based on user performance
 3. **Progress Tracking** - Statistics, streaks, and success rates
 4. **User-Generated Content** - Users can add their own nouns and verbs to the database
@@ -150,6 +151,8 @@ Business logic abstracted from UI components:
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
 - **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
 - **wordTranslationService.ts** - Verb/adjective hints in the app language, from bundled `database/seeds/translations/` (not synced); falls back to `english`
+- **verbPrepositionService.ts** - Builds verb + preposition cloze questions (fixed button grid, confusion-based distractors, alternates graded correct) from stored `verb_prepositions` patterns
+- **verbPrepositionBrowseService.ts** - Verb preposition cheat sheet: all patterns grouped by preposition (synonym alternates listed under each), with mastery from `verb_prep` progress
 - **statisticsService.ts** - User progress, streaks, forecasting
 - **syncService.ts** - Optional PocketBase vocabulary sync
 

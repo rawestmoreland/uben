@@ -6,6 +6,7 @@ import { adjectivesV2 } from './seeds/adjectives/v2-expanded';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
+import { verbPrepositionsV1 } from './seeds/verb-prepositions/v1-initial';
 import { verbsV1 } from './seeds/verbs/v1-initial';
 
 /**
@@ -50,6 +51,64 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // so any dev install that already seeded v1 re-runs the UPSERT and
   // backfills the new columns instead of staying permanently null.
   await seedVerbs(db, '1.1.0_verbs_v2_person_forms');
+
+  // Seed verb + preposition patterns for the verb preposition quiz (#144).
+  // Independent of nouns/verbs — each pattern carries its own verb string.
+  await seedVerbPrepositions(db, '1.0.0_verb_prepositions_v1');
+}
+
+/**
+ * Seed the verb_prepositions table from the versioned seed list.
+ * Uses INSERT OR IGNORE against UNIQUE(verb, is_reflexive, preposition,
+ * sentence), so re-running never duplicates a pattern or changes its row ID
+ * (which would orphan its card_progress). Corrections to existing sentences
+ * therefore need a new seed version, not an edit of the old one.
+ */
+async function seedVerbPrepositions(
+  db: SQLite.SQLiteDatabase,
+  version: string,
+): Promise<void> {
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [version],
+  );
+
+  if (exists) {
+    return; // Already seeded
+  }
+
+  console.log(`[DB] Seeding verb prepositions (${version})...`);
+
+  await db.withTransactionAsync(async () => {
+    for (const pattern of verbPrepositionsV1) {
+      await db.runAsync(
+        `INSERT OR IGNORE INTO verb_prepositions
+           (verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, english_trap, level)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          pattern.verb,
+          pattern.is_reflexive ? 1 : 0,
+          pattern.preposition,
+          pattern.alt_prepositions?.length
+            ? JSON.stringify(pattern.alt_prepositions)
+            : null,
+          pattern.case_governed,
+          pattern.sentence,
+          pattern.translation,
+          pattern.english_trap ?? null,
+          pattern.level,
+        ],
+      );
+    }
+
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+  });
+
+  console.log(
+    `[DB] Seeded ${verbPrepositionsV1.length} verb prepositions (${version})`,
+  );
 }
 
 /**

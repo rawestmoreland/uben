@@ -68,7 +68,9 @@
       "translations_downloading": "Download delle traduzioni in corso…",
       "translations_download_failed": "Impossibile scaricare le traduzioni. I suggerimenti saranno in inglese finché non sarai di nuovo online.",
       "adjective_difficulty_advanced": "Desinenze avanzate",
-      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
+      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi.",
+      "verb_preposition_case_step": "Verifica il caso delle preposizioni miste",
+      "verb_preposition_case_step_description": "Dopo una risposta corretta con an, auf, in, über o vor nel quiz delle preposizioni, scegli anche Akkusativ o Dativ."
     },
     "level_filter": {
       "label": "LIVELLO DI STUDIO",
@@ -189,6 +191,40 @@
       "check_button": "Controlla",
       "continue": "Continua"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verbo + Preposizione",
+      "prompt": "Quale preposizione?",
+      "blank_a11y": "spazio vuoto",
+      "question_a11y": "{{sentence}}. Quale preposizione completa lo spazio vuoto?",
+      "all_caught_up": "Tutto in regola",
+      "no_cards_due": "Nessun costrutto verbale da ripassare al momento.\n\nTorna più tardi!",
+      "correct": "Corretto",
+      "incorrect": "Non proprio",
+      "you_picked": "Hai scelto {{preposition}}",
+      "also_accepted": "Accettato anche: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continua",
+      "case_prompt": "Quale caso regge?",
+      "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})"
+    },
+    "verb_preposition_patterns": {
+      "title": "Schemi per preposizione",
+      "open": "Schemi",
+      "open_a11y": "Sfoglia gli schemi raggruppati per preposizione",
+      "close": "Chiudi gli schemi",
+      "summary": "{{started}} schemi su {{total}} esercitati",
+      "summary_empty": "{{total}} schemi. Avvia il quiz per tenere traccia dei progressi.",
+      "empty_title": "Nessuno schema",
+      "empty": "Non ci sono ancora schemi verbali su questo dispositivo. Riprova dopo il prossimo aggiornamento del vocabolario.",
+      "error": "Impossibile caricare gli schemi.",
+      "also_with": "Accettato anche per: {{preposition}}",
+      "contrast": "Confronta: {{patterns}}",
+      "mastery": {
+        "new": "Nuovo",
+        "learning": "In corso",
+        "mastered": "Padroneggiato"
+      }
+    },
     "plural_quiz": {
       "badge": "Desinenze del plurale",
       "prompt": "Quale desinenza al plurale?",
@@ -271,6 +307,10 @@
         "verbs": {
           "title": "Verbi",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Preposizioni",
+          "subtitle": "warten auf + Akk."
         }
       }
     }

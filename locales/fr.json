@@ -72,7 +72,9 @@
       "translations_downloading": "Téléchargement des traductions…",
       "translations_download_failed": "Impossible de télécharger les traductions. Les indices s'afficheront en anglais jusqu'à votre retour en ligne.",
       "adjective_difficulty_advanced": "Terminaisons d'adjectifs avancées",
-      "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs."
+      "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs.",
+      "verb_preposition_case_step": "Tester le cas des prépositions mixtes",
+      "verb_preposition_case_step_description": "Après une bonne réponse avec an, auf, in, über ou vor dans le quiz des prépositions, choisis aussi Akkusativ ou Dativ."
     },
     "level_filter": {
       "label": "NIVEAU D'ÉTUDE",
@@ -194,6 +196,40 @@
       "check_button": "Vérifier",
       "continue": "Continuer"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verbe + Préposition",
+      "prompt": "Quelle préposition ?",
+      "blank_a11y": "blanc",
+      "question_a11y": "{{sentence}}. Quelle préposition complète le blanc ?",
+      "all_caught_up": "Tout est à jour",
+      "no_cards_due": "Aucune construction verbale à réviser pour le moment.\n\nReviens plus tard !",
+      "correct": "Correct",
+      "incorrect": "Pas tout à fait",
+      "you_picked": "Tu as choisi {{preposition}}",
+      "also_accepted": "Également accepté : {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continuer",
+      "case_prompt": "Quel cas régit-elle ?",
+      "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})"
+    },
+    "verb_preposition_patterns": {
+      "title": "Modèles par préposition",
+      "open": "Modèles",
+      "open_a11y": "Parcourir les modèles regroupés par préposition",
+      "close": "Fermer les modèles",
+      "summary": "{{started}} modèles sur {{total}} pratiqués",
+      "summary_empty": "{{total}} modèles. Lancez le quiz pour suivre vos progrès.",
+      "empty_title": "Aucun modèle",
+      "empty": "Aucun modèle de verbe n'est disponible sur cet appareil. Revenez après la prochaine mise à jour du vocabulaire.",
+      "error": "Impossible de charger les modèles.",
+      "also_with": "Aussi accepté pour : {{preposition}}",
+      "contrast": "Comparer : {{patterns}}",
+      "mastery": {
+        "new": "Nouveau",
+        "learning": "En cours",
+        "mastered": "Maîtrisé"
+      }
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Débloquez Üben Pro",
@@ -245,6 +281,10 @@
         "verbs": {
           "title": "Verbes",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Prépositions",
+          "subtitle": "warten auf + Akk."
         }
       }
     }
