@@ -14,7 +14,8 @@ type ExerciseId =
   | 'plurals'
   | 'adjectives'
   | 'verbs'
-  | 'prepositions';
+  | 'prepositions'
+  | 'compounds';
 
 interface ExerciseConfig {
   id: ExerciseId;
@@ -75,6 +76,16 @@ const EXERCISES: readonly ExerciseConfig[] = [
     status: 'available',
     entitlement: 'pro_only',
     paywallSource: 'verb_preposition_quiz_entry',
+  },
+  {
+    // Pro only, no free trial: the da(r)-/wo(r)- forms of those same patterns
+    // (darauf, worauf), with their own progress.
+    id: 'compounds',
+    route: '/verb-preposition-compound-quiz',
+    accentColor: AppColors.blue,
+    status: 'available',
+    entitlement: 'pro_only',
+    paywallSource: 'verb_preposition_compound_quiz_entry',
   },
 ];
 

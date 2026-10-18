@@ -207,6 +207,13 @@
       "case_prompt": "Melyik esetet vonzza?",
       "case_you_picked": "Ezt választottad: {{picked}} (ez vonzza: {{correct}})"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Da- / wo- szavak",
+      "prompt_da": "Melyik da- szó?",
+      "prompt_wo": "Melyik wo- szó?",
+      "question_a11y": "{{sentence}}. Melyik szó illik az üres helyre?",
+      "person_rule": "Személyeknél az elöljárószót + személyes névmást használd, nem a(z) {{compound}} alakot: {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Minták elöljárószavanként",
       "open": "Minták",
@@ -311,6 +318,10 @@
         "prepositions": {
           "title": "Elöljárószók",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     }

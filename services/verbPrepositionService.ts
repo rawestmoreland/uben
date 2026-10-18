@@ -9,7 +9,11 @@
 // sentence, a preposition that isn't on the button grid) returns null and is
 // left out of the quiz rather than risking a wrong "correct" answer.
 
-import type { DueVerbPrepCard, VerbPrepositionCase } from '@/types/database';
+import type {
+  DueVerbPrepCard,
+  VerbPrepositionCase,
+  VerbPrepositionCompoundForm,
+} from '@/types/database';
 
 // ── Button grid ──────────────────────────────────────────────────────
 
@@ -174,6 +178,20 @@ export interface VerbPrepositionQuestion {
   patternLabel: string;
   /** The sentence with the primary answer filled in. */
   completedSentence: string;
+  /**
+   * Set for da(r)-/wo(r)- questions (see verbPrepositionCompoundService),
+   * where the answers are compounds like "darauf" rather than prepositions.
+   */
+  compound?: VerbPrepositionCompoundInfo;
+}
+
+/** What feedback shows beyond the pattern for a da(r)-/wo(r)- question. */
+export interface VerbPrepositionCompoundInfo {
+  form: VerbPrepositionCompoundForm;
+  /** How the answer is built, e.g. "da + r + auf". */
+  construction: string;
+  /** How a person is referred to instead, e.g. "Ich warte auf ihn."; null when the verb only takes things. */
+  personExample: string | null;
 }
 
 /** The stored pattern fields a question is built from. */
@@ -218,7 +236,7 @@ export function splitSentenceAtBlank(
   };
 }
 
-function fillBlank(sentence: string, preposition: string): string {
+export function fillBlank(sentence: string, preposition: string): string {
   const blank = BLANK_PATTERN.exec(sentence);
   // A blank that opens the sentence is capitalised: "Auf wen wartest du?"
   const filled =

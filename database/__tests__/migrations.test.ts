@@ -96,7 +96,7 @@ describe('runMigrations()', () => {
   });
 
   it('applies only unapplied migrations in a partial state', async () => {
-    // Migration 001 already applied; 002–011 not yet applied
+    // Migration 001 already applied; 002–012 not yet applied
     mockDb.getFirstAsync
       .mockResolvedValueOnce({ '1': 1 }) // 001 → applied
       .mockResolvedValueOnce(null) // 002 → unapplied
@@ -108,7 +108,8 @@ describe('runMigrations()', () => {
       .mockResolvedValueOnce(null) // 008 → unapplied
       .mockResolvedValueOnce(null) // 009 → unapplied
       .mockResolvedValueOnce(null) // 010 → unapplied
-      .mockResolvedValueOnce(null); // 011 → unapplied
+      .mockResolvedValueOnce(null) // 011 → unapplied
+      .mockResolvedValueOnce(null); // 012 → unapplied
 
     await runMigrations(mockDb as any);
 
@@ -117,7 +118,7 @@ describe('runMigrations()', () => {
         sql === 'INSERT INTO migrations (version) VALUES (?)',
     );
 
-    expect(insertCalls).toHaveLength(10);
+    expect(insertCalls).toHaveLength(11);
     expect(insertCalls[0][1]).toEqual(['002']);
     expect(insertCalls[1][1]).toEqual(['003']);
     expect(insertCalls[2][1]).toEqual(['004']);
@@ -128,6 +129,7 @@ describe('runMigrations()', () => {
     expect(insertCalls[7][1]).toEqual(['009']);
     expect(insertCalls[8][1]).toEqual(['010']);
     expect(insertCalls[9][1]).toEqual(['011']);
+    expect(insertCalls[10][1]).toEqual(['012']);
   });
 
   it('calls each migration up() with the db object', async () => {
@@ -296,6 +298,69 @@ describe('migration 011 (add_verb_prepositions)', () => {
     expect(deleteCards).toBeLessThan(createCall);
     expect(sql[createCall]).toContain(
       "CHECK(word_type IN ('noun', 'verb', 'adjective', 'noun_plural'))",
+    );
+    expect(dropTable).toBeGreaterThan(createCall);
+  });
+});
+
+const migration012 = migrations.find((m) => m.version === '012')!;
+
+describe('migration 012 (add_verb_preposition_compounds)', () => {
+  let mockDb: ReturnType<typeof makeMockDb>;
+
+  beforeEach(() => {
+    mockDb = makeMockDb();
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  function executedSql(): string[] {
+    return mockDb.execAsync.mock.calls.map(([sql]: [string]) => sql.trim());
+  }
+
+  it('creates the verb_preposition_compounds table', async () => {
+    await migration012.up(mockDb as any);
+
+    const createCall = executedSql().find((sql) =>
+      sql.startsWith('CREATE TABLE IF NOT EXISTS verb_preposition_compounds'),
+    );
+    expect(createCall).toBeDefined();
+    expect(createCall).toContain("CHECK(form IN ('da', 'wo'))");
+    expect(createCall).toContain('UNIQUE(verb_preposition_id, form)');
+    expect(createCall).toContain('ON DELETE CASCADE');
+  });
+
+  it('widens the word_type CHECK to include verb_prep_compound', async () => {
+    await migration012.up(mockDb as any);
+
+    const createCall = executedSql().find((sql) =>
+      sql.startsWith('CREATE TABLE card_progress_rebuild'),
+    );
+    expect(createCall).toContain(
+      "CHECK(word_type IN ('noun', 'verb', 'adjective', 'noun_plural', 'verb_prep', 'verb_prep_compound'))",
+    );
+  });
+
+  it('down() removes compound cards, restores the CHECK, then drops the table', async () => {
+    await migration012.down!(mockDb as any);
+
+    const sql = executedSql();
+    const deleteCards = sql.indexOf(
+      "DELETE FROM card_progress WHERE word_type = 'verb_prep_compound';",
+    );
+    const createCall = sql.findIndex((statement) =>
+      statement.startsWith('CREATE TABLE card_progress_rebuild'),
+    );
+    const dropTable = sql.indexOf(
+      'DROP TABLE IF EXISTS verb_preposition_compounds;',
+    );
+    expect(deleteCards).toBeGreaterThanOrEqual(0);
+    expect(deleteCards).toBeLessThan(createCall);
+    expect(sql[createCall]).toContain(
+      "CHECK(word_type IN ('noun', 'verb', 'adjective', 'noun_plural', 'verb_prep'))",
     );
     expect(dropTable).toBeGreaterThan(createCall);
   });
@@ -586,6 +651,127 @@ describeWithSqlite('migrations against real SQLite', () => {
       raw
         .prepare(
           "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'verb_prepositions'",
+        )
+        .all(),
+    ).toEqual([]);
+    expect(raw.prepare('PRAGMA foreign_key_check').all()).toEqual([]);
+  });
+
+  // ── Migration 012 ──────────────────────────────────────────────────────────
+
+  function insertCompound(
+    patternId: number,
+    form: string,
+    sentence: string,
+  ): number {
+    return Number(
+      raw
+        .prepare(
+          'INSERT INTO verb_preposition_compounds (verb_preposition_id, form, sentence, translation) VALUES (?, ?, ?, ?)',
+        )
+        .run(patternId, form, sentence, 'translation').lastInsertRowid,
+    );
+  }
+
+  it('stores one da and one wo question per pattern and cascades on delete', async () => {
+    await runMigrations(db as any);
+
+    const pattern = insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
+    insertCompound(pattern, 'da', 'Ich warte ____.');
+    insertCompound(pattern, 'wo', '____ wartest du?');
+
+    expect(() => insertCompound(pattern, 'da', 'Ich warte ____ darauf.')).toThrow(
+      /UNIQUE/,
+    );
+    expect(() => insertCompound(pattern, 'dar', 'Ich warte ____.')).toThrow(
+      /CHECK/,
+    );
+    expect(() => insertCompound(9999, 'da', 'Ich warte ____.')).toThrow(
+      /FOREIGN KEY/,
+    );
+
+    raw.prepare('DELETE FROM verb_prepositions WHERE id = ?').run(pattern);
+    expect(
+      count('SELECT COUNT(*) AS count FROM verb_preposition_compounds'),
+    ).toBe(0);
+  });
+
+  it('allows one verb_prep_compound card per question, independent of other card types', async () => {
+    await runMigrations(db as any);
+
+    const pattern = insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
+    const compound = insertCompound(pattern, 'da', 'Ich warte ____.');
+    insertCard('verb_prep', pattern);
+    insertCard('verb_prep_compound', compound);
+
+    expect(count('SELECT COUNT(*) AS count FROM card_progress')).toBe(2);
+    expect(() => insertCard('verb_prep_compound', compound)).toThrow(/UNIQUE/);
+  });
+
+  it('upgrades from 011 without losing card progress or review history', async () => {
+    await migrateTo('011');
+
+    const kindId = insertNoun('Kind', 'das', 'Kinder');
+    const pattern = insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
+    const articleCard = insertCard('noun', kindId, 6);
+    const patternCard = insertCard('verb_prep', pattern, 3);
+    for (const cardId of [articleCard, patternCard]) {
+      raw
+        .prepare(
+          'INSERT INTO review_history (card_progress_id, quality) VALUES (?, 4)',
+        )
+        .run(cardId);
+    }
+    const progressBefore = raw
+      .prepare('SELECT * FROM card_progress ORDER BY id')
+      .all();
+
+    await runMigrations(db as any);
+
+    expect(
+      raw.prepare('SELECT version FROM migrations ORDER BY version').all(),
+    ).toHaveLength(migrations.length);
+    expect(raw.prepare('SELECT * FROM card_progress ORDER BY id').all()).toEqual(
+      progressBefore,
+    );
+    expect(count('SELECT COUNT(*) AS count FROM review_history')).toBe(2);
+    expect(raw.prepare('PRAGMA foreign_keys').get()).toEqual({
+      foreign_keys: 1,
+    });
+    expect(raw.prepare('PRAGMA foreign_key_check').all()).toEqual([]);
+    expect(
+      count('SELECT COUNT(*) AS count FROM verb_preposition_compounds'),
+    ).toBe(0);
+  });
+
+  it('down() drops compound cards, their history, and the table but keeps everything else', async () => {
+    await runMigrations(db as any);
+
+    const pattern = insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
+    const compound = insertCompound(pattern, 'da', 'Ich warte ____.');
+    const patternCard = insertCard('verb_prep', pattern);
+    const compoundCard = insertCard('verb_prep_compound', compound);
+    for (const cardId of [patternCard, compoundCard]) {
+      raw
+        .prepare(
+          'INSERT INTO review_history (card_progress_id, quality) VALUES (?, 4)',
+        )
+        .run(cardId);
+    }
+
+    await migration012.down!(db as any);
+
+    expect(
+      raw.prepare('SELECT id, word_type FROM card_progress').all(),
+    ).toEqual([{ id: patternCard, word_type: 'verb_prep' }]);
+    expect(
+      raw.prepare('SELECT card_progress_id FROM review_history').all(),
+    ).toEqual([{ card_progress_id: patternCard }]);
+    expect(() => insertCard('verb_prep_compound', compound)).toThrow(/CHECK/);
+    expect(
+      raw
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'verb_preposition_compounds'",
         )
         .all(),
     ).toEqual([]);

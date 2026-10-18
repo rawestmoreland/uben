@@ -207,6 +207,13 @@
       "case_prompt": "它要求哪个格？",
       "case_you_picked": "你选了 {{picked}}（应为 {{correct}}）"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "da- / wo- 词",
+      "prompt_da": "选哪个 da- 词?",
+      "prompt_wo": "选哪个 wo- 词?",
+      "question_a11y": "{{sentence}}。哪个词适合填入空格?",
+      "person_rule": "指人时用介词 + 代词,不用 {{compound}}:{{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "按介词分类的搭配",
       "open": "搭配",
@@ -311,6 +318,10 @@
         "prepositions": {
           "title": "介词",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     }

@@ -16,6 +16,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 // ── Types ────────────────────────────────────────────────────────────
 
+/**
+ * 'preposition' asks for the preposition of a verb pattern; 'compound' asks
+ * for its da(r)-/wo(r)- form (darauf, worauf). Each has its own SM-2 cards.
+ */
+export type VerbPrepositionQuizMode = 'preposition' | 'compound';
+
 export type VerbPrepositionQuizPhase =
   | 'loading'
   | 'playing'
@@ -76,8 +82,15 @@ export interface VerbPrepositionQuizSessionData {
  * unless the learner turned the step off in Settings. A wrong case caps the
  * SM-2 quality at 3 (see applyCaseStepToQuality): the card is not reset.
  * Nothing is saved until the card is fully answered.
+ *
+ * In 'compound' mode the same flow quizzes the da(r)-/wo(r)- forms. The
+ * questions carry compounds instead of prepositions, so grading and feedback
+ * are unchanged and the case step never applies (a compound is not a
+ * two-way preposition). Progress lives on 'verb_prep_compound' cards.
  */
-export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData {
+export function useVerbPrepositionQuizSession(
+  mode: VerbPrepositionQuizMode = 'preposition',
+): VerbPrepositionQuizSessionData {
   const [phase, setPhase] = useState<VerbPrepositionQuizPhase>('loading');
   const [cards, setCards] = useState<VerbPrepositionQuizCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -110,13 +123,18 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
           return;
         }
 
-        caseStepEnabled.current =
-          await settingsService.getVerbPrepositionCaseStep();
+        if (mode === 'preposition') {
+          caseStepEnabled.current =
+            await settingsService.getVerbPrepositionCaseStep();
+        }
 
-        const session = await spacedRepetitionService.getVerbPrepositionSession(
-          20,
-          5,
-        );
+        const session =
+          mode === 'compound'
+            ? await spacedRepetitionService.getVerbPrepositionCompoundSession(
+                20,
+                5,
+              )
+            : await spacedRepetitionService.getVerbPrepositionSession(20, 5);
 
         if (cancelled) return;
 
@@ -139,7 +157,7 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [mode]);
 
   // ── Current card ─────────────────────────────────────────────────
 
@@ -167,7 +185,7 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
         // New cards (id === 0) need a card_progress row first
         if (cardProgressId === 0) {
           cardProgressId = await spacedRepetitionService.createCardForWord(
-            'verb_prep',
+            mode === 'compound' ? 'verb_prep_compound' : 'verb_prep',
             card.word_id,
           );
         }
@@ -181,7 +199,7 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
         console.error('[VerbPrepositionQuiz] Failed to record review:', error);
       }
     },
-    [],
+    [mode],
   );
 
   // ── Submit answer ────────────────────────────────────────────────
