@@ -7,6 +7,7 @@ import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
 import { verbPrepositionsV1 } from './seeds/verb-prepositions/v1-initial';
+import { verbPrepositionCompoundsV1 } from './seeds/verb-prepositions/v2-compounds';
 import { verbsV1 } from './seeds/verbs/v1-initial';
 
 /**
@@ -55,6 +56,10 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // Seed verb + preposition patterns for the verb preposition quiz (#144).
   // Independent of nouns/verbs — each pattern carries its own verb string.
   await seedVerbPrepositions(db, '1.0.0_verb_prepositions_v1');
+
+  // da(r)-/wo(r)- questions for those patterns (#151). Must run after the
+  // patterns they attach to.
+  await seedVerbPrepositionCompounds(db, '1.0.0_verb_preposition_compounds_v1');
 }
 
 /**
@@ -108,6 +113,76 @@ async function seedVerbPrepositions(
 
   console.log(
     `[DB] Seeded ${verbPrepositionsV1.length} verb prepositions (${version})`,
+  );
+}
+
+/**
+ * Seed the verb_preposition_compounds table: a da and a wo row per entry,
+ * attached to the pattern matched by (verb, is_reflexive, preposition).
+ * INSERT OR IGNORE against UNIQUE(verb_preposition_id, form) keeps row IDs
+ * (and so card_progress) stable; corrections need a new seed version.
+ */
+async function seedVerbPrepositionCompounds(
+  db: SQLite.SQLiteDatabase,
+  version: string,
+): Promise<void> {
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [version],
+  );
+
+  if (exists) {
+    return; // Already seeded
+  }
+
+  console.log(`[DB] Seeding verb preposition compounds (${version})...`);
+
+  let seededCount = 0;
+
+  await db.withTransactionAsync(async () => {
+    for (const entry of verbPrepositionCompoundsV1) {
+      const pattern = await db.getFirstAsync<{ id: number }>(
+        `SELECT id FROM verb_prepositions
+         WHERE verb = ? AND is_reflexive = ? AND preposition = ?`,
+        [entry.verb, entry.is_reflexive ? 1 : 0, entry.preposition],
+      );
+
+      if (!pattern) {
+        console.warn(
+          `[DB] No verb preposition for compound ${entry.verb} ${entry.preposition}, skipping`,
+        );
+        continue;
+      }
+
+      const forms = [
+        ['da', entry.da_sentence, entry.da_translation],
+        ['wo', entry.wo_sentence, entry.wo_translation],
+      ] as const;
+
+      for (const [form, sentence, translation] of forms) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO verb_preposition_compounds
+             (verb_preposition_id, form, sentence, translation, person_example)
+           VALUES (?, ?, ?, ?, ?)`,
+          [
+            pattern.id,
+            form,
+            sentence,
+            translation,
+            entry.person_example ?? null,
+          ],
+        );
+        seededCount++;
+      }
+    }
+
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+  });
+
+  console.log(
+    `[DB] Seeded ${seededCount} verb preposition compounds (${version})`,
   );
 }
 

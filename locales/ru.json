@@ -217,6 +217,13 @@
       "case_prompt": "Какой падеж она требует?",
       "case_you_picked": "Вы выбрали {{picked}} (требуется {{correct}})"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Слова da- / wo-",
+      "prompt_da": "Какое слово с da-?",
+      "prompt_wo": "Какое слово с wo-?",
+      "question_a11y": "{{sentence}}. Какое слово подходит к пропуску?",
+      "person_rule": "Для людей используйте предлог + местоимение, а не {{compound}}: {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Модели по предлогам",
       "open": "Модели",
@@ -321,6 +328,10 @@
         "prepositions": {
           "title": "Предлоги",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     }

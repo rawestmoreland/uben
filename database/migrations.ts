@@ -791,6 +791,69 @@ export const migrations: Migration[] = [
       await db.execAsync('DROP TABLE IF EXISTS verb_prepositions;');
     },
   },
+  {
+    version: '012',
+    name: 'add_verb_preposition_compounds',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 012] Adding verb_preposition_compounds and widening card_progress.word_type to allow verb_prep_compound...',
+      );
+
+      // da(r)-/wo(r)- questions for patterns whose preposition takes a thing
+      // (Ich warte ____. -> darauf; ____ wartest du? -> worauf). One row per
+      // (pattern, form), each with its own cloze sentence. The answer is not
+      // stored: it is derived from the pattern's preposition.
+      // `person_example` shows the rule for people (auf + Akk. + pronoun).
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS verb_preposition_compounds (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verb_preposition_id INTEGER NOT NULL,
+          form TEXT NOT NULL CHECK(form IN ('da', 'wo')),
+          sentence TEXT NOT NULL,
+          translation TEXT NOT NULL,
+          person_example TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (verb_preposition_id) REFERENCES verb_prepositions(id) ON DELETE CASCADE,
+          UNIQUE(verb_preposition_id, form)
+        );
+      `);
+
+      // Each compound question is its own card: word_type
+      // 'verb_prep_compound', word_id = verb_preposition_compounds.id.
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+        'verb_prep',
+        'verb_prep_compound',
+      ]);
+
+      console.log('[Migration 012] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove compound cards (and their history) before restoring the
+      // narrower CHECK constraint
+      await db.execAsync(`
+        DELETE FROM review_history WHERE card_progress_id IN (
+          SELECT id FROM card_progress WHERE word_type = 'verb_prep_compound'
+        );
+      `);
+      await db.execAsync(
+        "DELETE FROM card_progress WHERE word_type = 'verb_prep_compound';",
+      );
+
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+        'verb_prep',
+      ]);
+
+      await db.execAsync('DROP TABLE IF EXISTS verb_preposition_compounds;');
+    },
+  },
 ];
 
 /**
