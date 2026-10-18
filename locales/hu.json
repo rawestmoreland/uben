@@ -68,7 +68,18 @@
       "translations_downloading": "Fordítások letöltése…",
       "translations_download_failed": "A fordításokat nem sikerült letölteni. A tippek angolul jelennek meg, amíg újra online nem leszel.",
       "adjective_difficulty_advanced": "Haladó melléknévragok",
-      "adjective_difficulty_advanced_description": "A részes esetet (távolabbi tárgy) is felveszi a melléknévragok gyakorlásába."
+      "adjective_difficulty_advanced_description": "A részes esetet (távolabbi tárgy) is felveszi a melléknévragok gyakorlásába.",
+      "reminders_title": "Emlékeztetők",
+      "reminders_enable": "Gyakorlási emlékeztetők",
+      "reminders_enable_description": "Értesítés, ha szavak várnak ismétlésre. Naponta legfeljebb egy, és csak ha van mit ismételni.",
+      "reminders_time": "Emlékeztető időpontja",
+      "reminders_time_description": "Mikor érkezzen az emlékeztető.",
+      "reminders_time_earlier": "Egy órával korábban",
+      "reminders_time_later": "Egy órával később",
+      "reminders_streak": "Sorozat-emlékeztető",
+      "reminders_streak_description": "Emlékeztető, mielőtt egy legalább 3 napos sorozat megszakadna.",
+      "reminders_denied": "Az Üben értesítései ki vannak kapcsolva az eszköz beállításaiban.",
+      "reminders_open_settings": "Beállítások megnyitása"
     },
     "level_filter": {
       "label": "TANULÁSI SZINT",
@@ -273,6 +284,22 @@
           "subtitle": "Präteritum"
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Gyakorlási emlékeztetők",
+      "due_title": "Ideje gyakorolni",
+      "streak_title": "Tartsd a sorozatot",
+      "streak_body": "A sorozatod {{streak}} napos. Gyakorolj ma, hogy ne szakadjon meg.",
+      "prompt_title": "Gyakorlási emlékeztetők?",
+      "prompt_body": "Szeretnél emlékeztetőt, ha szavak várnak ismétlésre? Naponta legfeljebb egyet küldünk, és csak ha van mit ismételni. Ezt bármikor módosíthatod a Beállításokban.",
+      "prompt_not_now": "Most nem",
+      "prompt_accept": "Kérek",
+      "due_body_a_one": "{{count}} szó vár ismétlésre. Egy rövid gyakorlás frissen tartja.",
+      "due_body_a_other": "{{count}} szó vár ismétlésre. Egy rövid gyakorlás frissen tartja őket.",
+      "due_body_b_one": "{{count}} szó kész az ismétlésre. Pár perc is elég.",
+      "due_body_b_other": "{{count}} szó kész az ismétlésre. Pár perc is elég.",
+      "due_body_c_one": "Egy gyors kör? {{count}} szó vár ismétlésre.",
+      "due_body_c_other": "Egy gyors kör? {{count}} szó vár ismétlésre."
     }
   }
 }

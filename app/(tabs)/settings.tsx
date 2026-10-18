@@ -1,4 +1,5 @@
 import { LanguagePicker } from '@/components/settings/language-picker';
+import { RemindersCard } from '@/components/settings/reminders-card';
 import { TranslationSyncOverlay } from '@/components/settings/translation-sync-overlay';
 import {
   AppColors,
@@ -250,6 +251,10 @@ export default function SettingsScreen() {
             />
           </View>
         </View>
+
+        {/* ── Reminders Card ──────────────────────────────────── */}
+        <RemindersCard />
+
         {/* ── Database Diagnostics Card (unlocked by tapping header 7×) ── */}
         {showDiagnostics && (
           <View style={[styles.card, shadowStyle]}>
