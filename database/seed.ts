@@ -54,8 +54,9 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Seed verb + preposition patterns for the verb preposition quiz (#144).
   // Independent of nouns/verbs — each pattern carries its own verb string.
-  // v2 is the curated A1-B1 list and replaces the earlier, broader v1 seed.
-  await seedVerbPrepositions(db, '1.1.0_verb_prepositions_v2');
+  // The curated A1-B1 list replaces the earlier, broader v1 seed. Bump the
+  // version whenever the list changes: seeding syncs the table to the list.
+  await seedVerbPrepositions(db, '1.2.0_verb_prepositions_v3');
 }
 
 /** Identity of a seeded pattern: the same columns as the table's UNIQUE constraint. */

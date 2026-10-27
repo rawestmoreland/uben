@@ -39,7 +39,7 @@ describe('verb preposition seed data', () => {
       const key = `${pattern.verb}|${pattern.is_reflexive ? 1 : 0}|${pattern.preposition}`;
       examplesPerPattern.set(key, (examplesPerPattern.get(key) ?? 0) + 1);
     }
-    expect(examplesPerPattern.size).toBe(43);
+    expect(examplesPerPattern.size).toBe(57);
     for (const count of examplesPerPattern.values()) {
       expect(count).toBe(2);
     }
@@ -122,6 +122,13 @@ describe('verb preposition seed data', () => {
     }
   });
 
+  it('covers every quiz preposition', () => {
+    const used = new Set(verbPrepositionsV2.map((p) => p.preposition));
+    for (const preposition of QUIZ_PREPOSITIONS) {
+      expect(used).toContain(preposition);
+    }
+  });
+
   it('has no alternate that is the answer of a sibling pattern of the same verb', () => {
     // An alternate is a synonym for this sentence. If it were also a separate
     // pattern of the verb, it would be both a distractor and a correct answer.
@@ -167,7 +174,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
     expect(
       opened.raw
         .prepare('SELECT 1 FROM data_versions WHERE version = ?')
-        .get('1.1.0_verb_prepositions_v2'),
+        .get('1.2.0_verb_prepositions_v3'),
     ).toBeTruthy();
   });
 
@@ -176,7 +183,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
 
     const bewerben = opened.raw
       .prepare(
-        "SELECT alt_prepositions FROM verb_prepositions WHERE verb = 'bewerben' LIMIT 1",
+        "SELECT alt_prepositions FROM verb_prepositions WHERE verb = 'bewerben' AND preposition = 'um' LIMIT 1",
       )
       .get() as { alt_prepositions: string };
     expect(JSON.parse(bewerben.alt_prepositions)).toEqual(['auf']);
@@ -197,7 +204,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
 
     // Force the version gate open so the INSERT OR IGNORE itself is exercised
     opened.raw.exec(
-      "DELETE FROM data_versions WHERE version = '1.1.0_verb_prepositions_v2'",
+      "DELETE FROM data_versions WHERE version = '1.2.0_verb_prepositions_v3'",
     );
     await seedVocabulary(opened.db as any);
 
