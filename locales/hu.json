@@ -205,7 +205,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Tovább",
       "case_prompt": "Melyik esetet vonzza?",
-      "case_you_picked": "Ezt választottad: {{picked}} (ez vonzza: {{correct}})"
+      "case_you_picked": "Ezt választottad: {{picked}} (ez vonzza: {{correct}})",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Melyik da(r)-/wo(r)- alak?",
+      "pronoun_question_a11y": "{{sentence}}. Melyik da(r)- vagy wo(r)- alak illik az üres helyre?",
+      "people_rule": "Személyeknél névmást használunk: {{pronoun}} / {{question}}? (nem {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "Minták elöljárószavanként",
@@ -311,6 +315,10 @@
         "prepositions": {
           "title": "Elöljárószók",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

@@ -205,7 +205,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Devam",
       "case_prompt": "Hangi hâli alır?",
-      "case_you_picked": "{{picked}} seçtin ({{correct}} alıyor)"
+      "case_you_picked": "{{picked}} seçtin ({{correct}} alıyor)",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Hangi da(r)-/wo(r)- biçimi?",
+      "pronoun_question_a11y": "{{sentence}}. Boşluğa hangi da(r)- veya wo(r)- biçimi uyar?",
+      "people_rule": "Kişiler için zamir kullanılır: {{pronoun}} / {{question}}? ({{da}} / {{wo}} değil)"
     },
     "verb_preposition_patterns": {
       "title": "Edata göre kalıplar",
@@ -311,6 +315,10 @@
         "prepositions": {
           "title": "Edatlar",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

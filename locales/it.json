@@ -205,7 +205,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continua",
       "case_prompt": "Quale caso regge?",
-      "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})"
+      "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Quale forma con da(r)-/wo(r)-?",
+      "pronoun_question_a11y": "{{sentence}}. Quale forma con da(r)- o wo(r)- completa lo spazio?",
+      "people_rule": "Per le persone si usa un pronome: {{pronoun}} / {{question}}? (non {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "Schemi per preposizione",
@@ -311,6 +315,10 @@
         "prepositions": {
           "title": "Preposizioni",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

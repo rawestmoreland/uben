@@ -172,5 +172,10 @@ describe('verb preposition quiz translations', () => {
     const tile = locales[locale].app.home_screen.tiles.prepositions;
     expect(tile.title).toEqual(expect.any(String));
     expect(tile.subtitle).toEqual(expect.any(String));
+
+    const pronounTile =
+      locales[locale].app.home_screen.tiles.prepositionPronouns;
+    expect(pronounTile.title).toEqual(expect.any(String));
+    expect(pronounTile.subtitle).toEqual(expect.any(String));
   });
 });

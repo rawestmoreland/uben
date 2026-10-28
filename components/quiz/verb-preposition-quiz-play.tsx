@@ -1,5 +1,8 @@
 import { Layout, Spacing } from '@/constants/design';
-import type { VerbPrepositionQuizSessionData } from '@/hooks/use-verb-preposition-quiz-session';
+import type {
+  VerbPrepositionQuizMode,
+  VerbPrepositionQuizSessionData,
+} from '@/hooks/use-verb-preposition-quiz-session';
 import { useSettings } from '@/hooks/use-settings';
 import type { VerbPrepositionCase } from '@/types/database';
 import * as Haptics from 'expo-haptics';
@@ -15,6 +18,7 @@ import { VerbPrepositionQuizHeader } from './verb-preposition-quiz-header';
 
 interface VerbPrepositionQuizPlayProps {
   quiz: VerbPrepositionQuizSessionData;
+  mode: VerbPrepositionQuizMode;
 }
 
 /**
@@ -27,6 +31,7 @@ interface VerbPrepositionQuizPlayProps {
  */
 export function VerbPrepositionQuizPlay({
   quiz,
+  mode,
 }: VerbPrepositionQuizPlayProps) {
   const { t } = useTranslation('app');
   const { showEnglishHint, eszettPreference } = useSettings();
@@ -73,6 +78,7 @@ export function VerbPrepositionQuizPlay({
       <VerbPrepositionQuizHeader
         current={progress.current}
         total={progress.total}
+        mode={mode}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -91,6 +97,7 @@ export function VerbPrepositionQuizPlay({
             sentence={question.sentence}
             translation={showEnglishHint ? question.translation : null}
             eszettPreference={eszettPreference}
+            mode={mode}
           />
         )}
         <View style={styles.section}>

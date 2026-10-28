@@ -96,7 +96,7 @@ describe('runMigrations()', () => {
   });
 
   it('applies only unapplied migrations in a partial state', async () => {
-    // Migration 001 already applied; 002–011 not yet applied
+    // Migration 001 already applied; 002–012 not yet applied
     mockDb.getFirstAsync
       .mockResolvedValueOnce({ '1': 1 }) // 001 → applied
       .mockResolvedValueOnce(null) // 002 → unapplied
@@ -108,7 +108,8 @@ describe('runMigrations()', () => {
       .mockResolvedValueOnce(null) // 008 → unapplied
       .mockResolvedValueOnce(null) // 009 → unapplied
       .mockResolvedValueOnce(null) // 010 → unapplied
-      .mockResolvedValueOnce(null); // 011 → unapplied
+      .mockResolvedValueOnce(null) // 011 → unapplied
+      .mockResolvedValueOnce(null); // 012 → unapplied
 
     await runMigrations(mockDb as any);
 
@@ -117,7 +118,7 @@ describe('runMigrations()', () => {
         sql === 'INSERT INTO migrations (version) VALUES (?)',
     );
 
-    expect(insertCalls).toHaveLength(10);
+    expect(insertCalls).toHaveLength(11);
     expect(insertCalls[0][1]).toEqual(['002']);
     expect(insertCalls[1][1]).toEqual(['003']);
     expect(insertCalls[2][1]).toEqual(['004']);
@@ -128,6 +129,7 @@ describe('runMigrations()', () => {
     expect(insertCalls[7][1]).toEqual(['009']);
     expect(insertCalls[8][1]).toEqual(['010']);
     expect(insertCalls[9][1]).toEqual(['011']);
+    expect(insertCalls[10][1]).toEqual(['012']);
   });
 
   it('calls each migration up() with the db object', async () => {
@@ -296,6 +298,72 @@ describe('migration 011 (add_verb_prepositions)', () => {
     expect(deleteCards).toBeLessThan(createCall);
     expect(sql[createCall]).toContain(
       "CHECK(word_type IN ('noun', 'verb', 'adjective', 'noun_plural'))",
+    );
+    expect(dropTable).toBeGreaterThan(createCall);
+  });
+});
+
+// ── Migration 012: verb_preposition_pronouns + verb_prep_pronoun cards ──────
+
+const migration012 = migrations.find((m) => m.version === '012')!;
+
+describe('migration 012 (add_verb_preposition_pronouns)', () => {
+  let mockDb: ReturnType<typeof makeMockDb>;
+
+  beforeEach(() => {
+    mockDb = makeMockDb();
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  function executedSql(): string[] {
+    return mockDb.execAsync.mock.calls.map(([sql]: [string]) => sql.trim());
+  }
+
+  it('creates the verb_preposition_pronouns table linked to its pattern', async () => {
+    await migration012.up(mockDb as any);
+
+    const createCall = executedSql().find((sql) =>
+      sql.startsWith('CREATE TABLE IF NOT EXISTS verb_preposition_pronouns'),
+    );
+    expect(createCall).toBeDefined();
+    expect(createCall).toContain(
+      'FOREIGN KEY (verb_preposition_id) REFERENCES verb_prepositions(id) ON DELETE CASCADE',
+    );
+    expect(createCall).toContain('UNIQUE(verb_preposition_id)');
+  });
+
+  it('widens the word_type CHECK to include verb_prep_pronoun', async () => {
+    await migration012.up(mockDb as any);
+
+    const createCall = executedSql().find((sql) =>
+      sql.startsWith('CREATE TABLE card_progress_rebuild'),
+    );
+    expect(createCall).toContain(
+      "CHECK(word_type IN ('noun', 'verb', 'adjective', 'noun_plural', 'verb_prep', 'verb_prep_pronoun'))",
+    );
+  });
+
+  it('down() removes verb_prep_pronoun cards, restores the CHECK, then drops the table', async () => {
+    await migration012.down!(mockDb as any);
+
+    const sql = executedSql();
+    const deleteCards = sql.indexOf(
+      "DELETE FROM card_progress WHERE word_type = 'verb_prep_pronoun';",
+    );
+    const createCall = sql.findIndex((statement) =>
+      statement.startsWith('CREATE TABLE card_progress_rebuild'),
+    );
+    const dropTable = sql.indexOf(
+      'DROP TABLE IF EXISTS verb_preposition_pronouns;',
+    );
+    expect(deleteCards).toBeGreaterThanOrEqual(0);
+    expect(deleteCards).toBeLessThan(createCall);
+    expect(sql[createCall]).toContain(
+      "CHECK(word_type IN ('noun', 'verb', 'adjective', 'noun_plural', 'verb_prep'))",
     );
     expect(dropTable).toBeGreaterThan(createCall);
   });

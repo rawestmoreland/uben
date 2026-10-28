@@ -14,7 +14,8 @@ type ExerciseId =
   | 'plurals'
   | 'adjectives'
   | 'verbs'
-  | 'prepositions';
+  | 'prepositions'
+  | 'prepositionPronouns';
 
 interface ExerciseConfig {
   id: ExerciseId;
@@ -75,6 +76,16 @@ const EXERCISES: readonly ExerciseConfig[] = [
     status: 'available',
     entitlement: 'pro_only',
     paywallSource: 'verb_preposition_quiz_entry',
+  },
+  {
+    // Pro only, no free trial. The da(r)-/wo(r)- forms (darauf, Worauf) of
+    // the same patterns; the route's query string is replayed by the paywall.
+    id: 'prepositionPronouns',
+    route: '/verb-preposition-quiz?mode=pronouns',
+    accentColor: AppColors.blue,
+    status: 'available',
+    entitlement: 'pro_only',
+    paywallSource: 'verb_preposition_pronoun_quiz_entry',
   },
 ];
 

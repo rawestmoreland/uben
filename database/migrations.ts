@@ -791,6 +791,67 @@ export const migrations: Migration[] = [
       await db.execAsync('DROP TABLE IF EXISTS verb_prepositions;');
     },
   },
+  {
+    version: '012',
+    name: 'add_verb_preposition_pronouns',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 012] Adding verb_preposition_pronouns and widening card_progress.word_type to allow verb_prep_pronoun...',
+      );
+
+      // The da(r)-/wo(r)- practice for a pattern that takes a thing: one row
+      // per pattern with a cloze sentence for each form. The pattern's
+      // preposition, case and sibling patterns stay in verb_prepositions.
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS verb_preposition_pronouns (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verb_preposition_id INTEGER NOT NULL,
+          da_sentence TEXT NOT NULL,
+          da_translation TEXT NOT NULL,
+          wo_sentence TEXT NOT NULL,
+          wo_translation TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (verb_preposition_id) REFERENCES verb_prepositions(id) ON DELETE CASCADE,
+          UNIQUE(verb_preposition_id)
+        );
+      `);
+
+      // A pattern's pronoun practice is its own card: word_type
+      // 'verb_prep_pronoun', word_id = verb_preposition_pronouns.id.
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+        'verb_prep',
+        'verb_prep_pronoun',
+      ]);
+
+      console.log('[Migration 012] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove verb_prep_pronoun cards (and their history) before restoring
+      // the narrower CHECK constraint
+      await db.execAsync(`
+        DELETE FROM review_history WHERE card_progress_id IN (
+          SELECT id FROM card_progress WHERE word_type = 'verb_prep_pronoun'
+        );
+      `);
+      await db.execAsync(
+        "DELETE FROM card_progress WHERE word_type = 'verb_prep_pronoun';",
+      );
+
+      await rebuildCardProgress(db, [
+        'noun',
+        'verb',
+        'adjective',
+        'noun_plural',
+        'verb_prep',
+      ]);
+
+      await db.execAsync('DROP TABLE IF EXISTS verb_preposition_pronouns;');
+    },
+  },
 ];
 
 /**

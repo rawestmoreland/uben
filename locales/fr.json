@@ -210,7 +210,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continuer",
       "case_prompt": "Quel cas régit-elle ?",
-      "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})"
+      "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Quelle forme en da(r)-/wo(r)- ?",
+      "pronoun_question_a11y": "{{sentence}}. Quelle forme en da(r)- ou wo(r)- complète le blanc ?",
+      "people_rule": "Pour les personnes, on utilise un pronom : {{pronoun}} / {{question}} ? (pas {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "Modèles par préposition",
@@ -285,6 +289,10 @@
         "prepositions": {
           "title": "Prépositions",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

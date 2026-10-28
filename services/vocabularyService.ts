@@ -201,7 +201,7 @@ export class VocabularyService {
           CASE WHEN next_review_date <= date('now') THEN 1 END
         ) AS due_today
       FROM card_progress
-      WHERE word_type NOT IN ('noun_plural', 'verb_prep')
+      WHERE word_type NOT IN ('noun_plural', 'verb_prep', 'verb_prep_pronoun')
     `);
 
     return (

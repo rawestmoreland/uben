@@ -156,6 +156,20 @@ export interface VerbPrepositionButton {
   enabled: boolean;
 }
 
+/**
+ * The rule for people, shown in da(r)-/wo(r)- feedback: a person is never
+ * `darauf`/`worauf`, it is the preposition + a pronoun (`auf ihn`) or the
+ * question `Auf wen`.
+ */
+export interface PeopleRule {
+  /** e.g. "auf ihn" */
+  withPronoun: string;
+  /** e.g. "Auf wen" */
+  question: string;
+  /** The forms that are for things, e.g. "darauf" and "worauf" */
+  thingForms: { da: string; wo: string };
+}
+
 export interface VerbPrepositionQuestion {
   /** Cloze sentence containing the "____" blank. */
   sentence: string;
@@ -174,6 +188,8 @@ export interface VerbPrepositionQuestion {
   patternLabel: string;
   /** The sentence with the primary answer filled in. */
   completedSentence: string;
+  /** Set on da(r)-/wo(r)- questions; null or absent on cloze preposition ones. */
+  peopleRule?: PeopleRule | null;
 }
 
 /** The stored pattern fields a question is built from. */
@@ -218,7 +234,7 @@ export function splitSentenceAtBlank(
   };
 }
 
-function fillBlank(sentence: string, preposition: string): string {
+export function fillBlank(sentence: string, preposition: string): string {
   const blank = BLANK_PATTERN.exec(sentence);
   // A blank that opens the sentence is capitalised: "Auf wen wartest du?"
   const filled =

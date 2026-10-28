@@ -89,7 +89,7 @@ export class StatisticsService {
        FROM card_progress
        WHERE total_reviews >= ?
          AND CAST(correct_reviews AS REAL) / total_reviews < 0.6
-         AND word_type NOT IN ('noun_plural', 'verb_prep')`,
+         AND word_type NOT IN ('noun_plural', 'verb_prep', 'verb_prep_pronoun')`,
       [minReviews],
     );
     return result?.count ?? 0;
@@ -103,7 +103,7 @@ export class StatisticsService {
   async getMasteredCount(): Promise<number> {
     const result = await this.db.getFirstAsync<{ count: number }>(
       `SELECT COUNT(*) AS count FROM card_progress
-       WHERE interval >= 21 AND word_type NOT IN ('noun_plural', 'verb_prep')`,
+       WHERE interval >= 21 AND word_type NOT IN ('noun_plural', 'verb_prep', 'verb_prep_pronoun')`,
     );
     return result?.count ?? 0;
   }

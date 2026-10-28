@@ -5,6 +5,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import type { VerbPrepositionQuizMode } from '@/hooks/use-verb-preposition-quiz-session';
 import { splitSentenceAtBlank } from '@/services/verbPrepositionService';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { uiUpperCase } from '@/utils/uiText';
@@ -17,6 +18,7 @@ interface VerbPrepositionQuestionCardProps {
   /** English gloss of the sense being tested; it is what disambiguates verbs with several prepositions. */
   translation: string | null;
   eszettPreference: 'eszett' | 'ss';
+  mode: VerbPrepositionQuizMode;
 }
 
 /** The question: a cloze sentence with the preposition blanked out, plus its English gloss. */
@@ -24,27 +26,37 @@ export function VerbPrepositionQuestionCard({
   sentence,
   translation,
   eszettPreference,
+  mode,
 }: VerbPrepositionQuestionCardProps) {
   const { t } = useTranslation('app');
-  const displaySentence = applyGermanTextPreference(
-    sentence,
-    eszettPreference,
-  );
+  const isPronouns = mode === 'pronouns';
+  const displaySentence = applyGermanTextPreference(sentence, eszettPreference);
   const parts = splitSentenceAtBlank(displaySentence);
 
   return (
     <View style={[styles.card, shadowStyle]}>
       <Text style={styles.prompt}>
-        {uiUpperCase(t('verb_preposition_quiz.prompt'))}
+        {uiUpperCase(
+          t(
+            isPronouns
+              ? 'verb_preposition_quiz.pronoun_prompt'
+              : 'verb_preposition_quiz.prompt',
+          ),
+        )}
       </Text>
       <Text
         style={styles.sentence}
-        accessibilityLabel={t('verb_preposition_quiz.question_a11y', {
-          sentence: displaySentence.replace(
-            /_{2,}/,
-            t('verb_preposition_quiz.blank_a11y'),
-          ),
-        })}
+        accessibilityLabel={t(
+          isPronouns
+            ? 'verb_preposition_quiz.pronoun_question_a11y'
+            : 'verb_preposition_quiz.question_a11y',
+          {
+            sentence: displaySentence.replace(
+              /_{2,}/,
+              t('verb_preposition_quiz.blank_a11y'),
+            ),
+          },
+        )}
       >
         {parts ? (
           <>

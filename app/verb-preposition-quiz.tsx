@@ -8,9 +8,12 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
-import { useVerbPrepositionQuizSession } from '@/hooks/use-verb-preposition-quiz-session';
+import {
+  useVerbPrepositionQuizSession,
+  type VerbPrepositionQuizMode,
+} from '@/hooks/use-verb-preposition-quiz-session';
 import { uiUpperCase } from '@/utils/uiText';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
@@ -23,6 +26,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // case ("warten auf + Akk."). Pro only, with no metered free trial: the home
 // tile routes non-Pro users to the paywall, and the session hook reports a
 // 'locked' phase as a defensive gate for direct/deep links.
+//
+// `?mode=pronouns` asks the same patterns as da(r)-/wo(r)- forms instead
+// ("Ich warte ____." -> darauf, "____ wartest du?" -> Worauf).
 
 function goBack() {
   router.back();
@@ -34,7 +40,10 @@ function openPatterns() {
 
 export default function VerbPrepositionQuizScreen() {
   const { t } = useTranslation('app');
-  const quiz = useVerbPrepositionQuizSession();
+  const params = useLocalSearchParams<{ mode?: string }>();
+  const mode: VerbPrepositionQuizMode =
+    params.mode === 'pronouns' ? 'pronouns' : 'patterns';
+  const quiz = useVerbPrepositionQuizSession(mode);
   const { phase } = quiz;
 
   useEffect(() => {
@@ -42,12 +51,18 @@ export default function VerbPrepositionQuizScreen() {
       router.replace({
         pathname: '/paywall',
         params: {
-          redirectTo: '/verb-preposition-quiz',
-          source: 'verb_preposition_quiz_entry',
+          redirectTo:
+            mode === 'pronouns'
+              ? '/verb-preposition-quiz?mode=pronouns'
+              : '/verb-preposition-quiz',
+          source:
+            mode === 'pronouns'
+              ? 'verb_preposition_pronoun_quiz_entry'
+              : 'verb_preposition_quiz_entry',
         },
       });
     }
-  }, [phase]);
+  }, [phase, mode]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -77,7 +92,7 @@ export default function VerbPrepositionQuizScreen() {
         </View>
       )}
       {(phase === 'playing' || phase === 'case' || phase === 'feedback') && (
-        <VerbPrepositionQuizPlay quiz={quiz} />
+        <VerbPrepositionQuizPlay quiz={quiz} mode={mode} />
       )}
       {phase === 'complete' && (
         <VerbPrepositionQuizResults results={quiz.results} />

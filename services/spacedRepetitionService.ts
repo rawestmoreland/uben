@@ -4,6 +4,10 @@ import {
   type PluralQuizSession,
 } from '@/services/pluralService';
 import {
+  buildVerbPrepositionPronounCards,
+  type VerbPrepositionPronounCardRow,
+} from '@/services/verbPrepositionPronounService';
+import {
   buildVerbPrepositionCards,
   type VerbPrepositionCardRow,
   type VerbPrepositionQuizSession,
@@ -122,6 +126,28 @@ const VERB_PREP_COLUMNS = `
   vp.translation,
   vp.english_trap,
   vp.remote_id,
+  (SELECT json_group_array(DISTINCT sibling.preposition)
+     FROM verb_prepositions sibling
+     WHERE sibling.verb = vp.verb
+       AND sibling.is_reflexive = vp.is_reflexive
+       AND sibling.id != vp.id) AS sibling_prepositions`;
+
+/**
+ * The pattern columns plus both da(r)-/wo(r)- sentences, for the
+ * verb_prep_pronoun queries (which join verb_preposition_pronouns as `vpp`).
+ */
+const VERB_PREP_PRONOUN_COLUMNS = `
+  vp.verb,
+  vp.is_reflexive,
+  vp.preposition,
+  vp.alt_prepositions,
+  vp.case_governed,
+  vp.english_trap,
+  vp.remote_id,
+  vpp.da_sentence,
+  vpp.da_translation,
+  vpp.wo_sentence,
+  vpp.wo_translation,
   (SELECT json_group_array(DISTINCT sibling.preposition)
      FROM verb_prepositions sibling
      WHERE sibling.verb = vp.verb
@@ -630,6 +656,74 @@ export class SpacedRepetitionService {
 
     const dueCards = buildVerbPrepositionCards(dueRows).slice(0, dueLimit);
     const newCards = buildVerbPrepositionCards(newRows).slice(0, newCardsLimit);
+
+    return {
+      cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],
+      dueCount: dueCards.length,
+      newCount: newCards.length,
+    };
+  }
+
+  /**
+   * Build a review session for the da(r)-/wo(r)- quiz. Each pattern that takes
+   * a thing has one card: word_type 'verb_prep_pronoun', word_id =
+   * verb_preposition_pronouns.id, so its progress is independent of the
+   * cloze preposition card for the same pattern and excluded from article
+   * stats. Whether a card is asked as da(r)- or wo(r)- is decided when the
+   * session is built (see buildVerbPrepositionPronounCards).
+   *
+   * Ordering and the due/new split match getVerbPrepositionSession.
+   */
+  async getVerbPrepositionPronounSession(
+    maxCards: number = 20,
+    newCardsLimit: number = 5,
+  ): Promise<VerbPrepositionQuizSession> {
+    const dueLimit = maxCards - newCardsLimit;
+
+    const dueRows = await this.db.getAllAsync<VerbPrepositionPronounCardRow>(
+      `SELECT cp.*, ${VERB_PREP_PRONOUN_COLUMNS}
+       FROM card_progress cp
+       JOIN verb_preposition_pronouns vpp
+         ON cp.word_type = 'verb_prep_pronoun' AND cp.word_id = vpp.id
+       JOIN verb_prepositions vp ON vp.id = vpp.verb_preposition_id
+       WHERE cp.next_review_date <= date('now')
+       ORDER BY cp.next_review_date ASC
+       LIMIT ?`,
+      [dueLimit * VERB_PREP_CANDIDATE_OVERFETCH],
+    );
+
+    const newRows = await this.db.getAllAsync<VerbPrepositionPronounCardRow>(
+      `SELECT
+         0 AS id,
+         'verb_prep_pronoun' AS word_type,
+         vpp.id AS word_id,
+         2.5 AS ease_factor,
+         0 AS interval,
+         0 AS repetitions,
+         date('now') AS next_review_date,
+         0 AS total_reviews,
+         0 AS correct_reviews,
+         NULL AS last_reviewed_at,
+         vpp.created_at,
+         ${VERB_PREP_PRONOUN_COLUMNS}
+       FROM verb_preposition_pronouns vpp
+       JOIN verb_prepositions vp ON vp.id = vpp.verb_preposition_id
+       LEFT JOIN card_progress cp
+         ON cp.word_type = 'verb_prep_pronoun' AND cp.word_id = vpp.id
+       WHERE cp.id IS NULL
+       ORDER BY RANDOM()
+       LIMIT ?`,
+      [newCardsLimit * VERB_PREP_CANDIDATE_OVERFETCH],
+    );
+
+    const dueCards = buildVerbPrepositionPronounCards(dueRows).slice(
+      0,
+      dueLimit,
+    );
+    const newCards = buildVerbPrepositionPronounCards(newRows).slice(
+      0,
+      newCardsLimit,
+    );
 
     return {
       cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],

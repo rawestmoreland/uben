@@ -7,6 +7,7 @@ import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
 import { verbPrepositionsV1 } from './seeds/verb-prepositions/v1-initial';
+import { verbPrepositionPronounsV1 } from './seeds/verb-prepositions/v1-pronouns';
 import { verbsV1 } from './seeds/verbs/v1-initial';
 
 /**
@@ -55,6 +56,10 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // Seed verb + preposition patterns for the verb preposition quiz (#144).
   // Independent of nouns/verbs — each pattern carries its own verb string.
   await seedVerbPrepositions(db, '1.0.0_verb_prepositions_v1');
+
+  // da(r)-/wo(r)- sentences for those patterns (#151). Must follow the
+  // patterns, which each row is linked to.
+  await seedVerbPrepositionPronouns(db, '1.0.0_verb_preposition_pronouns_v1');
 }
 
 /**
@@ -109,6 +114,60 @@ async function seedVerbPrepositions(
   console.log(
     `[DB] Seeded ${verbPrepositionsV1.length} verb prepositions (${version})`,
   );
+}
+
+/**
+ * Seed the da(r)-/wo(r)- sentences, each linked to its seeded pattern by
+ * (verb, is_reflexive, preposition). An entry whose pattern isn't in the
+ * table is skipped, and INSERT OR IGNORE against UNIQUE(verb_preposition_id)
+ * keeps re-runs from changing a row ID (which would orphan its card_progress).
+ */
+async function seedVerbPrepositionPronouns(
+  db: SQLite.SQLiteDatabase,
+  version: string,
+): Promise<void> {
+  const exists = await db.getFirstAsync<{ '1': number }>(
+    'SELECT 1 FROM data_versions WHERE version = ?',
+    [version],
+  );
+
+  if (exists) {
+    return; // Already seeded
+  }
+
+  console.log(`[DB] Seeding verb preposition pronouns (${version})...`);
+
+  let seeded = 0;
+  await db.withTransactionAsync(async () => {
+    for (const entry of verbPrepositionPronounsV1) {
+      const pattern = await db.getFirstAsync<{ id: number }>(
+        `SELECT id FROM verb_prepositions
+         WHERE verb = ? AND is_reflexive = ? AND preposition = ?`,
+        [entry.verb, entry.is_reflexive ? 1 : 0, entry.preposition],
+      );
+      if (!pattern) continue;
+
+      await db.runAsync(
+        `INSERT OR IGNORE INTO verb_preposition_pronouns
+           (verb_preposition_id, da_sentence, da_translation, wo_sentence, wo_translation)
+         VALUES (?, ?, ?, ?, ?)`,
+        [
+          pattern.id,
+          entry.da_sentence,
+          entry.da_translation,
+          entry.wo_sentence,
+          entry.wo_translation,
+        ],
+      );
+      seeded++;
+    }
+
+    await db.runAsync('INSERT INTO data_versions (version) VALUES (?)', [
+      version,
+    ]);
+  });
+
+  console.log(`[DB] Seeded ${seeded} verb preposition pronouns (${version})`);
 }
 
 /**

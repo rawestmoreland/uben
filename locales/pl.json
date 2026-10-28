@@ -215,7 +215,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Dalej",
       "case_prompt": "Jaki przypadek rządzi?",
-      "case_you_picked": "Wybrano {{picked}} (rządzi: {{correct}})"
+      "case_you_picked": "Wybrano {{picked}} (rządzi: {{correct}})",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Która forma z da(r)-/wo(r)-?",
+      "pronoun_question_a11y": "{{sentence}}. Która forma z da(r)- lub wo(r)- pasuje do luki?",
+      "people_rule": "Dla osób używamy zaimka: {{pronoun}} / {{question}}? (nie {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "Wzorce według przyimka",
@@ -321,6 +325,10 @@
         "prepositions": {
           "title": "Przyimki",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

@@ -205,7 +205,11 @@
       "feedback_a11y": "{{verdict}}。{{pattern}}。{{sentence}}",
       "continue": "继续",
       "case_prompt": "它要求哪个格？",
-      "case_you_picked": "你选了 {{picked}}（应为 {{correct}}）"
+      "case_you_picked": "你选了 {{picked}}（应为 {{correct}}）",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "选哪个 da(r)-/wo(r)- 形式?",
+      "pronoun_question_a11y": "{{sentence}}。哪个 da(r)- 或 wo(r)- 形式适合填入空格?",
+      "people_rule": "指人时用代词:{{pronoun}} / {{question}}?(不用 {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "按介词分类的搭配",
@@ -311,6 +315,10 @@
         "prepositions": {
           "title": "介词",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

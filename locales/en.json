@@ -205,7 +205,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Continue",
       "case_prompt": "Which case does it take?",
-      "case_you_picked": "You picked {{picked}} (it takes {{correct}})"
+      "case_you_picked": "You picked {{picked}} (it takes {{correct}})",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Which da(r)-/wo(r)- form?",
+      "pronoun_question_a11y": "{{sentence}}. Which da(r)- or wo(r)- form fits the blank?",
+      "people_rule": "For people, use a pronoun instead: {{pronoun}} / {{question}}? (not {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "Patterns by preposition",
@@ -311,6 +315,10 @@
         "prepositions": {
           "title": "Prepositions",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }

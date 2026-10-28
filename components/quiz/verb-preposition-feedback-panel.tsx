@@ -31,7 +31,8 @@ interface VerbPrepositionFeedbackPanelProps {
  * with its case ("warten auf + Akk."), the completed sentence with the
  * preposition highlighted, the gloss, and any other accepted prepositions.
  * The pattern (with its case) is shown whether or not the case step was asked
- * or answered correctly.
+ * or answered correctly. On da(r)-/wo(r)- questions it also carries the rule
+ * for people (`auf ihn`, not `darauf`).
  */
 export function VerbPrepositionFeedbackPanel({
   question,
@@ -121,6 +122,16 @@ export function VerbPrepositionFeedbackPanel({
           <Text style={styles.note}>
             {t('verb_preposition_quiz.also_accepted', {
               prepositions: alternates.join(', '),
+            })}
+          </Text>
+        )}
+        {question.peopleRule && (
+          <Text style={styles.note}>
+            {t('verb_preposition_quiz.people_rule', {
+              pronoun: display(question.peopleRule.withPronoun),
+              question: display(question.peopleRule.question),
+              da: question.peopleRule.thingForms.da,
+              wo: question.peopleRule.thingForms.wo,
             })}
           </Text>
         )}

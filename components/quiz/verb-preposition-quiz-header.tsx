@@ -1,4 +1,5 @@
 import { AppColors, Layout, Spacing, Typography } from '@/constants/design';
+import type { VerbPrepositionQuizMode } from '@/hooks/use-verb-preposition-quiz-session';
 import { uiUpperCase } from '@/utils/uiText';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 interface VerbPrepositionQuizHeaderProps {
   current: number;
   total: number;
+  mode: VerbPrepositionQuizMode;
 }
 
 function exitQuiz() {
@@ -21,6 +23,7 @@ function openPatterns() {
 export function VerbPrepositionQuizHeader({
   current,
   total,
+  mode,
 }: VerbPrepositionQuizHeaderProps) {
   const { t } = useTranslation('app');
   const percent = total > 0 ? Math.round((current / total) * 100) : 0;
@@ -30,7 +33,13 @@ export function VerbPrepositionQuizHeader({
       <View style={styles.topRow}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>
-            {uiUpperCase(t('verb_preposition_quiz.badge'))}
+            {uiUpperCase(
+              t(
+                mode === 'pronouns'
+                  ? 'verb_preposition_quiz.pronoun_badge'
+                  : 'verb_preposition_quiz.badge',
+              ),
+            )}
           </Text>
         </View>
         <Pressable

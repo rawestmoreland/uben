@@ -119,6 +119,45 @@ describeWithSqlite('verb_prep cards against real SQLite', () => {
     expect(await service.hasReviewedToday()).toBe(true);
   });
 
+  it('keeps da(r)-/wo(r)- progress out of article stats', async () => {
+    const kind = insertNoun('Kind', 'das', 'Kinder');
+    await service.createCardForWord('noun', kind);
+    const before = await articleStats();
+
+    const warten = insertPattern('warten', 'auf');
+    const pronounId = Number(
+      raw
+        .prepare(
+          `INSERT INTO verb_preposition_pronouns (verb_preposition_id, da_sentence, da_translation, wo_sentence, wo_translation)
+           VALUES (?, 'Ich warte ____.', 'da', '____ wartest du?', 'wo')`,
+        )
+        .run(warten).lastInsertRowid,
+    );
+
+    // Struggling (five wrong answers) and, on a second card, mastered
+    const strugglingCard = await service.createCardForWord(
+      'verb_prep_pronoun',
+      pronounId,
+    );
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await service.recordReview(strugglingCard, 0, 4000);
+    }
+    const masteredCard = await service.createCardForWord(
+      'verb_prep_pronoun',
+      pronounId + 1,
+    );
+    raw
+      .prepare(
+        "UPDATE card_progress SET interval = 30, next_review_date = date('now', '+30 days') WHERE id = ?",
+      )
+      .run(masteredCard);
+
+    expect(await articleStats()).toEqual(before);
+    // Same pattern id, different card type: no collision with its verb_prep card
+    const patternCard = await service.createCardForWord('verb_prep', warten);
+    expect(patternCard).not.toBe(strugglingCard);
+  });
+
   it('keeps a noun id and a pattern id with the same value on separate cards', async () => {
     const kind = insertNoun('Kind', 'das', 'Kinder');
     const pattern = insertPattern('warten', 'auf');

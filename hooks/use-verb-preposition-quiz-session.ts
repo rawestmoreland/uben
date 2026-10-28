@@ -16,6 +16,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 // ── Types ────────────────────────────────────────────────────────────
 
+/**
+ * 'patterns' is the cloze preposition quiz; 'pronouns' asks the da(r)-/wo(r)-
+ * form of the same patterns. Each keeps its own card progress.
+ */
+export type VerbPrepositionQuizMode = 'patterns' | 'pronouns';
+
 export type VerbPrepositionQuizPhase =
   | 'loading'
   | 'playing'
@@ -71,13 +77,20 @@ export interface VerbPrepositionQuizSessionData {
  * any stored alternates. Progress lives on its own 'verb_prep' card, so it
  * never touches article stats.
  *
+ * In 'pronouns' mode the cards are da(r)-/wo(r)- questions (darauf, Worauf)
+ * loaded by getVerbPrepositionPronounSession and tracked as 'verb_prep_pronoun'
+ * cards. The answers are compounds, never a two-way preposition, so the case
+ * step below never applies to them.
+ *
  * After a correct two-way preposition (an, auf, in, ...) the session moves to
  * a 'case' phase and asks for Akkusativ or Dativ before showing feedback,
  * unless the learner turned the step off in Settings. A wrong case caps the
  * SM-2 quality at 3 (see applyCaseStepToQuality): the card is not reset.
  * Nothing is saved until the card is fully answered.
  */
-export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData {
+export function useVerbPrepositionQuizSession(
+  mode: VerbPrepositionQuizMode = 'patterns',
+): VerbPrepositionQuizSessionData {
   const [phase, setPhase] = useState<VerbPrepositionQuizPhase>('loading');
   const [cards, setCards] = useState<VerbPrepositionQuizCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -113,10 +126,13 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
         caseStepEnabled.current =
           await settingsService.getVerbPrepositionCaseStep();
 
-        const session = await spacedRepetitionService.getVerbPrepositionSession(
-          20,
-          5,
-        );
+        const session =
+          mode === 'pronouns'
+            ? await spacedRepetitionService.getVerbPrepositionPronounSession(
+                20,
+                5,
+              )
+            : await spacedRepetitionService.getVerbPrepositionSession(20, 5);
 
         if (cancelled) return;
 
@@ -139,7 +155,7 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [mode]);
 
   // ── Current card ─────────────────────────────────────────────────
 
@@ -167,7 +183,7 @@ export function useVerbPrepositionQuizSession(): VerbPrepositionQuizSessionData 
         // New cards (id === 0) need a card_progress row first
         if (cardProgressId === 0) {
           cardProgressId = await spacedRepetitionService.createCardForWord(
-            'verb_prep',
+            card.word_type,
             card.word_id,
           );
         }

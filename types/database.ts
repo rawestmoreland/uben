@@ -96,13 +96,16 @@ export interface VerbPreposition {
  * What a card_progress row tracks. A noun has two independent cards: 'noun'
  * for its article and 'noun_plural' for its plural ending (word_id = noun id).
  * 'verb_prep' tracks a verb preposition pattern (word_id = verb_prepositions.id).
+ * 'verb_prep_pronoun' tracks the da(r)-/wo(r)- forms of a pattern
+ * (word_id = verb_preposition_pronouns.id).
  */
 export type CardWordType =
   | 'noun'
   | 'verb'
   | 'adjective'
   | 'noun_plural'
-  | 'verb_prep';
+  | 'verb_prep'
+  | 'verb_prep_pronoun';
 
 /** SM-2 spaced repetition progress for a single card */
 export interface CardProgress {
@@ -231,6 +234,22 @@ export interface DuePluralCard extends CardProgress {
   english: string | null;
   sense: string | null; // Disambiguation hint for homographs (die Bank: Bänke vs Banken)
   remote_id: string | null;
+}
+
+/**
+ * The da(r)-/wo(r)- sentences for one verb preposition pattern (the pattern
+ * must take a thing, not only a person). Each is a cloze sentence whose blank
+ * is the pronominal adverb: "Ich warte ____." (darauf), "____ wartest du?"
+ * (Worauf).
+ */
+export interface VerbPrepositionPronoun {
+  id: number;
+  verb_preposition_id: number; // verb_prepositions.id
+  da_sentence: string;
+  da_translation: string;
+  wo_sentence: string;
+  wo_translation: string;
+  created_at: string;
 }
 
 /** A verb preposition card that is due for review, joined with its pattern data */
@@ -363,6 +382,21 @@ export interface SeedVerbPreposition {
   /** Optional note on a common English-speaker mistake, shown in feedback */
   english_trap?: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/** Shape for seed da(r)-/wo(r)- sentences. Matched to a seeded pattern by
+ * (verb, is_reflexive, preposition). */
+export interface SeedVerbPrepositionPronoun {
+  /** Infinitive without "sich", as in the pattern it belongs to */
+  verb: string;
+  is_reflexive?: boolean;
+  preposition: string;
+  /** Cloze sentence whose blank is the da(r)- form, e.g. "Ich warte ____." */
+  da_sentence: string;
+  da_translation: string;
+  /** Cloze sentence whose blank is the wo(r)- form, e.g. "____ wartest du?" */
+  wo_sentence: string;
+  wo_translation: string;
 }
 
 /** A correction to an existing noun in the database */

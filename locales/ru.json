@@ -215,7 +215,11 @@
       "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
       "continue": "Далее",
       "case_prompt": "Какой падеж она требует?",
-      "case_you_picked": "Вы выбрали {{picked}} (требуется {{correct}})"
+      "case_you_picked": "Вы выбрали {{picked}} (требуется {{correct}})",
+      "pronoun_badge": "Da(r)- / Wo(r)-",
+      "pronoun_prompt": "Какая форма с da(r)-/wo(r)-?",
+      "pronoun_question_a11y": "{{sentence}}. Какая форма с da(r)- или wo(r)- подходит к пропуску?",
+      "people_rule": "Для людей используется местоимение: {{pronoun}} / {{question}}? (не {{da}} / {{wo}})"
     },
     "verb_preposition_patterns": {
       "title": "Модели по предлогам",
@@ -321,6 +325,10 @@
         "prepositions": {
           "title": "Предлоги",
           "subtitle": "warten auf + Akk."
+        },
+        "prepositionPronouns": {
+          "title": "da(r)- / wo(r)-",
+          "subtitle": "warten auf → darauf"
         }
       }
     }
