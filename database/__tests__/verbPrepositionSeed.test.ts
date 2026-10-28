@@ -9,6 +9,7 @@
 
 import { runMigrations } from '@/database/migrations';
 import { seedVocabulary } from '@/database/seed';
+import { adjectiveNounPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-adjectives-nouns';
 import { verbPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-core';
 import { describeWithSqlite, openTestDatabase } from '@/test-utils/sqlite';
 
@@ -32,6 +33,53 @@ const QUIZ_PREPOSITIONS = [
 const VALID_CASES = ['akk', 'dat', 'gen'];
 const VALID_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
+const ALL_PATTERNS = [...verbPrepositionsV2, ...adjectiveNounPrepositionsV2];
+
+describe('adjective and noun preposition seed data (#152)', () => {
+  it('has a solid set of adjective and noun patterns', () => {
+    const adjectives = adjectiveNounPrepositionsV2.filter(
+      (pattern) => pattern.kind === 'adjective',
+    );
+    const nouns = adjectiveNounPrepositionsV2.filter(
+      (pattern) => pattern.kind === 'noun',
+    );
+    expect(adjectives.length).toBeGreaterThanOrEqual(25);
+    expect(nouns.length).toBeGreaterThanOrEqual(25);
+    expect(adjectives.length + nouns.length).toBe(
+      adjectiveNounPrepositionsV2.length,
+    );
+  });
+
+  it('uses only adjective or noun kinds and never reflexive', () => {
+    for (const pattern of adjectiveNounPrepositionsV2) {
+      expect(['adjective', 'noun']).toContain(pattern.kind);
+      expect(pattern.is_reflexive).toBeUndefined();
+    }
+  });
+
+  it('capitalises noun head words and lowercases adjectives', () => {
+    for (const pattern of adjectiveNounPrepositionsV2) {
+      const first = pattern.verb.charAt(0);
+      if (pattern.kind === 'noun') expect(first).toBe(first.toUpperCase());
+      else expect(first).toBe(first.toLowerCase());
+    }
+  });
+
+  it('uses only the cases and levels the schema allows', () => {
+    for (const pattern of adjectiveNounPrepositionsV2) {
+      expect(VALID_CASES).toContain(pattern.case_governed);
+      expect(VALID_LEVELS).toContain(pattern.level);
+    }
+  });
+
+  it('does not repeat a v1 verb pattern', () => {
+    const verbSentences = new Set(verbPrepositionsV2.map((p) => p.sentence));
+    for (const pattern of adjectiveNounPrepositionsV2) {
+      expect(verbSentences.has(pattern.sentence)).toBe(false);
+    }
+  });
+});
+
 describe('verb preposition seed data', () => {
   it('has two example sentences for every pattern', () => {
     const examplesPerPattern = new Map<string, number>();
@@ -47,7 +95,7 @@ describe('verb preposition seed data', () => {
 
   it('uses standard spelling, leaving ss/ß to the display preference', () => {
     // The Swiss spellings an unconverted source list is likely to contain
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       expect(`${pattern.sentence} ${pattern.translation}`).not.toMatch(
         /heisst|gross|Fussball|Strasse|Fuss\b/,
       );
@@ -55,20 +103,20 @@ describe('verb preposition seed data', () => {
   });
 
   it('has exactly one blank in every sentence', () => {
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       expect(pattern.sentence.split('____')).toHaveLength(2);
     }
   });
 
   it('uses only valid case and level values', () => {
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       expect(VALID_CASES).toContain(pattern.case_governed);
       expect(VALID_LEVELS).toContain(pattern.level);
     }
   });
 
   it('uses only quiz prepositions as answers and alternates', () => {
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       expect(QUIZ_PREPOSITIONS).toContain(pattern.preposition);
       for (const alt of pattern.alt_prepositions ?? []) {
         expect(QUIZ_PREPOSITIONS).toContain(alt);
@@ -77,13 +125,13 @@ describe('verb preposition seed data', () => {
   });
 
   it('never lists the primary preposition among alt_prepositions', () => {
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       expect(pattern.alt_prepositions ?? []).not.toContain(pattern.preposition);
     }
   });
 
   it('has no empty or duplicated alt_prepositions', () => {
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       if (pattern.alt_prepositions === undefined) continue;
       expect(pattern.alt_prepositions.length).toBeGreaterThan(0);
       expect(new Set(pattern.alt_prepositions).size).toBe(
@@ -93,7 +141,7 @@ describe('verb preposition seed data', () => {
   });
 
   it('has a verb, translation and non-blank text on every pattern', () => {
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of ALL_PATTERNS) {
       expect(pattern.verb.trim()).not.toBe('');
       expect(pattern.translation.trim()).not.toBe('');
       expect(pattern.sentence.replace('____', '').trim()).not.toBe('');
@@ -104,7 +152,7 @@ describe('verb preposition seed data', () => {
   });
 
   it('has no duplicate (verb, reflexive, preposition, sentence)', () => {
-    const keys = verbPrepositionsV2.map(
+    const keys = ALL_PATTERNS.map(
       (p) =>
         `${p.verb}|${p.is_reflexive ? 1 : 0}|${p.preposition}|${p.sentence}`,
     );
@@ -115,15 +163,15 @@ describe('verb preposition seed data', () => {
     // Sibling patterns must be told apart by their sentence alone, so two
     // patterns of one verb may never share a sentence.
     const seen = new Map<string, string>();
-    for (const pattern of verbPrepositionsV2) {
-      const key = `${pattern.verb}|${pattern.is_reflexive ? 1 : 0}|${pattern.sentence}`;
+    for (const pattern of ALL_PATTERNS) {
+      const key = `${pattern.kind ?? 'verb'}|${pattern.verb}|${pattern.is_reflexive ? 1 : 0}|${pattern.sentence}`;
       expect(seen.has(key)).toBe(false);
       seen.set(key, pattern.preposition);
     }
   });
 
   it('covers every quiz preposition', () => {
-    const used = new Set(verbPrepositionsV2.map((p) => p.preposition));
+    const used = new Set(ALL_PATTERNS.map((p) => p.preposition));
     for (const preposition of QUIZ_PREPOSITIONS) {
       expect(used).toContain(preposition);
     }
@@ -170,12 +218,45 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
   it('inserts every pattern and records the data version', async () => {
     await seedVocabulary(opened.db as any);
 
-    expect(countRows()).toBe(verbPrepositionsV2.length);
+    expect(countRows()).toBe(ALL_PATTERNS.length);
     expect(
       opened.raw
         .prepare('SELECT 1 FROM data_versions WHERE version = ?')
-        .get('1.2.0_verb_prepositions_v3'),
+        .get('1.3.0_verb_prepositions_v4'),
     ).toBeTruthy();
+  });
+
+  it('stores verbs, adjectives and nouns under their own kind', async () => {
+    await seedVocabulary(opened.db as any);
+
+    const kindOf = (head: string) =>
+      (
+        opened.raw
+          .prepare('SELECT kind FROM verb_prepositions WHERE verb = ? LIMIT 1')
+          .get(head) as { kind: string }
+      ).kind;
+    expect(kindOf('warten')).toBe('verb');
+    expect(kindOf('stolz')).toBe('adjective');
+    expect(kindOf('Angst')).toBe('noun');
+    expect(
+      (
+        opened.raw
+          .prepare(
+            "SELECT COUNT(*) AS count FROM verb_prepositions WHERE kind = 'verb'",
+          )
+          .get() as { count: number }
+      ).count,
+    ).toBe(verbPrepositionsV2.length);
+  });
+
+  it('does not retire adjective and noun patterns when the verb list syncs', async () => {
+    await seedVocabulary(opened.db as any);
+    opened.raw.exec(
+      "DELETE FROM data_versions WHERE version = '1.3.0_verb_prepositions_v4'",
+    );
+    await seedVocabulary(opened.db as any);
+
+    expect(countRows()).toBe(ALL_PATTERNS.length);
   });
 
   it('stores alt_prepositions as JSON and null when absent', async () => {
@@ -204,11 +285,11 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
 
     // Force the version gate open so the INSERT OR IGNORE itself is exercised
     opened.raw.exec(
-      "DELETE FROM data_versions WHERE version = '1.2.0_verb_prepositions_v3'",
+      "DELETE FROM data_versions WHERE version = '1.3.0_verb_prepositions_v4'",
     );
     await seedVocabulary(opened.db as any);
 
-    expect(countRows()).toBe(verbPrepositionsV2.length);
+    expect(countRows()).toBe(ALL_PATTERNS.length);
     expect(
       opened.raw.prepare('SELECT id FROM verb_prepositions ORDER BY id').all(),
     ).toEqual(idsBefore);
@@ -259,7 +340,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
         ),
       ).toBe(0);
       expect(count('SELECT COUNT(*) AS count FROM review_history')).toBe(0);
-      expect(countRows()).toBe(verbPrepositionsV2.length);
+      expect(countRows()).toBe(ALL_PATTERNS.length);
     });
 
     it('keeps the id and progress of patterns that are still seeded', async () => {
@@ -298,7 +379,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
           )
           .get(keptId),
       ).toEqual({ total_reviews: 3 });
-      expect(countRows()).toBe(verbPrepositionsV2.length);
+      expect(countRows()).toBe(ALL_PATTERNS.length);
     });
   });
 });

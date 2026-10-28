@@ -11,7 +11,10 @@
 // of all its cards combined.
 
 import { getDatabase } from '@/database/db';
-import type { VerbPrepositionCase } from '@/types/database';
+import type {
+  PrepositionPatternKind,
+  VerbPrepositionCase,
+} from '@/types/database';
 import {
   formatCaseLabel,
   parsePrepositionList,
@@ -40,6 +43,7 @@ export function getMastery(
 /** One verb_prepositions row left-joined with its card_progress row. */
 export interface VerbPrepositionPatternRow {
   id: number;
+  kind: PrepositionPatternKind;
   verb: string;
   is_reflexive: number;
   preposition: string;
@@ -57,7 +61,9 @@ export interface VerbPrepositionBrowseItem {
   id: number;
   /** Unique within the whole list, even when a pattern shows under two prepositions. */
   key: string;
-  /** e.g. "sich freuen auf" */
+  /** Whether the head word is a verb, adjective or noun. */
+  kind: PrepositionPatternKind;
+  /** e.g. "sich freuen auf", "stolz auf", "Angst vor" */
   pattern: string;
   /** e.g. "+ Akk." */
   caseLabel: string;
@@ -99,8 +105,12 @@ function patternName(row: {
   return `${row.is_reflexive ? 'sich ' : ''}${row.verb} ${row.preposition}`;
 }
 
-function verbKey(row: { verb: string; is_reflexive: number }): string {
-  return `${row.is_reflexive}:${row.verb}`;
+function verbKey(row: {
+  kind: PrepositionPatternKind;
+  verb: string;
+  is_reflexive: number;
+}): string {
+  return `${row.kind}:${row.is_reflexive}:${row.verb}`;
 }
 
 /** Sections follow the quiz button grid; any other preposition comes after, alphabetically. */
@@ -211,6 +221,7 @@ export function groupPatternsByPreposition(
       const item: VerbPrepositionBrowseItem = {
         id: row.id,
         key: `${preposition}-${row.id}`,
+        kind: row.kind,
         pattern: isAlternate ? patternName({ ...row, preposition }) : ownName,
         caseLabel: formatCaseLabel(row.case_governed),
         translation: row.translation,
@@ -252,6 +263,7 @@ export class VerbPrepositionBrowseService {
     const rows = await this.db.getAllAsync<VerbPrepositionPatternRow>(
       `SELECT
          vp.id,
+         vp.kind,
          vp.verb,
          vp.is_reflexive,
          vp.preposition,
@@ -265,7 +277,7 @@ export class VerbPrepositionBrowseService {
        FROM verb_prepositions vp
        LEFT JOIN card_progress cp
          ON cp.word_type = 'verb_prep' AND cp.word_id = vp.id
-       ORDER BY vp.verb, vp.is_reflexive, vp.id`,
+       ORDER BY vp.kind, vp.verb, vp.is_reflexive, vp.id`,
     );
     return groupPatternsByPreposition(rows);
   }

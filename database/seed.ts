@@ -1,4 +1,4 @@
-import type { NounCorrection } from '@/types/database';
+import type { NounCorrection, SeedVerbPreposition } from '@/types/database';
 import type * as SQLite from 'expo-sqlite';
 import { generateCategoryRemoteId, generateNounRemoteId } from './remote-id';
 import { adjectivesV1 } from './seeds/adjectives/v1-initial';
@@ -7,6 +7,7 @@ import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
 import { verbPrepositionCompoundsV1 } from './seeds/verb-prepositions/v2-compounds';
+import { adjectiveNounPrepositionsV2 } from './seeds/verb-prepositions/v2-adjectives-nouns';
 import { verbPrepositionsV2 } from './seeds/verb-prepositions/v2-core';
 import { verbsV1 } from './seeds/verbs/v1-initial';
 
@@ -57,7 +58,9 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // Independent of nouns/verbs — each pattern carries its own verb string.
   // The curated A1-B1 list replaces the earlier, broader v1 seed. Bump the
   // version whenever the list changes: seeding syncs the table to the list.
-  await seedVerbPrepositions(db, '1.2.0_verb_prepositions_v3');
+  // Verb patterns plus the adjective and noun patterns (#152, `kind`) form one
+  // list, so the retire step below never mistakes the latter for stale rows.
+  await seedVerbPrepositions(db, '1.3.0_verb_prepositions_v4');
 
   // da(r)-/wo(r)- questions for those patterns (#151). Must run after the
   // patterns they attach to. Re-versioned because retiring patterns above
@@ -89,6 +92,12 @@ function verbPrepositionKey(pattern: {
  * Changing a sentence therefore retires its old card and creates a new one;
  * to keep progress, add the corrected sentence under a new seed version.
  */
+/** Every pattern the verb_prepositions table should contain, across all kinds. */
+const allPrepositionPatterns: SeedVerbPreposition[] = [
+  ...verbPrepositionsV2,
+  ...adjectiveNounPrepositionsV2,
+];
+
 async function seedVerbPrepositions(
   db: SQLite.SQLiteDatabase,
   version: string,
@@ -107,7 +116,7 @@ async function seedVerbPrepositions(
   let retired = 0;
 
   await db.withTransactionAsync(async () => {
-    const seededKeys = new Set(verbPrepositionsV2.map(verbPrepositionKey));
+    const seededKeys = new Set(allPrepositionPatterns.map(verbPrepositionKey));
     const storedPatterns = await db.getAllAsync<{
       id: number;
       verb: string;
@@ -150,12 +159,13 @@ async function seedVerbPrepositions(
       retired += 1;
     }
 
-    for (const pattern of verbPrepositionsV2) {
+    for (const pattern of allPrepositionPatterns) {
       await db.runAsync(
         `INSERT OR IGNORE INTO verb_prepositions
-           (verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, english_trap, level)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (kind, verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, english_trap, level)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
+          pattern.kind ?? 'verb',
           pattern.verb,
           pattern.is_reflexive ? 1 : 0,
           pattern.preposition,
@@ -177,7 +187,7 @@ async function seedVerbPrepositions(
   });
 
   console.log(
-    `[DB] Seeded ${verbPrepositionsV2.length} verb prepositions (${version}), retired ${retired}`,
+    `[DB] Seeded ${allPrepositionPatterns.length} verb prepositions (${version}), retired ${retired}`,
   );
 }
 
@@ -208,7 +218,7 @@ async function seedVerbPrepositionCompounds(
     for (const entry of verbPrepositionCompoundsV1) {
       const pattern = await db.getFirstAsync<{ id: number }>(
         `SELECT id FROM verb_prepositions
-         WHERE verb = ? AND is_reflexive = ? AND preposition = ?`,
+         WHERE kind = 'verb' AND verb = ? AND is_reflexive = ? AND preposition = ?`,
         [entry.verb, entry.is_reflexive ? 1 : 0, entry.preposition],
       );
 

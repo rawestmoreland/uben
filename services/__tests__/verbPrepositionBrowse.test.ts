@@ -12,6 +12,7 @@
 
 import { runMigrations } from '@/database/migrations';
 import { seedVocabulary } from '@/database/seed';
+import { adjectiveNounPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-adjectives-nouns';
 import { verbPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-core';
 import { describeWithSqlite, openTestDatabase } from '@/test-utils/sqlite';
 import {
@@ -30,6 +31,7 @@ function row(
 ): VerbPrepositionPatternRow {
   return {
     id: 1,
+    kind: 'verb',
     verb: 'warten',
     is_reflexive: 0,
     preposition: 'auf',
@@ -152,6 +154,24 @@ describe('groupPatternsByPreposition', () => {
     for (const item of sections.flatMap((section) => section.data)) {
       expect(item.contrastPatterns).toEqual([]);
     }
+  });
+
+  it('keeps adjective, noun and verb patterns of the same head word apart', () => {
+    const { sections } = groupPatternsByPreposition([
+      row({ id: 1, kind: 'noun', verb: 'Angst', preposition: 'vor' }),
+      row({ id: 2, kind: 'noun', verb: 'Angst', preposition: 'um' }),
+      row({ id: 3, kind: 'verb', verb: 'Angst', preposition: 'vor' }),
+    ]);
+    const byId = new Map(
+      sections
+        .flatMap((section) => section.data)
+        .map((item) => [item.id, item]),
+    );
+    // Only the two noun patterns contrast; the verb row shares just the string
+    expect(byId.get(1)?.contrastPatterns).toEqual(['Angst um']);
+    expect(byId.get(2)?.contrastPatterns).toEqual(['Angst vor']);
+    expect(byId.get(3)?.contrastPatterns).toEqual([]);
+    expect(byId.get(1)?.kind).toBe('noun');
   });
 
   it('also lists a synonym pattern under its accepted alternate', () => {
@@ -282,8 +302,9 @@ describeWithSqlite('verbPrepositionBrowseService against real SQLite', () => {
     );
     // Each pattern is listed once, whatever its number of example sentences
     const patternCount = new Set(
-      verbPrepositionsV2.map(
-        (p) => `${p.verb}|${p.is_reflexive ? 1 : 0}|${p.preposition}`,
+      [...verbPrepositionsV2, ...adjectiveNounPrepositionsV2].map(
+        (p) =>
+          `${p.kind ?? 'verb'}|${p.verb}|${p.is_reflexive ? 1 : 0}|${p.preposition}`,
       ),
     ).size;
     expect(data.patternCount).toBe(patternCount);
