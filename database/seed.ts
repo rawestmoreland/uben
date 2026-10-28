@@ -1,4 +1,4 @@
-import type { NounCorrection } from '@/types/database';
+import type { NounCorrection, SeedVerbPreposition } from '@/types/database';
 import type * as SQLite from 'expo-sqlite';
 import { generateCategoryRemoteId, generateNounRemoteId } from './remote-id';
 import { adjectivesV1 } from './seeds/adjectives/v1-initial';
@@ -7,6 +7,7 @@ import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
 import { verbPrepositionsV1 } from './seeds/verb-prepositions/v1-initial';
+import { adjectiveNounPrepositionsV2 } from './seeds/verb-prepositions/v2-adjectives-nouns';
 import { verbsV1 } from './seeds/verbs/v1-initial';
 
 /**
@@ -54,11 +55,24 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Seed verb + preposition patterns for the verb preposition quiz (#144).
   // Independent of nouns/verbs — each pattern carries its own verb string.
-  await seedVerbPrepositions(db, '1.0.0_verb_prepositions_v1');
+  await seedVerbPrepositions(
+    db,
+    verbPrepositionsV1,
+    '1.0.0_verb_prepositions_v1',
+  );
+
+  // Adjective + preposition and noun + preposition patterns (#152), stored in
+  // the same table with kind 'adjective' / 'noun'.
+  await seedVerbPrepositions(
+    db,
+    adjectiveNounPrepositionsV2,
+    '1.1.0_adjective_noun_prepositions_v2',
+  );
 }
 
 /**
- * Seed the verb_prepositions table from the versioned seed list.
+ * Seed the verb_prepositions table from a versioned seed list (verb patterns,
+ * or adjective/noun patterns via `kind`).
  * Uses INSERT OR IGNORE against UNIQUE(verb, is_reflexive, preposition,
  * sentence), so re-running never duplicates a pattern or changes its row ID
  * (which would orphan its card_progress). Corrections to existing sentences
@@ -66,6 +80,7 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
  */
 async function seedVerbPrepositions(
   db: SQLite.SQLiteDatabase,
+  patterns: SeedVerbPreposition[],
   version: string,
 ): Promise<void> {
   const exists = await db.getFirstAsync<{ '1': number }>(
@@ -80,12 +95,13 @@ async function seedVerbPrepositions(
   console.log(`[DB] Seeding verb prepositions (${version})...`);
 
   await db.withTransactionAsync(async () => {
-    for (const pattern of verbPrepositionsV1) {
+    for (const pattern of patterns) {
       await db.runAsync(
         `INSERT OR IGNORE INTO verb_prepositions
-           (verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, english_trap, level)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (kind, verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, english_trap, level)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
+          pattern.kind ?? 'verb',
           pattern.verb,
           pattern.is_reflexive ? 1 : 0,
           pattern.preposition,
@@ -106,9 +122,7 @@ async function seedVerbPrepositions(
     ]);
   });
 
-  console.log(
-    `[DB] Seeded ${verbPrepositionsV1.length} verb prepositions (${version})`,
-  );
+  console.log(`[DB] Seeded ${patterns.length} verb prepositions (${version})`);
 }
 
 /**

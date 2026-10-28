@@ -96,7 +96,7 @@ describe('runMigrations()', () => {
   });
 
   it('applies only unapplied migrations in a partial state', async () => {
-    // Migration 001 already applied; 002–011 not yet applied
+    // Migration 001 already applied; 002–012 not yet applied
     mockDb.getFirstAsync
       .mockResolvedValueOnce({ '1': 1 }) // 001 → applied
       .mockResolvedValueOnce(null) // 002 → unapplied
@@ -108,7 +108,8 @@ describe('runMigrations()', () => {
       .mockResolvedValueOnce(null) // 008 → unapplied
       .mockResolvedValueOnce(null) // 009 → unapplied
       .mockResolvedValueOnce(null) // 010 → unapplied
-      .mockResolvedValueOnce(null); // 011 → unapplied
+      .mockResolvedValueOnce(null) // 011 → unapplied
+      .mockResolvedValueOnce(null); // 012 → unapplied
 
     await runMigrations(mockDb as any);
 
@@ -117,7 +118,7 @@ describe('runMigrations()', () => {
         sql === 'INSERT INTO migrations (version) VALUES (?)',
     );
 
-    expect(insertCalls).toHaveLength(10);
+    expect(insertCalls).toHaveLength(11);
     expect(insertCalls[0][1]).toEqual(['002']);
     expect(insertCalls[1][1]).toEqual(['003']);
     expect(insertCalls[2][1]).toEqual(['004']);
@@ -128,6 +129,7 @@ describe('runMigrations()', () => {
     expect(insertCalls[7][1]).toEqual(['009']);
     expect(insertCalls[8][1]).toEqual(['010']);
     expect(insertCalls[9][1]).toEqual(['011']);
+    expect(insertCalls[10][1]).toEqual(['012']);
   });
 
   it('calls each migration up() with the db object', async () => {
@@ -330,9 +332,9 @@ describeWithSqlite('migrations against real SQLite', () => {
       'CREATE TABLE migrations (version TEXT PRIMARY KEY, applied_at DATETIME DEFAULT CURRENT_TIMESTAMP)',
     );
     for (const migration of migrations.filter((m) => m.version <= version)) {
-      raw.prepare('INSERT INTO migrations (version) VALUES (?)').run(
-        migration.version,
-      );
+      raw
+        .prepare('INSERT INTO migrations (version) VALUES (?)')
+        .run(migration.version);
     }
   }
 
@@ -400,9 +402,9 @@ describeWithSqlite('migrations against real SQLite', () => {
     expect(
       raw.prepare('SELECT version FROM migrations ORDER BY version').all(),
     ).toHaveLength(migrations.length);
-    expect(raw.prepare('SELECT * FROM card_progress ORDER BY id').all()).toEqual(
-      progressBefore,
-    );
+    expect(
+      raw.prepare('SELECT * FROM card_progress ORDER BY id').all(),
+    ).toEqual(progressBefore);
     expect(count('SELECT COUNT(*) AS count FROM review_history')).toBe(3);
     expect(raw.prepare('PRAGMA foreign_keys').get()).toEqual({
       foreign_keys: 1,
@@ -459,9 +461,17 @@ describeWithSqlite('migrations against real SQLite', () => {
     verb: string,
     preposition: string,
     sentence: string,
-    options: { reflexive?: boolean; caseGoverned?: string; remoteId?: string | null } = {},
+    options: {
+      reflexive?: boolean;
+      caseGoverned?: string;
+      remoteId?: string | null;
+    } = {},
   ): number {
-    const { reflexive = false, caseGoverned = 'akk', remoteId = null } = options;
+    const {
+      reflexive = false,
+      caseGoverned = 'akk',
+      remoteId = null,
+    } = options;
     return Number(
       raw
         .prepare(
@@ -482,18 +492,28 @@ describeWithSqlite('migrations against real SQLite', () => {
   it('stores several patterns for one verb but rejects duplicates', async () => {
     await runMigrations(db as any);
 
-    insertPattern('freuen', 'auf', 'Ich freue mich schon ____ das Wochenende.', {
-      reflexive: true,
-    });
+    insertPattern(
+      'freuen',
+      'auf',
+      'Ich freue mich schon ____ das Wochenende.',
+      {
+        reflexive: true,
+      },
+    );
     insertPattern('freuen', 'über', 'Ich freue mich ____ das Geschenk.', {
       reflexive: true,
     });
 
     expect(count('SELECT COUNT(*) AS count FROM verb_prepositions')).toBe(2);
     expect(() =>
-      insertPattern('freuen', 'auf', 'Ich freue mich schon ____ das Wochenende.', {
-        reflexive: true,
-      }),
+      insertPattern(
+        'freuen',
+        'auf',
+        'Ich freue mich schon ____ das Wochenende.',
+        {
+          reflexive: true,
+        },
+      ),
     ).toThrow(/UNIQUE/);
     expect(() =>
       insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.', {
@@ -507,17 +527,25 @@ describeWithSqlite('migrations against real SQLite', () => {
 
     insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
     insertPattern('denken', 'an', 'Ich denke ____ dich.');
-    insertPattern('glauben', 'an', 'Ich glaube ____ dich.', { remoteId: 'abc' });
+    insertPattern('glauben', 'an', 'Ich glaube ____ dich.', {
+      remoteId: 'abc',
+    });
 
     expect(() =>
-      insertPattern('hoffen', 'auf', 'Ich hoffe ____ Regen.', { remoteId: 'abc' }),
+      insertPattern('hoffen', 'auf', 'Ich hoffe ____ Regen.', {
+        remoteId: 'abc',
+      }),
     ).toThrow(/UNIQUE/);
   });
 
   it('allows one verb_prep card per pattern, independent of other card types', async () => {
     await runMigrations(db as any);
 
-    const pattern = insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
+    const pattern = insertPattern(
+      'warten',
+      'auf',
+      'Ich warte ____ meine Frau.',
+    );
     insertCard('verb', pattern);
     insertCard('verb_prep', pattern);
 
@@ -547,9 +575,9 @@ describeWithSqlite('migrations against real SQLite', () => {
     expect(
       raw.prepare('SELECT version FROM migrations ORDER BY version').all(),
     ).toHaveLength(migrations.length);
-    expect(raw.prepare('SELECT * FROM card_progress ORDER BY id').all()).toEqual(
-      progressBefore,
-    );
+    expect(
+      raw.prepare('SELECT * FROM card_progress ORDER BY id').all(),
+    ).toEqual(progressBefore);
     expect(count('SELECT COUNT(*) AS count FROM review_history')).toBe(2);
     expect(raw.prepare('PRAGMA foreign_keys').get()).toEqual({
       foreign_keys: 1,
@@ -563,7 +591,11 @@ describeWithSqlite('migrations against real SQLite', () => {
 
     const kindId = insertNoun('Kind', 'das', 'Kinder');
     const pluralCard = insertCard('noun_plural', kindId);
-    const pattern = insertPattern('warten', 'auf', 'Ich warte ____ meine Frau.');
+    const pattern = insertPattern(
+      'warten',
+      'auf',
+      'Ich warte ____ meine Frau.',
+    );
     const patternCard = insertCard('verb_prep', pattern);
     for (const cardId of [pluralCard, patternCard]) {
       raw
@@ -590,5 +622,116 @@ describeWithSqlite('migrations against real SQLite', () => {
         .all(),
     ).toEqual([]);
     expect(raw.prepare('PRAGMA foreign_key_check').all()).toEqual([]);
+  });
+
+  // ── Migration 012 ──────────────────────────────────────────────────────────
+
+  const migration012 = migrations.find((m) => m.version === '012')!;
+
+  function insertKindPattern(
+    kind: string,
+    head: string,
+    preposition: string,
+    sentence: string,
+  ): number {
+    return Number(
+      raw
+        .prepare(
+          'INSERT INTO verb_prepositions (kind, verb, preposition, case_governed, sentence, translation) VALUES (?, ?, ?, ?, ?, ?)',
+        )
+        .run(kind, head, preposition, 'akk', sentence, 'translation')
+        .lastInsertRowid,
+    );
+  }
+
+  it('defaults existing patterns to kind verb when upgrading from 011', async () => {
+    await migrateTo('011');
+    const pattern = insertPattern(
+      'warten',
+      'auf',
+      'Ich warte ____ meine Frau.',
+    );
+    const card = insertCard('verb_prep', pattern, 6);
+
+    await runMigrations(db as any);
+
+    expect(raw.prepare('SELECT id, kind FROM verb_prepositions').all()).toEqual(
+      [{ id: pattern, kind: 'verb' }],
+    );
+    expect(
+      raw.prepare('SELECT id, word_id, interval FROM card_progress').all(),
+    ).toEqual([{ id: card, word_id: pattern, interval: 6 }]);
+  });
+
+  it('accepts verb, adjective and noun kinds and rejects anything else', async () => {
+    await runMigrations(db as any);
+
+    insertKindPattern('verb', 'warten', 'auf', 'Ich warte ____ meine Frau.');
+    insertKindPattern('adjective', 'stolz', 'auf', 'Ich bin ____ dich stolz.');
+    insertKindPattern('noun', 'Angst', 'vor', 'Ich habe Angst ____ dem Hund.');
+
+    expect(count('SELECT COUNT(*) AS count FROM verb_prepositions')).toBe(3);
+    expect(() =>
+      insertKindPattern('adverb', 'gern', 'auf', 'Ich mag ____ gern.'),
+    ).toThrow(/CHECK/);
+  });
+
+  it('gives adjective and noun patterns their own verb_prep cards', async () => {
+    await runMigrations(db as any);
+
+    const adjective = insertKindPattern(
+      'adjective',
+      'stolz',
+      'auf',
+      'Ich bin ____ dich stolz.',
+    );
+    insertCard('verb_prep', adjective);
+
+    expect(() => insertCard('verb_prep', adjective)).toThrow(/UNIQUE/);
+  });
+
+  it('down() removes adjective and noun patterns with their cards and history but keeps verbs', async () => {
+    await runMigrations(db as any);
+
+    const verb = insertKindPattern(
+      'verb',
+      'warten',
+      'auf',
+      'Ich warte ____ meine Frau.',
+    );
+    const adjective = insertKindPattern(
+      'adjective',
+      'stolz',
+      'auf',
+      'Ich bin ____ dich stolz.',
+    );
+    const verbCard = insertCard('verb_prep', verb);
+    const adjectiveCard = insertCard('verb_prep', adjective);
+    for (const cardId of [verbCard, adjectiveCard]) {
+      raw
+        .prepare(
+          'INSERT INTO review_history (card_progress_id, quality) VALUES (?, 4)',
+        )
+        .run(cardId);
+    }
+
+    await migration012.down!(db as any);
+
+    expect(raw.prepare('SELECT id FROM verb_prepositions').all()).toEqual([
+      { id: verb },
+    ]);
+    expect(raw.prepare('SELECT id FROM card_progress').all()).toEqual([
+      { id: verbCard },
+    ]);
+    expect(
+      raw.prepare('SELECT card_progress_id FROM review_history').all(),
+    ).toEqual([{ card_progress_id: verbCard }]);
+    expect(
+      raw
+        .prepare(
+          "SELECT name FROM pragma_table_info('verb_prepositions') WHERE name = 'kind'",
+        )
+        .all(),
+    ).toEqual([]);
   });
 });

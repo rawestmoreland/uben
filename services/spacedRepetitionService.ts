@@ -113,6 +113,7 @@ const VERB_PREP_CANDIDATE_OVERFETCH = 2;
  * patterns (same verb and reflexivity) as a JSON array for distractors.
  */
 const VERB_PREP_COLUMNS = `
+  vp.kind,
   vp.verb,
   vp.is_reflexive,
   vp.preposition,
@@ -124,7 +125,8 @@ const VERB_PREP_COLUMNS = `
   vp.remote_id,
   (SELECT json_group_array(DISTINCT sibling.preposition)
      FROM verb_prepositions sibling
-     WHERE sibling.verb = vp.verb
+     WHERE sibling.kind = vp.kind
+       AND sibling.verb = vp.verb
        AND sibling.is_reflexive = vp.is_reflexive
        AND sibling.id != vp.id) AS sibling_prepositions`;
 

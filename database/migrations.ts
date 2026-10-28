@@ -791,6 +791,50 @@ export const migrations: Migration[] = [
       await db.execAsync('DROP TABLE IF EXISTS verb_prepositions;');
     },
   },
+  {
+    version: '012',
+    name: 'add_preposition_pattern_kind',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log(
+        '[Migration 012] Adding verb_prepositions.kind (verb | adjective | noun)...',
+      );
+
+      // Adjective + preposition (stolz auf) and noun + preposition (Angst vor)
+      // reuse the verb pattern model (#152). The head word stays in the
+      // `verb` column and `kind` says what it is; existing rows are verbs.
+      // Progress keeps word_type 'verb_prep' (word_id = verb_prepositions.id),
+      // so card_progress needs no rebuild and no existing card is touched.
+      await db.execAsync(`
+        ALTER TABLE verb_prepositions
+          ADD COLUMN kind TEXT NOT NULL DEFAULT 'verb'
+          CHECK(kind IN ('verb', 'adjective', 'noun'));
+      `);
+      await db.execAsync(
+        'CREATE INDEX IF NOT EXISTS idx_verb_prepositions_kind ON verb_prepositions(kind);',
+      );
+
+      console.log('[Migration 012] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      // Remove adjective/noun patterns (and their cards and history) before
+      // dropping the column that tells them apart from verbs
+      await db.execAsync(`
+        DELETE FROM review_history WHERE card_progress_id IN (
+          SELECT cp.id FROM card_progress cp
+          JOIN verb_prepositions vp ON cp.word_type = 'verb_prep' AND cp.word_id = vp.id
+          WHERE vp.kind != 'verb'
+        );
+      `);
+      await db.execAsync(`
+        DELETE FROM card_progress WHERE word_type = 'verb_prep' AND word_id IN (
+          SELECT id FROM verb_prepositions WHERE kind != 'verb'
+        );
+      `);
+      await db.execAsync("DELETE FROM verb_prepositions WHERE kind != 'verb';");
+      await db.execAsync('DROP INDEX IF EXISTS idx_verb_prepositions_kind;');
+      await db.execAsync('ALTER TABLE verb_prepositions DROP COLUMN kind;');
+    },
+  },
 ];
 
 /**

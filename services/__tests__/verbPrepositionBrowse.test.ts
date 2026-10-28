@@ -13,6 +13,7 @@
 import { runMigrations } from '@/database/migrations';
 import { seedVocabulary } from '@/database/seed';
 import { verbPrepositionsV1 } from '@/database/seeds/verb-prepositions/v1-initial';
+import { adjectiveNounPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-adjectives-nouns';
 import { describeWithSqlite, openTestDatabase } from '@/test-utils/sqlite';
 import {
   getMastery,
@@ -30,6 +31,7 @@ function row(
 ): VerbPrepositionPatternRow {
   return {
     id: 1,
+    kind: 'verb',
     verb: 'warten',
     is_reflexive: 0,
     preposition: 'auf',
@@ -154,6 +156,24 @@ describe('groupPatternsByPreposition', () => {
     }
   });
 
+  it('keeps adjective, noun and verb patterns of the same head word apart', () => {
+    const { sections } = groupPatternsByPreposition([
+      row({ id: 1, kind: 'noun', verb: 'Angst', preposition: 'vor' }),
+      row({ id: 2, kind: 'noun', verb: 'Angst', preposition: 'um' }),
+      row({ id: 3, kind: 'verb', verb: 'Angst', preposition: 'vor' }),
+    ]);
+    const byId = new Map(
+      sections
+        .flatMap((section) => section.data)
+        .map((item) => [item.id, item]),
+    );
+    // Only the two noun patterns contrast; the verb row shares just the string
+    expect(byId.get(1)?.contrastPatterns).toEqual(['Angst um']);
+    expect(byId.get(2)?.contrastPatterns).toEqual(['Angst vor']);
+    expect(byId.get(3)?.contrastPatterns).toEqual([]);
+    expect(byId.get(1)?.kind).toBe('noun');
+  });
+
   it('also lists a synonym pattern under its accepted alternate', () => {
     const { sections, patternCount } = groupPatternsByPreposition([
       row({
@@ -221,6 +241,11 @@ describe('groupPatternsByPreposition', () => {
   });
 });
 
+const ALL_SEEDED_PATTERNS = [
+  ...verbPrepositionsV1,
+  ...adjectiveNounPrepositionsV2,
+];
+
 describeWithSqlite('verbPrepositionBrowseService against real SQLite', () => {
   async function openSeededDb() {
     const { raw, db } = openTestDatabase();
@@ -238,8 +263,8 @@ describeWithSqlite('verbPrepositionBrowseService against real SQLite', () => {
     const ids = new Set(
       data.sections.flatMap((section) => section.data.map((item) => item.id)),
     );
-    expect(data.patternCount).toBe(verbPrepositionsV1.length);
-    expect(ids.size).toBe(verbPrepositionsV1.length);
+    expect(data.patternCount).toBe(ALL_SEEDED_PATTERNS.length);
+    expect(ids.size).toBe(ALL_SEEDED_PATTERNS.length);
     expect(data.startedCount).toBe(0);
     expect(
       data.sections.every((section) =>
