@@ -20,6 +20,8 @@ export function useSettings() {
   const [appLanguage, setAppLanguageState] = useState<AppLanguage>('en');
   const [adjectiveDeclensionDifficulty, setAdjectiveDeclensionDifficultyState] =
     useState<'standard' | 'advanced'>('standard');
+  const [verbPrepositionCaseStep, setVerbPrepositionCaseStepState] =
+    useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [syncingLanguage, setSyncingLanguage] = useState<AppLanguage | null>(
     null,
@@ -33,20 +35,25 @@ export function useSettings() {
 
     (async () => {
       try {
-        const [englishHint, eszett, language, adjectiveDifficulty] =
-          await Promise.all([
-            settingsService.getShowEnglishHint(),
-            settingsService.getEszettPreference(),
-            settingsService.getAppLanguage(
-              resolveAppLanguage(i18n.language),
-            ),
-            settingsService.getAdjectiveDeclensionDifficulty(),
-          ]);
+        const [
+          englishHint,
+          eszett,
+          language,
+          adjectiveDifficulty,
+          caseStep,
+        ] = await Promise.all([
+          settingsService.getShowEnglishHint(),
+          settingsService.getEszettPreference(),
+          settingsService.getAppLanguage(resolveAppLanguage(i18n.language)),
+          settingsService.getAdjectiveDeclensionDifficulty(),
+          settingsService.getVerbPrepositionCaseStep(),
+        ]);
         if (!cancelled) {
           setShowEnglishHintState(englishHint);
           setEszettPreferenceState(eszett);
           setAppLanguageState(language);
           setAdjectiveDeclensionDifficultyState(adjectiveDifficulty);
+          setVerbPrepositionCaseStepState(caseStep);
         }
       } catch (error) {
         console.error('[Settings] Failed to load settings:', error);
@@ -136,6 +143,17 @@ export function useSettings() {
     [adjectiveDeclensionDifficulty],
   );
 
+  const setVerbPrepositionCaseStep = useCallback(async (enabled: boolean) => {
+    setVerbPrepositionCaseStepState(enabled);
+    try {
+      await settingsService.setVerbPrepositionCaseStep(enabled);
+    } catch (error) {
+      console.error('[Settings] Failed to save case step setting:', error);
+      // Revert optimistic update on failure
+      setVerbPrepositionCaseStepState(!enabled);
+    }
+  }, []);
+
   return {
     showEnglishHint,
     setShowEnglishHint,
@@ -147,6 +165,8 @@ export function useSettings() {
     translationSyncFailed,
     adjectiveDeclensionDifficulty,
     setAdjectiveDeclensionDifficulty,
+    verbPrepositionCaseStep,
+    setVerbPrepositionCaseStep,
     isLoading,
   };
 }

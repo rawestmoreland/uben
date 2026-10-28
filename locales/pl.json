@@ -77,6 +77,8 @@
       "translations_download_failed": "Nie udało się pobrać tłumaczeń. Podpowiedzi będą po angielsku, dopóki nie wrócisz online.",
       "adjective_difficulty_advanced": "Zaawansowane końcówki",
       "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników.",
+      "verb_preposition_case_step": "Sprawdzaj przypadek po przyimkach dwuprzypadkowych",
+      "verb_preposition_case_step_description": "Po poprawnym an, auf, in, über lub vor w quizie przyimków wybierz też Akkusativ lub Dativ.",
       "reminders_title": "Przypomnienia",
       "reminders_enable": "Przypomnienia o nauce",
       "reminders_enable_description": "Powiadomienie, gdy są słówka do powtórki. Najwyżej jedno dziennie i tylko gdy jest co powtarzać.",
@@ -210,6 +212,47 @@
       "check_button": "Sprawdź",
       "continue": "Dalej"
     },
+    "verb_preposition_quiz": {
+      "badge": "Czasownik + przyimek",
+      "prompt": "Jaki przyimek?",
+      "blank_a11y": "luka",
+      "question_a11y": "{{sentence}}. Jaki przyimek pasuje do luki?",
+      "all_caught_up": "Wszystko gotowe",
+      "no_cards_due": "Brak połączeń czasowników do powtórki.\n\nWróć później!",
+      "correct": "Dobrze",
+      "incorrect": "Nie do końca",
+      "you_picked": "Wybrano {{preposition}}",
+      "also_accepted": "Dopuszczalne także: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Dalej",
+      "case_prompt": "Jaki przypadek rządzi?",
+      "case_you_picked": "Wybrano {{picked}} (rządzi: {{correct}})"
+    },
+    "verb_preposition_compound_quiz": {
+      "badge": "Słowa da- / wo-",
+      "prompt_da": "Które słowo z da-?",
+      "prompt_wo": "Które słowo z wo-?",
+      "question_a11y": "{{sentence}}. Które słowo pasuje do luki?",
+      "person_rule": "Przy osobach użyj przyimka + zaimka, a nie {{compound}}: {{example}}"
+    },
+    "verb_preposition_patterns": {
+      "title": "Wzorce według przyimka",
+      "open": "Wzorce",
+      "open_a11y": "Przeglądaj wzorce pogrupowane według przyimka",
+      "close": "Zamknij wzorce",
+      "summary": "Przećwiczono {{started}} z {{total}} wzorców",
+      "summary_empty": "Wzorców: {{total}}. Rozpocznij quiz, aby śledzić postępy.",
+      "empty_title": "Brak wzorców",
+      "empty": "Na tym urządzeniu nie ma jeszcze wzorców czasowników. Wróć po następnej aktualizacji słownictwa.",
+      "error": "Nie udało się wczytać wzorców.",
+      "also_with": "Akceptowane także dla: {{preposition}}",
+      "contrast": "Porównaj: {{patterns}}",
+      "mastery": {
+        "new": "Nowy",
+        "learning": "W nauce",
+        "mastered": "Opanowany"
+      }
+    },
     "plural_quiz": {
       "badge": "Liczba mnoga",
       "prompt": "Jaka końcówka liczby mnogiej?",
@@ -292,6 +335,14 @@
         "verbs": {
           "title": "Czasowniki",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Przyimki",
+          "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

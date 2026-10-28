@@ -139,6 +139,27 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="verb-preposition-quiz"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="verb-preposition-compound-quiz"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="verb-preposition-patterns"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
             name="paywall"
             options={{
               presentation: 'modal',

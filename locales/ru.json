@@ -77,6 +77,8 @@
       "translations_download_failed": "Не удалось загрузить переводы. Подсказки будут на английском, пока вы не подключитесь к сети.",
       "adjective_difficulty_advanced": "Расширенные окончания прилагательных",
       "adjective_difficulty_advanced_description": "Добавить дательный падеж (косвенное дополнение) в тренировку окончаний прилагательных.",
+      "verb_preposition_case_step": "Проверять падеж у двойных предлогов",
+      "verb_preposition_case_step_description": "После верного an, auf, in, über или vor в тесте предлогов выберите ещё Akkusativ или Dativ.",
       "reminders_title": "Напоминания",
       "reminders_enable": "Напоминания о занятиях",
       "reminders_enable_description": "Уведомление, когда есть слова для повторения. Не чаще одного в день и только если есть что повторять.",
@@ -210,6 +212,47 @@
       "check_button": "Проверить",
       "continue": "Продолжить"
     },
+    "verb_preposition_quiz": {
+      "badge": "Глагол + предлог",
+      "prompt": "Какой предлог?",
+      "blank_a11y": "пропуск",
+      "question_a11y": "{{sentence}}. Какой предлог подходит к пропуску?",
+      "all_caught_up": "Всё повторено",
+      "no_cards_due": "Сейчас нет глагольных конструкций для повторения.\n\nВозвращайтесь позже!",
+      "correct": "Верно",
+      "incorrect": "Не совсем",
+      "you_picked": "Вы выбрали {{preposition}}",
+      "also_accepted": "Также допустимо: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Далее",
+      "case_prompt": "Какой падеж она требует?",
+      "case_you_picked": "Вы выбрали {{picked}} (требуется {{correct}})"
+    },
+    "verb_preposition_compound_quiz": {
+      "badge": "Слова da- / wo-",
+      "prompt_da": "Какое слово с da-?",
+      "prompt_wo": "Какое слово с wo-?",
+      "question_a11y": "{{sentence}}. Какое слово подходит к пропуску?",
+      "person_rule": "Для людей используйте предлог + местоимение, а не {{compound}}: {{example}}"
+    },
+    "verb_preposition_patterns": {
+      "title": "Модели по предлогам",
+      "open": "Модели",
+      "open_a11y": "Просмотр моделей, сгруппированных по предлогам",
+      "close": "Закрыть модели",
+      "summary": "Отработано моделей: {{started}} из {{total}}",
+      "summary_empty": "Моделей: {{total}}. Начните викторину, чтобы отслеживать прогресс.",
+      "empty_title": "Моделей пока нет",
+      "empty": "На этом устройстве пока нет моделей глаголов. Загляните после следующего обновления словаря.",
+      "error": "Не удалось загрузить модели.",
+      "also_with": "Также допустимо для: {{preposition}}",
+      "contrast": "Сравните: {{patterns}}",
+      "mastery": {
+        "new": "Новое",
+        "learning": "Изучается",
+        "mastered": "Усвоено"
+      }
+    },
     "plural_quiz": {
       "badge": "Окончания множественного числа",
       "prompt": "Какое окончание множественного числа?",
@@ -292,6 +335,14 @@
         "verbs": {
           "title": "Глаголы",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Предлоги",
+          "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

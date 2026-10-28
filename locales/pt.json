@@ -73,6 +73,8 @@
       "translations_download_failed": "Não foi possível transferir as traduções. As dicas serão apresentadas em inglês até voltar a estar online.",
       "adjective_difficulty_advanced": "Terminações de adjetivos avançadas",
       "adjective_difficulty_advanced_description": "Inclui também o dativo (complemento indireto) na prática de terminações de adjetivos.",
+      "verb_preposition_case_step": "Testar o caso nas preposições mistas",
+      "verb_preposition_case_step_description": "Depois de acertar an, auf, in, über ou vor no quiz de preposições, escolha também Akkusativ ou Dativ.",
       "reminders_title": "Lembretes",
       "reminders_enable": "Lembretes de prática",
       "reminders_enable_description": "Um aviso quando há palavras para rever. No máximo um por dia, e só quando houver algo para rever.",
@@ -205,6 +207,47 @@
       "check_button": "Verificar",
       "continue": "Continuar"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verbo + Preposição",
+      "prompt": "Qual preposição?",
+      "blank_a11y": "lacuna",
+      "question_a11y": "{{sentence}}. Qual preposição completa a lacuna?",
+      "all_caught_up": "Tudo em dia",
+      "no_cards_due": "Nenhuma construção verbal para revisar agora.\n\nVolte mais tarde!",
+      "correct": "Correto",
+      "incorrect": "Quase",
+      "you_picked": "Você escolheu {{preposition}}",
+      "also_accepted": "Também aceito: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continuar",
+      "case_prompt": "Qual caso ela rege?",
+      "case_you_picked": "Você escolheu {{picked}} (rege {{correct}})"
+    },
+    "verb_preposition_compound_quiz": {
+      "badge": "Palavras com da- / wo-",
+      "prompt_da": "Qual palavra com da-?",
+      "prompt_wo": "Qual palavra com wo-?",
+      "question_a11y": "{{sentence}}. Qual palavra completa a lacuna?",
+      "person_rule": "Para pessoas, use a preposição + um pronome, não {{compound}}: {{example}}"
+    },
+    "verb_preposition_patterns": {
+      "title": "Padrões por preposição",
+      "open": "Padrões",
+      "open_a11y": "Ver padrões agrupados por preposição",
+      "close": "Fechar padrões",
+      "summary": "{{started}} de {{total}} padrões praticados",
+      "summary_empty": "{{total}} padrões. Inicie o quiz para acompanhar seu progresso.",
+      "empty_title": "Nenhum padrão",
+      "empty": "Ainda não há padrões de verbos neste dispositivo. Volte após a próxima atualização de vocabulário.",
+      "error": "Não foi possível carregar os padrões.",
+      "also_with": "Também aceito para: {{preposition}}",
+      "contrast": "Compare: {{patterns}}",
+      "mastery": {
+        "new": "Novo",
+        "learning": "Aprendendo",
+        "mastered": "Dominado"
+      }
+    },
     "plural_quiz": {
       "badge": "Terminações do plural",
       "prompt": "Que terminação de plural?",
@@ -287,6 +330,14 @@
         "verbs": {
           "title": "Verbos",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Preposições",
+          "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

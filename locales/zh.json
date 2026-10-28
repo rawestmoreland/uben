@@ -69,6 +69,8 @@
       "translations_download_failed": "无法下载翻译。在重新联网之前，提示将以英文显示。",
       "adjective_difficulty_advanced": "进阶形容词词尾",
       "adjective_difficulty_advanced_description": "在形容词词尾练习中加入与格(间接宾语)。",
+      "verb_preposition_case_step": "测试二格介词的格",
+      "verb_preposition_case_step_description": "在介词测验中答对 an、auf、in、über 或 vor 后，还要选择 Akkusativ 或 Dativ。",
       "reminders_title": "提醒",
       "reminders_enable": "练习提醒",
       "reminders_enable_description": "有单词待复习时通知你。每天最多一条，且仅在有内容需要复习时发送。",
@@ -200,6 +202,47 @@
       "check_button": "检查",
       "continue": "继续"
     },
+    "verb_preposition_quiz": {
+      "badge": "动词 + 介词",
+      "prompt": "选哪个介词?",
+      "blank_a11y": "空格",
+      "question_a11y": "{{sentence}}。哪个介词适合填入空格?",
+      "all_caught_up": "已全部完成",
+      "no_cards_due": "目前没有需要复习的动词搭配。\n\n请稍后再来!",
+      "correct": "正确",
+      "incorrect": "不太对",
+      "you_picked": "你选了 {{preposition}}",
+      "also_accepted": "也可接受:{{prepositions}}",
+      "feedback_a11y": "{{verdict}}。{{pattern}}。{{sentence}}",
+      "continue": "继续",
+      "case_prompt": "它要求哪个格？",
+      "case_you_picked": "你选了 {{picked}}（应为 {{correct}}）"
+    },
+    "verb_preposition_compound_quiz": {
+      "badge": "da- / wo- 词",
+      "prompt_da": "选哪个 da- 词?",
+      "prompt_wo": "选哪个 wo- 词?",
+      "question_a11y": "{{sentence}}。哪个词适合填入空格?",
+      "person_rule": "指人时用介词 + 代词,不用 {{compound}}:{{example}}"
+    },
+    "verb_preposition_patterns": {
+      "title": "按介词分类的搭配",
+      "open": "搭配",
+      "open_a11y": "按介词分组浏览搭配",
+      "close": "关闭搭配",
+      "summary": "已练习 {{started}} / {{total}} 个搭配",
+      "summary_empty": "共 {{total}} 个搭配。开始测验以记录进度。",
+      "empty_title": "暂无搭配",
+      "empty": "此设备上还没有动词搭配。请在下次词汇更新后再来看看。",
+      "error": "无法加载搭配。",
+      "also_with": "也适用于：{{preposition}}",
+      "contrast": "对比：{{patterns}}",
+      "mastery": {
+        "new": "新",
+        "learning": "学习中",
+        "mastered": "已掌握"
+      }
+    },
     "plural_quiz": {
       "badge": "复数词尾",
       "prompt": "复数词尾是什么?",
@@ -282,6 +325,14 @@
         "verbs": {
           "title": "动词",
           "subtitle": "过去式(Präteritum)"
+        },
+        "prepositions": {
+          "title": "介词",
+          "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

@@ -69,6 +69,8 @@
       "translations_download_failed": "A fordításokat nem sikerült letölteni. A tippek angolul jelennek meg, amíg újra online nem leszel.",
       "adjective_difficulty_advanced": "Haladó melléknévragok",
       "adjective_difficulty_advanced_description": "A részes esetet (távolabbi tárgy) is felveszi a melléknévragok gyakorlásába.",
+      "verb_preposition_case_step": "Eset ellenőrzése kétirányú elöljárószóknál",
+      "verb_preposition_case_step_description": "Az elöljárószó-kvíz an, auf, in, über vagy vor helyes választása után válaszd ki az Akkusativ vagy Dativ esetet is.",
       "reminders_title": "Emlékeztetők",
       "reminders_enable": "Gyakorlási emlékeztetők",
       "reminders_enable_description": "Értesítés, ha szavak várnak ismétlésre. Naponta legfeljebb egy, és csak ha van mit ismételni.",
@@ -200,6 +202,47 @@
       "check_button": "Ellenőrzés",
       "continue": "Tovább"
     },
+    "verb_preposition_quiz": {
+      "badge": "Ige + elöljárószó",
+      "prompt": "Melyik elöljárószó?",
+      "blank_a11y": "üres hely",
+      "question_a11y": "{{sentence}}. Melyik elöljárószó illik az üres helyre?",
+      "all_caught_up": "Minden kész",
+      "no_cards_due": "Jelenleg nincs ismétlésre váró igei szerkezet.\n\nTérj vissza később!",
+      "correct": "Helyes",
+      "incorrect": "Nem egészen",
+      "you_picked": "Ezt választottad: {{preposition}}",
+      "also_accepted": "Szintén elfogadott: {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Tovább",
+      "case_prompt": "Melyik esetet vonzza?",
+      "case_you_picked": "Ezt választottad: {{picked}} (ez vonzza: {{correct}})"
+    },
+    "verb_preposition_compound_quiz": {
+      "badge": "Da- / wo- szavak",
+      "prompt_da": "Melyik da- szó?",
+      "prompt_wo": "Melyik wo- szó?",
+      "question_a11y": "{{sentence}}. Melyik szó illik az üres helyre?",
+      "person_rule": "Személyeknél az elöljárószót + személyes névmást használd, nem a(z) {{compound}} alakot: {{example}}"
+    },
+    "verb_preposition_patterns": {
+      "title": "Minták elöljárószavanként",
+      "open": "Minták",
+      "open_a11y": "Minták böngészése elöljárószavak szerint csoportosítva",
+      "close": "Minták bezárása",
+      "summary": "{{started}} / {{total}} minta gyakorolva",
+      "summary_empty": "{{total}} minta. Indítsd el a kvízt a haladásod követéséhez.",
+      "empty_title": "Még nincs minta",
+      "empty": "Ezen az eszközön még nincsenek igeminták. Nézz vissza a következő szókincsfrissítés után.",
+      "error": "A minták betöltése sikertelen.",
+      "also_with": "Elfogadott még ennél: {{preposition}}",
+      "contrast": "Hasonlítsd össze: {{patterns}}",
+      "mastery": {
+        "new": "Új",
+        "learning": "Tanulás",
+        "mastered": "Elsajátítva"
+      }
+    },
     "plural_quiz": {
       "badge": "Többesszám-képzők",
       "prompt": "Melyik többesszám-képző?",
@@ -282,6 +325,14 @@
         "verbs": {
           "title": "Igék",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Elöljárószók",
+          "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },
