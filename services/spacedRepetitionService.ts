@@ -5,6 +5,8 @@ import {
 } from '@/services/pluralService';
 import {
   buildVerbPrepositionCards,
+  limitOneCardPerPattern,
+  verbPrepositionPatternKey,
   type VerbPrepositionCardRow,
   type VerbPrepositionQuizSession,
 } from '@/services/verbPrepositionService';
@@ -101,11 +103,12 @@ function buildNounFilters(
 const PLURAL_CANDIDATE_OVERFETCH = 3;
 
 /**
- * Same idea for the verb preposition quiz: a pattern is only dropped after
- * the fetch if its sentence has no blank or its preposition has no button.
- * Seeded data should almost never hit that, so a small margin is enough.
+ * Same idea for the verb preposition quiz: a card is dropped after the fetch
+ * if its sentence has no blank or its preposition has no button (rare in
+ * seeded data), or if another example of its pattern is already in the
+ * session (each pattern has two sentences, so this happens regularly).
  */
-const VERB_PREP_CANDIDATE_OVERFETCH = 2;
+const VERB_PREP_CANDIDATE_OVERFETCH = 3;
 
 /**
  * Columns shared by the due and new verb preposition queries. The
@@ -587,8 +590,9 @@ export class SpacedRepetitionService {
    *
    * Like the plural quiz, due cards come first (most overdue first) and new
    * cards follow, each group shuffled. Patterns that can't produce a sound
-   * question are dropped (see verbPrepositionService). There's no
-   * category/level filter yet: v1 is one flat pool.
+   * question are dropped (see verbPrepositionService), and a pattern is
+   * asked at most once per session even though it has several example
+   * sentences. There's no category/level filter yet: v1 is one flat pool.
    */
   async getVerbPrepositionSession(
     maxCards: number = 20,
@@ -628,8 +632,14 @@ export class SpacedRepetitionService {
       [newCardsLimit * VERB_PREP_CANDIDATE_OVERFETCH],
     );
 
-    const dueCards = buildVerbPrepositionCards(dueRows).slice(0, dueLimit);
-    const newCards = buildVerbPrepositionCards(newRows).slice(0, newCardsLimit);
+    // A pattern has several example sentences, but a session asks it once
+    const dueCards = limitOneCardPerPattern(
+      buildVerbPrepositionCards(dueRows),
+    ).slice(0, dueLimit);
+    const newCards = limitOneCardPerPattern(
+      buildVerbPrepositionCards(newRows),
+      new Set(dueCards.map(verbPrepositionPatternKey)),
+    ).slice(0, newCardsLimit);
 
     return {
       cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],
