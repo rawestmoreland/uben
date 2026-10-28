@@ -67,12 +67,16 @@ export function VerbPrepositionQuizPlay({
 
   if (!currentCard) return null;
   const { question } = currentCard;
+  const compoundForm = question.compound?.form;
 
   return (
     <View style={styles.container}>
       <VerbPrepositionQuizHeader
         current={progress.current}
         total={progress.total}
+        badge={
+          compoundForm ? t('verb_preposition_compound_quiz.badge') : undefined
+        }
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -91,6 +95,7 @@ export function VerbPrepositionQuizPlay({
             sentence={question.sentence}
             translation={showEnglishHint ? question.translation : null}
             eszettPreference={eszettPreference}
+            compoundForm={compoundForm}
           />
         )}
         <View style={styles.section}>

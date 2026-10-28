@@ -7,6 +7,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 interface VerbPrepositionQuizHeaderProps {
   current: number;
   total: number;
+  /** Mode badge text; defaults to the preposition quiz's. */
+  badge?: string;
 }
 
 function exitQuiz() {
@@ -21,6 +23,7 @@ function openPatterns() {
 export function VerbPrepositionQuizHeader({
   current,
   total,
+  badge,
 }: VerbPrepositionQuizHeaderProps) {
   const { t } = useTranslation('app');
   const percent = total > 0 ? Math.round((current / total) * 100) : 0;
@@ -30,7 +33,7 @@ export function VerbPrepositionQuizHeader({
       <View style={styles.topRow}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>
-            {uiUpperCase(t('verb_preposition_quiz.badge'))}
+            {uiUpperCase(badge ?? t('verb_preposition_quiz.badge'))}
           </Text>
         </View>
         <Pressable
