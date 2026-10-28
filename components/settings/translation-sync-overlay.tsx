@@ -45,7 +45,11 @@ export function TranslationSyncOverlay({ language }: TranslationSyncOverlayProps
 
 const styles = StyleSheet.create({
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     zIndex: 1000,
     elevation: 1000,
     alignItems: 'center',
