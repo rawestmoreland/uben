@@ -212,6 +212,13 @@
       "case_prompt": "Quel cas régit-elle ?",
       "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Mots da- / wo-",
+      "prompt_da": "Quel mot en da- ?",
+      "prompt_wo": "Quel mot en wo- ?",
+      "question_a11y": "{{sentence}}. Quel mot complète le blanc ?",
+      "person_rule": "Pour une personne, utilisez la préposition + un pronom, pas {{compound}} : {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Modèles par préposition",
       "open": "Modèles",
@@ -285,6 +292,10 @@
         "prepositions": {
           "title": "Prépositions",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     }

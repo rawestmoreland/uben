@@ -5,6 +5,10 @@
 // Unlike the quiz, nothing is filtered here: a pattern the quiz can't ask
 // (no blank, preposition missing from the button grid) is still a valid
 // thing to read, so every seeded pattern is reachable from the screen.
+//
+// A pattern can have several example sentences, each its own quiz card. The
+// cheat sheet lists the pattern once, with its first example and the progress
+// of all its cards combined.
 
 import { getDatabase } from '@/database/db';
 import type {
@@ -26,7 +30,7 @@ export const MASTERED_INTERVAL_DAYS = 21;
 /** new = never reviewed; learning = reviewed but not yet long-term; mastered = interval >= 21 days. */
 export type VerbPrepositionMastery = 'new' | 'learning' | 'mastered';
 
-/** Mastery of one pattern from its card_progress values (null when it has no progress row). */
+/** Mastery of one card from its card_progress values (null when it has no progress row). */
 export function getMastery(
   progress: { total_reviews: number; interval: number } | null,
 ): VerbPrepositionMastery {
@@ -133,6 +137,49 @@ function buildExample(
   return { ...parts, preposition: filled };
 }
 
+/** One pattern: its first example row plus the progress of every example. */
+interface PatternGroup {
+  row: VerbPrepositionPatternRow;
+  masteries: VerbPrepositionMastery[];
+  totalReviews: number;
+  correctReviews: number;
+}
+
+/** New or mastered only when every example is; anything in between is learning. */
+function combineMastery(
+  masteries: readonly VerbPrepositionMastery[],
+): VerbPrepositionMastery {
+  if (masteries.every((mastery) => mastery === 'new')) return 'new';
+  if (masteries.every((mastery) => mastery === 'mastered')) return 'mastered';
+  return 'learning';
+}
+
+/** Collapse example rows to one entry per pattern; the first row (lowest id) is the one shown. */
+function groupExamplesByPattern(
+  rows: readonly VerbPrepositionPatternRow[],
+): PatternGroup[] {
+  const groups = new Map<string, PatternGroup>();
+  for (const row of rows) {
+    const key = `${verbKey(row)}:${row.preposition.trim().toLowerCase()}`;
+    const mastery = getMastery(
+      row.total_reviews === null
+        ? null
+        : { total_reviews: row.total_reviews, interval: row.interval ?? 0 },
+    );
+    const group = groups.get(key) ?? {
+      row,
+      masteries: [],
+      totalReviews: 0,
+      correctReviews: 0,
+    };
+    group.masteries.push(mastery);
+    group.totalReviews += row.total_reviews ?? 0;
+    group.correctReviews += row.correct_reviews ?? 0;
+    groups.set(key, group);
+  }
+  return [...groups.values()];
+}
+
 /**
  * Group pattern rows by preposition. A pattern appears under its primary
  * preposition and, for genuine synonyms, under each accepted alternate too.
@@ -142,8 +189,10 @@ function buildExample(
 export function groupPatternsByPreposition(
   rows: readonly VerbPrepositionPatternRow[],
 ): VerbPrepositionBrowseData {
+  const patterns = groupExamplesByPattern(rows);
+
   const patternsByVerb = new Map<string, string[]>();
-  for (const row of rows) {
+  for (const { row } of patterns) {
     const key = verbKey(row);
     patternsByVerb.set(key, [
       ...(patternsByVerb.get(key) ?? []),
@@ -154,16 +203,12 @@ export function groupPatternsByPreposition(
   const sections = new Map<string, VerbPrepositionBrowseItem[]>();
   let startedCount = 0;
 
-  for (const row of rows) {
+  for (const { row, masteries, totalReviews, correctReviews } of patterns) {
     const primary = row.preposition.trim().toLowerCase();
     const alternates = parsePrepositionList(row.alt_prepositions).filter(
       (alternate) => alternate !== primary,
     );
-    const mastery = getMastery(
-      row.total_reviews === null
-        ? null
-        : { total_reviews: row.total_reviews, interval: row.interval ?? 0 },
-    );
+    const mastery = combineMastery(masteries);
     if (mastery !== 'new') startedCount += 1;
 
     const ownName = patternName(row);
@@ -185,8 +230,8 @@ export function groupPatternsByPreposition(
         primaryPreposition: isAlternate ? primary : null,
         contrastPatterns,
         mastery,
-        totalReviews: row.total_reviews ?? 0,
-        correctReviews: row.correct_reviews ?? 0,
+        totalReviews,
+        correctReviews,
       };
       sections.set(preposition, [...(sections.get(preposition) ?? []), item]);
     }
@@ -201,7 +246,7 @@ export function groupPatternsByPreposition(
           first.pattern.localeCompare(second.pattern, 'de'),
         ),
       })),
-    patternCount: rows.length,
+    patternCount: patterns.length,
     startedCount,
   };
 }

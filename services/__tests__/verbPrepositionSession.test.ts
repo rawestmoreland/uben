@@ -63,7 +63,7 @@ function validRows(count: number, idOffset: number, isDue: boolean) {
     prepRow({
       id: isDue ? idOffset + index : 0,
       word_id: idOffset + index,
-      verb: `warten${index}`,
+      verb: `warten${idOffset + index}`,
     }),
   );
 }
@@ -105,8 +105,8 @@ describe('getVerbPrepositionSession() — session logic', () => {
     mockRows([], []);
     await service.getVerbPrepositionSession(20, 5);
 
-    expect(queryCall(0)[1]).toEqual([30]); // 15 due slots x2
-    expect(queryCall(1)[1]).toEqual([10]); // 5 new slots x2
+    expect(queryCall(0)[1]).toEqual([45]); // 15 due slots x3
+    expect(queryCall(1)[1]).toEqual([15]); // 5 new slots x3
   });
 
   it('drops patterns that cannot produce a question and attaches the rest', async () => {
@@ -133,6 +133,50 @@ describe('getVerbPrepositionSession() — session logic', () => {
     expect(session.cards.every((card) => card.question)).toBeTruthy();
     expect(session.dueCount).toBe(1);
     expect(session.newCount).toBe(1);
+  });
+
+  it('asks a pattern once per session, even across due and new cards', async () => {
+    const sentence = (text: string) => ({ sentence: text });
+    mockRows(
+      [
+        prepRow({ id: 7, word_id: 1, ...sentence('Ich warte ____ den Bus.') }),
+        prepRow({ id: 8, word_id: 2, ...sentence('Wir warten ____ den Zug.') }),
+      ],
+      [
+        // Same pattern as a due card, so its example would give the answer away
+        prepRow({ word_id: 3, ...sentence('Sie wartet ____ ihre Freundin.') }),
+        prepRow({
+          word_id: 4,
+          verb: 'hoffen',
+          ...sentence('Ich hoffe ____ Regen.'),
+        }),
+        prepRow({
+          word_id: 5,
+          verb: 'hoffen',
+          ...sentence('Wir hoffen ____ Glück.'),
+        }),
+      ],
+    );
+
+    const session = await service.getVerbPrepositionSession();
+
+    expect(session.cards.map((card) => card.word_id)).toEqual([1, 4]);
+    expect(session.dueCount).toBe(1);
+    expect(session.newCount).toBe(1);
+  });
+
+  it('treats a reflexive verb and its non-reflexive twin as different patterns', async () => {
+    mockRows(
+      [],
+      [
+        prepRow({ word_id: 1, verb: 'freuen', is_reflexive: 1 }),
+        prepRow({ word_id: 2, verb: 'freuen', is_reflexive: 0 }),
+      ],
+    );
+
+    const { cards } = await service.getVerbPrepositionSession();
+
+    expect(cards).toHaveLength(2);
   });
 
   it('feeds sibling patterns into the question buttons', async () => {

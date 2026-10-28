@@ -207,6 +207,13 @@
       "case_prompt": "Hangi hâli alır?",
       "case_you_picked": "{{picked}} seçtin ({{correct}} alıyor)"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Da- / wo- sözcükleri",
+      "prompt_da": "Hangi da- sözcüğü?",
+      "prompt_wo": "Hangi wo- sözcüğü?",
+      "question_a11y": "{{sentence}}. Boşluğa hangi sözcük uyar?",
+      "person_rule": "Kişiler için {{compound}} değil, edat + zamir kullanılır: {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Edata göre kalıplar",
       "open": "Kalıplar",
@@ -311,6 +318,10 @@
         "prepositions": {
           "title": "Edatlar",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     }
