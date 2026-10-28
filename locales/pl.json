@@ -78,7 +78,18 @@
       "adjective_difficulty_advanced": "Zaawansowane końcówki",
       "adjective_difficulty_advanced_description": "Dodaj także przypadek celownik (dopełnienie dalsze) do ćwiczeń z końcówkami przymiotników.",
       "verb_preposition_case_step": "Sprawdzaj przypadek po przyimkach dwuprzypadkowych",
-      "verb_preposition_case_step_description": "Po poprawnym an, auf, in, über lub vor w quizie przyimków wybierz też Akkusativ lub Dativ."
+      "verb_preposition_case_step_description": "Po poprawnym an, auf, in, über lub vor w quizie przyimków wybierz też Akkusativ lub Dativ.",
+      "reminders_title": "Przypomnienia",
+      "reminders_enable": "Przypomnienia o nauce",
+      "reminders_enable_description": "Powiadomienie, gdy są słówka do powtórki. Najwyżej jedno dziennie i tylko gdy jest co powtarzać.",
+      "reminders_time": "Godzina przypomnienia",
+      "reminders_time_description": "Kiedy przychodzi przypomnienie.",
+      "reminders_time_earlier": "Godzinę wcześniej",
+      "reminders_time_later": "Godzinę później",
+      "reminders_streak": "Przypomnienie o serii",
+      "reminders_streak_description": "Otrzymaj przypomnienie, zanim seria co najmniej 3 dni zostanie przerwana.",
+      "reminders_denied": "Powiadomienia dla Üben są wyłączone w ustawieniach urządzenia.",
+      "reminders_open_settings": "Otwórz ustawienia"
     },
     "level_filter": {
       "label": "POZIOM NAUKI",
@@ -323,6 +334,28 @@
           "subtitle": "warten auf + Akk."
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Przypomnienia o nauce",
+      "due_title": "Czas na ćwiczenia",
+      "streak_title": "Utrzymaj serię",
+      "streak_body": "Twoja seria wynosi {{streak}}. Poćwicz dziś, żeby jej nie przerwać.",
+      "prompt_title": "Przypomnienia o nauce?",
+      "prompt_body": "Chcesz dostać przypomnienie, gdy są słówka do powtórki? Najwyżej jedno dziennie i tylko gdy jest co powtarzać. Możesz to zmienić w dowolnej chwili w Ustawieniach.",
+      "prompt_not_now": "Nie teraz",
+      "prompt_accept": "Przypominaj",
+      "due_body_a_one": "{{count}} słówko do powtórki. Krótka sesja utrzyma je w pamięci.",
+      "due_body_a_few": "{{count}} słówka do powtórki. Krótka sesja utrzyma je w pamięci.",
+      "due_body_a_many": "{{count}} słówek do powtórki. Krótka sesja utrzyma je w pamięci.",
+      "due_body_a_other": "{{count}} słówka do powtórki. Krótka sesja utrzyma je w pamięci.",
+      "due_body_b_one": "{{count}} słówko gotowe do powtórki. Wystarczy kilka minut.",
+      "due_body_b_few": "{{count}} słówka gotowe do powtórki. Wystarczy kilka minut.",
+      "due_body_b_many": "{{count}} słówek gotowych do powtórki. Wystarczy kilka minut.",
+      "due_body_b_other": "{{count}} słówka gotowe do powtórki. Wystarczy kilka minut.",
+      "due_body_c_one": "Szybka runda? {{count}} słówko do powtórki.",
+      "due_body_c_few": "Szybka runda? {{count}} słówka do powtórki.",
+      "due_body_c_many": "Szybka runda? {{count}} słówek do powtórki.",
+      "due_body_c_other": "Szybka runda? {{count}} słówka do powtórki."
     }
   }
 }

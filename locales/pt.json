@@ -74,7 +74,18 @@
       "adjective_difficulty_advanced": "Terminações de adjetivos avançadas",
       "adjective_difficulty_advanced_description": "Inclui também o dativo (complemento indireto) na prática de terminações de adjetivos.",
       "verb_preposition_case_step": "Testar o caso nas preposições mistas",
-      "verb_preposition_case_step_description": "Depois de acertar an, auf, in, über ou vor no quiz de preposições, escolha também Akkusativ ou Dativ."
+      "verb_preposition_case_step_description": "Depois de acertar an, auf, in, über ou vor no quiz de preposições, escolha também Akkusativ ou Dativ.",
+      "reminders_title": "Lembretes",
+      "reminders_enable": "Lembretes de prática",
+      "reminders_enable_description": "Um aviso quando há palavras para rever. No máximo um por dia, e só quando houver algo para rever.",
+      "reminders_time": "Hora do lembrete",
+      "reminders_time_description": "Quando o lembrete chega.",
+      "reminders_time_earlier": "Uma hora mais cedo",
+      "reminders_time_later": "Uma hora mais tarde",
+      "reminders_streak": "Lembrete de sequência",
+      "reminders_streak_description": "Recebe um lembrete antes de uma sequência de 3 ou mais dias se quebrar.",
+      "reminders_denied": "As notificações estão desativadas para o Üben nas definições do dispositivo.",
+      "reminders_open_settings": "Abrir definições"
     },
     "level_filter": {
       "label": "NÍVEL DE ESTUDO",
@@ -318,6 +329,25 @@
           "subtitle": "warten auf + Akk."
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Lembretes de prática",
+      "due_title": "Hora de praticar",
+      "streak_title": "Mantém a sequência",
+      "streak_body": "A tua sequência está em {{streak}}. Pratica hoje para a manter.",
+      "prompt_title": "Lembretes de prática?",
+      "prompt_body": "Queres um lembrete quando houver palavras para rever? No máximo um por dia, e só quando houver algo para rever. Podes alterar isto a qualquer momento nas Definições.",
+      "prompt_not_now": "Agora não",
+      "prompt_accept": "Lembrar-me",
+      "due_body_a_one": "{{count}} palavra para rever. Uma sessão curta mantém-na fresca.",
+      "due_body_a_many": "{{count}} palavras para rever. Uma sessão curta mantém-nas frescas.",
+      "due_body_a_other": "{{count}} palavras para rever. Uma sessão curta mantém-nas frescas.",
+      "due_body_b_one": "{{count}} palavra pronta a rever. Bastam alguns minutos.",
+      "due_body_b_many": "{{count}} palavras prontas a rever. Bastam alguns minutos.",
+      "due_body_b_other": "{{count}} palavras prontas a rever. Bastam alguns minutos.",
+      "due_body_c_one": "Uma ronda rápida? {{count}} palavra para rever.",
+      "due_body_c_many": "Uma ronda rápida? {{count}} palavras para rever.",
+      "due_body_c_other": "Uma ronda rápida? {{count}} palavras para rever."
     }
   }
 }

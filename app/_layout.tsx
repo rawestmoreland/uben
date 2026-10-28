@@ -14,6 +14,7 @@ import '@/constants/i18n'; // Initialize i18next before any component renders
 import { useAdsInit } from '@/hooks/use-ads-init';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
+import { useReminderScheduler } from '@/hooks/use-reminder-scheduler';
 import { purchaseService } from '@/services/purchaseService';
 import { Platform } from 'react-native';
 import Purchases, {
@@ -31,6 +32,7 @@ export default function RootLayout() {
   useAdsInit();
   const [showingSplash, setShowingSplash] = useState(true);
   const [splashAnimationDone, setSplashAnimationDone] = useState(false);
+  useReminderScheduler(isReady && !showingSplash);
 
   useEffect(() => {
     if (Platform.OS !== 'ios' && Platform.OS !== 'android') return;

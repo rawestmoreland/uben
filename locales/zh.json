@@ -70,7 +70,18 @@
       "adjective_difficulty_advanced": "进阶形容词词尾",
       "adjective_difficulty_advanced_description": "在形容词词尾练习中加入与格(间接宾语)。",
       "verb_preposition_case_step": "测试二格介词的格",
-      "verb_preposition_case_step_description": "在介词测验中答对 an、auf、in、über 或 vor 后，还要选择 Akkusativ 或 Dativ。"
+      "verb_preposition_case_step_description": "在介词测验中答对 an、auf、in、über 或 vor 后，还要选择 Akkusativ 或 Dativ。",
+      "reminders_title": "提醒",
+      "reminders_enable": "练习提醒",
+      "reminders_enable_description": "有单词待复习时通知你。每天最多一条，且仅在有内容需要复习时发送。",
+      "reminders_time": "提醒时间",
+      "reminders_time_description": "提醒送达的时间。",
+      "reminders_time_earlier": "提前一小时",
+      "reminders_time_later": "推迟一小时",
+      "reminders_streak": "连续记录提醒",
+      "reminders_streak_description": "连续练习 3 天或以上的记录即将中断前提醒你。",
+      "reminders_denied": "设备设置中已关闭 Üben 的通知。",
+      "reminders_open_settings": "打开设置"
     },
     "level_filter": {
       "label": "学习级别",
@@ -313,6 +324,22 @@
           "subtitle": "warten auf + Akk."
         }
       }
+    },
+    "reminders": {
+      "channel_name": "练习提醒",
+      "due_title": "该练习了",
+      "streak_title": "保持连续记录",
+      "streak_body": "你已连续练习 {{streak}} 天。今天继续练习，保持记录。",
+      "prompt_title": "练习提醒？",
+      "prompt_body": "有单词待复习时，要提醒你吗？每天最多一条，而且只在有内容需要复习时发送。你可以随时在设置中更改。",
+      "prompt_not_now": "暂时不用",
+      "prompt_accept": "提醒我",
+      "due_body_a_one": "有 {{count}} 个单词待复习。简短练习能让记忆保持新鲜。",
+      "due_body_a_other": "有 {{count}} 个单词待复习。简短练习能让记忆保持新鲜。",
+      "due_body_b_one": "{{count}} 个单词可以复习了。几分钟就够。",
+      "due_body_b_other": "{{count}} 个单词可以复习了。几分钟就够。",
+      "due_body_c_one": "来一轮快速练习？有 {{count}} 个单词待复习。",
+      "due_body_c_other": "来一轮快速练习？有 {{count}} 个单词待复习。"
     }
   }
 }

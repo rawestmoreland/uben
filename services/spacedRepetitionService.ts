@@ -639,6 +639,34 @@ export class SpacedRepetitionService {
   }
 
   /**
+   * Cards that will be due on each given local day (`YYYY-MM-DD`) if the user
+   * doesn't practice in between, i.e. everything with `next_review_date` on or
+   * before that day. Plural-ending and verb preposition cards are excluded, as in getUserStats.
+   * Used to decide which days are worth a practice reminder.
+   */
+  async getCumulativeDueCounts(
+    dateKeys: string[],
+  ): Promise<Record<string, number>> {
+    if (dateKeys.length === 0) return {};
+    const lastKey = dateKeys.reduce((a, b) => (a > b ? a : b));
+
+    const rows = await this.db.getAllAsync<{ day: string; count: number }>(
+      `SELECT next_review_date AS day, COUNT(*) AS count
+       FROM card_progress
+       WHERE word_type NOT IN ('noun_plural', 'verb_prep') AND next_review_date <= ?
+       GROUP BY next_review_date`,
+      [lastKey],
+    );
+
+    return Object.fromEntries(
+      dateKeys.map((key) => [
+        key,
+        rows.reduce((sum, row) => (row.day <= key ? sum + row.count : sum), 0),
+      ]),
+    );
+  }
+
+  /**
    * Check if the user has completed at least one review today.
    */
   async hasReviewedToday(): Promise<boolean> {

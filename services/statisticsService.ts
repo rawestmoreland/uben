@@ -51,6 +51,20 @@ export class StatisticsService {
   }
 
   /**
+   * Timestamps (SQLite UTC strings) of the user's most recent reviews, newest
+   * first. Used to learn what time of day they usually practice.
+   */
+  async getRecentReviewTimestamps(limit: number = 200): Promise<string[]> {
+    const rows = await this.db.getAllAsync<{ reviewed_at: string }>(
+      `SELECT reviewed_at FROM review_history
+       ORDER BY reviewed_at DESC
+       LIMIT ?`,
+      [limit],
+    );
+    return rows.map((row) => row.reviewed_at);
+  }
+
+  /**
    * Get the words with the lowest success rates.
    * Only includes cards with at least `minReviews` total reviews to avoid noise.
    */
