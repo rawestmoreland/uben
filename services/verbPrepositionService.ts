@@ -451,6 +451,18 @@ export interface VerbPrepositionCardRow extends DueVerbPrepCard {
   sibling_prepositions: string | null;
 }
 
+type VerbPrepositionPatternKey = Pick<
+  DueVerbPrepCard,
+  'verb' | 'is_reflexive' | 'preposition'
+>;
+
+/** Identifies a pattern across its example sentences, e.g. "1|freuen|auf". */
+export function verbPrepositionPatternKey(
+  pattern: VerbPrepositionPatternKey,
+): string {
+  return `${pattern.is_reflexive ? 1 : 0}|${pattern.verb}|${normalizePreposition(pattern.preposition)}`;
+}
+
 /** A card whose pattern produced a sound question. */
 export interface VerbPrepositionQuizCard extends DueVerbPrepCard {
   question: VerbPrepositionQuestion;
@@ -480,4 +492,26 @@ export function buildVerbPrepositionCards(
     if (question) cards.push({ ...card, question });
   }
   return cards;
+}
+
+/**
+ * Keep at most one card per pattern (verb + preposition), skipping patterns in
+ * `askedPatterns`. A pattern has several example sentences, and asking two of
+ * them in one session would give the answer away. The caller passes the
+ * patterns of the cards it already kept, so due and new cards don't repeat
+ * each other either.
+ */
+export function limitOneCardPerPattern<T extends VerbPrepositionPatternKey>(
+  cards: readonly T[],
+  askedPatterns: ReadonlySet<string> = new Set(),
+): T[] {
+  const seen = new Set(askedPatterns);
+  const kept: T[] = [];
+  for (const card of cards) {
+    const key = verbPrepositionPatternKey(card);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    kept.push(card);
+  }
+  return kept;
 }

@@ -3,7 +3,7 @@ import type { SeedVerbPrepositionCompound } from '@/types/database';
 /**
  * da(r)- and wo(r)- questions for the verb preposition quiz (#151).
  *
- * Each entry belongs to a pattern in `v1-initial.ts`, matched by
+ * Each entry belongs to a pattern in `v2-core.ts`, matched by
  * (verb, is_reflexive, preposition). Authoring rules:
  *
  * - Only patterns whose preposition takes a *thing* get an entry. People take
@@ -64,16 +64,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     person_example: 'Bitte achte auf ihn!',
   },
   {
-    verb: 'verlassen',
-    is_reflexive: true,
-    preposition: 'auf',
-    da_sentence: 'Ich habe es dir versprochen. Du kannst dich ____ verlassen.',
-    da_translation: 'You can rely on it.',
-    wo_sentence: '____ kann man sich heutzutage noch verlassen?',
-    wo_translation: 'What can you still rely on these days?',
-    person_example: 'Du kannst dich auf ihn verlassen.',
-  },
-  {
     verb: 'konzentrieren',
     is_reflexive: true,
     preposition: 'auf',
@@ -81,24 +71,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     da_translation: 'I have to concentrate on it.',
     wo_sentence: '____ konzentrierst du dich gerade?',
     wo_translation: 'What are you concentrating on right now?',
-  },
-  {
-    verb: 'antworten',
-    preposition: 'auf',
-    da_sentence:
-      'Ich habe eine Frage gestellt. Er hat noch nicht ____ geantwortet.',
-    da_translation: "He hasn't answered it yet.",
-    wo_sentence: '____ hat sie geantwortet?',
-    wo_translation: 'What did she reply to?',
-  },
-  {
-    verb: 'reagieren',
-    preposition: 'auf',
-    da_sentence: 'Die Nachricht ist schlimm. Wie hat sie ____ reagiert?',
-    da_translation: 'How did she react to it?',
-    wo_sentence: '____ hat er so wütend reagiert?',
-    wo_translation: 'What did he react so angrily to?',
-    person_example: 'Wie hat sie auf ihn reagiert?',
   },
   {
     verb: 'vorbereiten',
@@ -117,14 +89,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_sentence: '____ würdest du nie verzichten?',
     wo_translation: 'What would you never do without?',
     person_example: 'Ich verzichte nicht auf ihn.',
-  },
-  {
-    verb: 'ankommen',
-    preposition: 'auf',
-    da_sentence: 'Gehen wir wandern? Es kommt ____ an.',
-    da_translation: 'It depends.',
-    wo_sentence: '____ kommt es an?',
-    wo_translation: 'What does it depend on?',
   },
 
   // ── über ────────────────────────────────────────────────────────────
@@ -148,16 +112,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     person_example: 'Ich ärgere mich über ihn.',
   },
   {
-    verb: 'aufregen',
-    is_reflexive: true,
-    preposition: 'über',
-    da_sentence: 'Es ist nur ein kleiner Fehler. Reg dich nicht ____ auf!',
-    da_translation: "Don't get worked up about it.",
-    wo_sentence: '____ regt er sich ständig auf?',
-    wo_translation: 'What does he keep getting worked up about?',
-    person_example: 'Er regt sich über sie auf.',
-  },
-  {
     verb: 'beschweren',
     is_reflexive: true,
     preposition: 'über',
@@ -166,16 +120,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_sentence: '____ beschweren sich die Kunden?',
     wo_translation: 'What are the customers complaining about?',
     person_example: 'Die Gäste beschweren sich über ihn.',
-  },
-  {
-    verb: 'nachdenken',
-    preposition: 'über',
-    da_sentence:
-      'Das ist eine schwierige Frage. Ich muss noch ____ nachdenken.',
-    da_translation: 'I still have to think about it.',
-    wo_sentence: '____ denkst du gerade nach?',
-    wo_translation: 'What are you thinking about right now?',
-    person_example: 'Ich denke oft über ihn nach.',
   },
   {
     verb: 'diskutieren',
@@ -187,15 +131,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     person_example: 'Wir diskutieren über ihn.',
   },
   {
-    verb: 'staunen',
-    preposition: 'über',
-    da_sentence: 'Die Aussicht ist wunderschön. Wir staunen ____.',
-    da_translation: "We're amazed at it.",
-    wo_sentence: '____ staunst du?',
-    wo_translation: 'What are you amazed at?',
-    person_example: 'Wir staunen über ihn.',
-  },
-  {
     verb: 'lachen',
     preposition: 'über',
     da_sentence: 'Der Witz war richtig gut. Alle lachen ____.',
@@ -203,16 +138,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_sentence: '____ lacht ihr?',
     wo_translation: 'What are you laughing about?',
     person_example: 'Alle lachen über ihn.',
-  },
-  {
-    verb: 'wundern',
-    is_reflexive: true,
-    preposition: 'über',
-    da_sentence: 'Sein Verhalten ist seltsam. Ich wundere mich ____.',
-    da_translation: "I'm surprised at it.",
-    wo_sentence: '____ wunderst du dich?',
-    wo_translation: 'What are you surprised at?',
-    person_example: 'Ich wundere mich über ihn.',
   },
   {
     verb: 'unterhalten',
@@ -277,14 +202,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     person_example: 'Ich interessiere mich für ihn.',
   },
   {
-    verb: 'danken',
-    preposition: 'für',
-    da_sentence: 'Du hast mir sehr geholfen. Ich danke dir ____.',
-    da_translation: 'Thank you for it.',
-    wo_sentence: '____ dankst du ihm?',
-    wo_translation: 'What are you thanking him for?',
-  },
-  {
     verb: 'sorgen',
     preposition: 'für',
     da_sentence:
@@ -293,26 +210,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_sentence: '____ sorgst du heute Abend?',
     wo_translation: 'What are you providing tonight?',
     person_example: 'Er sorgt für ihn.',
-  },
-  {
-    verb: 'begeistern',
-    is_reflexive: true,
-    preposition: 'für',
-    da_sentence: 'Fußball ist ihre Leidenschaft. Sie begeistert sich ____.',
-    da_translation: "She's passionate about it.",
-    wo_sentence: '____ begeistert er sich?',
-    wo_translation: 'What is he passionate about?',
-    person_example: 'Sie begeistert sich für ihn.',
-  },
-  {
-    verb: 'einsetzen',
-    is_reflexive: true,
-    preposition: 'für',
-    da_sentence: 'Die Umwelt ist ihr wichtig. Sie setzt sich ____ ein.',
-    da_translation: 'She campaigns for it.',
-    wo_sentence: '____ setzt du dich ein?',
-    wo_translation: 'What do you campaign for?',
-    person_example: 'Sie setzt sich für ihn ein.',
   },
 
   // ── an ──────────────────────────────────────────────────────────────
@@ -336,25 +233,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     person_example: 'Ich erinnere mich gern an ihn.',
   },
   {
-    verb: 'glauben',
-    preposition: 'an',
-    da_sentence: 'Das Ziel ist schwer. Ich glaube fest ____.',
-    da_translation: 'I firmly believe in it.',
-    wo_sentence: '____ glaubst du?',
-    wo_translation: 'What do you believe in?',
-    person_example: 'Ich glaube an ihn.',
-  },
-  {
-    verb: 'gewöhnen',
-    is_reflexive: true,
-    preposition: 'an',
-    da_sentence: 'Das Wetter ist kalt. Ich gewöhne mich langsam ____.',
-    da_translation: "I'm slowly getting used to it.",
-    wo_sentence: '____ musst du dich noch gewöhnen?',
-    wo_translation: 'What do you still have to get used to?',
-    person_example: 'Ich gewöhne mich an ihn.',
-  },
-  {
     verb: 'halten',
     is_reflexive: true,
     preposition: 'an',
@@ -371,34 +249,8 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_sentence: '____ nimmst du teil?',
     wo_translation: 'What are you taking part in?',
   },
-  {
-    verb: 'zweifeln',
-    preposition: 'an',
-    da_sentence: 'Seine Geschichte klingt seltsam. Ich zweifle ____.',
-    da_translation: 'I doubt it.',
-    wo_sentence: '____ zweifelst du?',
-    wo_translation: 'What do you doubt?',
-    person_example: 'Ich zweifle an ihm.',
-  },
-  {
-    verb: 'liegen',
-    preposition: 'an',
-    da_sentence: 'Wir kommen zu spät. Das liegt nur ____.',
-    da_translation: "That's only because of it.",
-    wo_sentence: '____ liegt das?',
-    wo_translation: 'What is the reason for that?',
-    person_example: 'Es liegt an ihm.',
-  },
 
   // ── mit ─────────────────────────────────────────────────────────────
-  {
-    verb: 'anfangen',
-    preposition: 'mit',
-    da_sentence: 'Die Hausaufgaben sind lang. Wann fängst du ____ an?',
-    da_translation: 'When are you starting on them?',
-    wo_sentence: '____ fängst du an?',
-    wo_translation: 'What are you starting with?',
-  },
   {
     verb: 'aufhören',
     preposition: 'mit',
@@ -406,24 +258,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     da_translation: 'Please stop it.',
     wo_sentence: '____ soll ich aufhören?',
     wo_translation: 'What should I stop?',
-  },
-  {
-    verb: 'rechnen',
-    preposition: 'mit',
-    da_sentence: 'Morgen ist ein Feiertag. Wir rechnen ____.',
-    da_translation: "We're expecting it.",
-    wo_sentence: '____ rechnest du?',
-    wo_translation: 'What are you expecting?',
-    person_example: 'Ich rechne mit ihm.',
-  },
-  {
-    verb: 'zurechtkommen',
-    preposition: 'mit',
-    da_sentence: 'Der Computer ist neu. Ich komme gut ____ zurecht.',
-    da_translation: "I'm coping well with it.",
-    wo_sentence: '____ kommst du nicht zurecht?',
-    wo_translation: "What can't you cope with?",
-    person_example: 'Ich komme gut mit ihm zurecht.',
   },
 
   // ── von ─────────────────────────────────────────────────────────────
@@ -436,15 +270,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_translation: 'What do you dream of?',
     person_example: 'Ich träume von ihm.',
   },
-  {
-    verb: 'abhängen',
-    preposition: 'von',
-    da_sentence: 'Wir wollen grillen. Das hängt ____ ab, ob es regnet.',
-    da_translation: 'That depends on whether it rains.',
-    wo_sentence: '____ hängt das ab?',
-    wo_translation: 'What does that depend on?',
-    person_example: 'Das hängt von ihm ab.',
-  },
 
   // ── zu ──────────────────────────────────────────────────────────────
   {
@@ -454,32 +279,6 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     da_translation: "I'm inviting you to it.",
     wo_sentence: '____ lädst du uns ein?',
     wo_translation: 'What are you inviting us to?',
-  },
-  {
-    verb: 'gratulieren',
-    preposition: 'zu',
-    da_sentence: 'Du hast Geburtstag! Wir gratulieren dir ____.',
-    da_translation: 'We congratulate you on it.',
-    wo_sentence: '____ gratulierst du ihm?',
-    wo_translation: 'What are you congratulating him on?',
-  },
-  {
-    verb: 'passen',
-    preposition: 'zu',
-    da_sentence: 'Das Kleid ist schön. Die Schuhe passen gut ____.',
-    da_translation: 'The shoes go well with it.',
-    wo_sentence: '____ passen die Schuhe?',
-    wo_translation: 'What do the shoes go with?',
-    person_example: 'Die Schuhe passen zu ihr.',
-  },
-  {
-    verb: 'führen',
-    preposition: 'zu',
-    da_sentence:
-      'Zu viel Stress ist gefährlich. Das kann ____ führen, dass man krank wird.',
-    da_translation: 'That can lead to people getting ill.',
-    wo_sentence: '____ führt das?',
-    wo_translation: 'What does that lead to?',
   },
 
   // ── nach ────────────────────────────────────────────────────────────
@@ -558,23 +357,5 @@ export const verbPrepositionCompoundsV1: SeedVerbPrepositionCompound[] = [
     wo_sentence: '____ fürchtest du dich?',
     wo_translation: 'What are you scared of?',
     person_example: 'Das Kind fürchtet sich vor ihm.',
-  },
-  {
-    verb: 'warnen',
-    preposition: 'vor',
-    da_sentence: 'Es gibt Betrüger. Die Polizei warnt ____.',
-    da_translation: 'The police are warning about it.',
-    wo_sentence: '____ warnt die Polizei?',
-    wo_translation: 'What are the police warning about?',
-    person_example: 'Die Polizei warnt vor ihm.',
-  },
-  {
-    verb: 'schützen',
-    preposition: 'vor',
-    da_sentence: 'Es ist kalt. Der Mantel schützt dich ____.',
-    da_translation: 'The coat protects you from it.',
-    wo_sentence: '____ schützt dich der Mantel?',
-    wo_translation: 'What does the coat protect you from?',
-    person_example: 'Er schützt dich vor ihm.',
   },
 ];

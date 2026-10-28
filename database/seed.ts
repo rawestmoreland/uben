@@ -6,8 +6,8 @@ import { adjectivesV2 } from './seeds/adjectives/v2-expanded';
 import { categories } from './seeds/categories';
 import { nounCorrectionVersions } from './seeds/corrections';
 import { nounSeedVersions } from './seeds/nouns';
-import { verbPrepositionsV1 } from './seeds/verb-prepositions/v1-initial';
 import { verbPrepositionCompoundsV1 } from './seeds/verb-prepositions/v2-compounds';
+import { verbPrepositionsV2 } from './seeds/verb-prepositions/v2-core';
 import { verbsV1 } from './seeds/verbs/v1-initial';
 
 /**
@@ -55,19 +55,39 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
 
   // Seed verb + preposition patterns for the verb preposition quiz (#144).
   // Independent of nouns/verbs — each pattern carries its own verb string.
-  await seedVerbPrepositions(db, '1.0.0_verb_prepositions_v1');
+  // The curated A1-B1 list replaces the earlier, broader v1 seed. Bump the
+  // version whenever the list changes: seeding syncs the table to the list.
+  await seedVerbPrepositions(db, '1.2.0_verb_prepositions_v3');
 
   // da(r)-/wo(r)- questions for those patterns (#151). Must run after the
-  // patterns they attach to.
-  await seedVerbPrepositionCompounds(db, '1.0.0_verb_preposition_compounds_v1');
+  // patterns they attach to. Re-versioned because retiring patterns above
+  // cascades away their compound rows, which then need re-seeding.
+  await seedVerbPrepositionCompounds(db, '1.0.1_verb_preposition_compounds_v2');
+}
+
+/** Identity of a seeded pattern: the same columns as the table's UNIQUE constraint. */
+function verbPrepositionKey(pattern: {
+  verb: string;
+  is_reflexive?: boolean | number;
+  preposition: string;
+  sentence: string;
+}): string {
+  return `${pattern.verb}|${pattern.is_reflexive ? 1 : 0}|${pattern.preposition}|${pattern.sentence}`;
 }
 
 /**
- * Seed the verb_prepositions table from the versioned seed list.
- * Uses INSERT OR IGNORE against UNIQUE(verb, is_reflexive, preposition,
- * sentence), so re-running never duplicates a pattern or changes its row ID
- * (which would orphan its card_progress). Corrections to existing sentences
- * therefore need a new seed version, not an edit of the old one.
+ * Make the verb_prepositions table match the versioned seed list.
+ *
+ * Rows already in the list are left alone (INSERT OR IGNORE against
+ * UNIQUE(verb, is_reflexive, preposition, sentence)), so their row IDs, and
+ * with them their card_progress, survive. Rows that are no longer in the list
+ * (the broader v1 seed that shipped to dev and TestFlight builds) are removed
+ * together with their card_progress and review_history, so a learner is never
+ * asked a pattern that has been retired. Every row in this table is seeded
+ * (there are no user-added patterns), so a leftover row is always stale.
+ *
+ * Changing a sentence therefore retires its old card and creates a new one;
+ * to keep progress, add the corrected sentence under a new seed version.
  */
 async function seedVerbPrepositions(
   db: SQLite.SQLiteDatabase,
@@ -84,8 +104,53 @@ async function seedVerbPrepositions(
 
   console.log(`[DB] Seeding verb prepositions (${version})...`);
 
+  let retired = 0;
+
   await db.withTransactionAsync(async () => {
-    for (const pattern of verbPrepositionsV1) {
+    const seededKeys = new Set(verbPrepositionsV2.map(verbPrepositionKey));
+    const storedPatterns = await db.getAllAsync<{
+      id: number;
+      verb: string;
+      is_reflexive: number;
+      preposition: string;
+      sentence: string;
+    }>(
+      'SELECT id, verb, is_reflexive, preposition, sentence FROM verb_prepositions',
+    );
+
+    for (const stored of storedPatterns) {
+      if (seededKeys.has(verbPrepositionKey(stored))) continue;
+
+      await db.runAsync(
+        `DELETE FROM review_history WHERE card_progress_id IN (
+           SELECT id FROM card_progress WHERE word_type = 'verb_prep' AND word_id = ?
+         )`,
+        [stored.id],
+      );
+      // Compounds cascade with their pattern; drop their progress too.
+      await db.runAsync(
+        `DELETE FROM review_history WHERE card_progress_id IN (
+           SELECT id FROM card_progress WHERE word_type = 'verb_prep_compound'
+             AND word_id IN (SELECT id FROM verb_preposition_compounds WHERE verb_preposition_id = ?)
+         )`,
+        [stored.id],
+      );
+      await db.runAsync(
+        `DELETE FROM card_progress WHERE word_type = 'verb_prep_compound'
+           AND word_id IN (SELECT id FROM verb_preposition_compounds WHERE verb_preposition_id = ?)`,
+        [stored.id],
+      );
+      await db.runAsync(
+        "DELETE FROM card_progress WHERE word_type = 'verb_prep' AND word_id = ?",
+        [stored.id],
+      );
+      await db.runAsync('DELETE FROM verb_prepositions WHERE id = ?', [
+        stored.id,
+      ]);
+      retired += 1;
+    }
+
+    for (const pattern of verbPrepositionsV2) {
       await db.runAsync(
         `INSERT OR IGNORE INTO verb_prepositions
            (verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, english_trap, level)
@@ -112,7 +177,7 @@ async function seedVerbPrepositions(
   });
 
   console.log(
-    `[DB] Seeded ${verbPrepositionsV1.length} verb prepositions (${version})`,
+    `[DB] Seeded ${verbPrepositionsV2.length} verb prepositions (${version}), retired ${retired}`,
   );
 }
 

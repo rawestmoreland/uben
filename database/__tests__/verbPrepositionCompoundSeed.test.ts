@@ -8,7 +8,7 @@
  */
 
 import { verbPrepositionCompoundsV1 } from '@/database/seeds/verb-prepositions/v2-compounds';
-import { verbPrepositionsV1 } from '@/database/seeds/verb-prepositions/v1-initial';
+import { verbPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-core';
 import { toCompound } from '@/services/verbPrepositionCompoundService';
 import { PREPOSITION_GRID } from '@/services/verbPrepositionService';
 
@@ -19,16 +19,18 @@ const keyOf = (entry: {
 }) => `${entry.is_reflexive ? 'sich ' : ''}${entry.verb} ${entry.preposition}`;
 
 const patternsByKey = new Map(
-  verbPrepositionsV1.map((pattern) => [keyOf(pattern), pattern]),
+  verbPrepositionsV2.map((pattern) => [keyOf(pattern), pattern]),
 );
 
 describe('verb preposition compound seed data', () => {
   it('has a worthwhile number of entries', () => {
-    expect(verbPrepositionCompoundsV1.length).toBeGreaterThanOrEqual(40);
+    expect(verbPrepositionCompoundsV1.length).toBeGreaterThanOrEqual(30);
   });
 
-  it('keys every pattern of the preposition seed uniquely, so entries can attach unambiguously', () => {
-    expect(patternsByKey.size).toBe(verbPrepositionsV1.length);
+  it('attaches at most one entry per pattern, though a pattern has several sentences', () => {
+    expect(new Set(verbPrepositionCompoundsV1.map(keyOf)).size).toBe(
+      verbPrepositionCompoundsV1.length,
+    );
   });
 
   it('attaches every entry to exactly one existing pattern', () => {
@@ -128,7 +130,6 @@ describe('verb preposition compound seed data', () => {
     ];
     const keys = new Set(verbPrepositionCompoundsV1.map(keyOf));
     for (const key of peopleOnly) {
-      expect(patternsByKey.has(key)).toBe(true); // guards against a typo above
       expect(keys.has(key)).toBe(false);
     }
   });
