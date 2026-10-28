@@ -16,6 +16,7 @@ import { applyGermanTextPreference } from '@/utils/germanText';
 import { uiUpperCase } from '@/utils/uiText';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import { VerbPrepositionCompoundNote } from './verb-preposition-compound-note';
 
 interface VerbPrepositionFeedbackPanelProps {
   question: VerbPrepositionQuestion;
@@ -31,7 +32,8 @@ interface VerbPrepositionFeedbackPanelProps {
  * with its case ("warten auf + Akk."), the completed sentence with the
  * preposition highlighted, the gloss, and any other accepted prepositions.
  * The pattern (with its case) is shown whether or not the case step was asked
- * or answered correctly.
+ * or answered correctly. For da(r)-/wo(r)- questions it also shows how the
+ * compound is built and the rule for people.
  */
 export function VerbPrepositionFeedbackPanel({
   question,
@@ -117,6 +119,13 @@ export function VerbPrepositionFeedbackPanel({
           )}
         </Text>
         <Text style={styles.translation}>{question.translation}</Text>
+        {question.compound && (
+          <VerbPrepositionCompoundNote
+            compound={question.compound}
+            answer={question.primaryAnswer}
+            eszettPreference={eszettPreference}
+          />
+        )}
         {alternates.length > 0 && (
           <Text style={styles.note}>
             {t('verb_preposition_quiz.also_accepted', {

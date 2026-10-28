@@ -94,7 +94,7 @@ export class StatisticsService {
    * Count words the user consistently struggles with.
    * A word is "struggling" when it has enough reviews (minReviews) but a success
    * rate below 60% — meaning the user keeps getting it wrong.
-   * Plural-ending and verb-preposition cards are excluded: that progress
+   * Plural-ending, verb-preposition and da(r)-/wo(r)- cards are excluded: that progress
    * must not change the article stats.
    */
   async getStrugglingWordsCount(minReviews: number = 5): Promise<number> {
@@ -103,7 +103,7 @@ export class StatisticsService {
        FROM card_progress
        WHERE total_reviews >= ?
          AND CAST(correct_reviews AS REAL) / total_reviews < 0.6
-         AND word_type NOT IN ('noun_plural', 'verb_prep')`,
+         AND word_type NOT IN ('noun_plural', 'verb_prep', 'verb_prep_compound')`,
       [minReviews],
     );
     return result?.count ?? 0;
@@ -117,7 +117,7 @@ export class StatisticsService {
   async getMasteredCount(): Promise<number> {
     const result = await this.db.getFirstAsync<{ count: number }>(
       `SELECT COUNT(*) AS count FROM card_progress
-       WHERE interval >= 21 AND word_type NOT IN ('noun_plural', 'verb_prep')`,
+       WHERE interval >= 21 AND word_type NOT IN ('noun_plural', 'verb_prep', 'verb_prep_compound')`,
     );
     return result?.count ?? 0;
   }

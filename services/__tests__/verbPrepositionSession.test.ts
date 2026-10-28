@@ -42,6 +42,7 @@ function prepRow(
     correct_reviews: 0,
     last_reviewed_at: null,
     created_at: '2026-10-16 00:00:00',
+    kind: 'verb',
     verb: 'warten',
     is_reflexive: 0,
     preposition: 'auf',
@@ -62,7 +63,7 @@ function validRows(count: number, idOffset: number, isDue: boolean) {
     prepRow({
       id: isDue ? idOffset + index : 0,
       word_id: idOffset + index,
-      verb: `warten${index}`,
+      verb: `warten${idOffset + index}`,
     }),
   );
 }
@@ -104,8 +105,8 @@ describe('getVerbPrepositionSession() — session logic', () => {
     mockRows([], []);
     await service.getVerbPrepositionSession(20, 5);
 
-    expect(queryCall(0)[1]).toEqual([30]); // 15 due slots x2
-    expect(queryCall(1)[1]).toEqual([10]); // 5 new slots x2
+    expect(queryCall(0)[1]).toEqual([45]); // 15 due slots x3
+    expect(queryCall(1)[1]).toEqual([15]); // 5 new slots x3
   });
 
   it('drops patterns that cannot produce a question and attaches the rest', async () => {
@@ -132,6 +133,50 @@ describe('getVerbPrepositionSession() — session logic', () => {
     expect(session.cards.every((card) => card.question)).toBeTruthy();
     expect(session.dueCount).toBe(1);
     expect(session.newCount).toBe(1);
+  });
+
+  it('asks a pattern once per session, even across due and new cards', async () => {
+    const sentence = (text: string) => ({ sentence: text });
+    mockRows(
+      [
+        prepRow({ id: 7, word_id: 1, ...sentence('Ich warte ____ den Bus.') }),
+        prepRow({ id: 8, word_id: 2, ...sentence('Wir warten ____ den Zug.') }),
+      ],
+      [
+        // Same pattern as a due card, so its example would give the answer away
+        prepRow({ word_id: 3, ...sentence('Sie wartet ____ ihre Freundin.') }),
+        prepRow({
+          word_id: 4,
+          verb: 'hoffen',
+          ...sentence('Ich hoffe ____ Regen.'),
+        }),
+        prepRow({
+          word_id: 5,
+          verb: 'hoffen',
+          ...sentence('Wir hoffen ____ Glück.'),
+        }),
+      ],
+    );
+
+    const session = await service.getVerbPrepositionSession();
+
+    expect(session.cards.map((card) => card.word_id)).toEqual([1, 4]);
+    expect(session.dueCount).toBe(1);
+    expect(session.newCount).toBe(1);
+  });
+
+  it('treats a reflexive verb and its non-reflexive twin as different patterns', async () => {
+    mockRows(
+      [],
+      [
+        prepRow({ word_id: 1, verb: 'freuen', is_reflexive: 1 }),
+        prepRow({ word_id: 2, verb: 'freuen', is_reflexive: 0 }),
+      ],
+    );
+
+    const { cards } = await service.getVerbPrepositionSession();
+
+    expect(cards).toHaveLength(2);
   });
 
   it('feeds sibling patterns into the question buttons', async () => {
@@ -220,17 +265,18 @@ describeWithSqlite('verb preposition quiz against real SQLite', () => {
     verb: string,
     preposition: string,
     sentence: string,
-    options: { reflexive?: boolean; alts?: string[] } = {},
+    options: { reflexive?: boolean; alts?: string[]; kind?: string } = {},
   ): number {
-    const { reflexive = false, alts } = options;
+    const { reflexive = false, alts, kind = 'verb' } = options;
     return Number(
       raw
         .prepare(
           `INSERT INTO verb_prepositions
-             (verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, level)
-           VALUES (?, ?, ?, ?, 'akk', ?, 'gloss', 'A2')`,
+             (kind, verb, is_reflexive, preposition, alt_prepositions, case_governed, sentence, translation, level)
+           VALUES (?, ?, ?, ?, ?, 'akk', ?, 'gloss', 'A2')`,
         )
         .run(
+          kind,
           verb,
           reflexive ? 1 : 0,
           preposition,
@@ -323,6 +369,32 @@ describeWithSqlite('verb preposition quiz against real SQLite', () => {
     // 'warten' has no siblings, so nothing is pulled in from other verbs
     const warten = session.cards.find((card) => card.verb === 'warten')!;
     expect(warten.question.primaryAnswer).toBe('auf');
+  });
+
+  it("serves adjective and noun patterns and uses a noun's other patterns as distractors", async () => {
+    insertPattern('Angst', 'vor', 'Ich habe Angst ____ dem Hund.', {
+      kind: 'noun',
+    });
+    insertPattern('Angst', 'um', 'Sie hat Angst ____ ihren Sohn.', {
+      kind: 'noun',
+    });
+    insertPattern('stolz', 'auf', 'Ich bin ____ dich stolz.', {
+      kind: 'adjective',
+    });
+
+    const { cards } = await service.getVerbPrepositionSession(20, 5);
+    const nounVor = cards.find(
+      (card) => card.kind === 'noun' && card.preposition === 'vor',
+    )!;
+    const enabled = nounVor.question.buttons
+      .filter((button) => button.enabled)
+      .map((button) => button.preposition);
+
+    expect(nounVor.question.patternLabel).toBe('Angst vor + Akk.');
+    expect(enabled).toContain('um');
+    expect(
+      cards.find((card) => card.kind === 'adjective')?.question.patternLabel,
+    ).toBe('stolz auf + Akk.');
   });
 
   it('reads stored alt_prepositions as accepted answers', async () => {

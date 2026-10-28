@@ -4,7 +4,15 @@ import {
   type PluralQuizSession,
 } from '@/services/pluralService';
 import {
+  buildVerbPrepositionCompoundCards,
+  onePerPattern,
+  type VerbPrepositionCompoundCardRow,
+  type VerbPrepositionCompoundQuizSession,
+} from '@/services/verbPrepositionCompoundService';
+import {
   buildVerbPrepositionCards,
+  limitOneCardPerPattern,
+  verbPrepositionPatternKey,
   type VerbPrepositionCardRow,
   type VerbPrepositionQuizSession,
 } from '@/services/verbPrepositionService';
@@ -101,11 +109,12 @@ function buildNounFilters(
 const PLURAL_CANDIDATE_OVERFETCH = 3;
 
 /**
- * Same idea for the verb preposition quiz: a pattern is only dropped after
- * the fetch if its sentence has no blank or its preposition has no button.
- * Seeded data should almost never hit that, so a small margin is enough.
+ * Same idea for the verb preposition quiz: a card is dropped after the fetch
+ * if its sentence has no blank or its preposition has no button (rare in
+ * seeded data), or if another example of its pattern is already in the
+ * session (each pattern has two sentences, so this happens regularly).
  */
-const VERB_PREP_CANDIDATE_OVERFETCH = 2;
+const VERB_PREP_CANDIDATE_OVERFETCH = 3;
 
 /**
  * Columns shared by the due and new verb preposition queries. The
@@ -113,6 +122,7 @@ const VERB_PREP_CANDIDATE_OVERFETCH = 2;
  * patterns (same verb and reflexivity) as a JSON array for distractors.
  */
 const VERB_PREP_COLUMNS = `
+  vp.kind,
   vp.verb,
   vp.is_reflexive,
   vp.preposition,
@@ -120,6 +130,31 @@ const VERB_PREP_COLUMNS = `
   vp.case_governed,
   vp.sentence,
   vp.translation,
+  vp.english_trap,
+  vp.remote_id,
+  (SELECT json_group_array(DISTINCT sibling.preposition)
+     FROM verb_prepositions sibling
+     WHERE sibling.kind = vp.kind
+       AND sibling.verb = vp.verb
+       AND sibling.is_reflexive = vp.is_reflexive
+       AND sibling.id != vp.id) AS sibling_prepositions`;
+
+/**
+ * Columns shared by the due and new da(r)-/wo(r)- queries: the parent
+ * pattern's columns (answer, case, siblings for distractors) with the
+ * compound row's own sentence and gloss.
+ */
+const VERB_PREP_COMPOUND_COLUMNS = `
+  vp.id AS verb_preposition_id,
+  vp.verb,
+  vp.is_reflexive,
+  vp.preposition,
+  vp.alt_prepositions,
+  vp.case_governed,
+  vpc.sentence,
+  vpc.translation,
+  vpc.form,
+  vpc.person_example,
   vp.english_trap,
   vp.remote_id,
   (SELECT json_group_array(DISTINCT sibling.preposition)
@@ -587,8 +622,9 @@ export class SpacedRepetitionService {
    *
    * Like the plural quiz, due cards come first (most overdue first) and new
    * cards follow, each group shuffled. Patterns that can't produce a sound
-   * question are dropped (see verbPrepositionService). There's no
-   * category/level filter yet: v1 is one flat pool.
+   * question are dropped (see verbPrepositionService), and a pattern is
+   * asked at most once per session even though it has several example
+   * sentences. There's no category/level filter yet: v1 is one flat pool.
    */
   async getVerbPrepositionSession(
     maxCards: number = 20,
@@ -628,8 +664,83 @@ export class SpacedRepetitionService {
       [newCardsLimit * VERB_PREP_CANDIDATE_OVERFETCH],
     );
 
-    const dueCards = buildVerbPrepositionCards(dueRows).slice(0, dueLimit);
-    const newCards = buildVerbPrepositionCards(newRows).slice(0, newCardsLimit);
+    // A pattern has several example sentences, but a session asks it once
+    const dueCards = limitOneCardPerPattern(
+      buildVerbPrepositionCards(dueRows),
+    ).slice(0, dueLimit);
+    const newCards = limitOneCardPerPattern(
+      buildVerbPrepositionCards(newRows),
+      new Set(dueCards.map(verbPrepositionPatternKey)),
+    ).slice(0, newCardsLimit);
+
+    return {
+      cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],
+      dueCount: dueCards.length,
+      newCount: newCards.length,
+    };
+  }
+
+  /**
+   * Build a review session for the da(r)-/wo(r)- quiz. Each question
+   * (a pattern's da or wo form) is its own card: word_type
+   * 'verb_prep_compound', word_id = verb_preposition_compounds.id, so
+   * progress is independent of the preposition quiz and excluded from article
+   * stats. A pattern appears at most once per session: its da and wo
+   * questions share an answer, so the second would give the first away.
+   * Same shape as getVerbPrepositionSession: due cards (most overdue first),
+   * then new cards, each shuffled.
+   */
+  async getVerbPrepositionCompoundSession(
+    maxCards: number = 20,
+    newCardsLimit: number = 5,
+  ): Promise<VerbPrepositionCompoundQuizSession> {
+    const dueLimit = maxCards - newCardsLimit;
+
+    const dueRows = await this.db.getAllAsync<VerbPrepositionCompoundCardRow>(
+      `SELECT cp.*, ${VERB_PREP_COMPOUND_COLUMNS}
+       FROM card_progress cp
+       JOIN verb_preposition_compounds vpc
+         ON cp.word_type = 'verb_prep_compound' AND cp.word_id = vpc.id
+       JOIN verb_prepositions vp ON vp.id = vpc.verb_preposition_id
+       WHERE cp.next_review_date <= date('now')
+       ORDER BY cp.next_review_date ASC
+       LIMIT ?`,
+      [dueLimit * VERB_PREP_CANDIDATE_OVERFETCH],
+    );
+
+    // Over-fetch more for new cards: a pattern's second form is skipped
+    const newRows = await this.db.getAllAsync<VerbPrepositionCompoundCardRow>(
+      `SELECT
+         0 AS id,
+         'verb_prep_compound' AS word_type,
+         vpc.id AS word_id,
+         2.5 AS ease_factor,
+         0 AS interval,
+         0 AS repetitions,
+         date('now') AS next_review_date,
+         0 AS total_reviews,
+         0 AS correct_reviews,
+         NULL AS last_reviewed_at,
+         vpc.created_at,
+         ${VERB_PREP_COMPOUND_COLUMNS}
+       FROM verb_preposition_compounds vpc
+       JOIN verb_prepositions vp ON vp.id = vpc.verb_preposition_id
+       LEFT JOIN card_progress cp
+         ON cp.word_type = 'verb_prep_compound' AND cp.word_id = vpc.id
+       WHERE cp.id IS NULL
+       ORDER BY RANDOM()
+       LIMIT ?`,
+      [newCardsLimit * VERB_PREP_CANDIDATE_OVERFETCH * 2],
+    );
+
+    const dueCards = onePerPattern(
+      buildVerbPrepositionCompoundCards(dueRows),
+    ).slice(0, dueLimit);
+    const takenPatterns = new Set(dueCards.map((c) => c.verb_preposition_id));
+    const newCards = onePerPattern(
+      buildVerbPrepositionCompoundCards(newRows),
+      takenPatterns,
+    ).slice(0, newCardsLimit);
 
     return {
       cards: [...shuffleArray(dueCards), ...shuffleArray(newCards)],

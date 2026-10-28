@@ -218,6 +218,13 @@
       "case_prompt": "Quale caso regge?",
       "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Parole con da- / wo-",
+      "prompt_da": "Quale parola con da-?",
+      "prompt_wo": "Quale parola con wo-?",
+      "question_a11y": "{{sentence}}. Quale parola completa lo spazio vuoto?",
+      "person_rule": "Per le persone usa la preposizione + un pronome, non {{compound}}: {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Schemi per preposizione",
       "open": "Schemi",
@@ -322,6 +329,10 @@
         "prepositions": {
           "title": "Preposizioni",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

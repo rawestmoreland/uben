@@ -9,7 +9,11 @@
 // sentence, a preposition that isn't on the button grid) returns null and is
 // left out of the quiz rather than risking a wrong "correct" answer.
 
-import type { DueVerbPrepCard, VerbPrepositionCase } from '@/types/database';
+import type {
+  DueVerbPrepCard,
+  VerbPrepositionCase,
+  VerbPrepositionCompoundForm,
+} from '@/types/database';
 
 // ── Button grid ──────────────────────────────────────────────────────
 
@@ -99,6 +103,37 @@ const PATTERN_CONFUSIONS: Record<string, readonly string[]> = {
   'abhängen von': ['auf'],
   'bestehen aus': ['von'],
   'Angst haben vor': ['von'],
+  // Adjective + preposition (#152)
+  'stolz auf': ['von'],
+  'verliebt in': ['mit', 'an'],
+  'interessiert an': ['in', 'für'],
+  'typisch für': ['von'],
+  'eifersüchtig auf': ['von'],
+  'wütend auf': ['mit'],
+  'enttäuscht von': ['in'],
+  'schuld an': ['für'],
+  'reich an': ['in'],
+  'fähig zu': ['von'],
+  'bereit zu': ['für'],
+  // Noun + preposition (#152)
+  'Angst vor': ['von'],
+  'Angst um': ['für'],
+  'Interesse an': ['in', 'für'],
+  'Hoffnung auf': ['für'],
+  'Wunsch nach': ['für'],
+  'Antwort auf': ['zu'],
+  'Respekt vor': ['für'],
+  'Streit um': ['über'],
+  'Sorge um': ['über'],
+  'Kontakt zu': ['mit'],
+  'Teilnahme an': ['in'],
+  'Zweifel an': ['über'],
+  'Vorbereitung auf': ['für'],
+  'Reaktion auf': ['zu'],
+  'Gedanke an': ['von'],
+  'Erinnerung an': ['von'],
+  'Recht auf': ['zu'],
+  'Lösung für': ['zu'],
 };
 
 /**
@@ -174,6 +209,20 @@ export interface VerbPrepositionQuestion {
   patternLabel: string;
   /** The sentence with the primary answer filled in. */
   completedSentence: string;
+  /**
+   * Set for da(r)-/wo(r)- questions (see verbPrepositionCompoundService),
+   * where the answers are compounds like "darauf" rather than prepositions.
+   */
+  compound?: VerbPrepositionCompoundInfo;
+}
+
+/** What feedback shows beyond the pattern for a da(r)-/wo(r)- question. */
+export interface VerbPrepositionCompoundInfo {
+  form: VerbPrepositionCompoundForm;
+  /** How the answer is built, e.g. "da + r + auf". */
+  construction: string;
+  /** How a person is referred to instead, e.g. "Ich warte auf ihn."; null when the verb only takes things. */
+  personExample: string | null;
 }
 
 /** The stored pattern fields a question is built from. */
@@ -218,7 +267,7 @@ export function splitSentenceAtBlank(
   };
 }
 
-function fillBlank(sentence: string, preposition: string): string {
+export function fillBlank(sentence: string, preposition: string): string {
   const blank = BLANK_PATTERN.exec(sentence);
   // A blank that opens the sentence is capitalised: "Auf wen wartest du?"
   const filled =
@@ -433,6 +482,18 @@ export interface VerbPrepositionCardRow extends DueVerbPrepCard {
   sibling_prepositions: string | null;
 }
 
+type VerbPrepositionPatternKey = Pick<
+  DueVerbPrepCard,
+  'verb' | 'is_reflexive' | 'preposition'
+>;
+
+/** Identifies a pattern across its example sentences, e.g. "1|freuen|auf". */
+export function verbPrepositionPatternKey(
+  pattern: VerbPrepositionPatternKey,
+): string {
+  return `${pattern.is_reflexive ? 1 : 0}|${pattern.verb}|${normalizePreposition(pattern.preposition)}`;
+}
+
 /** A card whose pattern produced a sound question. */
 export interface VerbPrepositionQuizCard extends DueVerbPrepCard {
   question: VerbPrepositionQuestion;
@@ -462,4 +523,26 @@ export function buildVerbPrepositionCards(
     if (question) cards.push({ ...card, question });
   }
   return cards;
+}
+
+/**
+ * Keep at most one card per pattern (verb + preposition), skipping patterns in
+ * `askedPatterns`. A pattern has several example sentences, and asking two of
+ * them in one session would give the answer away. The caller passes the
+ * patterns of the cards it already kept, so due and new cards don't repeat
+ * each other either.
+ */
+export function limitOneCardPerPattern<T extends VerbPrepositionPatternKey>(
+  cards: readonly T[],
+  askedPatterns: ReadonlySet<string> = new Set(),
+): T[] {
+  const seen = new Set(askedPatterns);
+  const kept: T[] = [];
+  for (const card of cards) {
+    const key = verbPrepositionPatternKey(card);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    kept.push(card);
+  }
+  return kept;
 }

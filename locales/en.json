@@ -218,6 +218,13 @@
       "case_prompt": "Which case does it take?",
       "case_you_picked": "You picked {{picked}} (it takes {{correct}})"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Da- / Wo- words",
+      "prompt_da": "Which da- word?",
+      "prompt_wo": "Which wo- word?",
+      "question_a11y": "{{sentence}}. Which word fits the blank?",
+      "person_rule": "For people, use the preposition + a pronoun, not {{compound}}: {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Patterns by preposition",
       "open": "Patterns",
@@ -322,6 +329,10 @@
         "prepositions": {
           "title": "Prepositions",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

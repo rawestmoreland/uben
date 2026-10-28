@@ -12,7 +12,8 @@
 
 import { runMigrations } from '@/database/migrations';
 import { seedVocabulary } from '@/database/seed';
-import { verbPrepositionsV1 } from '@/database/seeds/verb-prepositions/v1-initial';
+import { adjectiveNounPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-adjectives-nouns';
+import { verbPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-core';
 import { describeWithSqlite, openTestDatabase } from '@/test-utils/sqlite';
 import {
   getMastery,
@@ -30,6 +31,7 @@ function row(
 ): VerbPrepositionPatternRow {
   return {
     id: 1,
+    kind: 'verb',
     verb: 'warten',
     is_reflexive: 0,
     preposition: 'auf',
@@ -154,6 +156,24 @@ describe('groupPatternsByPreposition', () => {
     }
   });
 
+  it('keeps adjective, noun and verb patterns of the same head word apart', () => {
+    const { sections } = groupPatternsByPreposition([
+      row({ id: 1, kind: 'noun', verb: 'Angst', preposition: 'vor' }),
+      row({ id: 2, kind: 'noun', verb: 'Angst', preposition: 'um' }),
+      row({ id: 3, kind: 'verb', verb: 'Angst', preposition: 'vor' }),
+    ]);
+    const byId = new Map(
+      sections
+        .flatMap((section) => section.data)
+        .map((item) => [item.id, item]),
+    );
+    // Only the two noun patterns contrast; the verb row shares just the string
+    expect(byId.get(1)?.contrastPatterns).toEqual(['Angst um']);
+    expect(byId.get(2)?.contrastPatterns).toEqual(['Angst vor']);
+    expect(byId.get(3)?.contrastPatterns).toEqual([]);
+    expect(byId.get(1)?.kind).toBe('noun');
+  });
+
   it('also lists a synonym pattern under its accepted alternate', () => {
     const { sections, patternCount } = groupPatternsByPreposition([
       row({
@@ -212,6 +232,48 @@ describe('groupPatternsByPreposition', () => {
     expect(startedCount).toBe(2);
   });
 
+  it('lists a pattern once however many examples it has, showing the first', () => {
+    const { sections, patternCount } = groupPatternsByPreposition([
+      row({ id: 1, sentence: 'Ich warte ____ meine Frau.' }),
+      row({ id: 2, sentence: 'Wir warten ____ den Bus.' }),
+      row({ id: 3, verb: 'hoffen', sentence: 'Ich hoffe ____ Regen.' }),
+    ]);
+
+    expect(patternCount).toBe(2);
+    expect(sections[0].data.map((item) => item.pattern)).toEqual([
+      'hoffen auf',
+      'warten auf',
+    ]);
+    const warten = sections[0].data.find((i) => i.pattern === 'warten auf');
+    expect(warten?.id).toBe(1);
+    expect(warten?.example.after).toBe(' meine Frau.');
+  });
+
+  it("combines the progress of a pattern's examples", () => {
+    const reviewed = (id: number, interval: number) =>
+      row({ id, total_reviews: 2, correct_reviews: 1, interval });
+
+    const mastery = (rows: VerbPrepositionPatternRow[]) =>
+      groupPatternsByPreposition(rows).sections[0].data[0];
+
+    const bothNew = mastery([row({ id: 1 }), row({ id: 2 })]);
+    expect(bothNew.mastery).toBe('new');
+
+    const oneStarted = mastery([reviewed(1, 6), row({ id: 2 })]);
+    expect(oneStarted.mastery).toBe('learning');
+
+    const bothMastered = mastery([reviewed(1, 30), reviewed(2, 25)]);
+    expect(bothMastered.mastery).toBe('mastered');
+    expect(bothMastered.totalReviews).toBe(4);
+    expect(bothMastered.correctReviews).toBe(2);
+
+    const { startedCount } = groupPatternsByPreposition([
+      reviewed(1, 6),
+      row({ id: 2 }),
+    ]);
+    expect(startedCount).toBe(1);
+  });
+
   it('handles no patterns at all', () => {
     expect(groupPatternsByPreposition([])).toEqual({
       sections: [],
@@ -238,8 +300,15 @@ describeWithSqlite('verbPrepositionBrowseService against real SQLite', () => {
     const ids = new Set(
       data.sections.flatMap((section) => section.data.map((item) => item.id)),
     );
-    expect(data.patternCount).toBe(verbPrepositionsV1.length);
-    expect(ids.size).toBe(verbPrepositionsV1.length);
+    // Each pattern is listed once, whatever its number of example sentences
+    const patternCount = new Set(
+      [...verbPrepositionsV2, ...adjectiveNounPrepositionsV2].map(
+        (p) =>
+          `${p.kind ?? 'verb'}|${p.verb}|${p.is_reflexive ? 1 : 0}|${p.preposition}`,
+      ),
+    ).size;
+    expect(data.patternCount).toBe(patternCount);
+    expect(ids.size).toBe(patternCount);
     expect(data.startedCount).toBe(0);
     expect(
       data.sections.every((section) =>
@@ -250,36 +319,58 @@ describeWithSqlite('verbPrepositionBrowseService against real SQLite', () => {
 
   it('shows mastery from verb_prep progress only', async () => {
     const raw = await openSeededDb();
-    const target = raw
-      .prepare('SELECT id FROM verb_prepositions ORDER BY id LIMIT 1')
-      .get() as { id: number };
-    raw
+    const first = raw
       .prepare(
-        `INSERT INTO card_progress
-           (word_type, word_id, interval, repetitions, total_reviews, correct_reviews)
-         VALUES ('verb_prep', ?, 30, 4, 4, 4)`,
+        'SELECT id, verb, is_reflexive, preposition FROM verb_prepositions ORDER BY id LIMIT 1',
       )
-      .run(target.id);
+      .get() as {
+      id: number;
+      verb: string;
+      is_reflexive: number;
+      preposition: string;
+    };
+    // Every example of the first pattern is mastered
+    const patternRows = raw
+      .prepare(
+        `SELECT id FROM verb_prepositions
+         WHERE verb = ? AND is_reflexive = ? AND preposition = ?`,
+      )
+      .all(first.verb, first.is_reflexive, first.preposition) as {
+      id: number;
+    }[];
+    expect(patternRows.length).toBeGreaterThan(1);
+    for (const { id } of patternRows) {
+      raw
+        .prepare(
+          `INSERT INTO card_progress
+             (word_type, word_id, interval, repetitions, total_reviews, correct_reviews)
+           VALUES ('verb_prep', ?, 30, 4, 4, 4)`,
+        )
+        .run(id);
+    }
     // Progress for a different card type with the same word_id must not leak in
+    const other = raw
+      .prepare('SELECT MAX(id) AS id FROM verb_prepositions')
+      .get() as { id: number };
     raw
       .prepare(
         `INSERT INTO card_progress
            (word_type, word_id, interval, repetitions, total_reviews, correct_reviews)
          VALUES ('noun', ?, 30, 4, 4, 4)`,
       )
-      .run(target.id + 1);
+      .run(other.id);
 
     const data =
       await new VerbPrepositionBrowseService().getPatternsByPreposition();
     const items = data.sections.flatMap((section) => section.data);
 
-    expect(items.find((item) => item.id === target.id)?.mastery).toBe(
+    expect(items.find((item) => item.id === first.id)?.mastery).toBe(
       'mastered',
     );
     expect(
       items
         .filter((item) => item.mastery !== 'new')
-        .every((item) => item.id === target.id),
+        .every((item) => item.id === first.id),
     ).toBe(true);
     expect(data.startedCount).toBe(1);
   });

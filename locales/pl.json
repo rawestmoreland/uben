@@ -228,6 +228,13 @@
       "case_prompt": "Jaki przypadek rządzi?",
       "case_you_picked": "Wybrano {{picked}} (rządzi: {{correct}})"
     },
+    "verb_preposition_compound_quiz": {
+      "badge": "Słowa da- / wo-",
+      "prompt_da": "Które słowo z da-?",
+      "prompt_wo": "Które słowo z wo-?",
+      "question_a11y": "{{sentence}}. Które słowo pasuje do luki?",
+      "person_rule": "Przy osobach użyj przyimka + zaimka, a nie {{compound}}: {{example}}"
+    },
     "verb_preposition_patterns": {
       "title": "Wzorce według przyimka",
       "open": "Wzorce",
@@ -332,6 +339,10 @@
         "prepositions": {
           "title": "Przyimki",
           "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
     },

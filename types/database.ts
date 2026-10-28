@@ -73,13 +73,17 @@ export interface Adjective {
 /** Case governed by a verb's preposition (e.g. warten auf + Akkusativ) */
 export type VerbPrepositionCase = 'akk' | 'dat' | 'gen';
 
+/** What a preposition pattern's head word is: "warten auf", "stolz auf", "Angst vor" */
+export type PrepositionPatternKind = 'verb' | 'adjective' | 'noun';
+
 /**
- * A verb + preposition pattern with its cloze sentence. A verb that takes
+ * A verb, adjective or noun + preposition pattern with its cloze sentence. A verb that takes
  * several prepositions (sich freuen auf / über) has one row per pattern.
  */
 export interface VerbPreposition {
   id: number;
-  verb: string; // infinitive, without "sich" (e.g. "freuen")
+  kind: PrepositionPatternKind; // what `verb` holds; existing rows are 'verb'
+  verb: string; // head word: verb infinitive without "sich" ("freuen"), adjective ("stolz") or noun ("Angst")
   is_reflexive: number; // 0 or 1 (SQLite boolean)
   preposition: string; // the primary answer, e.g. "auf"
   alt_prepositions: string | null; // JSON array of also-correct prepositions, or null
@@ -92,17 +96,39 @@ export interface VerbPreposition {
   created_at: string;
 }
 
+/** The pronominal-adverb forms of a preposition: da(r)- (darauf) and wo(r)- (worauf). */
+export type VerbPrepositionCompoundForm = 'da' | 'wo';
+
+/**
+ * One da(r)- or wo(r)- question for a verb_prepositions pattern. Each pattern
+ * that takes a thing has up to two rows (one per form), each with its own
+ * cloze sentence ("Ich warte ____.", "____ wartest du?"). The answer is not
+ * stored: it is derived from the pattern's preposition.
+ */
+export interface VerbPrepositionCompound {
+  id: number;
+  verb_preposition_id: number;
+  form: VerbPrepositionCompoundForm;
+  sentence: string; // contains a "____" blank where the compound goes
+  translation: string;
+  person_example: string | null; // how a person is referred to instead, e.g. "Ich warte auf ihn."
+  created_at: string;
+}
+
 /**
  * What a card_progress row tracks. A noun has two independent cards: 'noun'
  * for its article and 'noun_plural' for its plural ending (word_id = noun id).
  * 'verb_prep' tracks a verb preposition pattern (word_id = verb_prepositions.id).
+ * 'verb_prep_compound' tracks one da(r)-/wo(r)- question
+ * (word_id = verb_preposition_compounds.id).
  */
 export type CardWordType =
   | 'noun'
   | 'verb'
   | 'adjective'
   | 'noun_plural'
-  | 'verb_prep';
+  | 'verb_prep'
+  | 'verb_prep_compound';
 
 /** SM-2 spaced repetition progress for a single card */
 export interface CardProgress {
@@ -235,6 +261,7 @@ export interface DuePluralCard extends CardProgress {
 
 /** A verb preposition card that is due for review, joined with its pattern data */
 export interface DueVerbPrepCard extends CardProgress {
+  kind: PrepositionPatternKind;
   verb: string;
   is_reflexive: number; // 0 or 1 (SQLite boolean)
   preposition: string;
@@ -244,6 +271,17 @@ export interface DueVerbPrepCard extends CardProgress {
   translation: string;
   english_trap: string | null;
   remote_id: string | null;
+}
+
+/**
+ * A da(r)-/wo(r)- card as loaded for a session: the parent pattern's columns
+ * (so the answer and distractors can be derived) with the compound row's own
+ * sentence and gloss in place of the pattern's.
+ */
+export interface DueVerbPrepCompoundCard extends DueVerbPrepCard {
+  verb_preposition_id: number;
+  form: VerbPrepositionCompoundForm;
+  person_example: string | null;
 }
 
 // ── Input Types ───────────────────────────────────────────────────────
@@ -348,7 +386,9 @@ export interface SeedVerb {
  * sense): a verb with several prepositions is several entries, each with a
  * sentence that only its own preposition fits. */
 export interface SeedVerbPreposition {
-  /** Infinitive without "sich", e.g. "freuen" */
+  /** What `verb` is; defaults to 'verb' */
+  kind?: PrepositionPatternKind;
+  /** Head word: infinitive without "sich" ("freuen"), adjective ("stolz") or noun ("Angst") */
   verb: string;
   is_reflexive?: boolean;
   /** The primary answer, e.g. "auf" */
@@ -363,6 +403,27 @@ export interface SeedVerbPreposition {
   /** Optional note on a common English-speaker mistake, shown in feedback */
   english_trap?: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/**
+ * da(r)-/wo(r)- questions for an existing verb_preposition pattern, matched
+ * to it by (verb, is_reflexive, preposition). Only patterns whose preposition
+ * takes a thing get one: people take `auf + Akk. + pronoun`, not `darauf`.
+ */
+export interface SeedVerbPrepositionCompound {
+  /** Infinitive without "sich", as in the pattern it belongs to */
+  verb: string;
+  is_reflexive?: boolean;
+  /** The pattern's primary preposition, e.g. "auf" */
+  preposition: string;
+  /** Cloze sentence with a "____" blank, e.g. "Ich warte ____." */
+  da_sentence: string;
+  da_translation: string;
+  /** Cloze question with a "____" blank, e.g. "____ wartest du?" */
+  wo_sentence: string;
+  wo_translation: string;
+  /** How a person is referred to instead, e.g. "Ich warte auf ihn."; omit when the verb only takes things */
+  person_example?: string;
 }
 
 /** A correction to an existing noun in the database */
