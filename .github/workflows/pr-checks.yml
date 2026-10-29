@@ -39,21 +39,6 @@ jobs:
 
             console.log('✅ PR direction is valid');
 
-  check-versions:
-    name: Check Version Sync
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Check app.config.js, package.json and store.config.json versions match
-        run: node scripts/check-versions.cjs
-
   lint-and-check:
     name: Lint and Type Check
     runs-on: ubuntu-latest

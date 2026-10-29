@@ -24,11 +24,6 @@ export const SETTINGS_KEYS = {
   GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
   GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
   PLURAL_NOTATION_HINT_SEEN: 'plural_notation_hint_seen',
-  VERB_PREPOSITION_CASE_STEP: 'verb_preposition_case_step',
-  REMINDERS_ENABLED: 'reminders_enabled',
-  REMINDER_TIME: 'reminder_time',
-  STREAK_REMINDERS_ENABLED: 'streak_reminders_enabled',
-  REMINDER_PROMPT_SEEN: 'reminder_prompt_seen',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
@@ -303,73 +298,6 @@ class SettingsService {
     );
   }
 
-  // ── Convenience: Verb Preposition Case Step ────────────────────────
-
-  /** Whether the preposition quiz follows a correct two-way preposition with an Akkusativ/Dativ tap. Default: true. */
-  async getVerbPrepositionCaseStep(): Promise<boolean> {
-    const value = await this.getSetting(
-      SETTINGS_KEYS.VERB_PREPOSITION_CASE_STEP,
-    );
-    // Default to true if never set
-    return value !== 'false';
-  }
-
-  async setVerbPrepositionCaseStep(enabled: boolean): Promise<void> {
-    await this.setSetting(
-      SETTINGS_KEYS.VERB_PREPOSITION_CASE_STEP,
-      enabled ? 'true' : 'false',
-    );
-  }
-
-  // ── Convenience: Practice Reminders ───────────────────────────────
-
-  /** Whether the daily practice reminder is on. Default: false (opt-in). */
-  async getRemindersEnabled(): Promise<boolean> {
-    const value = await this.getSetting(SETTINGS_KEYS.REMINDERS_ENABLED);
-    return value === 'true';
-  }
-
-  async setRemindersEnabled(enabled: boolean): Promise<void> {
-    await this.setSetting(
-      SETTINGS_KEYS.REMINDERS_ENABLED,
-      enabled ? 'true' : 'false',
-    );
-  }
-
-  /** Reminder time as `HH:MM` (local), or `null` if the user never chose one. */
-  async getReminderTime(): Promise<string | null> {
-    return this.getSetting(SETTINGS_KEYS.REMINDER_TIME);
-  }
-
-  async setReminderTime(time: string): Promise<void> {
-    await this.setSetting(SETTINGS_KEYS.REMINDER_TIME, time);
-  }
-
-  /** Whether the "save your streak" reminder is on. Default: false (opt-in). */
-  async getStreakRemindersEnabled(): Promise<boolean> {
-    const value = await this.getSetting(SETTINGS_KEYS.STREAK_REMINDERS_ENABLED);
-    return value === 'true';
-  }
-
-  async setStreakRemindersEnabled(enabled: boolean): Promise<void> {
-    await this.setSetting(
-      SETTINGS_KEYS.STREAK_REMINDERS_ENABLED,
-      enabled ? 'true' : 'false',
-    );
-  }
-
-  /** Whether the one-time "want reminders?" prompt has already been shown. Default: false. */
-  async getReminderPromptSeen(): Promise<boolean> {
-    const value = await this.getSetting(SETTINGS_KEYS.REMINDER_PROMPT_SEEN);
-    return value === 'true';
-  }
-
-  async setReminderPromptSeen(seen: boolean): Promise<void> {
-    await this.setSetting(
-      SETTINGS_KEYS.REMINDER_PROMPT_SEEN,
-      seen ? 'true' : 'false',
-    );
-  }
 }
 
 export const settingsService = new SettingsService();
