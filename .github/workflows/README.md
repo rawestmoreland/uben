@@ -69,21 +69,6 @@ The app version is not bumped here; an OTA reaches every build with a matching r
 
 `production.yml` publishes the draft when the tag is pushed, falling back to a git-log changelog if no draft exists. Requires the `ANTHROPIC_API_KEY` secret.
 
-### 4b. `prepare-release.yml` - Version Bump and Store Notes
-
-**Trigger:** Manual (`workflow_dispatch`), from `staging` only. Inputs: `bump` (`minor` or `patch`) and `dry_run`.
-
-**Purpose:** Bumps the version and writes the App Store "What's New" text for what is shipping, so neither is edited by hand.
-
-**Steps:**
-1. Check `app.config.js`, `package.json` and `store.config.json` versions agree
-2. `scripts/bump-version.js` bumps all three
-3. Claude reads the commits/PRs since the previous release tag and writes `releaseNotes` and `promoText` for every locale
-4. `scripts/apply-store-release-notes.cjs` validates (all locales present, App Store length limits) and writes them into `store.config.json`
-5. Commit `chore: bump version to <version>` to `staging` (skipped on `dry_run`; the diff is in the run summary either way)
-
-Commits pushed with `GITHUB_TOKEN` don't trigger other workflows, so run `staging.yml` manually afterwards if you want a preview build. Requires the `ANTHROPIC_API_KEY` secret.
-
 ### 5. `pr-checks.yml` - Pull Request Validation
 
 **Trigger:** Pull requests to `develop`, `staging`, or `main`
@@ -92,9 +77,8 @@ Commits pushed with `GITHUB_TOKEN` don't trigger other workflows, so run `stagin
 
 **Steps:**
 1. Validate PR direction (staging ← develop, main ← staging)
-2. Check the version matches in `app.config.js`, `package.json` and `store.config.json`
-3. Run lint and TypeScript checks
-4. Comment on PR with results
+2. Run lint and TypeScript checks
+3. Comment on PR with results
 
 ## Required Secrets
 

@@ -45,13 +45,6 @@ export default {
     android: {
       package: `com.westmorelandcreative.uben${getBundleSuffix()}`,
       icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
-      // Adaptive icon derived from the iOS icon. Preview builds swap the black
-      // background for blue so they're distinguishable from production.
-      adaptiveIcon: {
-        foregroundImage: './assets/images/android-icon-foreground.png',
-        backgroundImage: `./assets/images/android-icon-background${IS_PREVIEW ? '-preview' : ''}.png`,
-        monochromeImage: './assets/images/android-icon-monochrome.png',
-      },
       predictiveBackGestureEnabled: false,
     },
     plugins: [
@@ -105,15 +98,6 @@ export default {
               '-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1',
             ],
           },
-        },
-      ],
-      [
-        'expo-notifications',
-        {
-          // Local practice reminders only (no remote push). Android's
-          // status-bar glyph must be a white-on-transparent silhouette.
-          icon: './assets/images/notification-icon.png',
-          color: '#FFE500',
         },
       ],
       [

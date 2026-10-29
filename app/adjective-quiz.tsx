@@ -18,7 +18,6 @@ import {
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
 import { useSettings } from '@/hooks/use-settings';
-import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { useWordTranslation } from '@/hooks/use-word-translation';
 import { applyGermanTextPreference } from '@/utils/germanText';
@@ -435,7 +434,6 @@ function CompleteState({
   onEnableAdvanced,
 }: CompleteStateProps) {
   const { handleSessionComplete } = useStoreReview();
-  useReminderPrompt();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
   const { isPro } = useProEntitlement();

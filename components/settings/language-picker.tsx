@@ -11,17 +11,9 @@ import {
   type AppLanguage,
 } from '@/types/language';
 import { uiUpperCase } from '@/utils/uiText';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FlatList,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface LanguagePickerProps {
@@ -80,25 +72,15 @@ export function LanguagePicker({ value, onChange, disabled }: LanguagePickerProp
   const { t } = useTranslation('app');
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
-  const pendingLanguageRef = useRef<AppLanguage | null>(null);
 
   const openSheet = useCallback(() => setOpen(true), []);
   const close = useCallback(() => setOpen(false), []);
-  const applyPendingLanguage = useCallback(() => {
-    const language = pendingLanguageRef.current;
-    pendingLanguageRef.current = null;
-    if (language) onChange(language);
-  }, [onChange]);
   const handleSelect = useCallback(
     (language: AppLanguage) => {
-      pendingLanguageRef.current = language;
+      onChange(language);
       setOpen(false);
-      // iOS drops a modal dismissal that overlaps another UI change, leaving an
-      // invisible sheet over the screen that swallows touches (issue #176), so
-      // apply the change once the sheet is gone. Android has no onDismiss.
-      if (Platform.OS !== 'ios') applyPendingLanguage();
     },
-    [applyPendingLanguage],
+    [onChange],
   );
   const renderOption = useCallback(
     ({ item }: { item: AppLanguage }) => (
@@ -121,13 +103,7 @@ export function LanguagePicker({ value, onChange, disabled }: LanguagePickerProp
         <IconSymbol name="chevron.right" size={24} color={AppColors.black} />
       </Pressable>
 
-      <Modal
-        visible={open}
-        transparent
-        animationType="fade"
-        onRequestClose={close}
-        onDismiss={applyPendingLanguage}
-      >
+      <Modal visible={open} transparent animationType="fade" onRequestClose={close}>
         <View style={styles.backdrop}>
           <Pressable
             style={StyleSheet.absoluteFill}

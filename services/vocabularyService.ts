@@ -183,9 +183,8 @@ export class VocabularyService {
 
   /**
    * Get aggregated statistics across all card progress records.
-   * Plural-ending, verb-preposition and da(r)-/wo(r)- cards are excluded so they don't
-   * inflate the article quiz's card and due counts on the home and progress
-   * screens.
+   * Plural-ending cards are excluded so they don't inflate the article
+   * quiz's card and due counts on the home and progress screens.
    */
   async getUserStats(): Promise<UserStats> {
     const stats = await this.db.getFirstAsync<UserStats>(`
@@ -201,7 +200,7 @@ export class VocabularyService {
           CASE WHEN next_review_date <= date('now') THEN 1 END
         ) AS due_today
       FROM card_progress
-      WHERE word_type NOT IN ('noun_plural', 'verb_prep', 'verb_prep_compound')
+      WHERE word_type != 'noun_plural'
     `);
 
     return (
