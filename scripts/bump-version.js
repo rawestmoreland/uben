@@ -8,11 +8,13 @@
  *   node scripts/bump-version.js [branch]
  *
  * Branch-specific behavior:
- *   - develop: Patch increment (1.0.1 → 1.0.2)
- *   - staging: Minor increment (1.0.2 → 1.1.0)
+ *   - develop (or "patch"): Patch increment (1.0.1 → 1.0.2)
+ *   - staging (or "minor"): Minor increment (1.0.2 → 1.1.0)
  *   - main: No increment (promotes staging's version)
  *
- * Updates both app.json and package.json
+ * Updates app.config.js, package.json and store.config.json so the three
+ * stay in sync (scripts/check-versions.cjs enforces this in CI). app.config.js
+ * and store.config.json are edited as text to keep their formatting intact.
  */
 
 const fs = require('fs');
@@ -23,14 +25,29 @@ const branch = process.argv[2] || process.env.GITHUB_REF_NAME || 'develop';
 
 console.log(`\n🔄 Version bump for branch: ${branch}\n`);
 
-// Read current versions
-const appJsonPath = path.join(__dirname, '../app.json');
+const appConfigPath = path.join(__dirname, '../app.config.js');
 const packageJsonPath = path.join(__dirname, '../package.json');
+const storeConfigPath = path.join(__dirname, '../store.config.json');
 
-const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
+const appConfigSource = fs.readFileSync(appConfigPath, 'utf8');
+const storeConfigSource = fs.readFileSync(storeConfigPath, 'utf8');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-const currentVersion = appJson.expo.version;
+// Same pattern as scripts/app-version.cjs, plus the store config's "v" prefix
+const appVersionPattern = /^(\s*version:\s*['"])(\d+\.\d+\.\d+)(['"])/m;
+const storeVersionPattern = /^(\s*"version":\s*"v)(\d+\.\d+\.\d+)(")/m;
+
+const appMatch = appConfigSource.match(appVersionPattern);
+if (!appMatch) {
+  console.error('❌ Could not find a semver "version" in app.config.js');
+  process.exit(1);
+}
+if (!storeConfigSource.match(storeVersionPattern)) {
+  console.error('❌ Could not find a "version": "vX.Y.Z" in store.config.json');
+  process.exit(1);
+}
+
+const currentVersion = appMatch[2];
 console.log(`📦 Current version: ${currentVersion}`);
 
 // Parse semantic version
@@ -41,12 +58,20 @@ let [major, minor, patch] = versionParts;
 let newVersion;
 let bumpType;
 
-if (branch === 'develop' || branch.startsWith('refs/heads/develop')) {
+if (
+  branch === 'develop' ||
+  branch === 'patch' ||
+  branch.startsWith('refs/heads/develop')
+) {
   // Patch increment for develop
   patch += 1;
   newVersion = `${major}.${minor}.${patch}`;
   bumpType = 'patch';
-} else if (branch === 'staging' || branch.startsWith('refs/heads/staging')) {
+} else if (
+  branch === 'staging' ||
+  branch === 'minor' ||
+  branch.startsWith('refs/heads/staging')
+) {
   // Minor increment for staging
   minor += 1;
   patch = 0;
@@ -66,10 +91,13 @@ if (branch === 'develop' || branch.startsWith('refs/heads/develop')) {
 
 console.log(`🎯 New version: ${newVersion} (${bumpType} bump)`);
 
-// Update app.json
-appJson.expo.version = newVersion;
-fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2) + '\n', 'utf8');
-console.log(`✅ Updated app.json`);
+// Update app.config.js
+fs.writeFileSync(
+  appConfigPath,
+  appConfigSource.replace(appVersionPattern, `$1${newVersion}$3`),
+  'utf8',
+);
+console.log(`✅ Updated app.config.js`);
 
 // Update package.json
 packageJson.version = newVersion;
@@ -79,6 +107,14 @@ fs.writeFileSync(
   'utf8',
 );
 console.log(`✅ Updated package.json`);
+
+// Update store.config.json (App Store metadata, version is "v"-prefixed)
+fs.writeFileSync(
+  storeConfigPath,
+  storeConfigSource.replace(storeVersionPattern, `$1${newVersion}$3`),
+  'utf8',
+);
+console.log(`✅ Updated store.config.json`);
 
 console.log(
   `\n🎉 Version bumped successfully: ${currentVersion} → ${newVersion}\n`,

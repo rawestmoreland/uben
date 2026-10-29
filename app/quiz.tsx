@@ -14,6 +14,7 @@ import {
   type QuizResult,
 } from '@/hooks/use-quiz-session';
 import { useSettings } from '@/hooks/use-settings';
+import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize, NOUN_SINGLE_LINE_PROPS } from '@/utils/typography';
@@ -341,6 +342,7 @@ interface CompleteStateProps {
 function CompleteState({ results, eszettPreference }: CompleteStateProps) {
   const { t } = useTranslation('app');
   const { handleSessionComplete } = useStoreReview();
+  useReminderPrompt();
   const { maybeShowInterstitial } = useQuizInterstitialAd();
 
   // Request a review once per completed session, when conditions are met
