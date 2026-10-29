@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "v1.12.0",
+    "version": "v1.13.0",
     "copyright": "2026",
     "release": {
       "automaticRelease": false
@@ -22,7 +22,7 @@
           "telc",
           "vocabulary"
         ],
-        "releaseNotes": "We've added a Präteritum quiz for pro users. Enjoy!",
+        "releaseNotes": "- New Pro quiz: verb, adjective and noun prepositions (warten auf, stolz auf, Angst vor)\n- Da(r)-/wo(r)- quiz: darauf, worauf and more\n- Preposition cheat sheet to browse all patterns\n- Optional daily practice reminders",
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "title": "Üben - German Articles",
@@ -46,7 +46,7 @@
             "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.19.34@2x.png"
           ]
         },
-        "promoText": "New in the latest update: Präteritum quiz for Pro users. Five focused minutes a day to finally stop guessing der, die, das - free, offline, no account, no ads."
+        "promoText": "New: Pro quiz for verb prepositions (warten auf, stolz auf, Angst vor). Stop guessing der, die, das - free, offline, no account, no ads."
       },
       "de-DE": {
         "title": "Üben - Deutsche Artikel",
@@ -68,8 +68,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Neu: Präteritum-Quiz für Pro-Nutzer. Fünf Minuten pro Tag, um bei der, die, das nicht mehr zu raten - kostenlos, offline, ohne Konto, ohne Werbung.",
-        "releaseNotes": "Wir haben ein Präteritum-Quiz für Pro-Nutzer hinzugefügt. Viel Spaß!",
+        "promoText": "Neu: Pro-Quiz zu Verbpräpositionen (warten auf, stolz auf, Angst vor). Schluss mit Raten bei der, die, das - kostenlos, offline, ohne Konto, ohne Werbung.",
+        "releaseNotes": "- Neues Pro-Quiz: Präpositionen bei Verben, Adjektiven und Nomen (warten auf, stolz auf, Angst vor)\n- Da(r)-/Wo(r)-Quiz: darauf, worauf und mehr\n- Präpositions-Spickzettel zum Durchstöbern aller Muster\n- Optionale tägliche Erinnerungen zum Üben",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -107,8 +107,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nowość: quiz Präteritum dla Pro. Pięć minut dziennie, by przestać zgadywać der, die, das - za darmo, offline, bez konta i bez reklam.",
-        "releaseNotes": "Dodaliśmy quiz Präteritum dla użytkowników Pro. Miłej nauki!",
+        "promoText": "Nowość: quiz Pro z przyimkami przy czasownikach (warten auf, stolz auf, Angst vor). Koniec zgadywania - za darmo, offline, bez konta i reklam.",
+        "releaseNotes": "- Nowy quiz Pro: przyimki przy czasownikach, przymiotnikach i rzeczownikach (warten auf, stolz auf, Angst vor)\n- Quiz da(r)-/wo(r)-: darauf, worauf i inne\n- Ściąga z przyimkami do przeglądania wszystkich wzorców\n- Opcjonalne codzienne przypomnienia o nauce",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -146,8 +146,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nouveau : quiz de Präteritum pour les utilisateurs Pro. Cinq minutes par jour pour ne plus deviner der, die, das - gratuit, hors ligne, sans compte ni pub.",
-        "releaseNotes": "Nous avons ajouté un quiz de Präteritum pour les utilisateurs Pro. Bon apprentissage !",
+        "promoText": "Nouveau : quiz Pro sur les prépositions des verbes (warten auf, stolz auf, Angst vor). Fini de deviner - gratuit, hors ligne, sans compte ni pub.",
+        "releaseNotes": "- Nouveau quiz Pro : prépositions des verbes, adjectifs et noms (warten auf, stolz auf, Angst vor)\n- Quiz da(r)-/wo(r)- : darauf, worauf et plus\n- Aide-mémoire des prépositions pour parcourir tous les modèles\n- Rappels quotidiens facultatifs pour s'exercer",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -185,8 +185,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nuevo: quiz de Präteritum para usuarios Pro. Cinco minutos al día para dejar de adivinar der, die, das - gratis, sin conexión, sin cuenta ni anuncios.",
-        "releaseNotes": "Hemos añadido un quiz de Präteritum para usuarios Pro. ¡Disfrútalo!",
+        "promoText": "Nuevo: quiz Pro de preposiciones con verbos (warten auf, stolz auf, Angst vor). Deja de adivinar - gratis, sin conexión, sin cuenta ni anuncios.",
+        "releaseNotes": "- Nuevo quiz Pro: preposiciones con verbos, adjetivos y sustantivos (warten auf, stolz auf, Angst vor)\n- Quiz da(r)-/wo(r)-: darauf, worauf y más\n- Guía rápida de preposiciones para explorar todos los patrones\n- Recordatorios diarios opcionales para practicar",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -224,8 +224,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Yeni: Pro kullanıcılar için Präteritum sınavı. der, die, das tahmin etmeyi bırakmak için günde beş dakika - ücretsiz, çevrimdışı, hesapsız, reklamsız.",
-        "releaseNotes": "Pro kullanıcılar için Präteritum sınavı ekledik. İyi çalışmalar!",
+        "promoText": "Yeni: fiil edatları için Pro sınavı (warten auf, stolz auf, Angst vor). Tahmin etmeyi bırak - ücretsiz, çevrimdışı, hesapsız, reklamsız.",
+        "releaseNotes": "- Yeni Pro sınavı: fiil, sıfat ve isimlerle edatlar (warten auf, stolz auf, Angst vor)\n- Da(r)-/wo(r)- sınavı: darauf, worauf ve daha fazlası\n- Tüm kalıplara göz atabileceğin edat özet sayfası\n- İsteğe bağlı günlük çalışma hatırlatmaları",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -265,8 +265,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "新增：Pro 用户专享 Präteritum 测验。每天五分钟，告别猜测 der、die、das——免费、离线、无需账号、无广告。",
-        "releaseNotes": "我们为 Pro 用户新增了 Präteritum 测验。祝学习愉快！"
+        "promoText": "新增：Pro 动词介词测验（warten auf、stolz auf、Angst vor）。告别瞎猜——免费、离线、无需账号、无广告。",
+        "releaseNotes": "- 新增 Pro 测验：动词、形容词和名词的介词搭配（warten auf、stolz auf、Angst vor）\n- da(r)-/wo(r)- 测验：darauf、worauf 等\n- 介词速查表，可浏览所有搭配\n- 可选的每日练习提醒"
       }
     },
     "categories": ["EDUCATION"],
