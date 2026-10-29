@@ -1,5 +1,3 @@
-import { PromoCodeForm } from '@/components/promo-code-form';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import {
   AppColors,
   Layout,
@@ -7,10 +5,10 @@ import {
   Typography,
   shadowStyle,
 } from '@/constants/design';
-import { PAYWALL_ID } from '@/constants/purchases';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { purchaseService } from '@/services/purchaseService';
-import { uiUpperCase } from '@/utils/uiText';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { PromoCodeForm } from '@/components/promo-code-form';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -26,8 +24,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import Purchases from 'react-native-purchases';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { uiUpperCase } from '@/utils/uiText';
 
 // ── Paywall Screen ───────────────────────────────────────────────────
 
@@ -51,9 +49,6 @@ export default function PaywallScreen() {
 
   useEffect(() => {
     purchaseService.trackPaywallViewed(funnelSource);
-    Purchases.trackCustomPaywallImpression({
-      paywallId: PAYWALL_ID,
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

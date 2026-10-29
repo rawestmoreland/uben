@@ -68,20 +68,7 @@
       "translations_downloading": "Downloading translations…",
       "translations_download_failed": "Couldn't download translations. Hints will show in English until you're online again.",
       "adjective_difficulty_advanced": "Advanced adjective endings",
-      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice.",
-      "verb_preposition_case_step": "Test the case on two-way prepositions",
-      "verb_preposition_case_step_description": "After a correct an, auf, in, über or vor in the preposition quiz, also choose Akkusativ or Dativ.",
-      "reminders_title": "Reminders",
-      "reminders_enable": "Practice reminders",
-      "reminders_enable_description": "A nudge when words are due. At most one a day, and only when there's something to review.",
-      "reminders_time": "Reminder time",
-      "reminders_time_description": "When the reminder arrives.",
-      "reminders_time_earlier": "One hour earlier",
-      "reminders_time_later": "One hour later",
-      "reminders_streak": "Streak reminder",
-      "reminders_streak_description": "Get a reminder before a streak of 3 or more days would break.",
-      "reminders_denied": "Notifications are turned off for Üben in your device settings.",
-      "reminders_open_settings": "Open settings"
+      "adjective_difficulty_advanced_description": "Also include the dative case (indirect object) in Adjective Endings practice."
     },
     "level_filter": {
       "label": "STUDY LEVEL",
@@ -202,47 +189,6 @@
       "check_button": "Check",
       "continue": "Continue"
     },
-    "verb_preposition_quiz": {
-      "badge": "Verb + Preposition",
-      "prompt": "Which preposition?",
-      "blank_a11y": "blank",
-      "question_a11y": "{{sentence}}. Which preposition fits the blank?",
-      "all_caught_up": "All caught up",
-      "no_cards_due": "No verb patterns due for review right now.\n\nCome back later!",
-      "correct": "Correct",
-      "incorrect": "Not quite",
-      "you_picked": "You picked {{preposition}}",
-      "also_accepted": "Also accepted: {{prepositions}}",
-      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Continue",
-      "case_prompt": "Which case does it take?",
-      "case_you_picked": "You picked {{picked}} (it takes {{correct}})"
-    },
-    "verb_preposition_compound_quiz": {
-      "badge": "Da- / Wo- words",
-      "prompt_da": "Which da- word?",
-      "prompt_wo": "Which wo- word?",
-      "question_a11y": "{{sentence}}. Which word fits the blank?",
-      "person_rule": "For people, use the preposition + a pronoun, not {{compound}}: {{example}}"
-    },
-    "verb_preposition_patterns": {
-      "title": "Patterns by preposition",
-      "open": "Patterns",
-      "open_a11y": "Browse patterns grouped by preposition",
-      "close": "Close patterns",
-      "summary": "{{started}} of {{total}} patterns practised",
-      "summary_empty": "{{total}} patterns. Start the quiz to track your progress.",
-      "empty_title": "No patterns yet",
-      "empty": "There are no verb patterns on this device yet. Check back after the next vocabulary update.",
-      "error": "Could not load the patterns.",
-      "also_with": "Also accepted for: {{preposition}}",
-      "contrast": "Compare: {{patterns}}",
-      "mastery": {
-        "new": "New",
-        "learning": "Learning",
-        "mastered": "Mastered"
-      }
-    },
     "plural_quiz": {
       "badge": "Plural Endings",
       "prompt": "Which plural ending?",
@@ -325,32 +271,8 @@
         "verbs": {
           "title": "Verbs",
           "subtitle": "Präteritum"
-        },
-        "prepositions": {
-          "title": "Prepositions",
-          "subtitle": "warten auf + Akk."
-        },
-        "compounds": {
-          "title": "Da- / Wo-",
-          "subtitle": "warten → darauf"
         }
       }
-    },
-    "reminders": {
-      "channel_name": "Practice reminders",
-      "due_title": "Time to practice",
-      "streak_title": "Keep your streak going",
-      "streak_body": "Your streak is at {{streak}}. Practice today to keep it alive.",
-      "prompt_title": "Practice reminders?",
-      "prompt_body": "Want a nudge when words are due? At most one a day, and only when there's something to review. You can change this any time in Settings.",
-      "prompt_not_now": "Not now",
-      "prompt_accept": "Remind me",
-      "due_body_a_one": "{{count}} word is due for review. A short session keeps it fresh.",
-      "due_body_a_other": "{{count}} words are due for review. A short session keeps them fresh.",
-      "due_body_b_one": "{{count}} word is ready to review. A few minutes is enough.",
-      "due_body_b_other": "{{count}} words are ready to review. A few minutes is enough.",
-      "due_body_c_one": "Quick round? {{count}} word is due.",
-      "due_body_c_other": "Quick round? {{count}} words are due."
     }
   }
 }

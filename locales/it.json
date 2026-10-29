@@ -68,20 +68,7 @@
       "translations_downloading": "Download delle traduzioni in corso…",
       "translations_download_failed": "Impossibile scaricare le traduzioni. I suggerimenti saranno in inglese finché non sarai di nuovo online.",
       "adjective_difficulty_advanced": "Desinenze avanzate",
-      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi.",
-      "verb_preposition_case_step": "Verifica il caso delle preposizioni miste",
-      "verb_preposition_case_step_description": "Dopo una risposta corretta con an, auf, in, über o vor nel quiz delle preposizioni, scegli anche Akkusativ o Dativ.",
-      "reminders_title": "Promemoria",
-      "reminders_enable": "Promemoria di studio",
-      "reminders_enable_description": "Un avviso quando ci sono parole da ripassare. Al massimo uno al giorno, e solo se c'è qualcosa da ripassare.",
-      "reminders_time": "Orario del promemoria",
-      "reminders_time_description": "Quando arriva il promemoria.",
-      "reminders_time_earlier": "Un'ora prima",
-      "reminders_time_later": "Un'ora dopo",
-      "reminders_streak": "Promemoria serie",
-      "reminders_streak_description": "Ricevi un promemoria prima che una serie di 3 o più giorni si interrompa.",
-      "reminders_denied": "Le notifiche sono disattivate per Üben nelle impostazioni del dispositivo.",
-      "reminders_open_settings": "Apri impostazioni"
+      "adjective_difficulty_advanced_description": "Includi anche il caso dativo (complemento di termine) negli esercizi sulle desinenze degli aggettivi."
     },
     "level_filter": {
       "label": "LIVELLO DI STUDIO",
@@ -202,47 +189,6 @@
       "check_button": "Controlla",
       "continue": "Continua"
     },
-    "verb_preposition_quiz": {
-      "badge": "Verbo + Preposizione",
-      "prompt": "Quale preposizione?",
-      "blank_a11y": "spazio vuoto",
-      "question_a11y": "{{sentence}}. Quale preposizione completa lo spazio vuoto?",
-      "all_caught_up": "Tutto in regola",
-      "no_cards_due": "Nessun costrutto verbale da ripassare al momento.\n\nTorna più tardi!",
-      "correct": "Corretto",
-      "incorrect": "Non proprio",
-      "you_picked": "Hai scelto {{preposition}}",
-      "also_accepted": "Accettato anche: {{prepositions}}",
-      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
-      "continue": "Continua",
-      "case_prompt": "Quale caso regge?",
-      "case_you_picked": "Hai scelto {{picked}} (regge {{correct}})"
-    },
-    "verb_preposition_compound_quiz": {
-      "badge": "Parole con da- / wo-",
-      "prompt_da": "Quale parola con da-?",
-      "prompt_wo": "Quale parola con wo-?",
-      "question_a11y": "{{sentence}}. Quale parola completa lo spazio vuoto?",
-      "person_rule": "Per le persone usa la preposizione + un pronome, non {{compound}}: {{example}}"
-    },
-    "verb_preposition_patterns": {
-      "title": "Schemi per preposizione",
-      "open": "Schemi",
-      "open_a11y": "Sfoglia gli schemi raggruppati per preposizione",
-      "close": "Chiudi gli schemi",
-      "summary": "{{started}} schemi su {{total}} esercitati",
-      "summary_empty": "{{total}} schemi. Avvia il quiz per tenere traccia dei progressi.",
-      "empty_title": "Nessuno schema",
-      "empty": "Non ci sono ancora schemi verbali su questo dispositivo. Riprova dopo il prossimo aggiornamento del vocabolario.",
-      "error": "Impossibile caricare gli schemi.",
-      "also_with": "Accettato anche per: {{preposition}}",
-      "contrast": "Confronta: {{patterns}}",
-      "mastery": {
-        "new": "Nuovo",
-        "learning": "In corso",
-        "mastered": "Padroneggiato"
-      }
-    },
     "plural_quiz": {
       "badge": "Desinenze del plurale",
       "prompt": "Quale desinenza al plurale?",
@@ -325,32 +271,8 @@
         "verbs": {
           "title": "Verbi",
           "subtitle": "Präteritum"
-        },
-        "prepositions": {
-          "title": "Preposizioni",
-          "subtitle": "warten auf + Akk."
-        },
-        "compounds": {
-          "title": "Da- / Wo-",
-          "subtitle": "warten → darauf"
         }
       }
-    },
-    "reminders": {
-      "channel_name": "Promemoria di studio",
-      "due_title": "È ora di esercitarsi",
-      "streak_title": "Mantieni la serie",
-      "streak_body": "La tua serie è a {{streak}}. Esercitati oggi per mantenerla.",
-      "prompt_title": "Promemoria di studio?",
-      "prompt_body": "Vuoi un promemoria quando ci sono parole da ripassare? Al massimo uno al giorno, e solo se c'è qualcosa da ripassare. Puoi cambiarlo in qualsiasi momento nelle Impostazioni.",
-      "prompt_not_now": "Non ora",
-      "prompt_accept": "Ricordamelo",
-      "due_body_a_one": "{{count}} parola da ripassare. Una sessione breve la mantiene fresca.",
-      "due_body_a_other": "{{count}} parole da ripassare. Una sessione breve le mantiene fresche.",
-      "due_body_b_one": "{{count}} parola pronta da ripassare. Bastano pochi minuti.",
-      "due_body_b_other": "{{count}} parole pronte da ripassare. Bastano pochi minuti.",
-      "due_body_c_one": "Un giro veloce? {{count}} parola da ripassare.",
-      "due_body_c_other": "Un giro veloce? {{count}} parole da ripassare."
     }
   }
 }
