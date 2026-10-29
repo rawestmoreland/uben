@@ -85,3 +85,34 @@ describe('settingsService plural notation hint', () => {
     ]);
   });
 });
+
+describe('settingsService verb preposition case step', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('defaults to on', async () => {
+    mockDb.getFirstAsync.mockResolvedValue(null);
+
+    await expect(settingsService.getVerbPrepositionCaseStep()).resolves.toBe(
+      true,
+    );
+  });
+
+  it('reads back off once turned off', async () => {
+    mockDb.getFirstAsync.mockResolvedValue({ value: 'false' });
+
+    await expect(settingsService.getVerbPrepositionCaseStep()).resolves.toBe(
+      false,
+    );
+  });
+
+  it('persists the toggle under its own key', async () => {
+    await settingsService.setVerbPrepositionCaseStep(false);
+
+    expect(mockDb.runAsync).toHaveBeenCalledWith(expect.any(String), [
+      SETTINGS_KEYS.VERB_PREPOSITION_CASE_STEP,
+      'false',
+    ]);
+  });
+});

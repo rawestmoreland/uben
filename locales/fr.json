@@ -72,7 +72,20 @@
       "translations_downloading": "Téléchargement des traductions…",
       "translations_download_failed": "Impossible de télécharger les traductions. Les indices s'afficheront en anglais jusqu'à votre retour en ligne.",
       "adjective_difficulty_advanced": "Terminaisons d'adjectifs avancées",
-      "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs."
+      "adjective_difficulty_advanced_description": "Inclure aussi le datif (complément d'objet indirect) dans l'entraînement aux terminaisons d'adjectifs.",
+      "verb_preposition_case_step": "Tester le cas des prépositions mixtes",
+      "verb_preposition_case_step_description": "Après une bonne réponse avec an, auf, in, über ou vor dans le quiz des prépositions, choisis aussi Akkusativ ou Dativ.",
+      "reminders_title": "Rappels",
+      "reminders_enable": "Rappels d'entraînement",
+      "reminders_enable_description": "Un rappel quand des mots sont à réviser. Un seul par jour au maximum, et seulement s'il y a quelque chose à réviser.",
+      "reminders_time": "Heure du rappel",
+      "reminders_time_description": "Quand le rappel arrive.",
+      "reminders_time_earlier": "Une heure plus tôt",
+      "reminders_time_later": "Une heure plus tard",
+      "reminders_streak": "Rappel de série",
+      "reminders_streak_description": "Recevez un rappel avant qu'une série de 3 jours ou plus ne se brise.",
+      "reminders_denied": "Les notifications sont désactivées pour Üben dans les réglages de l'appareil.",
+      "reminders_open_settings": "Ouvrir les réglages"
     },
     "level_filter": {
       "label": "NIVEAU D'ÉTUDE",
@@ -194,6 +207,47 @@
       "check_button": "Vérifier",
       "continue": "Continuer"
     },
+    "verb_preposition_quiz": {
+      "badge": "Verbe + Préposition",
+      "prompt": "Quelle préposition ?",
+      "blank_a11y": "blanc",
+      "question_a11y": "{{sentence}}. Quelle préposition complète le blanc ?",
+      "all_caught_up": "Tout est à jour",
+      "no_cards_due": "Aucune construction verbale à réviser pour le moment.\n\nReviens plus tard !",
+      "correct": "Correct",
+      "incorrect": "Pas tout à fait",
+      "you_picked": "Tu as choisi {{preposition}}",
+      "also_accepted": "Également accepté : {{prepositions}}",
+      "feedback_a11y": "{{verdict}}. {{pattern}}. {{sentence}}",
+      "continue": "Continuer",
+      "case_prompt": "Quel cas régit-elle ?",
+      "case_you_picked": "Tu as choisi {{picked}} (elle prend {{correct}})"
+    },
+    "verb_preposition_compound_quiz": {
+      "badge": "Mots da- / wo-",
+      "prompt_da": "Quel mot en da- ?",
+      "prompt_wo": "Quel mot en wo- ?",
+      "question_a11y": "{{sentence}}. Quel mot complète le blanc ?",
+      "person_rule": "Pour une personne, utilisez la préposition + un pronom, pas {{compound}} : {{example}}"
+    },
+    "verb_preposition_patterns": {
+      "title": "Modèles par préposition",
+      "open": "Modèles",
+      "open_a11y": "Parcourir les modèles regroupés par préposition",
+      "close": "Fermer les modèles",
+      "summary": "{{started}} modèles sur {{total}} pratiqués",
+      "summary_empty": "{{total}} modèles. Lancez le quiz pour suivre vos progrès.",
+      "empty_title": "Aucun modèle",
+      "empty": "Aucun modèle de verbe n'est disponible sur cet appareil. Revenez après la prochaine mise à jour du vocabulaire.",
+      "error": "Impossible de charger les modèles.",
+      "also_with": "Aussi accepté pour : {{preposition}}",
+      "contrast": "Comparer : {{patterns}}",
+      "mastery": {
+        "new": "Nouveau",
+        "learning": "En cours",
+        "mastered": "Maîtrisé"
+      }
+    },
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Débloquez Üben Pro",
@@ -245,8 +299,35 @@
         "verbs": {
           "title": "Verbes",
           "subtitle": "Präteritum"
+        },
+        "prepositions": {
+          "title": "Prépositions",
+          "subtitle": "warten auf + Akk."
+        },
+        "compounds": {
+          "title": "Da- / Wo-",
+          "subtitle": "warten → darauf"
         }
       }
+    },
+    "reminders": {
+      "channel_name": "Rappels d'entraînement",
+      "due_title": "C'est l'heure de s'entraîner",
+      "streak_title": "Gardez votre série",
+      "streak_body": "Votre série est à {{streak}}. Entraînez-vous aujourd'hui pour la garder.",
+      "prompt_title": "Rappels d'entraînement ?",
+      "prompt_body": "Voulez-vous un rappel quand des mots sont à réviser ? Un seul par jour au maximum, et seulement s'il y a quelque chose à réviser. Vous pouvez modifier cela à tout moment dans les Réglages.",
+      "prompt_not_now": "Pas maintenant",
+      "prompt_accept": "Me rappeler",
+      "due_body_a_one": "{{count}} mot à réviser. Une courte session le garde frais.",
+      "due_body_a_many": "{{count}} mots à réviser. Une courte session les garde frais.",
+      "due_body_a_other": "{{count}} mots à réviser. Une courte session les garde frais.",
+      "due_body_b_one": "{{count}} mot prêt à être révisé. Quelques minutes suffisent.",
+      "due_body_b_many": "{{count}} mots prêts à être révisés. Quelques minutes suffisent.",
+      "due_body_b_other": "{{count}} mots prêts à être révisés. Quelques minutes suffisent.",
+      "due_body_c_one": "Un petit tour ? {{count}} mot à réviser.",
+      "due_body_c_many": "Un petit tour ? {{count}} mots à réviser.",
+      "due_body_c_other": "Un petit tour ? {{count}} mots à réviser."
     }
   }
 }

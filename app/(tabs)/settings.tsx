@@ -1,4 +1,5 @@
 import { LanguagePicker } from '@/components/settings/language-picker';
+import { RemindersCard } from '@/components/settings/reminders-card';
 import { TranslationSyncOverlay } from '@/components/settings/translation-sync-overlay';
 import {
   AppColors,
@@ -43,6 +44,8 @@ export default function SettingsScreen() {
     translationSyncFailed,
     adjectiveDeclensionDifficulty,
     setAdjectiveDeclensionDifficulty,
+    verbPrepositionCaseStep,
+    setVerbPrepositionCaseStep,
     isLoading,
   } = useSettings();
 
@@ -249,7 +252,34 @@ export default function SettingsScreen() {
               style={styles.switch}
             />
           </View>
+
+          {/* Verb Preposition Case Step Toggle */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingTextGroup}>
+              <Text style={styles.settingLabel}>
+                {uiUpperCase(t('settings.verb_preposition_case_step'))}
+              </Text>
+              <Text style={styles.settingDescription}>
+                {t('settings.verb_preposition_case_step_description')}
+              </Text>
+            </View>
+            <Switch
+              value={verbPrepositionCaseStep}
+              onValueChange={setVerbPrepositionCaseStep}
+              disabled={isLoading}
+              trackColor={{
+                false: AppColors.lightGray,
+                true: AppColors.yellow,
+              }}
+              thumbColor={AppColors.white}
+              style={styles.switch}
+            />
+          </View>
         </View>
+
+        {/* ── Reminders Card ──────────────────────────────────── */}
+        <RemindersCard />
+
         {/* ── Database Diagnostics Card (unlocked by tapping header 7×) ── */}
         {showDiagnostics && (
           <View style={[styles.card, shadowStyle]}>
