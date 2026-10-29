@@ -1,0 +1,124 @@
+name: Prepare Release
+
+# Manual: bumps the version and has Claude write the App Store "what's new" text
+# for everything shipping, then commits both to staging. Run it from the staging
+# branch once QA has signed off, before opening the staging -> main PR.
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump: minor (1.12.0 -> 1.13.0) or patch (1.12.0 -> 1.12.1)'
+        type: choice
+        options:
+          - minor
+          - patch
+        default: minor
+      dry_run:
+        description: 'Show the changes in the run summary without committing or pushing'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: read
+  id-token: write
+
+jobs:
+  prepare-release:
+    name: Bump Version and Write Store Notes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the staging branch
+        if: github.ref != 'refs/heads/staging'
+        run: |
+          echo "::error::Run this workflow from the staging branch (got ${{ github.ref_name }})."
+          exit 1
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Start from a consistent state so a drifted file isn't silently overwritten
+      - name: Check versions are in sync
+        run: node scripts/check-versions.cjs
+
+      - name: Bump version
+        id: bump
+        run: node scripts/bump-version.js "${{ inputs.bump }}"
+
+      - name: Find previous release tag
+        id: tags
+        run: |
+          # Previous production release (exact semver tags only; skips ota/staging tags)
+          PREV_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "v${{ steps.bump.outputs.new_version }}" | head -n 1 || true)
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Write store release notes with Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Write the App Store "What's New" text for Üben v${{ steps.bump.outputs.new_version }},
+            a German language learning app (article/plural quizzes with spaced repetition),
+            in ${{ github.repository }}.
+            Previous release tag: "${{ steps.tags.outputs.prev_tag }}" (empty means first release).
+
+            Steps:
+            1. Find what is shipping: use `git log` over the range
+               `${{ steps.tags.outputs.prev_tag }}..HEAD` (or all history if there is no previous tag),
+               and `gh pr view` / `gh pr list --state merged` to read the titles and descriptions
+               of the PRs included. Ignore version bumps, merges, CI, refactors and dependency
+               updates; only user-visible changes belong in store text.
+            2. Read store.config.json to see the locales under apple.info and the tone of the
+               existing releaseNotes and promoText (do not edit that file).
+            3. Write store-release-notes.json in the repo root: an object keyed by every locale
+               in store.config.json, each with "releaseNotes" and "promoText", e.g.
+               {"en-US": {"releaseNotes": "...", "promoText": "..."}, "de-DE": {...}}
+            4. releaseNotes: 1 to 4 short plain-text lines (use "\n" between lines, "- " bullets
+               if more than one item), describing the user-visible effect of what shipped. Natural
+               translations in each locale, not word for word. No emojis, no markdown, no PR numbers.
+            5. promoText: ONE sentence, 170 characters or fewer in every locale, that leads with
+               the most notable new thing and keeps the existing pitch (free, offline, no account,
+               no ads) where it fits. If it can't fit the news, shorten the pitch, not the news.
+            6. Do not invent changes. If nothing user-visible shipped, say so honestly with a
+               short bug fixes and improvements line instead of making something up.
+            Do not modify any other files and do not commit.
+          claude_args: |
+            --allowedTools "Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(gh pr view:*),Bash(gh pr list:*),Read,Write"
+            --model claude-sonnet-5-5
+
+      - name: Apply notes to store.config.json
+        run: |
+          test -s store-release-notes.json || { echo "::error::Claude did not produce store-release-notes.json"; exit 1; }
+          node scripts/apply-store-release-notes.cjs store-release-notes.json
+          rm store-release-notes.json
+          node scripts/check-versions.cjs
+
+      - name: Summarize changes
+        run: |
+          {
+            echo "## Release v${{ steps.bump.outputs.new_version }} (${{ inputs.bump }} bump)"
+            echo
+            echo "Previous release: \`${{ steps.tags.outputs.prev_tag }}\`"
+            echo
+            echo '```diff'
+            git diff -U0 -- app.config.js package.json store.config.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit and push to staging
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.config.js package.json store.config.json
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.new_version }}"
+          git push origin HEAD:staging
