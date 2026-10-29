@@ -65,40 +65,62 @@ git push origin develop
 
 **Files to update:**
 
+<<<<<<< HEAD
 | File              | Field     | Notes                         |
 | ----------------- | --------- | ----------------------------- |
 | `package.json`    | `version` | Semantic version e.g. `1.3.0` |
 | `app.config.js`   | `version` | Must match `package.json`     |
 | `store.config.js` | `version` | Must match `package.json`     |
+=======
+| File                | Field           | Notes                                   |
+| ------------------- | --------------- | --------------------------------------- |
+| `package.json`      | `version`       | Semantic version e.g. `1.3.0`           |
+| `app.config.js`     | `version`       | Must match `package.json`               |
+| `store.config.json` | `apple.version` | `v`-prefixed, must match `package.json` |
 
-### 4. Open a PR from staging → main
+`npm run version:bump` updates all three; `npm run version:check` (also run on every PR) fails if they differ. Don't touch `buildNumber` or `versionCode`; EAS auto-increments them on production builds.
+>>>>>>> staging
+
+### 5. Open a PR from staging → main
 
 - Title: `Release v1.3.0`
 - Link to the release ticket
 - The version bump in the diff makes it clear what's shipping
 
+Merging this PR triggers `release-notes.yml`, which has Claude draft the `v1.3.0` GitHub Release notes from the commits/PRs since the previous release tag.
+
 **PR checklist:**
 
 - [ ] QA signed off on staging preview build
-- [ ] Versions bumped (`version`, `buildNumber`, `versionCode`)
+- [ ] Version bumped and in sync (`package.json`, `app.config.js`, `store.config.json`)
+- [ ] App Store "What's New" text in `store.config.json` reviewed
 - [ ] Release ticket updated with what's included
 - [ ] No unresolved conflicts
 
-### 5. Merge and tag
+### 6. Merge and tag
+
+Tagging is manual, and pushing the tag is what starts the store release.
 
 ```bash
 # After PR is approved and merged:
 git checkout main
 git pull origin main
 git tag v1.3.0
-git push origin main --tags
+git push origin v1.3.0   # push only this tag, not --tags
 ```
 
-### 6. Trigger EAS production build
+The tag must exactly match the `app.config.js` version (`v` + version) and point at a commit on `main`, or `production.yml` fails validation. If that happens, delete the tag (locally and on origin), fix the version, and re-tag.
 
-```bash
-eas build --platform all --profile production
-```
+### 7. Watch the production workflow
+
+Pushing the tag triggers `production.yml`. **Do not run `eas build` yourself.** The workflow:
+
+1. Validates the tag (matches `app.config.js` version, commit is on `main`)
+2. Runs lint and the TypeScript check
+3. Builds each platform with the `production` profile and submits that build to the store (platforms come from the `BUILD_PLATFORMS` repo variable, default `ios`)
+4. Publishes the `v1.3.0` GitHub Release (the draft from `release-notes.yml`, or a git-log changelog if there is no draft)
+
+To re-run or override platforms, use Actions → "Production - App Store Release" → Run workflow with the tag as the ref.
 
 ---
 
@@ -184,7 +206,7 @@ git push origin --delete hotfix/fix-article-crash
 
 | Type              | Format                    | Version bump                            | Trigger                                                                      |
 | ----------------- | ------------------------- | --------------------------------------- | ---------------------------------------------------------------------------- |
-| Full native build | `v1.3.0`                  | `version`, `buildNumber`, `versionCode` | EAS production build + store submission                                      |
+| Full native build | `v1.3.0`                  | `version` (build numbers auto-increment) | Pushing the tag by hand starts `production.yml` (build, submit, GitHub Release) |
 | OTA update        | `v1.3.0-ota.<run number>` | None                                    | `eas update` only, no store submission (tag created by `production-ota.yml`) |
 
 ---
