@@ -53,25 +53,8 @@ git commit -m "chore: bump version to 1.3.0"
 git push origin staging
 ```
 
-### 4. Backfill develop
-
-After bumping the version, make sure develop matches
-
-```bash
-git checkout develop
-git merge --no-ff staging
-git push origin develop
-```
-
 **Files to update:**
 
-<<<<<<< HEAD
-| File              | Field     | Notes                         |
-| ----------------- | --------- | ----------------------------- |
-| `package.json`    | `version` | Semantic version e.g. `1.3.0` |
-| `app.config.js`   | `version` | Must match `package.json`     |
-| `store.config.js` | `version` | Must match `package.json`     |
-=======
 | File                | Field           | Notes                                   |
 | ------------------- | --------------- | --------------------------------------- |
 | `package.json`      | `version`       | Semantic version e.g. `1.3.0`           |
@@ -79,7 +62,16 @@ git push origin develop
 | `store.config.json` | `apple.version` | `v`-prefixed, must match `package.json` |
 
 `npm run version:bump` updates all three; `npm run version:check` (also run on every PR) fails if they differ. Don't touch `buildNumber` or `versionCode`; EAS auto-increments them on production builds.
->>>>>>> staging
+
+### 4. Backfill develop
+
+After bumping the version, merge staging back into develop so the two match.
+
+```bash
+git checkout develop
+git merge --no-ff staging
+git push origin develop
+```
 
 ### 5. Open a PR from staging → main
 
@@ -204,10 +196,10 @@ git push origin --delete hotfix/fix-article-crash
 
 ## Tag Naming Convention
 
-| Type              | Format                    | Version bump                            | Trigger                                                                      |
-| ----------------- | ------------------------- | --------------------------------------- | ---------------------------------------------------------------------------- |
+| Type              | Format                    | Version bump                             | Trigger                                                                         |
+| ----------------- | ------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
 | Full native build | `v1.3.0`                  | `version` (build numbers auto-increment) | Pushing the tag by hand starts `production.yml` (build, submit, GitHub Release) |
-| OTA update        | `v1.3.0-ota.<run number>` | None                                    | `eas update` only, no store submission (tag created by `production-ota.yml`) |
+| OTA update        | `v1.3.0-ota.<run number>` | None                                     | `eas update` only, no store submission (tag created by `production-ota.yml`)    |
 
 ---
 
