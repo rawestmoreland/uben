@@ -46,10 +46,14 @@ git push origin staging
 
 Once QA has signed off, bump versions on staging before opening the release PR. This is a deliberate act that signals "we are committing to shipping this."
 
+Run the **Prepare Release** workflow (Actions → Prepare Release → Run workflow, branch `staging`). It bumps the version, has Claude write the App Store "What's New" text from the changes since the last release, and commits both to `staging`. Tick `dry_run` first to review the diff in the run summary without committing. Review the committed `store.config.json` text before the release PR.
+
+To do it by hand instead:
+
 ```bash
 git checkout staging
-# Bump version in package.json and app.config.js
-git commit -m "chore: bump version to 1.3.0"
+npm run version:bump -- minor   # app.config.js, package.json, store.config.json
+git commit -am "chore: bump version to 1.3.0"
 git push origin staging
 ```
 
