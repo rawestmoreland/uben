@@ -85,7 +85,9 @@ export default {
           image: './assets/images/splash-icon.png',
           imageWidth: 200,
           resizeMode: 'contain',
-          backgroundColor: '#ffffff',
+          // splash-icon.png has an opaque black background, so match it in
+          // both modes (a white light-mode background shows as a stark box)
+          backgroundColor: '#000000',
           dark: {
             backgroundColor: '#000000',
           },

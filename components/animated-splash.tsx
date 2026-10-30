@@ -1,5 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 // Keep the splash screen visible while we prepare resources
@@ -10,6 +11,8 @@ interface AnimatedSplashProps {
 }
 
 export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
+  const { t } = useTranslation('app');
+
   // Letter animations
   const [letterU] = useState(() => new Animated.Value(-100));
   const [letterB] = useState(() => new Animated.Value(-100));
@@ -30,6 +33,9 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
   const [dot1] = useState(() => new Animated.Value(0));
   const [dot2] = useState(() => new Animated.Value(0));
   const [dot3] = useState(() => new Animated.Value(0));
+
+  // Background: starts black to match the native splash, then flips to yellow
+  const [backgroundProgress] = useState(() => new Animated.Value(0));
 
   // Decorative elements
   const [circleScale] = useState(() => new Animated.Value(0));
@@ -150,7 +156,17 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
       dotAnimation(dot3, 1800),
     ];
 
+    // Background colors can't use the native driver
+    const backgroundAnimation = Animated.timing(backgroundProgress, {
+      toValue: 1,
+      duration: 150,
+      delay: 100,
+      easing: Easing.linear,
+      useNativeDriver: false,
+    });
+
     // Start all animations
+    backgroundAnimation.start();
     letterAnimations.start();
     decoAnimations.start();
     taglineAnimation.start();
@@ -235,8 +251,13 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
     outputRange: [0.8, 1.3],
   });
 
+  const backgroundColor = backgroundProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#000000', '#FFE500'],
+  });
+
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { backgroundColor }]}>
       {/* Decorative circle */}
       <Animated.View
         style={[
@@ -323,7 +344,7 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
           },
         ]}
       >
-        PRACTICE MAKES PERFECT
+        {t('splash_tagline')}
       </Animated.Text>
 
       {/* Loading dots */}
@@ -356,14 +377,14 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
           ]}
         />
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFE500',
+    backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
   },
