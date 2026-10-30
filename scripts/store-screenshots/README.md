@@ -34,3 +34,19 @@ From the repo root: `npm run store:screenshots`.
 - **New or replaced originals**: update `FILES` and the detection rects in `LAYOUT`
   (`spec.js`). Rects only tell the detector where to look; exact boxes are measured from the image.
 - Fonts: `fonts.css` loads latin + latin-ext, which covers de, pl, fr, es and tr.
+
+## New-quiz screenshots (`new-quizzes.js`)
+
+Screens 07-09 (plural endings, verb prepositions, Präteritum) have no English original to
+re-letter, so `new-quizzes.js` lays them out in HTML (same neo-brutalist style, Work Sans) and
+renders every locale at both device sizes (iPhone 1242x2688, iPad 2064x2752) with Playwright.
+
+```bash
+node new-quizzes.js                 # all locales (en-US, de-DE, pl, fr-FR, es-ES, tr)
+node new-quizzes.js --locale=pl     # one locale
+```
+
+Edit `COPY` at the top of the script for headlines, subtitles and the in-mock UI strings (they
+mirror `locales/*.json`; de/es have no app locale so they are written there). Headlines that are
+too wide shrink automatically. Add a new locale to `COPY`, run it, then add the paths to
+`store.config.json`. Use `CHROMIUM_PATH` if Playwright's own browser is not installed.

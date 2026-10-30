@@ -4,7 +4,8 @@
   "description": "Generates localized App Store screenshots from the en-US originals",
   "scripts": {
     "generate": "node render.js",
-    "validate": "node render.js --validate"
+    "validate": "node render.js --validate",
+    "quizzes": "node new-quizzes.js"
   },
   "dependencies": {
     "@fontsource/work-sans": "^5.2.0",
