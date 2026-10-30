@@ -2,6 +2,7 @@
   "app": {
     "name": "Üben",
     "article_practice_title": "GERMAN ARTICLE PRACTICE",
+    "splash_tagline": "PRACTICE MAKES PERFECT",
     "pro_badge": "Pro",
     "description": "Learn German nouns and articles with spaced repetition.",
     "start_practicing": "Start practicing to track your progress",
