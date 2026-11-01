@@ -7,7 +7,8 @@ on:
     tags:
       # Exact semver only. Does not match v1.9.1-staging.4 or v1.9.1-ota.2
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  # Manual run: pick the semver tag as the ref. A non-tag ref fails validation.
+  # Manual run: run from main (the tag is derived from the app version and created
+  # on release) or from an existing semver tag.
   workflow_dispatch:
     inputs:
       platforms:
@@ -51,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -61,12 +63,23 @@ jobs:
         id: version
         run: |
           VERSION=$(node scripts/app-version.cjs)
-          TAG="${GITHUB_REF_NAME}"
-          if [ "$TAG" != "v${VERSION}" ]; then
-            echo "::error::Tag $TAG does not match app.config.js version v${VERSION}. Delete the tag, fix the version, and re-tag."
+          TAG="v${VERSION}"
+          # Only a tag ref has a tag name to compare. A manual run from a branch
+          # derives the tag from the app version instead.
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "$TAG" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match app.config.js version ${TAG}. Delete the tag, fix the version, and re-tag."
+            exit 1
+          fi
+          if [ "$GITHUB_REF_TYPE" != "tag" ] && [ "$GITHUB_REF_NAME" != "main" ]; then
+            echo "::error::Manual runs must use main or a semver tag as the ref (got $GITHUB_REF_NAME)."
+            exit 1
+          fi
+          if [ "$GITHUB_REF_TYPE" != "tag" ] && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "::error::Tag $TAG already exists. Run from that tag, or bump the version."
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Releasing v${VERSION}"
 
       - name: Check tagged commit is on main
@@ -166,13 +179,13 @@ jobs:
 
       - name: Generate fallback changelog
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          TAG="${{ needs.validate.outputs.tag }}"
           # Previous release = newest exact-semver tag other than this one
           PREV_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "$TAG" | head -n 1 || true)
           if [ -n "$PREV_TAG" ]; then
-            RANGE="${PREV_TAG}..${TAG}"
+            RANGE="${PREV_TAG}..${GITHUB_SHA}"
           else
-            RANGE="${TAG}"
+            RANGE="${GITHUB_SHA}"
           fi
           {
             echo "## Version ${TAG#v}"
@@ -186,7 +199,7 @@ jobs:
           script: |
             const fs = require('fs');
             const { owner, repo } = context.repo;
-            const tag = process.env.GITHUB_REF_NAME;
+            const tag = '${{ needs.validate.outputs.tag }}';
 
             // release-notes.yml may already have drafted this release with Claude-written notes.
             // If so, publish it and keep its body; otherwise fall back to the git log changelog.
@@ -205,6 +218,7 @@ jobs:
             await github.rest.repos.createRelease({
               owner, repo,
               tag_name: tag,
+              target_commitish: context.sha, // creates the tag on manual runs from main
               name: tag,
               body: fs.readFileSync('CHANGELOG.txt', 'utf8'),
               draft: false,
