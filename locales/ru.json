@@ -318,6 +318,7 @@
     "home_screen": {
       "header_subtitle": "ТРЕНИРОВКА НЕМЕЦКОЙ ГРАММАТИКИ",
       "practice_label": "ПРАКТИКА",
+      "reference_label": "СПРАВОЧНИК",
       "soon_badge": "Скоро",
       "tile_due": "К повтору: {{count}}",
       "tiles": {
@@ -344,6 +345,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Таблица глагол + предлог",
+          "subtitle": "Все модели по предлогам: warten auf + Akk."
         }
       }
     },

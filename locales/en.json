@@ -308,6 +308,7 @@
     "home_screen": {
       "header_subtitle": "GERMAN GRAMMAR PRACTICE",
       "practice_label": "PRACTICE",
+      "reference_label": "REFERENCE",
       "soon_badge": "Soon",
       "tile_due": "{{count}} due",
       "tiles": {
@@ -334,6 +335,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Verb + preposition table",
+          "subtitle": "All patterns by preposition: warten auf + Akk."
         }
       }
     },

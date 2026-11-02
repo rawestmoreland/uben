@@ -308,6 +308,7 @@
     "home_screen": {
       "header_subtitle": "德语语法练习",
       "practice_label": "练习",
+      "reference_label": "参考",
       "soon_badge": "即将推出",
       "tile_due": "{{count}} 项待复习",
       "tiles": {
@@ -334,6 +335,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "动词 + 介词表",
+          "subtitle": "按介词整理的全部搭配:warten auf + Akk."
         }
       }
     },
