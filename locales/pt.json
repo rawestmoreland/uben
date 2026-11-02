@@ -313,6 +313,7 @@
     "home_screen": {
       "header_subtitle": "PRÁTICA DE GRAMÁTICA ALEMÃ",
       "practice_label": "PRATICAR",
+      "reference_label": "REFERÊNCIA",
       "soon_badge": "Em breve",
       "tile_due": "{{count}} por rever",
       "tiles": {
@@ -339,6 +340,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Tabela verbo + preposição",
+          "subtitle": "Todos os padrões por preposição: warten auf + Akk."
         }
       }
     },

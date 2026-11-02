@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@/constants/design';
 import { ExerciseTileGrid } from '@/components/home/exercise-tile-grid';
+import { ReferenceSection } from '@/components/home/reference-section';
 import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import * as Haptics from 'expo-haptics';
@@ -166,6 +167,9 @@ export default function HomeScreen() {
           articlesDueCount={stats.due_today}
           isLoading={isLoading}
         />
+
+        {/* ── Reference (lookup tables, no quiz) ───────────────── */}
+        <ReferenceSection />
 
         {/* ── Word Actions ─────────────────────────────────────── */}
         <View style={styles.wordActionsRow}>
