@@ -5,6 +5,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useSentenceTranslation } from '@/hooks/use-word-translation';
 import {
   formatCaseName,
   isCorrectPreposition,
@@ -43,6 +44,10 @@ export function VerbPrepositionFeedbackPanel({
   eszettPreference,
 }: VerbPrepositionFeedbackPanelProps) {
   const { t } = useTranslation('app');
+  const translation = useSentenceTranslation(
+    question.sentence,
+    question.translation,
+  );
   const display = (text: string) =>
     applyGermanTextPreference(text, eszettPreference);
   const verdict = t(
@@ -118,7 +123,7 @@ export function VerbPrepositionFeedbackPanel({
             display(question.completedSentence)
           )}
         </Text>
-        <Text style={styles.translation}>{question.translation}</Text>
+        <Text style={styles.translation}>{translation}</Text>
         {question.compound && (
           <VerbPrepositionCompoundNote
             compound={question.compound}

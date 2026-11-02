@@ -93,7 +93,8 @@ export function VerbPrepositionQuizPlay({
         ) : (
           <VerbPrepositionQuestionCard
             sentence={question.sentence}
-            translation={showEnglishHint ? question.translation : null}
+            translation={question.translation}
+            showTranslation={showEnglishHint}
             eszettPreference={eszettPreference}
             compoundForm={compoundForm}
           />
