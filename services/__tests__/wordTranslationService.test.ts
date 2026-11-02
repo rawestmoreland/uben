@@ -2,9 +2,16 @@ import { adjectivesV1 } from '@/database/seeds/adjectives/v1-initial';
 import { adjectivesV2 } from '@/database/seeds/adjectives/v2-expanded';
 import { adjectiveTranslations } from '@/database/seeds/translations/adjectives';
 import { verbTranslations } from '@/database/seeds/translations/verbs';
+import { verbPrepositionSentenceTranslations } from '@/database/seeds/translations/verb-preposition-sentences';
+import { adjectiveNounPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-adjectives-nouns';
+import { verbPrepositionCompoundsV1 } from '@/database/seeds/verb-prepositions/v2-compounds';
+import { verbPrepositionsV2 } from '@/database/seeds/verb-prepositions/v2-core';
 import { verbsV1 } from '@/database/seeds/verbs/v1-initial';
 import { APP_LANGUAGES } from '@/types/language';
-import { getWordTranslation } from '../wordTranslationService';
+import {
+  getSentenceTranslation,
+  getWordTranslation,
+} from '../wordTranslationService';
 
 describe('getWordTranslation', () => {
   it('returns the stored English text for English', () => {
@@ -52,7 +59,9 @@ describe('bundled translations', () => {
   it('cover every seeded adjective in every non-English language', () => {
     for (const adjective of [...adjectivesV1, ...adjectivesV2]) {
       for (const language of languages) {
-        expect(adjectiveTranslations[adjective.german]?.[language]).toBeTruthy();
+        expect(
+          adjectiveTranslations[adjective.german]?.[language],
+        ).toBeTruthy();
       }
     }
   });
@@ -68,5 +77,68 @@ describe('bundled translations', () => {
     expect(
       Object.keys(adjectiveTranslations).filter((k) => !adjectives.has(k)),
     ).toEqual([]);
+  });
+});
+
+describe('getSentenceTranslation', () => {
+  const sentence = 'Ich denke jeden Tag ____ dich.';
+  const english = 'I think of you every day.';
+
+  it('returns the stored English gloss for English', () => {
+    expect(getSentenceTranslation(sentence, 'en', english)).toBe(english);
+  });
+
+  it('returns the bundled translation for the selected language', () => {
+    expect(getSentenceTranslation(sentence, 'fr', english)).toBe(
+      'Je pense à toi tous les jours.',
+    );
+    expect(getSentenceTranslation(sentence, 'zh', english)).toBe(
+      '我每天都想着你。',
+    );
+  });
+
+  it('falls back to English for sentences without an entry', () => {
+    expect(getSentenceTranslation('Unbekannt ____.', 'fr', 'Unknown.')).toBe(
+      'Unknown.',
+    );
+  });
+
+  it('falls back to English for an unsupported locale', () => {
+    expect(getSentenceTranslation(sentence, 'de', english)).toBe(english);
+  });
+});
+
+describe('bundled verb preposition sentence translations', () => {
+  const languages = APP_LANGUAGES.filter((language) => language !== 'en');
+  const sentences = [
+    ...verbPrepositionsV2.map((pattern) => pattern.sentence),
+    ...adjectiveNounPrepositionsV2.map((pattern) => pattern.sentence),
+    ...verbPrepositionCompoundsV1.flatMap((compound) => [
+      compound.da_sentence,
+      compound.wo_sentence,
+    ]),
+  ];
+
+  it('cover every seeded sentence in every non-English language', () => {
+    for (const sentence of sentences) {
+      for (const language of languages) {
+        expect(
+          verbPrepositionSentenceTranslations[sentence]?.[language]?.trim(),
+        ).toBeTruthy();
+      }
+    }
+  });
+
+  it('have no entries for sentences that are not seeded', () => {
+    const seeded = new Set(sentences);
+    expect(
+      Object.keys(verbPrepositionSentenceTranslations).filter(
+        (sentence) => !seeded.has(sentence),
+      ),
+    ).toEqual([]);
+  });
+
+  it('keep each sentence unique, so it is a safe key', () => {
+    expect(new Set(sentences).size).toBe(sentences.length);
   });
 });

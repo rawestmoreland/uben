@@ -282,6 +282,7 @@
     "home_screen": {
       "header_subtitle": "ENTRAÎNEMENT À LA GRAMMAIRE ALLEMANDE",
       "practice_label": "S'ENTRAÎNER",
+      "reference_label": "RÉFÉRENCE",
       "soon_badge": "Bientôt",
       "tile_due": "{{count}} à réviser",
       "tiles": {
@@ -308,6 +309,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Tableau verbe + préposition",
+          "subtitle": "Tous les modèles par préposition : warten auf + Akk."
         }
       }
     },

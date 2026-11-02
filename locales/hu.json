@@ -308,6 +308,7 @@
     "home_screen": {
       "header_subtitle": "NÉMET NYELVTANI GYAKORLÁS",
       "practice_label": "GYAKORLÁS",
+      "reference_label": "SEGÉDLET",
       "soon_badge": "Hamarosan",
       "tile_due": "{{count}} esedékes",
       "tiles": {
@@ -334,6 +335,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Ige + elöljárószó táblázat",
+          "subtitle": "Minden minta elöljárószó szerint: warten auf + Akk."
         }
       }
     },

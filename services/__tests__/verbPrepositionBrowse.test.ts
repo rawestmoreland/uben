@@ -103,6 +103,7 @@ describe('groupPatternsByPreposition', () => {
 
     const [item] = sections[0].data;
     expect(item.pattern).toBe('sich freuen auf');
+    expect(item.sentence).toBe('Ich freue mich schon ____ das Wochenende.');
     expect(item.caseLabel).toBe('+ Akk.');
     expect(item.example).toEqual({
       before: 'Ich freue mich schon ',
