@@ -67,8 +67,10 @@ export interface VerbPrepositionBrowseItem {
   pattern: string;
   /** e.g. "+ Akk." */
   caseLabel: string;
-  /** The sense being illustrated, e.g. "to look forward to". */
+  /** The sense being illustrated, e.g. "to look forward to" (stored English; the UI localises it). */
   translation: string;
+  /** The stored cloze sentence the translation glosses; the key for localised translations. */
+  sentence: string;
   /** Example sentence split around the preposition, which the UI highlights. */
   example: { before: string; preposition: string; after: string };
   /** True when this section is one of the pattern's accepted alternates, not its primary preposition. */
@@ -225,6 +227,7 @@ export function groupPatternsByPreposition(
         pattern: isAlternate ? patternName({ ...row, preposition }) : ownName,
         caseLabel: formatCaseLabel(row.case_governed),
         translation: row.translation,
+        sentence: row.sentence,
         example: buildExample(row.sentence, preposition),
         isAlternate,
         primaryPreposition: isAlternate ? primary : null,

@@ -151,7 +151,7 @@ Business logic abstracted from UI components:
 - **vocabularyService.ts** - CRUD operations for nouns/verbs (SQLite)
 - **spacedRepetitionService.ts** - SM-2 algorithm implementation
 - **pluralService.ts** - Classifies a noun's stored plural into one of the nine plural-ending quiz buttons
-- **wordTranslationService.ts** - Verb/adjective hints in the app language, from bundled `database/seeds/translations/` (not synced); falls back to `english`
+- **wordTranslationService.ts** - Verb/adjective hints and verb preposition example-sentence glosses in the app language, from bundled `database/seeds/translations/` (not synced; sentences are keyed by their German text); falls back to `english`/the stored English `translation`
 - **verbPrepositionService.ts** - Builds verb + preposition cloze questions (fixed button grid, confusion-based distractors, alternates graded correct) from stored `verb_prepositions` patterns
 - **verbPrepositionCompoundService.ts** - Builds da(r)-/wo(r)- questions by deriving the compound from a pattern's preposition and reusing the preposition question shape (buttons carry the compounds); one card per pattern per session
 - **verbPrepositionBrowseService.ts** - Verb preposition cheat sheet: all patterns grouped by preposition (synonym alternates listed under each), with mastery from `verb_prep` progress

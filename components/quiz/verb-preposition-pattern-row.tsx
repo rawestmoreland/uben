@@ -1,4 +1,5 @@
 import { AppColors, Layout, Spacing, Typography } from '@/constants/design';
+import { useSentenceTranslation } from '@/hooks/use-word-translation';
 import type {
   VerbPrepositionBrowseItem,
   VerbPrepositionMastery,
@@ -21,6 +22,7 @@ export const VerbPrepositionPatternRow = memo(
     eszettPreference,
   }: VerbPrepositionPatternRowProps) {
     const { t } = useTranslation('app');
+    const translation = useSentenceTranslation(item.sentence, item.translation);
     const prefer = (text: string) =>
       applyGermanTextPreference(text, eszettPreference);
     const { example } = item;
@@ -41,7 +43,7 @@ export const VerbPrepositionPatternRow = memo(
           </View>
         </View>
 
-        <Text style={styles.translation}>{item.translation}</Text>
+        <Text style={styles.translation}>{translation}</Text>
 
         <Text style={styles.example}>
           {prefer(example.before)}
