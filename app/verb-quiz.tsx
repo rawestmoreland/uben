@@ -29,6 +29,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type TextInputInstance,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -115,7 +116,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
   const { t } = useTranslation('app');
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
   const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const translation = useWordTranslation(
     'verb',
     currentQuestion?.infinitive ?? null,
