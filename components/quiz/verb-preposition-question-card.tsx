@@ -5,6 +5,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useSentenceTranslation } from '@/hooks/use-word-translation';
 import { splitSentenceAtBlank } from '@/services/verbPrepositionService';
 import type { VerbPrepositionCompoundForm } from '@/types/database';
 import { applyGermanTextPreference } from '@/utils/germanText';
@@ -15,38 +16,37 @@ import { StyleSheet, Text, View } from 'react-native';
 interface VerbPrepositionQuestionCardProps {
   /** Cloze sentence containing the "____" blank. */
   sentence: string;
-  /** English gloss of the sense being tested; it is what disambiguates verbs with several prepositions. */
-  translation: string | null;
+  /** Stored English gloss; shown in the app language when a translation is bundled. It is what disambiguates verbs with several prepositions. */
+  translation: string;
+  /** False when the learner turned the translation hint off. */
+  showTranslation: boolean;
   eszettPreference: 'eszett' | 'ss';
   /** Which compound is being asked; omitted for a plain preposition question. */
   compoundForm?: VerbPrepositionCompoundForm;
 }
 
-/** The question: a cloze sentence with the preposition blanked out, plus its English gloss. */
+/** The question: a cloze sentence with the preposition blanked out, plus its gloss in the app language. */
 export function VerbPrepositionQuestionCard({
   sentence,
   translation,
+  showTranslation,
   eszettPreference,
   compoundForm,
 }: VerbPrepositionQuestionCardProps) {
   const { t } = useTranslation('app');
+  const localisedTranslation = useSentenceTranslation(sentence, translation);
   const promptKey = compoundForm
     ? `verb_preposition_compound_quiz.prompt_${compoundForm}`
     : 'verb_preposition_quiz.prompt';
   const a11yKey = compoundForm
     ? 'verb_preposition_compound_quiz.question_a11y'
     : 'verb_preposition_quiz.question_a11y';
-  const displaySentence = applyGermanTextPreference(
-    sentence,
-    eszettPreference,
-  );
+  const displaySentence = applyGermanTextPreference(sentence, eszettPreference);
   const parts = splitSentenceAtBlank(displaySentence);
 
   return (
     <View style={[styles.card, shadowStyle]}>
-      <Text style={styles.prompt}>
-        {uiUpperCase(t(promptKey))}
-      </Text>
+      <Text style={styles.prompt}>{uiUpperCase(t(promptKey))}</Text>
       <Text
         style={styles.sentence}
         accessibilityLabel={t(a11yKey, {
@@ -66,7 +66,9 @@ export function VerbPrepositionQuestionCard({
           displaySentence
         )}
       </Text>
-      {translation && <Text style={styles.translation}>{translation}</Text>}
+      {showTranslation && localisedTranslation ? (
+        <Text style={styles.translation}>{localisedTranslation}</Text>
+      ) : null}
     </View>
   );
 }
