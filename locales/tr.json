@@ -308,6 +308,7 @@
     "home_screen": {
       "header_subtitle": "ALMANCA DİLBİLGİSİ ALIŞTIRMASI",
       "practice_label": "ALIŞTIRMA",
+      "reference_label": "REFERANS",
       "soon_badge": "Yakında",
       "tile_due": "{{count}} tekrar",
       "tiles": {
@@ -334,6 +335,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Fiil + edat tablosu",
+          "subtitle": "Tüm kalıplar edata göre: warten auf + Akk."
         }
       }
     },

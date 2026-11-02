@@ -318,6 +318,7 @@
     "home_screen": {
       "header_subtitle": "NAUKA GRAMATYKI NIEMIECKIEJ",
       "practice_label": "ĆWICZENIA",
+      "reference_label": "ŚCIĄGA",
       "soon_badge": "Wkrótce",
       "tile_due": "do powtórki: {{count}}",
       "tiles": {
@@ -344,6 +345,12 @@
         "compounds": {
           "title": "Da- / Wo-",
           "subtitle": "warten → darauf"
+        }
+      },
+      "reference": {
+        "prepositions": {
+          "title": "Tabela czasownik + przyimek",
+          "subtitle": "Wszystkie wzorce wg przyimka: warten auf + Akk."
         }
       }
     },
