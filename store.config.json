@@ -28,41 +28,6 @@
         "title": "Üben: German Grammar",
         "subtitle": "Der Die Das, Endings & Verbs",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "screenshots": {
-          "APP_IPAD_PRO_3GEN_129": [
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.40.37@2x.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.43.36@2x.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.44.13@2x.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.42.07@2x.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.43.07@2x.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/CleanShot 2026-02-11 at 15.44.57@2x.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/07-plural-endings.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/08-verb-prepositions.png",
-            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/09-praeteritum.png"
-          ],
-          "APP_IPHONE_65": [
-            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.13.26@2x.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.15.05@2x.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.16.30@2x.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.17.35@2x.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.18.36@2x.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/CleanShot 2026-02-07 at 22.19.34@2x.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/07-plural-endings.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/08-verb-prepositions.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_65/09-praeteritum.png"
-          ],
-          "APP_IPHONE_DUO": [
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/01-master-articles.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/02-spaced-repetition.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/03-streak.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/04-vocabulary.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/05-offline.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/06-daily.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/07-plural-endings.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/08-verb-prepositions.png",
-            "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/09-praeteritum.png"
-          ]
-        },
         "promoText": "New: browse the preposition cheat sheet from Home, with sentences translated into your language. Free, offline, no account, no ads."
       },
       "de-DE": {
@@ -86,31 +51,7 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Neu: Präpositions-Spickzettel direkt vom Start aus öffnen, mit übersetzten Beispielsätzen. Kostenlos, offline, ohne Konto, ohne Werbung.",
-        "releaseNotes": "- Den Präpositions-Spickzettel für Verben jetzt direkt vom Startbildschirm öffnen (Pro)\n- Beispielsätze zu den Präpositionen werden jetzt in deiner App-Sprache übersetzt",
-        "screenshots": {
-          "APP_IPAD_PRO_3GEN_129": [
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/03-streak.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/05-offline.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/06-daily.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/07-plural-endings.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/08-verb-prepositions.png",
-            "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/09-praeteritum.png"
-          ],
-          "APP_IPHONE_65": [
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/01-master-articles.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/02-spaced-repetition.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/03-streak.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/04-vocabulary.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/05-offline.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/06-daily.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/07-plural-endings.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/08-verb-prepositions.png",
-            "store/apple/screenshot/de-DE/APP_IPHONE_65/09-praeteritum.png"
-          ]
-        }
+        "releaseNotes": "- Den Präpositions-Spickzettel für Verben jetzt direkt vom Startbildschirm öffnen (Pro)\n- Beispielsätze zu den Präpositionen werden jetzt in deiner App-Sprache übersetzt"
       },
       "pl": {
         "title": "Üben: Niemiecka gramatyka",
@@ -133,31 +74,7 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Nowość: ściąga z przyimkami na ekranie głównym, ze zdaniami w twoim języku. Za darmo, offline, bez konta i reklam.",
-        "releaseNotes": "- Ściągę z przyimkami przy czasownikach otworzysz teraz prosto z ekranu głównego (Pro)\n- Przykładowe zdania z przyimkami są teraz tłumaczone na język aplikacji",
-        "screenshots": {
-          "APP_IPAD_PRO_3GEN_129": [
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/03-streak.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/05-offline.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/06-daily.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/07-plural-endings.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/08-verb-prepositions.png",
-            "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/09-praeteritum.png"
-          ],
-          "APP_IPHONE_65": [
-            "store/apple/screenshot/pl/APP_IPHONE_65/01-master-articles.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/02-spaced-repetition.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/03-streak.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/04-vocabulary.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/05-offline.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/06-daily.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/07-plural-endings.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/08-verb-prepositions.png",
-            "store/apple/screenshot/pl/APP_IPHONE_65/09-praeteritum.png"
-          ]
-        }
+        "releaseNotes": "- Ściągę z przyimkami przy czasownikach otworzysz teraz prosto z ekranu głównego (Pro)\n- Przykładowe zdania z przyimkami są teraz tłumaczone na język aplikacji"
       },
       "fr-FR": {
         "title": "Üben : Grammaire allemande",
@@ -180,31 +97,7 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Nouveau : l'aide-mémoire des prépositions depuis l'accueil, avec phrases traduites. Gratuit, hors ligne, sans compte ni pub.",
-        "releaseNotes": "- Ouvrez l'aide-mémoire des prépositions des verbes directement depuis l'accueil (Pro)\n- Les phrases d'exemple des prépositions sont désormais traduites dans la langue de l'app",
-        "screenshots": {
-          "APP_IPAD_PRO_3GEN_129": [
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/03-streak.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/05-offline.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/06-daily.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/07-plural-endings.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/08-verb-prepositions.png",
-            "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/09-praeteritum.png"
-          ],
-          "APP_IPHONE_65": [
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/01-master-articles.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/02-spaced-repetition.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/03-streak.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/04-vocabulary.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/05-offline.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/06-daily.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/07-plural-endings.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/08-verb-prepositions.png",
-            "store/apple/screenshot/fr-FR/APP_IPHONE_65/09-praeteritum.png"
-          ]
-        }
+        "releaseNotes": "- Ouvrez l'aide-mémoire des prépositions des verbes directement depuis l'accueil (Pro)\n- Les phrases d'exemple des prépositions sont désormais traduites dans la langue de l'app"
       },
       "es-ES": {
         "title": "Üben: Gramática alemana",
@@ -227,31 +120,7 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Nuevo: guía de preposiciones desde Inicio, con frases traducidas a tu idioma. Gratis, sin conexión, sin cuenta ni anuncios.",
-        "releaseNotes": "- Abre la guía rápida de preposiciones con verbos directamente desde la pantalla de inicio (Pro)\n- Las frases de ejemplo de preposiciones ahora se traducen al idioma de la app",
-        "screenshots": {
-          "APP_IPAD_PRO_3GEN_129": [
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/03-streak.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/05-offline.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/06-daily.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/07-plural-endings.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/08-verb-prepositions.png",
-            "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/09-praeteritum.png"
-          ],
-          "APP_IPHONE_65": [
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/01-master-articles.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/02-spaced-repetition.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/03-streak.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/04-vocabulary.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/05-offline.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/06-daily.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/07-plural-endings.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/08-verb-prepositions.png",
-            "store/apple/screenshot/es-ES/APP_IPHONE_65/09-praeteritum.png"
-          ]
-        }
+        "releaseNotes": "- Abre la guía rápida de preposiciones con verbos directamente desde la pantalla de inicio (Pro)\n- Las frases de ejemplo de preposiciones ahora se traducen al idioma de la app"
       },
       "tr": {
         "title": "Üben: Almanca Dilbilgisi",
@@ -274,31 +143,7 @@
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
         "promoText": "Yeni: edat özet sayfası ana ekranda, cümleler kendi dilinde. Ücretsiz, çevrimdışı, hesapsız, reklamsız.",
-        "releaseNotes": "- Fiil edatları özet sayfasını artık doğrudan ana ekrandan açabilirsin (Pro)\n- Edat örnek cümleleri artık uygulama dilinde çevriliyor",
-        "screenshots": {
-          "APP_IPAD_PRO_3GEN_129": [
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/02-spaced-repetition.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/03-streak.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/04-vocabulary.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/05-offline.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/06-daily.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/07-plural-endings.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/08-verb-prepositions.png",
-            "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/09-praeteritum.png"
-          ],
-          "APP_IPHONE_65": [
-            "store/apple/screenshot/tr/APP_IPHONE_65/01-master-articles.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/02-spaced-repetition.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/03-streak.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/04-vocabulary.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/05-offline.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/06-daily.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/07-plural-endings.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/08-verb-prepositions.png",
-            "store/apple/screenshot/tr/APP_IPHONE_65/09-praeteritum.png"
-          ]
-        }
+        "releaseNotes": "- Fiil edatları özet sayfasını artık doğrudan ana ekrandan açabilirsin (Pro)\n- Edat örnek cümleleri artık uygulama dilinde çevriliyor"
       },
       "zh-Hans": {
         "title": "Üben：德语语法",
