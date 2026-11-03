@@ -1,10 +1,10 @@
 import {
   AppColors,
   Layout,
-  Spacing,
-  Typography,
   shadowStyle,
   shadowStyleSmall,
+  Spacing,
+  Typography,
 } from '@/constants/design';
 import { useNounTranslation } from '@/hooks/use-noun-translation';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
@@ -13,11 +13,12 @@ import {
   type QuizMode,
   type QuizResult,
 } from '@/hooks/use-quiz-session';
-import { useSettings } from '@/hooks/use-settings';
 import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
+import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize, NOUN_SINGLE_LINE_PROPS } from '@/utils/typography';
+import { uiUpperCase } from '@/utils/uiText';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -32,7 +33,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { uiUpperCase } from '@/utils/uiText';
 
 // ── Constants ────────────────────────────────────────────────────────
 
@@ -53,18 +53,14 @@ function getArticleColor(article: Article): string {
   }
 }
 
-
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
   const { t } = useTranslation('app');
   const { mode } = useLocalSearchParams<{ mode?: QuizMode }>();
   const quiz = useQuizSession(mode ?? 'daily');
-  const { phase, nextCard, results, progress } = quiz;
-  const {
-    showEnglishHint,
-    eszettPreference,
-  } = useSettings();
+  const { phase, nextCard, results } = quiz;
+  const { showEnglishHint, eszettPreference } = useSettings();
 
   // Auto-advance after feedback
   useEffect(() => {
@@ -159,7 +155,9 @@ function PlayingState({
   );
 
   const isFeedback = phase === 'feedback';
-  const isHomograph = currentCard ? currentCard.has_homograph_siblings === 1 : false;
+  const isHomograph = currentCard
+    ? currentCard.has_homograph_siblings === 1
+    : false;
 
   // Check if the user's wrong answer happens to be valid for a sibling noun.
   // Only meaningful for improper homographs (different articles).
@@ -268,7 +266,11 @@ function PlayingState({
           )}
           {currentCard.sense && (
             <Text style={styles.senseHint}>
-              ({t(`senses.${currentCard.sense}`, { defaultValue: currentCard.sense })})
+              (
+              {t(`senses.${currentCard.sense}`, {
+                defaultValue: currentCard.sense,
+              })}
+              )
             </Text>
           )}
           {/* Always show English for homographs so the learner knows which
@@ -293,7 +295,6 @@ function PlayingState({
       <View style={styles.articlesSection}>
         <View style={styles.articlesRow}>
           {ARTICLES.map((article) => {
-            const isSelected = selectedArticle === article;
             const isCorrectAnswer = currentCard.article === article;
 
             let buttonBg: string = AppColors.white;

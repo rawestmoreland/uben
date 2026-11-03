@@ -22,6 +22,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  type ScrollViewInstance,
   StyleSheet,
   Text,
   View,
@@ -43,7 +44,7 @@ export default function PaywallScreen() {
   const [error, setError] = useState<string | null>(null);
   const [justUnlocked, setJustUnlocked] = useState(false);
   const [showPromoForm, setShowPromoForm] = useState(false);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
 
   // Falls back to redirectTo when no explicit source is given, so an entry
   // point that only sets redirectTo (the destination) still identifies itself.
