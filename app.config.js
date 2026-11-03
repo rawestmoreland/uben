@@ -27,12 +27,12 @@ const getSchemeSuffix = () => {
 
 export default {
   expo: {
-    // Non-production variants use an ASCII-only native name: the Xcode target
+    // All variants use an ASCII-only native name: the Xcode target
     // is derived from `name`, and EAS Build strips the "ü" differently from
     // prebuild ("benPreview" vs "ubenPreview"), failing with "Could not find
     // target". The visible home-screen name still keeps the umlaut via
     // CFBundleDisplayName below.
-    name: IS_DEV || IS_PREVIEW ? `uben${getAppVariant()}` : 'üben',
+    name: `uben${getAppVariant()}`,
     slug: 'uben',
     version: '1.14.0',
     orientation: 'portrait',
