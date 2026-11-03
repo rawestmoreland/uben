@@ -116,7 +116,7 @@ export default function MyWordsScreen() {
               <Text style={styles.countHeader}>
                 {words.length} WORD{words.length !== 1 ? 'S' : ''} ADDED
               </Text>
-            ) : null
+            ) : undefined
           }
           renderItem={({ item }) => (
             <WordRow word={item} onDelete={() => handleDelete(item)} />
@@ -126,7 +126,7 @@ export default function MyWordsScreen() {
               <View style={styles.adContainer}>
                 <AdBanner />
               </View>
-            ) : null
+            ) : undefined
           }
         />
       )}

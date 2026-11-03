@@ -7,14 +7,15 @@ import {
   shadowStyleSmall,
 } from '@/constants/design';
 import { useQuizInterstitialAd } from '@/hooks/use-quiz-interstitial-ad';
+import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
+import { useStoreReview } from '@/hooks/use-store-review';
 import {
   useVerbQuizSession,
   type VerbQuizResult,
 } from '@/hooks/use-verb-quiz-session';
-import { PRONOUN_LABELS } from '@/services/verbImperfectService';
-import { useReminderPrompt } from '@/hooks/use-reminder-prompt';
-import { useStoreReview } from '@/hooks/use-store-review';
 import { useWordTranslation } from '@/hooks/use-word-translation';
+import { PRONOUN_LABELS } from '@/services/verbImperfectService';
+import { uiUpperCase } from '@/utils/uiText';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -29,10 +30,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TextInputInstance,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { uiUpperCase } from '@/utils/uiText';
 
 // ── Quiz Screen ──────────────────────────────────────────────────────
 //
@@ -115,7 +116,7 @@ function PlayingState({ quiz }: PlayingStateProps) {
   const { t } = useTranslation('app');
   const { currentQuestion, phase, selectedAnswer, isCorrect, progress } = quiz;
   const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const translation = useWordTranslation(
     'verb',
     currentQuestion?.infinitive ?? null,
@@ -370,7 +371,8 @@ function CompleteState({ results, t }: CompleteStateProps) {
                 ]}
               />
               <Text style={styles.resultWord}>
-                {result.question.infinitive} · {PRONOUN_LABELS[result.question.pronoun]}{' '}
+                {result.question.infinitive} ·{' '}
+                {PRONOUN_LABELS[result.question.pronoun]}{' '}
                 {result.question.correctAnswer}
               </Text>
               {!result.isCorrect && (
