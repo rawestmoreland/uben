@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "v1.13.0",
+    "version": "v1.14.0",
     "copyright": "2026",
     "release": {
       "automaticRelease": false
@@ -22,7 +22,7 @@
           "telc",
           "vocabulary"
         ],
-        "releaseNotes": "- New Pro quiz: verb, adjective and noun prepositions (warten auf, stolz auf, Angst vor)\n- Da(r)-/wo(r)- quiz: darauf, worauf and more\n- Preposition cheat sheet to browse all patterns\n- Optional daily practice reminders",
+        "releaseNotes": "- Open the verb + preposition cheat sheet straight from the home screen (Pro)\n- Preposition example sentences now show translations in your app language",
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "title": "Üben: German Grammar",
@@ -63,7 +63,7 @@
             "store/apple/screenshot/en-US/APP_IPHONE_DUO_OUTER/09-praeteritum.png"
           ]
         },
-        "promoText": "New: Pro quiz for verb prepositions (warten auf, stolz auf, Angst vor). Stop guessing der, die, das - free, offline, no account, no ads."
+        "promoText": "New: browse the preposition cheat sheet from Home, with sentences translated into your language. Free, offline, no account, no ads."
       },
       "de-DE": {
         "title": "Üben: Deutsche Grammatik",
@@ -85,8 +85,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Neu: Pro-Quiz zu Verbpräpositionen (warten auf, stolz auf, Angst vor). Schluss mit Raten bei der, die, das - kostenlos, offline, ohne Konto, ohne Werbung.",
-        "releaseNotes": "- Neues Pro-Quiz: Präpositionen bei Verben, Adjektiven und Nomen (warten auf, stolz auf, Angst vor)\n- Da(r)-/Wo(r)-Quiz: darauf, worauf und mehr\n- Präpositions-Spickzettel zum Durchstöbern aller Muster\n- Optionale tägliche Erinnerungen zum Üben",
+        "promoText": "Neu: Präpositions-Spickzettel direkt vom Start aus öffnen, mit übersetzten Beispielsätzen. Kostenlos, offline, ohne Konto, ohne Werbung.",
+        "releaseNotes": "- Den Präpositions-Spickzettel für Verben jetzt direkt vom Startbildschirm öffnen (Pro)\n- Beispielsätze zu den Präpositionen werden jetzt in deiner App-Sprache übersetzt",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/de-DE/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -132,8 +132,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nowość: quiz Pro z przyimkami przy czasownikach (warten auf, stolz auf, Angst vor). Koniec zgadywania - za darmo, offline, bez konta i reklam.",
-        "releaseNotes": "- Nowy quiz Pro: przyimki przy czasownikach, przymiotnikach i rzeczownikach (warten auf, stolz auf, Angst vor)\n- Quiz da(r)-/wo(r)-: darauf, worauf i inne\n- Ściąga z przyimkami do przeglądania wszystkich wzorców\n- Opcjonalne codzienne przypomnienia o nauce",
+        "promoText": "Nowość: ściąga z przyimkami na ekranie głównym, ze zdaniami w twoim języku. Za darmo, offline, bez konta i reklam.",
+        "releaseNotes": "- Ściągę z przyimkami przy czasownikach otworzysz teraz prosto z ekranu głównego (Pro)\n- Przykładowe zdania z przyimkami są teraz tłumaczone na język aplikacji",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/pl/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -179,8 +179,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nouveau : quiz Pro sur les prépositions des verbes (warten auf, stolz auf, Angst vor). Fini de deviner - gratuit, hors ligne, sans compte ni pub.",
-        "releaseNotes": "- Nouveau quiz Pro : prépositions des verbes, adjectifs et noms (warten auf, stolz auf, Angst vor)\n- Quiz da(r)-/wo(r)- : darauf, worauf et plus\n- Aide-mémoire des prépositions pour parcourir tous les modèles\n- Rappels quotidiens facultatifs pour s'exercer",
+        "promoText": "Nouveau : l'aide-mémoire des prépositions depuis l'accueil, avec phrases traduites. Gratuit, hors ligne, sans compte ni pub.",
+        "releaseNotes": "- Ouvrez l'aide-mémoire des prépositions des verbes directement depuis l'accueil (Pro)\n- Les phrases d'exemple des prépositions sont désormais traduites dans la langue de l'app",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/fr-FR/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -226,8 +226,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nuevo: quiz Pro de preposiciones con verbos (warten auf, stolz auf, Angst vor). Deja de adivinar - gratis, sin conexión, sin cuenta ni anuncios.",
-        "releaseNotes": "- Nuevo quiz Pro: preposiciones con verbos, adjetivos y sustantivos (warten auf, stolz auf, Angst vor)\n- Quiz da(r)-/wo(r)-: darauf, worauf y más\n- Guía rápida de preposiciones para explorar todos los patrones\n- Recordatorios diarios opcionales para practicar",
+        "promoText": "Nuevo: guía de preposiciones desde Inicio, con frases traducidas a tu idioma. Gratis, sin conexión, sin cuenta ni anuncios.",
+        "releaseNotes": "- Abre la guía rápida de preposiciones con verbos directamente desde la pantalla de inicio (Pro)\n- Las frases de ejemplo de preposiciones ahora se traducen al idioma de la app",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/es-ES/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -273,8 +273,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Yeni: fiil edatları için Pro sınavı (warten auf, stolz auf, Angst vor). Tahmin etmeyi bırak - ücretsiz, çevrimdışı, hesapsız, reklamsız.",
-        "releaseNotes": "- Yeni Pro sınavı: fiil, sıfat ve isimlerle edatlar (warten auf, stolz auf, Angst vor)\n- Da(r)-/wo(r)- sınavı: darauf, worauf ve daha fazlası\n- Tüm kalıplara göz atabileceğin edat özet sayfası\n- İsteğe bağlı günlük çalışma hatırlatmaları",
+        "promoText": "Yeni: edat özet sayfası ana ekranda, cümleler kendi dilinde. Ücretsiz, çevrimdışı, hesapsız, reklamsız.",
+        "releaseNotes": "- Fiil edatları özet sayfasını artık doğrudan ana ekrandan açabilirsin (Pro)\n- Edat örnek cümleleri artık uygulama dilinde çevriliyor",
         "screenshots": {
           "APP_IPAD_PRO_3GEN_129": [
             "store/apple/screenshot/tr/APP_IPAD_PRO_3GEN_129/01-master-articles.png",
@@ -321,8 +321,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "新增：Pro 动词介词测验（warten auf、stolz auf、Angst vor）。告别瞎猜——免费、离线、无需账号、无广告。",
-        "releaseNotes": "- 新增 Pro 测验：动词、形容词和名词的介词搭配（warten auf、stolz auf、Angst vor）\n- da(r)-/wo(r)- 测验：darauf、worauf 等\n- 介词速查表，可浏览所有搭配\n- 可选的每日练习提醒"
+        "promoText": "新增：主屏幕直达介词速查表，例句附母语翻译。免费、离线、无需账号、无广告。",
+        "releaseNotes": "- 现在可直接从主屏幕打开动词介词速查表（Pro）\n- 介词例句现在会以应用语言显示翻译"
       }
     },
     "categories": ["EDUCATION"],
