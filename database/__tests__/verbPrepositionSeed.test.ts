@@ -222,7 +222,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
     expect(
       opened.raw
         .prepare('SELECT 1 FROM data_versions WHERE version = ?')
-        .get('1.3.0_verb_prepositions_v4'),
+        .get('1.3.1_verb_prepositions_v5'),
     ).toBeTruthy();
   });
 
@@ -252,7 +252,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
   it('does not retire adjective and noun patterns when the verb list syncs', async () => {
     await seedVocabulary(opened.db as any);
     opened.raw.exec(
-      "DELETE FROM data_versions WHERE version = '1.3.0_verb_prepositions_v4'",
+      "DELETE FROM data_versions WHERE version = '1.3.1_verb_prepositions_v5'",
     );
     await seedVocabulary(opened.db as any);
 
@@ -285,7 +285,7 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
 
     // Force the version gate open so the INSERT OR IGNORE itself is exercised
     opened.raw.exec(
-      "DELETE FROM data_versions WHERE version = '1.3.0_verb_prepositions_v4'",
+      "DELETE FROM data_versions WHERE version = '1.3.1_verb_prepositions_v5'",
     );
     await seedVocabulary(opened.db as any);
 
@@ -341,6 +341,39 @@ describeWithSqlite('verb preposition seeding against real SQLite', () => {
       ).toBe(0);
       expect(count('SELECT COUNT(*) AS count FROM review_history')).toBe(0);
       expect(countRows()).toBe(ALL_PATTERNS.length);
+    });
+
+    it('retires the incorrect "Angst um" noun pattern from earlier installs', async () => {
+      const angstUmId = Number(
+        opened.raw
+          .prepare(
+            `INSERT INTO verb_prepositions
+               (kind, verb, is_reflexive, preposition, case_governed, sentence, translation)
+             VALUES ('noun', 'Angst', 0, 'um', 'akk', 'Sie hat Angst ____ ihren Sohn.', 'She is afraid for her son.')`,
+          )
+          .run().lastInsertRowid,
+      );
+      insertCard(angstUmId);
+
+      await seedVocabulary(opened.db as any);
+
+      const count = (sql: string) =>
+        (opened.raw.prepare(sql).get() as { count: number }).count;
+      expect(
+        count(
+          "SELECT COUNT(*) AS count FROM verb_prepositions WHERE verb = 'Angst' AND preposition = 'um'",
+        ),
+      ).toBe(0);
+      expect(
+        count(
+          "SELECT COUNT(*) AS count FROM verb_prepositions WHERE kind = 'noun' AND verb = 'Angst' AND preposition = 'vor'",
+        ),
+      ).toBe(1);
+      expect(
+        count(
+          `SELECT COUNT(*) AS count FROM card_progress WHERE word_type = 'verb_prep' AND word_id = ${angstUmId}`,
+        ),
+      ).toBe(0);
     });
 
     it('keeps the id and progress of patterns that are still seeded', async () => {

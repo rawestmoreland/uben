@@ -117,7 +117,6 @@ const PATTERN_CONFUSIONS: Record<string, readonly string[]> = {
   'bereit zu': ['für'],
   // Noun + preposition (#152)
   'Angst vor': ['von'],
-  'Angst um': ['für'],
   'Interesse an': ['in', 'für'],
   'Hoffnung auf': ['für'],
   'Wunsch nach': ['für'],

@@ -9,7 +9,7 @@ import type { SeedVerbPreposition } from '@/types/database';
  * The v1 authoring rules apply unchanged: exactly one "____" blank, exactly one
  * quiz-button preposition fits it, `alt_prepositions` only for genuine
  * synonyms, and the sentence uses the article form of `case_governed`. Where
- * a head word takes two prepositions (Angst vor / um, Streit mit / um) each
+ * a head word takes two prepositions (Streit mit / um) each
  * sentence is built so only its own preposition fits.
  */
 export const adjectiveNounPrepositionsV2: SeedVerbPreposition[] = [
@@ -316,16 +316,6 @@ export const adjectiveNounPrepositionsV2: SeedVerbPreposition[] = [
     translation: "I'm afraid of the dog.",
     english_trap: 'English "afraid of" pulls toward von.',
     level: 'A2',
-  },
-  {
-    kind: 'noun',
-    verb: 'Angst',
-    preposition: 'um',
-    case_governed: 'akk',
-    sentence: 'Sie hat Angst ____ ihren Sohn.',
-    translation: "She's afraid for her son.",
-    english_trap: 'English "afraid for" pulls toward für.',
-    level: 'B1',
   },
   {
     kind: 'noun',

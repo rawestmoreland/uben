@@ -329,16 +329,6 @@ const rows: Record<string, SentenceRow> = {
     'Félek a kutyától.',
     '我怕那条狗。',
   ],
-  'Sie hat Angst ____ ihren Sohn.': [
-    'Ha paura per suo figlio.',
-    'Boi się o swojego syna.',
-    'Elle a peur pour son fils.',
-    'Oğlu için korkuyor.',
-    'Она боится за своего сына.',
-    'Ela tem medo pelo filho.',
-    'Retteg a fiáért.',
-    '她担心她的儿子。',
-  ],
   'Er hat großes Interesse ____ moderner Kunst.': [
     "Ha un grande interesse per l'arte moderna.",
     'Ma duże zainteresowanie sztuką nowoczesną.',

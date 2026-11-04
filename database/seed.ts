@@ -60,7 +60,7 @@ export async function seedVocabulary(db: SQLite.SQLiteDatabase): Promise<void> {
   // version whenever the list changes: seeding syncs the table to the list.
   // Verb patterns plus the adjective and noun patterns (#152, `kind`) form one
   // list, so the retire step below never mistakes the latter for stale rows.
-  await seedVerbPrepositions(db, '1.3.0_verb_prepositions_v4');
+  await seedVerbPrepositions(db, '1.3.1_verb_prepositions_v5');
 
   // da(r)-/wo(r)- questions for those patterns (#151). Must run after the
   // patterns they attach to. Re-versioned because retiring patterns above
