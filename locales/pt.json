@@ -10,7 +10,6 @@
     "total_reviews_one": "{{count}} revisão concluída no total",
     "total_reviews_many": "{{count}} revisões concluídas no total",
     "total_reviews_other": "{{count}} revisões concluídas no total",
-    "about": "Acerca de",
     "home": "Início",
     "settings_title": "Definições",
     "practice": "Praticar",
@@ -313,7 +312,6 @@
     "home_screen": {
       "header_subtitle": "PRÁTICA DE GRAMÁTICA ALEMÃ",
       "practice_label": "PRATICAR",
-      "reference_label": "REFERÊNCIA",
       "soon_badge": "Em breve",
       "tile_due": "{{count}} por rever",
       "tiles": {
@@ -367,6 +365,68 @@
       "due_body_c_one": "Uma ronda rápida? {{count}} palavra para rever.",
       "due_body_c_many": "Uma ronda rápida? {{count}} palavras para rever.",
       "due_body_c_other": "Uma ronda rápida? {{count}} palavras para rever."
+    },
+    "reference_screen": {
+      "tab_label": "Referência",
+      "title": "Referência",
+      "subtitle": "Tabelas e guias",
+      "close": "Fechar"
+    },
+    "gender_hints": {
+      "title": "Pistas de género",
+      "row_subtitle": "Terminações que indicam der, die ou das",
+      "intro": "Terminações e grupos de significado que permitem adivinhar o artigo de um substantivo. Aprenda sempre o artigo com o substantivo; use estas pistas quando tiver dúvidas.",
+      "tip": "As pistas não são garantias. Aprenda cada substantivo novo com o seu artigo.",
+      "exceptions": "Exceções",
+      "strength": {
+        "rule": "Regra",
+        "tendency": "Tendência"
+      },
+      "gender": {
+        "die": "Feminino",
+        "der": "Masculino",
+        "das": "Neutro"
+      },
+      "hints": {
+        "in": "Pessoas do sexo feminino",
+        "e": "A maioria dos substantivos terminados em -e",
+        "flowers_trees": "Flores e árvores",
+        "er": "Muitas vezes pessoas que fazem algo, e ferramentas",
+        "days_months_seasons": "Dias, meses e estações do ano",
+        "directions": "Pontos cardeais",
+        "male_persons": "Pessoas do sexo masculino",
+        "weather": "A maioria das palavras do tempo atmosférico",
+        "alcohol": "A maioria das bebidas alcoólicas",
+        "cars": "Marcas de automóveis",
+        "verbs_as_nouns": "Verbos usados como substantivos",
+        "adjectives_as_nouns": "Adjetivos usados como substantivos para coisas ou ideias",
+        "metals": "A maioria dos metais",
+        "languages": "Línguas",
+        "venues": "Hotéis, cafés, cinemas, restaurantes"
+      }
+    },
+    "case_sheet": {
+      "title": "Guia dos casos",
+      "row_subtitle": "Artigos, pronomes e preposições por caso",
+      "intro": "A forma a usar depende do caso. Faça a pergunta para o encontrar.",
+      "sections": {
+        "cases": "Os quatro casos",
+        "definite": "Artigo definido (der, die, das)",
+        "indefinite": "Artigo indefinido (ein, kein, mein…)",
+        "pronouns": "Pronomes pessoais",
+        "prepositions": "Preposições por caso"
+      },
+      "roles": {
+        "nominative": "Sujeito: quem ou o que pratica a ação",
+        "accusative": "Complemento direto: quem ou o que é afetado",
+        "dative": "Complemento indireto: a quem ou para quem",
+        "genitive": "Posse: de quem"
+      },
+      "noun_endings": "Os substantivos masculinos e neutros acrescentam -(e)s no genitivo (des Mannes). Os substantivos no plural acrescentam -n no dativo (den Kindern).",
+      "ein_words_note": "Os possessivos (mein, dein, sein…) e kein têm as mesmas terminações. A coluna do plural mostra as formas de kein-.",
+      "two_way_rule": "Preposições mistas: o movimento pede o acusativo, a posição o dativo.",
+      "two_way_motion": "(movimento: acusativo)",
+      "two_way_location": "(posição: dativo)"
     }
   }
 }
