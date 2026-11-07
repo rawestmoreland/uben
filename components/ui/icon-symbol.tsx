@@ -21,6 +21,7 @@ const MAPPING = {
   'book.fill': 'menu-book',
   'chart.bar.fill': 'bar-chart',
   'info.circle.fill': 'info',
+  'books.vertical.fill': 'library-books',
   'gearshape.fill': 'settings',
   'checkmark.circle.fill': 'check-circle',
 } as const satisfies Record<string, MaterialIconName>;

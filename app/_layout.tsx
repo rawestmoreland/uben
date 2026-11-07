@@ -160,6 +160,27 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="gender-hints"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="case-cheat-sheet"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="how-it-works"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
             name="paywall"
             options={{
               presentation: 'modal',

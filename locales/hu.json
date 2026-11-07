@@ -9,7 +9,6 @@
     "start_practice": "Gyakorlás indítása",
     "total_reviews_one": "{{count}} befejezett ismétlés összesen",
     "total_reviews_other": "{{count}} befejezett ismétlés összesen",
-    "about": "Névjegy",
     "home": "Kezdőlap",
     "settings_title": "Beállítások",
     "practice": "Gyakorlás",
@@ -308,7 +307,6 @@
     "home_screen": {
       "header_subtitle": "NÉMET NYELVTANI GYAKORLÁS",
       "practice_label": "GYAKORLÁS",
-      "reference_label": "SEGÉDLET",
       "soon_badge": "Hamarosan",
       "tile_due": "{{count}} esedékes",
       "tiles": {
@@ -359,6 +357,68 @@
       "due_body_b_other": "{{count}} szó kész az ismétlésre. Pár perc is elég.",
       "due_body_c_one": "Egy gyors kör? {{count}} szó vár ismétlésre.",
       "due_body_c_other": "Egy gyors kör? {{count}} szó vár ismétlésre."
+    },
+    "reference_screen": {
+      "tab_label": "Segédlet",
+      "title": "Segédlet",
+      "subtitle": "Táblázatok és útmutatók",
+      "close": "Bezárás"
+    },
+    "gender_hints": {
+      "title": "Nemi tippek",
+      "row_subtitle": "Végződések, amelyek der, die vagy das névelőt jeleznek",
+      "intro": "Végződések és jelentéscsoportok, amelyekből kitalálható a főnév névelője. A névelőt mindig a főnévvel együtt tanuld meg; ezeket a tippeket akkor használd, ha bizonytalan vagy.",
+      "tip": "A tippek nem garanciák. Minden új főnevet a névelőjével együtt tanulj meg.",
+      "exceptions": "Kivételek",
+      "strength": {
+        "rule": "Szabály",
+        "tendency": "Tendencia"
+      },
+      "gender": {
+        "die": "Nőnem",
+        "der": "Hímnem",
+        "das": "Semleges nem"
+      },
+      "hints": {
+        "in": "Női személyek",
+        "e": "A legtöbb -e végű főnév",
+        "flowers_trees": "Virágok és fák",
+        "er": "Gyakran tevékenységet végző személyek és eszközök",
+        "days_months_seasons": "Napok, hónapok és évszakok",
+        "directions": "Égtájak",
+        "male_persons": "Férfi személyek",
+        "weather": "Az időjárás-szavak többsége",
+        "alcohol": "A legtöbb alkoholos ital",
+        "cars": "Autómárkák",
+        "verbs_as_nouns": "Főnévként használt igék",
+        "adjectives_as_nouns": "Főnévként használt melléknevek dolgokra vagy fogalmakra",
+        "metals": "A legtöbb fém",
+        "languages": "Nyelvek",
+        "venues": "Szállodák, kávézók, mozik, éttermek"
+      }
+    },
+    "case_sheet": {
+      "title": "Esetek összefoglalója",
+      "row_subtitle": "Névelők, névmások és elöljárók esetek szerint",
+      "intro": "A használandó alak az esettől függ. A kérdéssel találd meg az esetet.",
+      "sections": {
+        "cases": "A négy eset",
+        "definite": "Határozott névelő (der, die, das)",
+        "indefinite": "Határozatlan névelő (ein, kein, mein…)",
+        "pronouns": "Személyes névmások",
+        "prepositions": "Elöljárók esetek szerint"
+      },
+      "roles": {
+        "nominative": "Alany: ki vagy mi végzi a cselekvést",
+        "accusative": "Tárgy: kit vagy mit érint a cselekvés",
+        "dative": "Részeshatározó: kinek vagy kiért",
+        "genitive": "Birtoklás: kié"
+      },
+      "noun_endings": "A hím- és semleges nemű főnevek Genitiv esetben -(e)s végződést kapnak (des Mannes). A többes számú főnevek Dativ esetben -n végződést kapnak (den Kindern).",
+      "ein_words_note": "A birtokos névmások (mein, dein, sein…) és a kein ugyanezeket a végződéseket kapják. A többes szám oszlopa a kein- alakokat mutatja.",
+      "two_way_rule": "Kétféle esetet vonzó elöljárók: mozgás esetén Akkusativ, helyzet esetén Dativ.",
+      "two_way_motion": "(mozgás: Akkusativ)",
+      "two_way_location": "(helyzet: Dativ)"
     }
   }
 }

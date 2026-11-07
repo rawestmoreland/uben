@@ -48,12 +48,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="reference"
         options={{
-          title: uiUpperCase(t('about')),
+          title: uiUpperCase(t('reference_screen.tab_label')),
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconContainer}>
-              <IconSymbol size={26} name="info.circle.fill" color={color} />
+              <IconSymbol size={26} name="books.vertical.fill" color={color} />
               {focused && <View style={styles.activeIndicator} />}
             </View>
           ),
