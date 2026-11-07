@@ -27,9 +27,14 @@ const getSchemeSuffix = () => {
 
 export default {
   expo: {
-    name: `üben${getAppVariant()}`,
+    // All variants use an ASCII-only native name: the Xcode target
+    // is derived from `name`, and EAS Build strips the "ü" differently from
+    // prebuild ("benPreview" vs "ubenPreview"), failing with "Could not find
+    // target". The visible home-screen name still keeps the umlaut via
+    // CFBundleDisplayName below.
+    name: `uben${getAppVariant()}`,
     slug: 'uben',
-    version: '1.13.0',
+    version: '1.14.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: `germanpractice${getSchemeSuffix()}`,
@@ -39,6 +44,7 @@ export default {
       supportsTablet: true,
       bundleIdentifier: `com.westmorelandcreative.uben${getBundleSuffix()}`,
       infoPlist: {
+        CFBundleDisplayName: `üben${getAppVariant()}`,
         ITSAppUsesNonExemptEncryption: false,
       },
     },
