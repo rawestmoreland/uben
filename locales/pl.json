@@ -435,6 +435,15 @@
       "two_way_rule": "Przyimki dwuprzypadkowe: ruch wymaga biernika, położenie celownika.",
       "two_way_motion": "(ruch: biernik)",
       "two_way_location": "(położenie: celownik)"
+    },
+    "app_update": {
+      "title_available": "Dostępna aktualizacja",
+      "body_available": "Wersja {{version}} jest już dostępna. Zaktualizuj, aby otrzymać najnowsze poprawki i funkcje.",
+      "update": "Aktualizuj",
+      "later": "Później",
+      "title_required": "Wymagana aktualizacja",
+      "body_required": "Ta wersja Üben nie jest już obsługiwana. Zaktualizuj do wersji {{version}}, aby dalej ćwiczyć.",
+      "dismiss_label": "Zamknij powiadomienie o aktualizacji"
     }
   }
 }

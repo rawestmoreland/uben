@@ -29,6 +29,10 @@ export const SETTINGS_KEYS = {
   REMINDER_TIME: 'reminder_time',
   STREAK_REMINDERS_ENABLED: 'streak_reminders_enabled',
   REMINDER_PROMPT_SEEN: 'reminder_prompt_seen',
+  /** JSON `{ checkedAt, config }` — last `app_config` row fetched from PocketBase. */
+  APP_UPDATE_CACHE: 'app_update_cache',
+  /** The `latest_version` the user last dismissed the update banner for. */
+  APP_UPDATE_DISMISSED_VERSION: 'app_update_dismissed_version',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────

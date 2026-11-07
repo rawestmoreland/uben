@@ -419,6 +419,15 @@
       "two_way_rule": "Kétféle esetet vonzó elöljárók: mozgás esetén Akkusativ, helyzet esetén Dativ.",
       "two_way_motion": "(mozgás: Akkusativ)",
       "two_way_location": "(helyzet: Dativ)"
+    },
+    "app_update": {
+      "title_available": "Frissítés érhető el",
+      "body_available": "Megjelent a(z) {{version}} verzió. Frissíts a legújabb javításokért és funkciókért.",
+      "update": "Frissítés",
+      "later": "Később",
+      "title_required": "Frissítés szükséges",
+      "body_required": "Az Üben ezen verziója már nem támogatott. Frissíts a(z) {{version}} verzióra a gyakorlás folytatásához.",
+      "dismiss_label": "Frissítési értesítés elrejtése"
     }
   }
 }

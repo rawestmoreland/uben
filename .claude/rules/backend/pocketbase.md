@@ -105,6 +105,18 @@ nounsCollection.AddIndex("idx_nouns_german_article", true, "german, article", ""
 - Anyone can read (public vocabulary)
 - Only admins can create/update/delete
 
+#### `app_config` Collection
+
+Drives the in-app "update available" notice (see `services/appUpdateService.ts`). **One row per platform**, edited on each store release (not a release log).
+
+- `platform` (select, required) — `ios` or `android`; unique index, so at most two rows
+- `latest_version` (text, required) — `x.y.z`; set once the build is live in the store
+- `min_version` (text, optional) — `x.y.z`; installs below it get a blocking update screen. Keep it at or below `latest_version`
+- `store_url` (text, required) — App Store / Play Store link (https)
+- `message` (text, optional) — custom text shown instead of the default
+
+**API Rules:** public read, admin-only write. Migration: `base/migrations/1794054353_created_app_config.go`.
+
 #### `users` Collection (Built-in)
 
 PocketBase's auth collection, modified by migration:
