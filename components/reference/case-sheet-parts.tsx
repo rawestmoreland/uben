@@ -12,6 +12,11 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { ReferenceTable } from './reference-table';
 
+interface GermanTextProps {
+  /** Renders German text in the user's ß / ss preference (`useGermanText`). */
+  german: (text: string) => string;
+}
+
 const COLUMN_COLORS: Record<ArticleColumn, string> = {
   masculine: AppColors.blue,
   feminine: AppColors.pink,
@@ -26,17 +31,18 @@ const ARTICLE_TABLE_COLUMNS = ARTICLE_COLUMNS.map((column) => ({
 }));
 
 /** The four cases: question, role and an example sentence each. */
-export function CaseOverviewList() {
+export function CaseOverviewList({ german }: GermanTextProps) {
   const { t } = useTranslation('app');
   return (
     <View>
       {CASE_OVERVIEW.map((entry) => (
         <View key={entry.key} style={styles.overviewRow}>
           <Text style={styles.overviewName}>
-            {entry.name} <Text style={styles.question}>{entry.question}</Text>
+            {german(entry.name)}{' '}
+            <Text style={styles.question}>{german(entry.question)}</Text>
           </Text>
           <Text style={styles.role}>{t(`case_sheet.roles.${entry.key}`)}</Text>
-          <Text style={styles.example}>{entry.example}</Text>
+          <Text style={styles.example}>{german(entry.example)}</Text>
         </View>
       ))}
     </View>
@@ -46,11 +52,13 @@ export function CaseOverviewList() {
 /** Article table: one row per case, one column per gender and plural. */
 export function ArticleTable({
   forms,
-}: {
+  german,
+}: GermanTextProps & {
   forms: Record<CaseKey, Record<ArticleColumn, string>>;
 }) {
   return (
     <ReferenceTable
+      german={german}
       columns={ARTICLE_TABLE_COLUMNS}
       rows={CASE_OVERVIEW.map((entry) => ({
         key: entry.key,
@@ -62,15 +70,15 @@ export function ArticleTable({
 }
 
 /** Prepositions grouped by the case they take, plus the wo?/wohin? rule. */
-export function PrepositionGroups() {
+export function PrepositionGroups({ german }: GermanTextProps) {
   const { t } = useTranslation('app');
   return (
     <View style={styles.groups}>
       {PREPOSITION_GROUPS.map((group) => (
         <View key={group.key}>
-          <Text style={styles.groupLabel}>{group.label}</Text>
+          <Text style={styles.groupLabel}>{german(group.label)}</Text>
           <Text style={styles.prepositions}>
-            {group.prepositions.join('  ·  ')}
+            {german(group.prepositions.join('  ·  '))}
           </Text>
         </View>
       ))}
@@ -78,7 +86,7 @@ export function PrepositionGroups() {
         <Text style={styles.twoWayTitle}>{t('case_sheet.two_way_rule')}</Text>
         {TWO_WAY_EXAMPLES.map((example) => (
           <Text key={example.kind} style={styles.example}>
-            {example.question} {example.sentence}
+            {german(`${example.question} ${example.sentence}`)}
             {'  '}
             <Text style={styles.question}>
               {t(`case_sheet.two_way_${example.kind}`)}

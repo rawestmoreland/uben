@@ -19,19 +19,25 @@ interface ReferenceTableProps {
   rows: readonly ReferenceTableRow[];
   /** Header of the first column (the row-label column). Empty by default. */
   cornerLabel?: string;
+  /** Renders German text in the user's ß / ss preference (`useGermanText`). */
+  german: (text: string) => string;
 }
 
-/** Small bordered grid: a header row, then one row per case or pronoun. */
+/**
+ * Small bordered grid: a header row, then one row per case or pronoun. All
+ * text is German and follows the user's ß / ss preference.
+ */
 export function ReferenceTable({
   columns,
   rows,
   cornerLabel = '',
+  german,
 }: ReferenceTableProps) {
   return (
     <View style={styles.table}>
       <View style={styles.row}>
         <View style={[styles.cell, styles.rowHeaderCell, styles.cornerCell]}>
-          <Text style={styles.headerText}>{cornerLabel}</Text>
+          <Text style={styles.headerText}>{german(cornerLabel)}</Text>
         </View>
         {columns.map((column) => (
           <View
@@ -41,18 +47,18 @@ export function ReferenceTable({
               { backgroundColor: column.color ?? AppColors.white },
             ]}
           >
-            <Text style={styles.headerText}>{column.header}</Text>
+            <Text style={styles.headerText}>{german(column.header)}</Text>
           </View>
         ))}
       </View>
       {rows.map((row) => (
         <View key={row.key} style={styles.row}>
           <View style={[styles.cell, styles.rowHeaderCell]}>
-            <Text style={styles.rowHeaderText}>{row.header}</Text>
+            <Text style={styles.rowHeaderText}>{german(row.header)}</Text>
           </View>
           {row.cells.map((cell, index) => (
             <View key={columns[index].key} style={styles.cell}>
-              <Text style={styles.cellText}>{cell}</Text>
+              <Text style={styles.cellText}>{german(cell)}</Text>
             </View>
           ))}
         </View>

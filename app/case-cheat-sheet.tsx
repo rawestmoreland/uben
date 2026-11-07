@@ -7,6 +7,7 @@ import {
 import { ReferenceScreenShell } from '@/components/reference/reference-screen-shell';
 import { ReferenceTable } from '@/components/reference/reference-table';
 import { AppColors, Spacing, Typography } from '@/constants/design';
+import { useGermanText } from '@/hooks/use-german-text';
 import {
   CASE_OVERVIEW,
   DEFINITE_ARTICLES,
@@ -34,6 +35,7 @@ const PRONOUN_ROWS = PERSONAL_PRONOUNS.map((pronoun) => ({
 
 export default function CaseCheatSheetScreen() {
   const { t } = useTranslation('app');
+  const german = useGermanText();
 
   return (
     <ReferenceScreenShell
@@ -44,14 +46,14 @@ export default function CaseCheatSheetScreen() {
         title={t('case_sheet.sections.cases')}
         accentColor={AppColors.yellow}
       >
-        <CaseOverviewList />
+        <CaseOverviewList german={german} />
       </CheatSheetSection>
 
       <CheatSheetSection
         title={t('case_sheet.sections.definite')}
         accentColor={AppColors.blue}
       >
-        <ArticleTable forms={DEFINITE_ARTICLES} />
+        <ArticleTable forms={DEFINITE_ARTICLES} german={german} />
         <Text style={styles.note}>{t('case_sheet.noun_endings')}</Text>
       </CheatSheetSection>
 
@@ -59,7 +61,7 @@ export default function CaseCheatSheetScreen() {
         title={t('case_sheet.sections.indefinite')}
         accentColor={AppColors.pink}
       >
-        <ArticleTable forms={INDEFINITE_ARTICLES} />
+        <ArticleTable forms={INDEFINITE_ARTICLES} german={german} />
         <Text style={styles.note}>{t('case_sheet.ein_words_note')}</Text>
       </CheatSheetSection>
 
@@ -68,6 +70,7 @@ export default function CaseCheatSheetScreen() {
         accentColor={AppColors.green}
       >
         <ReferenceTable
+          german={german}
           cornerLabel={CASE_OVERVIEW[0].short}
           columns={PRONOUN_COLUMNS}
           rows={PRONOUN_ROWS}
@@ -78,7 +81,7 @@ export default function CaseCheatSheetScreen() {
         title={t('case_sheet.sections.prepositions')}
         accentColor={AppColors.purple}
       >
-        <PrepositionGroups />
+        <PrepositionGroups german={german} />
       </CheatSheetSection>
     </ReferenceScreenShell>
   );

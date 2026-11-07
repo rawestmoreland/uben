@@ -15,12 +15,14 @@ import {
   DEFINITE_ARTICLES,
   INDEFINITE_ARTICLES,
   PERSONAL_PRONOUNS,
+  PREPOSITION_GROUPS,
 } from '@/constants/reference/cases';
 import {
   GENDER_HINTS,
   HINT_ARTICLES,
   getHintsForArticle,
 } from '@/constants/reference/genderHints';
+import { applyGermanTextPreference } from '@/utils/germanText';
 
 const LOCALES_DIR = path.join(__dirname, '../../../locales');
 const locales = fs
@@ -134,4 +136,36 @@ describe('reference locale strings', () => {
       }
     },
   );
+});
+
+describe('ß / ss spelling preference', () => {
+  const allGermanStrings = [
+    ...GENDER_HINTS.flatMap((hint) => [
+      hint.pattern ?? '',
+      ...hint.examples,
+      ...(hint.exceptions ?? []),
+    ]),
+    ...PREPOSITION_GROUPS.flatMap((group) => [
+      group.label,
+      ...group.prepositions,
+    ]),
+  ];
+
+  it('has reference data that contains ß, so the preference matters', () => {
+    expect(allGermanStrings.some((text) => text.includes('ß'))).toBe(true);
+  });
+
+  it('leaves no ß in any reference string when the ss preference is on', () => {
+    for (const text of allGermanStrings) {
+      expect(applyGermanTextPreference(text, 'ss')).not.toContain('ß');
+    }
+  });
+
+  it('keeps ß unchanged for the standard preference', () => {
+    expect(applyGermanTextPreference('die Straße', 'eszett')).toBe(
+      'die Straße',
+    );
+    expect(applyGermanTextPreference('die Straße', 'ss')).toBe('die Strasse');
+    expect(applyGermanTextPreference('außerhalb', 'ss')).toBe('ausserhalb');
+  });
 });

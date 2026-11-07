@@ -7,6 +7,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { useGermanText } from '@/hooks/use-german-text';
 import {
   getHintsForArticle,
   HINT_ARTICLES,
@@ -28,6 +29,7 @@ const ARTICLE_COLORS: Record<HintArticle, string> = {
 
 export default function GenderHintsScreen() {
   const { t } = useTranslation('app');
+  const german = useGermanText();
 
   return (
     <ReferenceScreenShell
@@ -49,7 +51,7 @@ export default function GenderHintsScreen() {
             </Text>
           </View>
           {getHintsForArticle(article).map((hint) => (
-            <GenderHintCard key={hint.id} hint={hint} />
+            <GenderHintCard key={hint.id} hint={hint} german={german} />
           ))}
         </View>
       ))}

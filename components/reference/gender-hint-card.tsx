@@ -6,10 +6,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 interface GenderHintCardProps {
   hint: GenderHint;
+  /** Renders German text in the user's ß / ss preference (`useGermanText`). */
+  german: (text: string) => string;
 }
 
 /** One ending or meaning group, with its examples and known exceptions. */
-export function GenderHintCard({ hint }: GenderHintCardProps) {
+export function GenderHintCard({ hint, german }: GenderHintCardProps) {
   const { t } = useTranslation('app');
   const label = hint.hasLabel ? t(`gender_hints.hints.${hint.id}`) : null;
   const isRule = hint.strength === 'rule';
@@ -19,7 +21,7 @@ export function GenderHintCard({ hint }: GenderHintCardProps) {
       <View style={styles.headRow}>
         <View style={styles.headText}>
           {hint.pattern ? (
-            <Text style={styles.pattern}>{hint.pattern}</Text>
+            <Text style={styles.pattern}>{german(hint.pattern)}</Text>
           ) : null}
           {label ? (
             <Text style={hint.pattern ? styles.label : styles.labelOnly}>
@@ -33,13 +35,13 @@ export function GenderHintCard({ hint }: GenderHintCardProps) {
           </Text>
         </View>
       </View>
-      <Text style={styles.examples}>{hint.examples.join('  ·  ')}</Text>
+      <Text style={styles.examples}>{german(hint.examples.join('  ·  '))}</Text>
       {hint.exceptions ? (
         <Text style={styles.exceptions}>
           <Text style={styles.exceptionsLabel}>
             {t('gender_hints.exceptions')}:{' '}
           </Text>
-          {hint.exceptions.join(', ')}
+          {german(hint.exceptions.join(', '))}
         </Text>
       ) : null}
     </View>
