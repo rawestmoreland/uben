@@ -419,6 +419,15 @@
       "two_way_rule": "两可介词：表示移动用 Akkusativ，表示位置用 Dativ。",
       "two_way_motion": "（移动：Akkusativ）",
       "two_way_location": "（位置：Dativ）"
+    },
+    "app_update": {
+      "title_available": "有可用更新",
+      "body_available": "版本 {{version}} 已发布。更新即可获得最新的修复和功能。",
+      "update": "更新",
+      "later": "稍后",
+      "title_required": "需要更新",
+      "body_required": "此版本的 Üben 已不再受支持。请更新到 {{version}} 版本以继续练习。",
+      "dismiss_label": "关闭更新提示"
     }
   }
 }

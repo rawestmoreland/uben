@@ -158,6 +158,7 @@ Business logic abstracted from UI components:
 - **statisticsService.ts** - User progress, streaks, forecasting
 - **notificationService.ts** - Local practice reminders (expo-notifications; no remote push). Re-plans pending reminders from card/streak data via the pure `reminderPlanner.ts`
 - **syncService.ts** - Optional PocketBase vocabulary sync
+- **appUpdateService.ts** + **appVersion.ts** - Optional "your app is behind the store" notice. `appVersion.ts` is the pure semver/decision logic (unit tested); `appUpdateService.ts` fetches the PocketBase `app_config` row, caches it in `settings` and fetches at most once a day
 
 Services use the database singleton and provide clean APIs to components.
 
@@ -171,6 +172,16 @@ Services use the database singleton and provide clean APIs to components.
 - Rescheduled on app foreground/background (`hooks/use-reminder-scheduler.ts`), after a finished session and when settings change; one-time opt-in prompt after the first finished session (`hooks/use-reminder-prompt.ts`)
 - Tapping a reminder opens `/quiz`
 - Keep scheduling rules in `reminderPlanner.ts` (pure, unit tested); `notificationService.ts` owns scheduling and permissions (the tap handler lives in `use-reminder-scheduler.ts`); keep expo-notifications calls out of components
+
+#### App Update Notice
+
+`services/appUpdateService.ts` + `services/appVersion.ts` tell users when their installed build is behind the store (store auto-updates lag). Display only; free for everyone:
+
+- Data: PocketBase `app_config` collection, public read, **one row per platform** (`ios`/`android`, unique index on `platform`). Fields: `latest_version` (required), `min_version` (optional), `store_url` (required, https only), `message` (optional). Update `latest_version` only once that build is **live in the store**; keep `min_version` <= `latest_version` (a `min_version` above it is ignored)
+- `installed < min_version` -> blocking `UpdateRequiredModal`; `installed < latest_version` -> dismissible `UpdateBanner` on Home (dismissal is remembered per `latest_version`)
+- Installed version is read from the native binary (`expo-application`), **not** `Constants.expoConfig.version`: an OTA can carry a newer `version` than the binary. `expo-application` is already compiled in via `expo-notifications`, so the native fingerprint is unchanged and this ships over the air
+- Skipped on web and in dev/preview builds (`extra.appEnv`). Never throws; the last good row is cached so a mandatory update is still enforced offline
+- UI: `components/app-update/`, hook `hooks/use-app-update.ts`, mounted via `<AppUpdateNotice />` on Home
 
 #### Sync Service
 

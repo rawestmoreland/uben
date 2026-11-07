@@ -419,6 +419,15 @@
       "two_way_rule": "Preposizioni miste: il movimento vuole l'accusativo, la posizione il dativo.",
       "two_way_motion": "(movimento: accusativo)",
       "two_way_location": "(posizione: dativo)"
+    },
+    "app_update": {
+      "title_available": "Aggiornamento disponibile",
+      "body_available": "La versione {{version}} è disponibile. Aggiorna per ottenere le ultime correzioni e funzionalità.",
+      "update": "Aggiorna",
+      "later": "Più tardi",
+      "title_required": "Aggiornamento necessario",
+      "body_required": "Questa versione di Üben non è più supportata. Passa alla versione {{version}} per continuare a esercitarti.",
+      "dismiss_label": "Ignora l'avviso di aggiornamento"
     }
   }
 }

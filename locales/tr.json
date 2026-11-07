@@ -419,6 +419,15 @@
       "two_way_rule": "İki yönlü edatlar: hareket Akkusativ, konum Dativ ister.",
       "two_way_motion": "(hareket: Akkusativ)",
       "two_way_location": "(konum: Dativ)"
+    },
+    "app_update": {
+      "title_available": "Güncelleme mevcut",
+      "body_available": "{{version}} sürümü yayında. En son düzeltmeler ve özellikler için güncelleyin.",
+      "update": "Güncelle",
+      "later": "Daha sonra",
+      "title_required": "Güncelleme gerekli",
+      "body_required": "Üben'in bu sürümü artık desteklenmiyor. Pratik yapmaya devam etmek için {{version}} sürümüne güncelleyin.",
+      "dismiss_label": "Güncelleme bildirimini kapat"
     }
   }
 }

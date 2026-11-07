@@ -6,6 +6,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/design';
+import { AppUpdateNotice } from '@/components/app-update/app-update-notice';
 import { ExerciseTileGrid } from '@/components/home/exercise-tile-grid';
 import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
@@ -88,6 +89,9 @@ export default function HomeScreen() {
             {t('home_screen.header_subtitle')}
           </Text>
         </View>
+
+        {/* ── Store update notice (banner or blocking modal) ──── */}
+        <AppUpdateNotice />
 
         {/* ── Stats Row ───────────────────────────────────────── */}
         <View style={styles.statsRow}>
