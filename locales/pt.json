@@ -427,6 +427,15 @@
       "two_way_rule": "Preposições mistas: o movimento pede o acusativo, a posição o dativo.",
       "two_way_motion": "(movimento: acusativo)",
       "two_way_location": "(posição: dativo)"
+    },
+    "app_update": {
+      "title_available": "Atualização disponível",
+      "body_available": "A versão {{version}} já está disponível. Atualize para receber as últimas correções e recursos.",
+      "update": "Atualizar",
+      "later": "Mais tarde",
+      "title_required": "Atualização necessária",
+      "body_required": "Esta versão do Üben não é mais suportada. Atualize para a versão {{version}} para continuar praticando.",
+      "dismiss_label": "Dispensar aviso de atualização"
     }
   }
 }
