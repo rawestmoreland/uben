@@ -360,7 +360,64 @@
     },
     "reference_screen": {
       "title": "参考",
-      "subtitle": "速查表与指南"
+      "subtitle": "速查表与指南",
+      "close": "关闭"
+    },
+    "gender_hints": {
+      "title": "词性提示",
+      "row_subtitle": "提示 der、die、das 的词尾",
+      "intro": "可用来推测名词冠词的词尾和语义类别。学名词时务必连冠词一起记；拿不准时再用这些提示。",
+      "tip": "这些提示并非绝对。请把每个新名词和它的冠词一起学。",
+      "exceptions": "例外",
+      "strength": {
+        "rule": "规则",
+        "tendency": "倾向"
+      },
+      "gender": {
+        "die": "阴性",
+        "der": "阳性",
+        "das": "中性"
+      },
+      "hints": {
+        "in": "女性人物",
+        "e": "大多数以 -e 结尾的名词",
+        "flowers_trees": "花和树",
+        "er": "常指做某事的人和工具",
+        "days_months_seasons": "星期、月份和季节",
+        "directions": "方位",
+        "male_persons": "男性人物",
+        "weather": "大多数天气词",
+        "alcohol": "大多数酒类",
+        "cars": "汽车品牌",
+        "verbs_as_nouns": "用作名词的动词",
+        "adjectives_as_nouns": "用作名词、指事物或概念的形容词",
+        "metals": "大多数金属",
+        "languages": "语言",
+        "venues": "酒店、咖啡馆、电影院、餐厅"
+      }
+    },
+    "case_sheet": {
+      "title": "格速查表",
+      "row_subtitle": "按格列出的冠词、代词和介词",
+      "intro": "该用哪种形式取决于格。用提问来判断是哪一格。",
+      "sections": {
+        "cases": "四个格",
+        "definite": "定冠词（der、die、das）",
+        "indefinite": "不定冠词（ein、kein、mein……）",
+        "pronouns": "人称代词",
+        "prepositions": "按格分类的介词"
+      },
+      "roles": {
+        "nominative": "主语：谁或什么发出动作",
+        "accusative": "直接宾语：动作作用于谁或什么",
+        "dative": "间接宾语：给谁或为谁",
+        "genitive": "所属：谁的"
+      },
+      "noun_endings": "阳性和中性名词在 Genitiv 加 -(e)s（des Mannes）。复数名词在 Dativ 加 -n（den Kindern）。",
+      "ein_words_note": "物主代词（mein、dein、sein……）和 kein 的词尾相同。复数一列显示的是 kein- 的形式。",
+      "two_way_rule": "两可介词：表示移动用 Akkusativ，表示位置用 Dativ。",
+      "two_way_motion": "（移动：Akkusativ）",
+      "two_way_location": "（位置：Dativ）"
     }
   }
 }

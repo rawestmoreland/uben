@@ -337,7 +337,64 @@
     },
     "reference_screen": {
       "title": "Référence",
-      "subtitle": "Tableaux et guides"
+      "subtitle": "Tableaux et guides",
+      "close": "Fermer"
+    },
+    "gender_hints": {
+      "title": "Indices de genre",
+      "row_subtitle": "Terminaisons qui indiquent der, die ou das",
+      "intro": "Terminaisons et groupes de sens qui permettent de deviner l'article d'un nom. Apprenez toujours l'article avec le nom ; servez-vous de ces indices quand vous hésitez.",
+      "tip": "Ces indices ne sont pas des garanties. Apprenez chaque nouveau nom avec son article.",
+      "exceptions": "Exceptions",
+      "strength": {
+        "rule": "Règle",
+        "tendency": "Tendance"
+      },
+      "gender": {
+        "die": "Féminin",
+        "der": "Masculin",
+        "das": "Neutre"
+      },
+      "hints": {
+        "in": "Personnes de sexe féminin",
+        "e": "La plupart des noms en -e",
+        "flowers_trees": "Fleurs et arbres",
+        "er": "Souvent des personnes qui font quelque chose, et des outils",
+        "days_months_seasons": "Jours, mois et saisons",
+        "directions": "Points cardinaux",
+        "male_persons": "Personnes de sexe masculin",
+        "weather": "La plupart des mots de la météo",
+        "alcohol": "La plupart des boissons alcoolisées",
+        "cars": "Marques de voitures",
+        "verbs_as_nouns": "Verbes employés comme noms",
+        "adjectives_as_nouns": "Adjectifs employés comme noms pour des choses ou des idées",
+        "metals": "La plupart des métaux",
+        "languages": "Langues",
+        "venues": "Hôtels, cafés, cinémas, restaurants"
+      }
+    },
+    "case_sheet": {
+      "title": "Aide-mémoire des cas",
+      "row_subtitle": "Articles, pronoms et prépositions par cas",
+      "intro": "La forme à employer dépend du cas. Posez la question pour le trouver.",
+      "sections": {
+        "cases": "Les quatre cas",
+        "definite": "Article défini (der, die, das)",
+        "indefinite": "Article indéfini (ein, kein, mein…)",
+        "pronouns": "Pronoms personnels",
+        "prepositions": "Prépositions par cas"
+      },
+      "roles": {
+        "nominative": "Sujet : qui ou quoi fait l'action",
+        "accusative": "Objet direct : qui ou quoi est concerné",
+        "dative": "Objet indirect : à qui ou pour qui",
+        "genitive": "Possession : de qui"
+      },
+      "noun_endings": "Les noms masculins et neutres prennent -(e)s au génitif (des Mannes). Les noms au pluriel prennent -n au datif (den Kindern).",
+      "ein_words_note": "Les possessifs (mein, dein, sein…) et kein suivent les mêmes terminaisons. La colonne du pluriel montre les formes de kein-.",
+      "two_way_rule": "Prépositions mixtes : le mouvement demande l'accusatif, la position le datif.",
+      "two_way_motion": "(mouvement : accusatif)",
+      "two_way_location": "(position : datif)"
     }
   }
 }

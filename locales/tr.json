@@ -360,7 +360,64 @@
     },
     "reference_screen": {
       "title": "Referans",
-      "subtitle": "Tablolar ve rehberler"
+      "subtitle": "Tablolar ve rehberler",
+      "close": "Kapat"
+    },
+    "gender_hints": {
+      "title": "Cinsiyet ipuçları",
+      "row_subtitle": "der, die veya das'ı gösteren sonlar",
+      "intro": "Bir ismin artikelini tahmin etmeye yarayan sonlar ve anlam grupları. Artikeli her zaman isimle birlikte öğrenin; emin olmadığınızda bu ipuçlarından yararlanın.",
+      "tip": "İpuçları kesin garanti değildir. Her yeni ismi artikeliyle birlikte öğrenin.",
+      "exceptions": "İstisnalar",
+      "strength": {
+        "rule": "Kural",
+        "tendency": "Eğilim"
+      },
+      "gender": {
+        "die": "Dişil",
+        "der": "Eril",
+        "das": "Nötr"
+      },
+      "hints": {
+        "in": "Kadın kişiler",
+        "e": "-e ile biten isimlerin çoğu",
+        "flowers_trees": "Çiçekler ve ağaçlar",
+        "er": "Çoğunlukla bir iş yapan kişiler ve aletler",
+        "days_months_seasons": "Günler, aylar ve mevsimler",
+        "directions": "Yön adları",
+        "male_persons": "Erkek kişiler",
+        "weather": "Hava durumu sözcüklerinin çoğu",
+        "alcohol": "Alkollü içeceklerin çoğu",
+        "cars": "Araba markaları",
+        "verbs_as_nouns": "İsim olarak kullanılan fiiller",
+        "adjectives_as_nouns": "Şey veya kavram anlamında isim olarak kullanılan sıfatlar",
+        "metals": "Metallerin çoğu",
+        "languages": "Diller",
+        "venues": "Oteller, kafeler, sinemalar, restoranlar"
+      }
+    },
+    "case_sheet": {
+      "title": "Hâl özeti",
+      "row_subtitle": "Hâllere göre artikeller, zamirler ve edatlar",
+      "intro": "Kullanılacak biçim hâle bağlıdır. Hâli bulmak için soruyu sorun.",
+      "sections": {
+        "cases": "Dört hâl",
+        "definite": "Belirli artikel (der, die, das)",
+        "indefinite": "Belirsiz artikel (ein, kein, mein…)",
+        "pronouns": "Kişi zamirleri",
+        "prepositions": "Hâllere göre edatlar"
+      },
+      "roles": {
+        "nominative": "Özne: işi kim veya ne yapıyor",
+        "accusative": "Belirtili nesne: eylemden kim veya ne etkileniyor",
+        "dative": "Dolaylı nesne: kime veya kimin için",
+        "genitive": "Aitlik: kimin"
+      },
+      "noun_endings": "Eril ve nötr isimler Genitiv hâlinde -(e)s alır (des Mannes). Çoğul isimler Dativ hâlinde -n alır (den Kindern).",
+      "ein_words_note": "İyelik sözcükleri (mein, dein, sein…) ve kein aynı sonları alır. Çoğul sütunu kein- biçimlerini gösterir.",
+      "two_way_rule": "İki yönlü edatlar: hareket Akkusativ, konum Dativ ister.",
+      "two_way_motion": "(hareket: Akkusativ)",
+      "two_way_location": "(konum: Dativ)"
     }
   }
 }

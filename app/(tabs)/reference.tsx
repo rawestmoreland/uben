@@ -40,6 +40,16 @@ export default function ReferenceScreen() {
     router.push(PATTERNS_ROUTE);
   }, [isPro]);
 
+  const openGenderHints = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push('/gender-hints');
+  }, []);
+
+  const openCaseCheatSheet = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push('/case-cheat-sheet');
+  }, []);
+
   const openHowItWorks = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push('/how-it-works');
@@ -62,6 +72,18 @@ export default function ReferenceScreen() {
         </View>
 
         <View style={styles.list}>
+          <ReferenceRow
+            title={t('gender_hints.title')}
+            subtitle={t('gender_hints.row_subtitle')}
+            accentColor={AppColors.blue}
+            onPress={openGenderHints}
+          />
+          <ReferenceRow
+            title={t('case_sheet.title')}
+            subtitle={t('case_sheet.row_subtitle')}
+            accentColor={AppColors.yellow}
+            onPress={openCaseCheatSheet}
+          />
           <ReferenceRow
             title={t('home_screen.reference.prepositions.title')}
             subtitle={t('home_screen.reference.prepositions.subtitle')}
