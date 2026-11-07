@@ -10,18 +10,24 @@ import { SETTINGS_KEYS, settingsService } from './settingsService';
  * reviewed and tested on its own.
  *
  * Local integer IDs differ across installs, so nothing in the payload refers
- * to them. Words are identified by a `WordKey`: the PocketBase `remote_id`
- * for official nouns, and `(german, article)` / `german` for user-added
- * nouns and for adjectives.
+ * to them. Cards are identified by a key instead:
+ *   - nouns (`noun` article cards and `noun_plural` cards): the PocketBase
+ *     `remote_id` for official nouns, else `(german, article, sense)`
+ *   - adjectives: `german`
+ *   - preposition patterns (`verb_prep`): `(verb, is_reflexive, preposition,
+ *     sentence)`, the table's own UNIQUE key
+ *   - da(r)-/wo(r)- cards (`verb_prep_compound`): the pattern key plus `form`
  */
 
 export const BACKUP_PAYLOAD_VERSION = 1;
 
 /**
  * Settings that are safe and useful to carry to a new install. Deliberately
- * excluded: `pro_unlocked` (RevenueCat is the source of truth),
- * `selected_categories` (holds local category IDs), and ad/review-prompt
- * counters that only make sense per install.
+ * excluded: `pro_unlocked` / `promo_unlocked` / `promo_code_used`
+ * (entitlement state: RevenueCat and the promo server are the source of
+ * truth), `selected_categories` (holds local category IDs), reminder settings
+ * (they depend on this device's notification permission and are re-planned
+ * locally), and ad/review-prompt counters that only make sense per install.
  */
 export const BACKED_UP_SETTINGS_KEYS = [
   SETTINGS_KEYS.SHOW_ENGLISH_HINT,
@@ -34,7 +40,17 @@ export const BACKED_UP_SETTINGS_KEYS = [
   SETTINGS_KEYS.PRO_GRANDFATHER_MIGRATION_DONE,
   SETTINGS_KEYS.GRANDFATHERED_B_LEVEL,
   SETTINGS_KEYS.GRANDFATHERED_WORD_CAP,
+  SETTINGS_KEYS.PLURAL_NOTATION_HINT_SEEN,
+  SETTINGS_KEYS.VERB_PREPOSITION_CASE_STEP,
 ] as const;
+
+/** `card_progress.word_type` values the backup carries. */
+type BackedUpWordType =
+  | 'noun'
+  | 'noun_plural'
+  | 'adjective'
+  | 'verb_prep'
+  | 'verb_prep_compound';
 
 // ── Payload types ─────────────────────────────────────────────────────
 
@@ -79,13 +95,36 @@ export interface BackupUserAdjective {
   createdAt: string;
 }
 
+/**
+ * Identifies a verb/adjective/noun + preposition pattern: the same columns as
+ * `verb_prepositions`' UNIQUE constraint, so it is stable across installs
+ * (local ids and `remote_id`s are not).
+ */
+export interface BackupPatternKey {
+  /** Head word; the column is named `verb` for adjective and noun patterns too. */
+  verb: string;
+  isReflexive: boolean;
+  preposition: string;
+  sentence: string;
+}
+
 export interface BackupPayload {
   version: number;
   createdAt: string;
   userNouns: BackupUserNoun[];
   userAdjectives: BackupUserAdjective[];
+  /** Article cards (`word_type = 'noun'`). */
   nounProgress: (BackupNounKey & { progress: BackupCardProgress })[];
+  /** Plural-ending cards (`word_type = 'noun_plural'`), keyed like nouns. */
+  nounPluralProgress: (BackupNounKey & { progress: BackupCardProgress })[];
   adjectiveProgress: { german: string; progress: BackupCardProgress }[];
+  /** Preposition pattern cards (`word_type = 'verb_prep'`). */
+  verbPrepProgress: (BackupPatternKey & { progress: BackupCardProgress })[];
+  /** Da(r)-/wo(r)- cards (`word_type = 'verb_prep_compound'`). */
+  verbPrepCompoundProgress: (BackupPatternKey & {
+    form: 'da' | 'wo';
+    progress: BackupCardProgress;
+  })[];
   settings: Record<string, string>;
 }
 
@@ -122,6 +161,17 @@ interface AdjectiveProgressRow extends ProgressRow {
   german: string;
 }
 
+interface PatternProgressRow extends ProgressRow {
+  verb: string;
+  is_reflexive: number;
+  preposition: string;
+  sentence: string;
+}
+
+interface CompoundProgressRow extends PatternProgressRow {
+  form: 'da' | 'wo';
+}
+
 interface ReviewRow {
   card_progress_id: number;
   quality: number;
@@ -150,6 +200,28 @@ function toCardProgress(
   };
 }
 
+function toNounEntry(
+  row: NounProgressRow,
+  reviewsByCard: Map<number, BackupReview[]>,
+): BackupNounKey & { progress: BackupCardProgress } {
+  return {
+    remoteId: row.remote_id,
+    german: row.german,
+    article: row.article,
+    sense: row.sense,
+    progress: toCardProgress(row, reviewsByCard),
+  };
+}
+
+function toPatternKey(row: PatternProgressRow): BackupPatternKey {
+  return {
+    verb: row.verb,
+    isReflexive: row.is_reflexive === 1,
+    preposition: row.preposition,
+    sentence: row.sentence,
+  };
+}
+
 class BackupService {
   private db = getDatabase();
 
@@ -159,7 +231,10 @@ class BackupService {
       userNouns,
       userAdjectives,
       nounRows,
+      nounPluralRows,
       adjectiveRows,
+      patternRows,
+      compoundRows,
       reviewRows,
       settings,
     ] = await Promise.all([
@@ -188,15 +263,25 @@ class BackupService {
       }>(
         'SELECT german, english, level, created_at FROM adjectives WHERE is_user_added = 1',
       ),
-      this.db.getAllAsync<NounProgressRow>(
-        `SELECT ${PROGRESS_COLUMNS}, n.remote_id, n.german, n.article, n.sense
-         FROM card_progress cp
-         JOIN nouns n ON cp.word_type = 'noun' AND cp.word_id = n.id`,
-      ),
+      this.readNounProgress('noun'),
+      this.readNounProgress('noun_plural'),
       this.db.getAllAsync<AdjectiveProgressRow>(
         `SELECT ${PROGRESS_COLUMNS}, a.german
          FROM card_progress cp
          JOIN adjectives a ON cp.word_type = 'adjective' AND cp.word_id = a.id`,
+      ),
+      this.db.getAllAsync<PatternProgressRow>(
+        `SELECT ${PROGRESS_COLUMNS}, vp.verb, vp.is_reflexive, vp.preposition, vp.sentence
+         FROM card_progress cp
+         JOIN verb_prepositions vp ON cp.word_type = 'verb_prep' AND cp.word_id = vp.id`,
+      ),
+      this.db.getAllAsync<CompoundProgressRow>(
+        `SELECT ${PROGRESS_COLUMNS}, vp.verb, vp.is_reflexive, vp.preposition, vp.sentence,
+                vpc.form
+         FROM card_progress cp
+         JOIN verb_preposition_compounds vpc
+           ON cp.word_type = 'verb_prep_compound' AND cp.word_id = vpc.id
+         JOIN verb_prepositions vp ON vp.id = vpc.verb_preposition_id`,
       ),
       this.db.getAllAsync<ReviewRow>(
         `SELECT card_progress_id, quality, time_taken_ms, reviewed_at
@@ -237,19 +322,38 @@ class BackupService {
         level: row.level,
         createdAt: row.created_at,
       })),
-      nounProgress: nounRows.map((row) => ({
-        remoteId: row.remote_id,
-        german: row.german,
-        article: row.article,
-        sense: row.sense,
-        progress: toCardProgress(row, reviewsByCard),
-      })),
+      nounProgress: nounRows.map((row) => toNounEntry(row, reviewsByCard)),
+      nounPluralProgress: nounPluralRows.map((row) =>
+        toNounEntry(row, reviewsByCard),
+      ),
       adjectiveProgress: adjectiveRows.map((row) => ({
         german: row.german,
         progress: toCardProgress(row, reviewsByCard),
       })),
+      verbPrepProgress: patternRows.map((row) => ({
+        ...toPatternKey(row),
+        progress: toCardProgress(row, reviewsByCard),
+      })),
+      verbPrepCompoundProgress: compoundRows.map((row) => ({
+        ...toPatternKey(row),
+        form: row.form,
+        progress: toCardProgress(row, reviewsByCard),
+      })),
       settings,
     };
+  }
+
+  /** Cards for a word_type that is keyed by a noun id ('noun', 'noun_plural'). */
+  private readNounProgress(
+    wordType: 'noun' | 'noun_plural',
+  ): Promise<NounProgressRow[]> {
+    return this.db.getAllAsync<NounProgressRow>(
+      `SELECT ${PROGRESS_COLUMNS}, n.remote_id, n.german, n.article, n.sense
+       FROM card_progress cp
+       JOIN nouns n ON cp.word_id = n.id
+       WHERE cp.word_type = ?`,
+      [wordType],
+    );
   }
 
   /**
@@ -280,11 +384,17 @@ class BackupService {
         }
       }
 
-      for (const entry of payload.nounProgress) {
+      // The `?? []` fallbacks let a payload written before a card type existed
+      // restore cleanly instead of throwing.
+      for (const entry of payload.nounProgress ?? []) {
         const nounId = await this.findNounId(entry);
         await this.applyProgress('noun', nounId, entry.progress, result);
       }
-      for (const entry of payload.adjectiveProgress) {
+      for (const entry of payload.nounPluralProgress ?? []) {
+        const nounId = await this.findNounId(entry);
+        await this.applyProgress('noun_plural', nounId, entry.progress, result);
+      }
+      for (const entry of payload.adjectiveProgress ?? []) {
         const adjective = await this.db.getFirstAsync<{ id: number }>(
           'SELECT id FROM adjectives WHERE german = ?',
           [entry.german],
@@ -292,6 +402,19 @@ class BackupService {
         await this.applyProgress(
           'adjective',
           adjective?.id ?? null,
+          entry.progress,
+          result,
+        );
+      }
+      for (const entry of payload.verbPrepProgress ?? []) {
+        const patternId = await this.findPatternId(entry);
+        await this.applyProgress('verb_prep', patternId, entry.progress, result);
+      }
+      for (const entry of payload.verbPrepCompoundProgress ?? []) {
+        const compoundId = await this.findCompoundId(entry, entry.form);
+        await this.applyProgress(
+          'verb_prep_compound',
+          compoundId,
           entry.progress,
           result,
         );
@@ -349,6 +472,40 @@ class BackupService {
     return byNaturalKey?.id ?? null;
   }
 
+  /**
+   * Resolve a preposition pattern by its UNIQUE key. A pattern retired by a
+   * newer seed version simply isn't found, and its card is skipped.
+   */
+  private async findPatternId(key: BackupPatternKey): Promise<number | null> {
+    const row = await this.db.getFirstAsync<{ id: number }>(
+      `SELECT id FROM verb_prepositions
+       WHERE verb = ? AND is_reflexive = ? AND preposition = ? AND sentence = ?`,
+      [key.verb, key.isReflexive ? 1 : 0, key.preposition, key.sentence],
+    );
+    return row?.id ?? null;
+  }
+
+  /** Resolve a da(r)-/wo(r)- card by its pattern key plus form. */
+  private async findCompoundId(
+    key: BackupPatternKey,
+    form: 'da' | 'wo',
+  ): Promise<number | null> {
+    const row = await this.db.getFirstAsync<{ id: number }>(
+      `SELECT vpc.id FROM verb_preposition_compounds vpc
+       JOIN verb_prepositions vp ON vp.id = vpc.verb_preposition_id
+       WHERE vp.verb = ? AND vp.is_reflexive = ? AND vp.preposition = ?
+         AND vp.sentence = ? AND vpc.form = ?`,
+      [
+        key.verb,
+        key.isReflexive ? 1 : 0,
+        key.preposition,
+        key.sentence,
+        form,
+      ],
+    );
+    return row?.id ?? null;
+  }
+
   /** Returns true if a new user noun row was created. */
   private async restoreUserNoun(noun: BackupUserNoun): Promise<boolean> {
     if (await this.findNounId(noun)) return false;
@@ -403,7 +560,7 @@ class BackupService {
   }
 
   private async applyProgress(
-    wordType: 'noun' | 'adjective',
+    wordType: BackedUpWordType,
     wordId: number | null,
     progress: BackupCardProgress,
     result: RestoreResult,

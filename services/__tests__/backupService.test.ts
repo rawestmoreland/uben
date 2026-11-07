@@ -40,6 +40,8 @@ jest.mock('../settingsService', () => ({
     PRO_GRANDFATHER_MIGRATION_DONE: 'pro_grandfather_migration_done',
     GRANDFATHERED_B_LEVEL: 'grandfathered_b_level',
     GRANDFATHERED_WORD_CAP: 'grandfathered_word_cap',
+    PLURAL_NOTATION_HINT_SEEN: 'plural_notation_hint_seen',
+    VERB_PREPOSITION_CASE_STEP: 'verb_preposition_case_step',
   },
   settingsService: { getSetting: jest.fn(), setSetting: jest.fn() },
 }));
@@ -90,11 +92,21 @@ function emptyPayload(overrides: Partial<BackupPayload> = {}): BackupPayload {
     userNouns: [],
     userAdjectives: [],
     nounProgress: [],
+    nounPluralProgress: [],
     adjectiveProgress: [],
+    verbPrepProgress: [],
+    verbPrepCompoundProgress: [],
     settings: {},
     ...overrides,
   };
 }
+
+const PATTERN_KEY = {
+  verb: 'warten',
+  isReflexive: false,
+  preposition: 'auf',
+  sentence: 'Ich warte ____ meine Frau.',
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -106,8 +118,8 @@ beforeEach(() => {
 
 describe('createBackupPayload', () => {
   it('keys progress by word (never by local id) and attaches each card its own reviews', async () => {
-    mockDb.getAllAsync.mockImplementation(async (sql: string) => {
-      if (sql.includes("cp.word_type = 'noun'")) {
+    mockDb.getAllAsync.mockImplementation(async (sql: string, params?: string[]) => {
+      if (sql.includes('JOIN nouns') && params?.[0] === 'noun') {
         return [
           { id: 11, remote_id: 'abc123', german: 'Hund', article: 'der', sense: null, ...PROGRESS_ROW },
           { id: 12, remote_id: null, german: 'Bank', article: 'die', sense: 'seat', ...PROGRESS_ROW },
@@ -174,6 +186,70 @@ describe('createBackupPayload', () => {
     expect(requestedKeys).toEqual([...BACKED_UP_SETTINGS_KEYS]);
     expect(requestedKeys).not.toContain('pro_unlocked');
     expect(requestedKeys).not.toContain('selected_categories');
+    // Entitlement and per-device state must never ride along.
+    for (const excluded of [
+      'promo_unlocked',
+      'promo_code_used',
+      'reminders_enabled',
+      'reminder_time',
+      'streak_reminders_enabled',
+      'reminder_prompt_seen',
+    ]) {
+      expect(requestedKeys).not.toContain(excluded);
+    }
+  });
+
+  it('carries the plural-quiz and preposition-quiz preferences', () => {
+    expect(BACKED_UP_SETTINGS_KEYS).toContain('plural_notation_hint_seen');
+    expect(BACKED_UP_SETTINGS_KEYS).toContain('verb_preposition_case_step');
+  });
+
+  it('keys plural-ending cards by noun, separately from article cards', async () => {
+    mockDb.getAllAsync.mockImplementation(async (sql: string, params?: string[]) => {
+      if (sql.includes('JOIN nouns') && params?.[0] === 'noun_plural') {
+        return [{ id: 21, remote_id: 'abc123', german: 'Hund', article: 'der', sense: null, ...PROGRESS_ROW }];
+      }
+      if (sql.includes('FROM review_history')) {
+        return [{ card_progress_id: 21, quality: 4, time_taken_ms: 1200, reviewed_at: '2026-10-01 08:00:00' }];
+      }
+      return [];
+    });
+
+    const payload = await backupService.createBackupPayload();
+
+    expect(payload.nounProgress).toEqual([]);
+    expect(payload.nounPluralProgress).toHaveLength(1);
+    expect(payload.nounPluralProgress[0]).toMatchObject({ remoteId: 'abc123', german: 'Hund' });
+    expect(payload.nounPluralProgress[0].progress.reviews.map((r) => r.quality)).toEqual([4]);
+  });
+
+  it('keys preposition pattern and da/wo cards by pattern key, never by local id', async () => {
+    mockDb.getAllAsync.mockImplementation(async (sql: string) => {
+      if (sql.includes('verb_preposition_compounds')) {
+        return [{ id: 32, ...PATTERN_KEY, is_reflexive: 0, form: 'wo', ...PROGRESS_ROW }];
+      }
+      if (sql.includes("cp.word_type = 'verb_prep'")) {
+        return [
+          { id: 31, verb: 'sich freuen', is_reflexive: 1, preposition: 'auf', sentence: 'Ich freue mich ____ den Urlaub.', ...PROGRESS_ROW },
+        ];
+      }
+      if (sql.includes('FROM review_history')) {
+        return [{ card_progress_id: 32, quality: 5, time_taken_ms: 700, reviewed_at: '2026-10-02 08:00:00' }];
+      }
+      return [];
+    });
+
+    const payload = await backupService.createBackupPayload();
+
+    expect(payload.verbPrepProgress).toEqual([
+      expect.objectContaining({ verb: 'sich freuen', isReflexive: true, preposition: 'auf' }),
+    ]);
+    expect(payload.verbPrepCompoundProgress).toEqual([
+      expect.objectContaining({ ...PATTERN_KEY, form: 'wo' }),
+    ]);
+    expect(payload.verbPrepCompoundProgress[0].progress.reviews).toHaveLength(1);
+    expect(JSON.stringify(payload.verbPrepProgress)).not.toMatch(/"id"/);
+    expect(JSON.stringify(payload.verbPrepCompoundProgress)).not.toMatch(/"id"/);
   });
 });
 
@@ -317,5 +393,91 @@ describe('restoreFromPayload', () => {
 
     expect(mockSettings.setSetting).toHaveBeenCalledTimes(1);
     expect(mockSettings.setSetting).toHaveBeenCalledWith('app_language', 'pl');
+  });
+
+  it('restores plural-ending progress under word_type noun_plural for the same noun', async () => {
+    mockDb.getFirstAsync.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM nouns') && sql.includes('remote_id = ?')) return { id: 7 };
+      if (sql.includes('FROM card_progress')) return { id: 70 };
+      return null;
+    });
+
+    const result = await backupService.restoreFromPayload(
+      emptyPayload({
+        nounPluralProgress: [
+          { remoteId: 'abc123', german: 'Hund', article: 'der', sense: null, progress: progressPayload() },
+        ],
+      }),
+    );
+
+    expect(result).toMatchObject({ restoredCards: 1, restoredReviews: 2, skippedCards: 0 });
+    expect(mockDb.runAsync.mock.calls[0][1].slice(0, 2)).toEqual(['noun_plural', 7]);
+  });
+
+  it('restores a preposition pattern card by its unique key', async () => {
+    mockDb.getFirstAsync.mockImplementation(async (sql: string, params?: unknown[]) => {
+      if (sql.includes('FROM verb_prepositions')) {
+        expect(params).toEqual(['warten', 0, 'auf', 'Ich warte ____ meine Frau.']);
+        return { id: 15 };
+      }
+      if (sql.includes('FROM card_progress')) return { id: 80 };
+      return null;
+    });
+
+    const result = await backupService.restoreFromPayload(
+      emptyPayload({
+        verbPrepProgress: [{ ...PATTERN_KEY, progress: progressPayload() }],
+      }),
+    );
+
+    expect(result.restoredCards).toBe(1);
+    expect(mockDb.runAsync.mock.calls[0][1].slice(0, 2)).toEqual(['verb_prep', 15]);
+  });
+
+  it('restores a da/wo card by pattern key plus form', async () => {
+    mockDb.getFirstAsync.mockImplementation(async (sql: string, params?: unknown[]) => {
+      if (sql.includes('FROM verb_preposition_compounds')) {
+        expect(params).toEqual(['warten', 0, 'auf', 'Ich warte ____ meine Frau.', 'wo']);
+        return { id: 25 };
+      }
+      if (sql.includes('FROM card_progress')) return { id: 90 };
+      return null;
+    });
+
+    const result = await backupService.restoreFromPayload(
+      emptyPayload({
+        verbPrepCompoundProgress: [
+          { ...PATTERN_KEY, form: 'wo', progress: progressPayload() },
+        ],
+      }),
+    );
+
+    expect(result.restoredCards).toBe(1);
+    expect(mockDb.runAsync.mock.calls[0][1].slice(0, 2)).toEqual(['verb_prep_compound', 25]);
+  });
+
+  it('skips pattern and da/wo cards whose pattern was retired from this install', async () => {
+    const result = await backupService.restoreFromPayload(
+      emptyPayload({
+        verbPrepProgress: [{ ...PATTERN_KEY, progress: progressPayload() }],
+        verbPrepCompoundProgress: [
+          { ...PATTERN_KEY, form: 'da', progress: progressPayload() },
+        ],
+      }),
+    );
+
+    expect(result).toMatchObject({ restoredCards: 0, skippedCards: 2 });
+    expect(mockDb.runAsync).not.toHaveBeenCalled();
+  });
+
+  it('restores a payload written before the newer card types existed', async () => {
+    const legacy = emptyPayload() as Partial<BackupPayload>;
+    delete legacy.nounPluralProgress;
+    delete legacy.verbPrepProgress;
+    delete legacy.verbPrepCompoundProgress;
+
+    await expect(
+      backupService.restoreFromPayload(legacy as BackupPayload),
+    ).resolves.toMatchObject({ restoredCards: 0, skippedCards: 0 });
   });
 });
