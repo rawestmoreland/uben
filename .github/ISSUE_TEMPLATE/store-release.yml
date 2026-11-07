@@ -68,6 +68,7 @@ body:
         - [ ] App Store Connect: release notes added, build selected, submitted for review
         - [ ] Google Play: release notes added, rollout started
         - [ ] Store review approved and release live
+        - [ ] PocketBase `app_config` `latest_version` updated for each platform that is live (step 8 of RELEASE_WORKFLOW.md)
         - [ ] GitHub Release published for the tag
         - [ ] Smoke test of the live build
         - [ ] This issue closed
