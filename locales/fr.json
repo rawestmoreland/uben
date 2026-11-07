@@ -336,6 +336,7 @@
       "due_body_c_other": "Un petit tour ? {{count}} mots à réviser."
     },
     "reference_screen": {
+      "tab_label": "Référence",
       "title": "Référence",
       "subtitle": "Tableaux et guides",
       "close": "Fermer"

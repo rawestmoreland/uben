@@ -359,6 +359,7 @@
       "due_body_c_other": "Hızlı bir tur? {{count}} kelime tekrar bekliyor."
     },
     "reference_screen": {
+      "tab_label": "Referans",
       "title": "Referans",
       "subtitle": "Tablolar ve rehberler",
       "close": "Kapat"

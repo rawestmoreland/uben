@@ -359,6 +359,7 @@
       "due_body_c_other": "Un giro veloce? {{count}} parole da ripassare."
     },
     "reference_screen": {
+      "tab_label": "Riferimento",
       "title": "Riferimento",
       "subtitle": "Tabelle e guide",
       "close": "Chiudi"

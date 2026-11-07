@@ -359,6 +359,7 @@
       "due_body_c_other": "Quick round? {{count}} words are due."
     },
     "reference_screen": {
+      "tab_label": "Reference",
       "title": "Reference",
       "subtitle": "Lookup tables and guides",
       "close": "Close"

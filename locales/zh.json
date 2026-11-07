@@ -359,6 +359,7 @@
       "due_body_c_other": "来一轮快速练习？有 {{count}} 个单词待复习。"
     },
     "reference_screen": {
+      "tab_label": "参考",
       "title": "参考",
       "subtitle": "速查表与指南",
       "close": "关闭"

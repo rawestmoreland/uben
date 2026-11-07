@@ -367,6 +367,7 @@
       "due_body_c_other": "Uma ronda rápida? {{count}} palavras para rever."
     },
     "reference_screen": {
+      "tab_label": "Referência",
       "title": "Referência",
       "subtitle": "Tabelas e guias",
       "close": "Fechar"

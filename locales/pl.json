@@ -375,6 +375,7 @@
       "due_body_c_other": "Szybka runda? {{count}} słówka do powtórki."
     },
     "reference_screen": {
+      "tab_label": "Ściąga",
       "title": "Ściąga",
       "subtitle": "Tabele i przewodniki",
       "close": "Zamknij"

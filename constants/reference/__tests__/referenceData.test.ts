@@ -108,7 +108,8 @@ describe('reference locale strings', () => {
   it.each(locales)(
     '$code has every gender hint and case sheet string',
     ({ app }) => {
-      expect(app.reference_screen.title).toBeTruthy();
+      expect(app.reference_screen.tab_label).toBeTruthy();
+    expect(app.reference_screen.title).toBeTruthy();
       expect(app.reference_screen.close).toBeTruthy();
       for (const id of hintLabelIds) {
         expect(app.gender_hints.hints[id]).toBeTruthy();
