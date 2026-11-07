@@ -9,7 +9,6 @@
     "start_practice": "Start practice",
     "total_reviews_one": "{{count}} total review completed",
     "total_reviews_other": "{{count}} total reviews completed",
-    "about": "About",
     "home": "Home",
     "settings_title": "Settings",
     "practice": "Practice",
@@ -308,7 +307,6 @@
     "home_screen": {
       "header_subtitle": "GERMAN GRAMMAR PRACTICE",
       "practice_label": "PRACTICE",
-      "reference_label": "REFERENCE",
       "soon_badge": "Soon",
       "tile_due": "{{count}} due",
       "tiles": {
@@ -359,6 +357,67 @@
       "due_body_b_other": "{{count}} words are ready to review. A few minutes is enough.",
       "due_body_c_one": "Quick round? {{count}} word is due.",
       "due_body_c_other": "Quick round? {{count}} words are due."
+    },
+    "reference_screen": {
+      "title": "Reference",
+      "subtitle": "Lookup tables and guides",
+      "close": "Close"
+    },
+    "gender_hints": {
+      "title": "Gender hints",
+      "row_subtitle": "Endings that tell you der, die or das",
+      "intro": "Endings and meaning groups that predict a noun's article. Always learn the article with the noun; use these hints as a guess when you are unsure.",
+      "tip": "Hints are not guarantees. Learn every new noun together with its article.",
+      "exceptions": "Exceptions",
+      "strength": {
+        "rule": "Rule",
+        "tendency": "Tendency"
+      },
+      "gender": {
+        "die": "Feminine",
+        "der": "Masculine",
+        "das": "Neuter"
+      },
+      "hints": {
+        "in": "Female persons",
+        "e": "Most nouns ending in -e",
+        "flowers_trees": "Flowers and trees",
+        "er": "Often people who do something, and tools",
+        "days_months_seasons": "Days, months and seasons",
+        "directions": "Compass directions",
+        "male_persons": "Male persons",
+        "weather": "Most weather words",
+        "alcohol": "Most alcoholic drinks",
+        "cars": "Car brands",
+        "verbs_as_nouns": "Verbs used as nouns",
+        "adjectives_as_nouns": "Adjectives used as nouns for things or ideas",
+        "metals": "Most metals",
+        "languages": "Languages",
+        "venues": "Hotels, cafés, cinemas, restaurants"
+      }
+    },
+    "case_sheet": {
+      "title": "Case cheat sheet",
+      "row_subtitle": "Articles, pronouns and prepositions by case",
+      "intro": "Which form to use depends on the case. Ask the question to find it.",
+      "sections": {
+        "cases": "The four cases",
+        "definite": "Definite article (der, die, das)",
+        "indefinite": "Indefinite article (ein, kein, mein…)",
+        "pronouns": "Personal pronouns",
+        "prepositions": "Prepositions by case"
+      },
+      "roles": {
+        "nominative": "Subject: who or what does it",
+        "accusative": "Direct object: who or what is affected",
+        "dative": "Indirect object: to or for whom",
+        "genitive": "Possession: whose"
+      },
+      "noun_endings": "Masculine and neuter nouns add -(e)s in the genitive (des Mannes). Plural nouns add -n in the dative (den Kindern).",
+      "ein_words_note": "Possessives (mein, dein, sein…) and kein use the same endings. The plural column shows the kein- forms.",
+      "two_way_rule": "Two-way prepositions: movement takes the accusative, position takes the dative.",
+      "two_way_motion": "(movement: accusative)",
+      "two_way_location": "(position: dative)"
     }
   }
 }

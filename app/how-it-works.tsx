@@ -6,13 +6,19 @@ import {
   shadowStyle,
 } from '@/constants/design';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { uiUpperCase } from '@/utils/uiText';
 
-// ── About Screen ─────────────────────────────────────────────────────
+// ── How It Works Screen ──────────────────────────────────────────────
+// Opened from the Reference tab.
 
-export default function AboutScreen() {
+function goBack() {
+  router.back();
+}
+
+export default function HowItWorksScreen() {
   const { t } = useTranslation('app');
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -23,9 +29,20 @@ export default function AboutScreen() {
       >
         {/* ── Header ──────────────────────────────────────────── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>
-            {uiUpperCase(t('how_it_works.title'))}
-          </Text>
+          <View style={styles.topRow}>
+            <Text style={styles.headerTitle}>
+              {uiUpperCase(t('how_it_works.title'))}
+            </Text>
+            <Pressable
+              style={styles.closeButton}
+              onPress={goBack}
+              accessibilityRole="button"
+              accessibilityLabel={t('verb_preposition_patterns.close')}
+              hitSlop={12}
+            >
+              <Text style={styles.closeButtonText}>X</Text>
+            </Pressable>
+          </View>
           <Text style={styles.headerSubtitle}>
             {uiUpperCase(t('how_it_works.subtitle'))}
           </Text>
@@ -182,11 +199,32 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
     marginBottom: Spacing.lg,
   },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
   headerTitle: {
+    flex: 1,
     fontSize: Typography.title,
     fontWeight: Typography.bold,
     color: AppColors.black,
     letterSpacing: 1,
+  },
+  closeButton: {
+    width: 44,
+    height: 44,
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: Typography.body,
+    fontWeight: Typography.bold,
+    color: AppColors.black,
   },
   headerSubtitle: {
     fontSize: Typography.small,

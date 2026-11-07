@@ -11,7 +11,6 @@
     "total_reviews_few": "Ukończono {{count}} powtórzenia",
     "total_reviews_many": "Ukończono {{count}} powtórzeń",
     "total_reviews_other": "Ukończono {{count}} powtórzeń",
-    "about": "O aplikacji",
     "home": "Strona główna",
     "settings_title": "Ustawienia",
     "practice": "Ćwicz",
@@ -318,7 +317,6 @@
     "home_screen": {
       "header_subtitle": "NAUKA GRAMATYKI NIEMIECKIEJ",
       "practice_label": "ĆWICZENIA",
-      "reference_label": "ŚCIĄGA",
       "soon_badge": "Wkrótce",
       "tile_due": "do powtórki: {{count}}",
       "tiles": {
@@ -375,6 +373,67 @@
       "due_body_c_few": "Szybka runda? {{count}} słówka do powtórki.",
       "due_body_c_many": "Szybka runda? {{count}} słówek do powtórki.",
       "due_body_c_other": "Szybka runda? {{count}} słówka do powtórki."
+    },
+    "reference_screen": {
+      "title": "Ściąga",
+      "subtitle": "Tabele i przewodniki",
+      "close": "Zamknij"
+    },
+    "gender_hints": {
+      "title": "Wskazówki rodzaju",
+      "row_subtitle": "Końcówki podpowiadające der, die lub das",
+      "intro": "Końcówki i grupy znaczeniowe, które pozwalają odgadnąć rodzajnik rzeczownika. Zawsze ucz się rodzajnika razem z rzeczownikiem; korzystaj z tych wskazówek, gdy masz wątpliwości.",
+      "tip": "Wskazówki nie są gwarancją. Każdy nowy rzeczownik ucz się razem z jego rodzajnikiem.",
+      "exceptions": "Wyjątki",
+      "strength": {
+        "rule": "Reguła",
+        "tendency": "Tendencja"
+      },
+      "gender": {
+        "die": "Rodzaj żeński",
+        "der": "Rodzaj męski",
+        "das": "Rodzaj nijaki"
+      },
+      "hints": {
+        "in": "Osoby płci żeńskiej",
+        "e": "Większość rzeczowników zakończonych na -e",
+        "flowers_trees": "Kwiaty i drzewa",
+        "er": "Często osoby wykonujące czynność oraz narzędzia",
+        "days_months_seasons": "Dni, miesiące i pory roku",
+        "directions": "Strony świata",
+        "male_persons": "Osoby płci męskiej",
+        "weather": "Większość słów związanych z pogodą",
+        "alcohol": "Większość napojów alkoholowych",
+        "cars": "Marki samochodów",
+        "verbs_as_nouns": "Czasowniki używane jako rzeczowniki",
+        "adjectives_as_nouns": "Przymiotniki używane jako rzeczowniki oznaczające rzeczy lub idee",
+        "metals": "Większość metali",
+        "languages": "Języki",
+        "venues": "Hotele, kawiarnie, kina, restauracje"
+      }
+    },
+    "case_sheet": {
+      "title": "Ściąga: przypadki",
+      "row_subtitle": "Rodzajniki, zaimki i przyimki według przypadków",
+      "intro": "Właściwa forma zależy od przypadku. Zadaj pytanie, aby go znaleźć.",
+      "sections": {
+        "cases": "Cztery przypadki",
+        "definite": "Rodzajnik określony (der, die, das)",
+        "indefinite": "Rodzajnik nieokreślony (ein, kein, mein…)",
+        "pronouns": "Zaimki osobowe",
+        "prepositions": "Przyimki według przypadków"
+      },
+      "roles": {
+        "nominative": "Podmiot: kto lub co wykonuje czynność",
+        "accusative": "Dopełnienie bliższe: kogo lub co dotyczy czynność",
+        "dative": "Dopełnienie dalsze: komu lub dla kogo",
+        "genitive": "Przynależność: czyj"
+      },
+      "noun_endings": "Rzeczowniki rodzaju męskiego i nijakiego dostają w dopełniaczu końcówkę -(e)s (des Mannes). Rzeczowniki w liczbie mnogiej dostają w celowniku końcówkę -n (den Kindern).",
+      "ein_words_note": "Zaimki dzierżawcze (mein, dein, sein…) i kein mają te same końcówki. Kolumna liczby mnogiej pokazuje formy kein-.",
+      "two_way_rule": "Przyimki dwuprzypadkowe: ruch wymaga biernika, położenie celownika.",
+      "two_way_motion": "(ruch: biernik)",
+      "two_way_location": "(położenie: celownik)"
     }
   }
 }
