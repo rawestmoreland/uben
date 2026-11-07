@@ -19,10 +19,10 @@ export default function TabLayout() {
           sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }}
         />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>{t('about')}</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="reference">
+        <NativeTabs.Trigger.Label>{t('reference_screen.tab_label')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
-          sf={{ default: 'info.circle', selected: 'info.circle.fill' }}
+          sf={{ default: 'books.vertical', selected: 'books.vertical.fill' }}
         />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
