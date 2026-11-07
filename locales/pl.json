@@ -11,7 +11,6 @@
     "total_reviews_few": "Ukończono {{count}} powtórzenia",
     "total_reviews_many": "Ukończono {{count}} powtórzeń",
     "total_reviews_other": "Ukończono {{count}} powtórzeń",
-    "about": "O aplikacji",
     "home": "Strona główna",
     "settings_title": "Ustawienia",
     "practice": "Ćwicz",
@@ -318,7 +317,6 @@
     "home_screen": {
       "header_subtitle": "NAUKA GRAMATYKI NIEMIECKIEJ",
       "practice_label": "ĆWICZENIA",
-      "reference_label": "ŚCIĄGA",
       "soon_badge": "Wkrótce",
       "tile_due": "do powtórki: {{count}}",
       "tiles": {
@@ -375,6 +373,10 @@
       "due_body_c_few": "Szybka runda? {{count}} słówka do powtórki.",
       "due_body_c_many": "Szybka runda? {{count}} słówek do powtórki.",
       "due_body_c_other": "Szybka runda? {{count}} słówka do powtórki."
+    },
+    "reference_screen": {
+      "title": "Ściąga",
+      "subtitle": "Tabele i przewodniki"
     }
   }
 }

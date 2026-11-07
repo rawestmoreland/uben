@@ -9,7 +9,6 @@
     "start_practice": "开始练习",
     "total_reviews_one": "已完成 {{count}} 次复习",
     "total_reviews_other": "已完成 {{count}} 次复习",
-    "about": "关于",
     "home": "首页",
     "settings_title": "设置",
     "practice": "练习",
@@ -308,7 +307,6 @@
     "home_screen": {
       "header_subtitle": "德语语法练习",
       "practice_label": "练习",
-      "reference_label": "参考",
       "soon_badge": "即将推出",
       "tile_due": "{{count}} 项待复习",
       "tiles": {
@@ -359,6 +357,10 @@
       "due_body_b_other": "{{count}} 个单词可以复习了。几分钟就够。",
       "due_body_c_one": "来一轮快速练习？有 {{count}} 个单词待复习。",
       "due_body_c_other": "来一轮快速练习？有 {{count}} 个单词待复习。"
+    },
+    "reference_screen": {
+      "title": "参考",
+      "subtitle": "速查表与指南"
     }
   }
 }

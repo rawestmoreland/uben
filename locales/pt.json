@@ -10,7 +10,6 @@
     "total_reviews_one": "{{count}} revisão concluída no total",
     "total_reviews_many": "{{count}} revisões concluídas no total",
     "total_reviews_other": "{{count}} revisões concluídas no total",
-    "about": "Acerca de",
     "home": "Início",
     "settings_title": "Definições",
     "practice": "Praticar",
@@ -313,7 +312,6 @@
     "home_screen": {
       "header_subtitle": "PRÁTICA DE GRAMÁTICA ALEMÃ",
       "practice_label": "PRATICAR",
-      "reference_label": "REFERÊNCIA",
       "soon_badge": "Em breve",
       "tile_due": "{{count}} por rever",
       "tiles": {
@@ -367,6 +365,10 @@
       "due_body_c_one": "Uma ronda rápida? {{count}} palavra para rever.",
       "due_body_c_many": "Uma ronda rápida? {{count}} palavras para rever.",
       "due_body_c_other": "Uma ronda rápida? {{count}} palavras para rever."
+    },
+    "reference_screen": {
+      "title": "Referência",
+      "subtitle": "Tabelas e guias"
     }
   }
 }

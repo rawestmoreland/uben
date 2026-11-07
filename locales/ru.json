@@ -11,7 +11,6 @@
     "total_reviews_few": "Пройдено {{count}} повтора",
     "total_reviews_many": "Пройдено {{count}} повторов",
     "total_reviews_other": "Пройдено {{count}} повтора",
-    "about": "О приложении",
     "home": "Главная",
     "settings_title": "Настройки",
     "practice": "Практика",
@@ -318,7 +317,6 @@
     "home_screen": {
       "header_subtitle": "ТРЕНИРОВКА НЕМЕЦКОЙ ГРАММАТИКИ",
       "practice_label": "ПРАКТИКА",
-      "reference_label": "СПРАВОЧНИК",
       "soon_badge": "Скоро",
       "tile_due": "К повтору: {{count}}",
       "tiles": {
@@ -375,6 +373,10 @@
       "due_body_c_few": "Быстрый раунд? {{count}} слова ждут повторения.",
       "due_body_c_many": "Быстрый раунд? {{count}} слов ждут повторения.",
       "due_body_c_other": "Быстрый раунд? {{count}} слова ждут повторения."
+    },
+    "reference_screen": {
+      "title": "Справочник",
+      "subtitle": "Таблицы и руководства"
     }
   }
 }

@@ -10,7 +10,6 @@
     "total_reviews_one": "{{count}} révision terminée au total",
     "total_reviews_many": "{{count}} révisions terminées au total",
     "total_reviews_other": "{{count}} révisions terminées au total",
-    "about": "À propos",
     "home": "Accueil",
     "settings_title": "Réglages",
     "practice": "S'entraîner",
@@ -282,7 +281,6 @@
     "home_screen": {
       "header_subtitle": "ENTRAÎNEMENT À LA GRAMMAIRE ALLEMANDE",
       "practice_label": "S'ENTRAÎNER",
-      "reference_label": "RÉFÉRENCE",
       "soon_badge": "Bientôt",
       "tile_due": "{{count}} à réviser",
       "tiles": {
@@ -336,6 +334,10 @@
       "due_body_c_one": "Un petit tour ? {{count}} mot à réviser.",
       "due_body_c_many": "Un petit tour ? {{count}} mots à réviser.",
       "due_body_c_other": "Un petit tour ? {{count}} mots à réviser."
+    },
+    "reference_screen": {
+      "title": "Référence",
+      "subtitle": "Tableaux et guides"
     }
   }
 }

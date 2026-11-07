@@ -9,7 +9,6 @@
     "start_practice": "Start practice",
     "total_reviews_one": "{{count}} total review completed",
     "total_reviews_other": "{{count}} total reviews completed",
-    "about": "About",
     "home": "Home",
     "settings_title": "Settings",
     "practice": "Practice",
@@ -308,7 +307,6 @@
     "home_screen": {
       "header_subtitle": "GERMAN GRAMMAR PRACTICE",
       "practice_label": "PRACTICE",
-      "reference_label": "REFERENCE",
       "soon_badge": "Soon",
       "tile_due": "{{count}} due",
       "tiles": {
@@ -359,6 +357,10 @@
       "due_body_b_other": "{{count}} words are ready to review. A few minutes is enough.",
       "due_body_c_one": "Quick round? {{count}} word is due.",
       "due_body_c_other": "Quick round? {{count}} words are due."
+    },
+    "reference_screen": {
+      "title": "Reference",
+      "subtitle": "Lookup tables and guides"
     }
   }
 }

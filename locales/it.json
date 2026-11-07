@@ -9,7 +9,6 @@
     "start_practice": "Inizia a praticare",
     "total_reviews_one": "{{count}} ripetizione totale completata",
     "total_reviews_other": "{{count}} ripetizioni totali completate",
-    "about": "Informazioni",
     "home": "Home",
     "settings_title": "Impostazioni",
     "practice": "Pratica",
@@ -308,7 +307,6 @@
     "home_screen": {
       "header_subtitle": "PRATICA DI GRAMMATICA TEDESCA",
       "practice_label": "ESERCIZI",
-      "reference_label": "RIFERIMENTO",
       "soon_badge": "Presto",
       "tile_due": "{{count}} da ripassare",
       "tiles": {
@@ -359,6 +357,10 @@
       "due_body_b_other": "{{count}} parole pronte da ripassare. Bastano pochi minuti.",
       "due_body_c_one": "Un giro veloce? {{count}} parola da ripassare.",
       "due_body_c_other": "Un giro veloce? {{count}} parole da ripassare."
+    },
+    "reference_screen": {
+      "title": "Riferimento",
+      "subtitle": "Tabelle e guide"
     }
   }
 }

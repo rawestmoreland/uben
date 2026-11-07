@@ -9,7 +9,6 @@
     "start_practice": "Gyakorlás indítása",
     "total_reviews_one": "{{count}} befejezett ismétlés összesen",
     "total_reviews_other": "{{count}} befejezett ismétlés összesen",
-    "about": "Névjegy",
     "home": "Kezdőlap",
     "settings_title": "Beállítások",
     "practice": "Gyakorlás",
@@ -308,7 +307,6 @@
     "home_screen": {
       "header_subtitle": "NÉMET NYELVTANI GYAKORLÁS",
       "practice_label": "GYAKORLÁS",
-      "reference_label": "SEGÉDLET",
       "soon_badge": "Hamarosan",
       "tile_due": "{{count}} esedékes",
       "tiles": {
@@ -359,6 +357,10 @@
       "due_body_b_other": "{{count}} szó kész az ismétlésre. Pár perc is elég.",
       "due_body_c_one": "Egy gyors kör? {{count}} szó vár ismétlésre.",
       "due_body_c_other": "Egy gyors kör? {{count}} szó vár ismétlésre."
+    },
+    "reference_screen": {
+      "title": "Segédlet",
+      "subtitle": "Táblázatok és útmutatók"
     }
   }
 }
