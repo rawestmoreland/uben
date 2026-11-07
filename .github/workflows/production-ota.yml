@@ -14,6 +14,10 @@ on:
         required: false
         default: false
         type: boolean
+      platforms:
+        description: 'Platforms to update, e.g. "ios", "android" or "ios,android". Blank = BUILD_PLATFORMS repo variable (default ios)'
+        required: false
+        type: string
       issue:
         description: 'Tracking issue number to comment on (optional)'
         required: false
@@ -59,6 +63,23 @@ jobs:
       - name: Run TypeScript check
         run: npx tsc --noEmit
 
+      # Same resolution as production.yml / staging.yml
+      - name: Resolve platforms
+        id: platforms
+        env:
+          RAW: ${{ inputs.platforms || vars.BUILD_PLATFORMS || 'ios' }}
+        run: |
+          PLATFORMS=""
+          case "$RAW" in *ios*) PLATFORMS="ios" ;; esac
+          case "$RAW" in *android*) PLATFORMS="$PLATFORMS android" ;; esac
+          PLATFORMS=$(echo $PLATFORMS)
+          if [ -z "$PLATFORMS" ]; then
+            echo "::error::No valid platform in '$RAW'. Use ios, android, or both."
+            exit 1
+          fi
+          echo "Platforms: $RAW -> $PLATFORMS"
+          echo "list=$PLATFORMS" >> "$GITHUB_OUTPUT"
+
       # An OTA only reaches builds with the same runtime version. This needs
       # runtimeVersion.policy = 'fingerprint' in app.config.js; with 'appVersion' the
       # build's runtime version is "1.9.1", which can never equal a fingerprint hash.
@@ -66,6 +87,7 @@ jobs:
         id: verify
         env:
           SKIP_BUILD_CHECK: ${{ inputs.skip_build_check }}
+          PLATFORMS: ${{ steps.platforms.outputs.list }}
         run: |
           # Generate fingerprints with eas-cli, not `expo-updates fingerprint:generate`: eas-cli
           # resolves the same build profile env and EAS "production" environment variables the
@@ -88,36 +110,6 @@ jobs:
             printf '%s' "$hash"
           }
 
-          CURRENT_IOS=$(fingerprint_hash eas fingerprint:generate --build-profile production --platform ios --json --non-interactive)
-          CURRENT_ANDROID=$(fingerprint_hash eas fingerprint:generate --build-profile production --platform android --json --non-interactive)
-          echo "iOS fingerprint:     $CURRENT_IOS"
-          echo "Android fingerprint: $CURRENT_ANDROID"
-          echo "ios_fingerprint=$CURRENT_IOS" >> "$GITHUB_OUTPUT"
-          echo "android_fingerprint=$CURRENT_ANDROID" >> "$GITHUB_OUTPUT"
-
-          if [ -z "$CURRENT_IOS" ] || [ -z "$CURRENT_ANDROID" ]; then
-            echo "::error::Could not generate the native fingerprints."
-            exit 1
-          fi
-
-          # `eas update` doesn't apply the build profile's `env` block, but it does load the
-          # server-side EAS "production" environment via `--environment`; APP_ENV must be
-          # defined there. Abort now, before publishing, if an update run that way would get a
-          # different runtime version than the builds we just verified.
-          UPDATE_IOS=$(fingerprint_hash eas fingerprint:generate --environment production --platform ios --json --non-interactive)
-          UPDATE_ANDROID=$(fingerprint_hash eas fingerprint:generate --environment production --platform android --json --non-interactive)
-          echo "iOS update fingerprint:     $UPDATE_IOS"
-          echo "Android update fingerprint: $UPDATE_ANDROID"
-          if [ "$UPDATE_IOS" != "$CURRENT_IOS" ] || [ "$UPDATE_ANDROID" != "$CURRENT_ANDROID" ]; then
-            echo "::error::The update would be published with a different runtime version than the production build profile (iOS $UPDATE_IOS vs $CURRENT_IOS, Android $UPDATE_ANDROID vs $CURRENT_ANDROID). No device would receive it."
-            exit 1
-          fi
-
-          if [ "$SKIP_BUILD_CHECK" = "true" ]; then
-            echo "::warning::Skipping the EAS build lookup. Make sure the fingerprints above match the production binaries' runtime versions, or users will not receive this update."
-            exit 0
-          fi
-
           # The update is only delivered to builds with the same runtime version, so look for a
           # finished production-channel build with exactly the current fingerprint.
           check_platform() {
@@ -133,9 +125,36 @@ jobs:
             echo "$platform: found a finished build with runtime version $current"
           }
 
+          # Only the selected platforms are checked; the others are left alone.
           status=0
-          check_platform ios "$CURRENT_IOS" || status=1
-          check_platform android "$CURRENT_ANDROID" || status=1
+          for PLATFORM in $PLATFORMS; do
+            CURRENT=$(fingerprint_hash eas fingerprint:generate --build-profile production --platform "$PLATFORM" --json --non-interactive)
+            echo "$PLATFORM fingerprint:        $CURRENT"
+            echo "${PLATFORM}_fingerprint=$CURRENT" >> "$GITHUB_OUTPUT"
+            if [ -z "$CURRENT" ]; then
+              echo "::error::Could not generate the $PLATFORM native fingerprint."
+              status=1
+              continue
+            fi
+
+            # `eas update` doesn't apply the build profile's `env` block, but it does load the
+            # server-side EAS "production" environment via `--environment`; APP_ENV must be
+            # defined there. Abort before publishing if an update run that way would get a
+            # different runtime version than the build we just verified.
+            UPDATE_FP=$(fingerprint_hash eas fingerprint:generate --environment production --platform "$PLATFORM" --json --non-interactive)
+            echo "$PLATFORM update fingerprint: $UPDATE_FP"
+            if [ "$UPDATE_FP" != "$CURRENT" ]; then
+              echo "::error::The $PLATFORM update would be published with a different runtime version than the production build profile ($UPDATE_FP vs $CURRENT). No device would receive it."
+              status=1
+              continue
+            fi
+
+            if [ "$SKIP_BUILD_CHECK" = "true" ]; then
+              echo "::warning::Skipping the EAS build lookup for $PLATFORM. Make sure the fingerprint above matches the production binary's runtime version, or users will not receive this update."
+            else
+              check_platform "$PLATFORM" "$CURRENT" || status=1
+            fi
+          done
           if [ "$status" -ne 0 ]; then exit 1; fi
           echo "Fingerprints match - OTA update is safe to publish"
 
@@ -143,34 +162,29 @@ jobs:
         id: ota
         env:
           UPDATE_MESSAGE: ${{ inputs.message }}
+          PLATFORMS: ${{ steps.platforms.outputs.list }}
           EXPECTED_IOS_RV: ${{ steps.verify.outputs.ios_fingerprint }}
           EXPECTED_ANDROID_RV: ${{ steps.verify.outputs.android_fingerprint }}
         run: |
-          # Publish each platform separately: `--platform all` also exports a web
+          # Publish each selected platform separately: `--platform all` also exports a web
           # bundle, which this native-only app can't build. Each platform gets its
           # own update group.
           # `--environment production` loads the EAS "production" variables (incl. APP_ENV)
           # so the update sees the same config as the store builds; without it `eas update`
           # computes a different runtime version and reaches no one.
-          publish() {
-            eas update --branch production --environment production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$1" --json
-          }
-          IOS_OUTPUT=$(publish ios)
-          echo "$IOS_OUTPUT"
-          ANDROID_OUTPUT=$(publish android)
-          echo "$ANDROID_OUTPUT"
-          # Last line of defense: the update must carry the runtime version of the verified builds
-          IOS_RV=$(echo "$IOS_OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')
-          ANDROID_RV=$(echo "$ANDROID_OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')
-          if [ "$IOS_RV" != "$EXPECTED_IOS_RV" ] || [ "$ANDROID_RV" != "$EXPECTED_ANDROID_RV" ]; then
-            echo "::error::Published runtime versions (iOS $IOS_RV, Android $ANDROID_RV) differ from the verified builds (iOS $EXPECTED_IOS_RV, Android $EXPECTED_ANDROID_RV). These updates will not reach production devices; delete them from the production branch in the EAS dashboard."
-            exit 1
-          fi
-          # iOS and Android fingerprints differ, so record both
-          echo "ios_group_id=$(echo "$IOS_OUTPUT" | jq -r '.[0].group')" >> "$GITHUB_OUTPUT"
-          echo "android_group_id=$(echo "$ANDROID_OUTPUT" | jq -r '.[0].group')" >> "$GITHUB_OUTPUT"
-          echo "ios_runtime_version=$(echo "$IOS_OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')" >> "$GITHUB_OUTPUT"
-          echo "android_runtime_version=$(echo "$ANDROID_OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')" >> "$GITHUB_OUTPUT"
+          for PLATFORM in $PLATFORMS; do
+            OUTPUT=$(eas update --branch production --environment production --message "${UPDATE_MESSAGE} (${GITHUB_SHA::7})" --non-interactive --platform "$PLATFORM" --json)
+            echo "$OUTPUT"
+            # Last line of defense: the update must carry the runtime version of the verified build
+            RV=$(echo "$OUTPUT" | jq -r '.[0].runtimeVersion // "n/a"')
+            if [ "$PLATFORM" = ios ]; then EXPECTED=$EXPECTED_IOS_RV; else EXPECTED=$EXPECTED_ANDROID_RV; fi
+            if [ "$RV" != "$EXPECTED" ]; then
+              echo "::error::Published $PLATFORM runtime version ($RV) differs from the verified build ($EXPECTED). This update will not reach production devices; delete it from the production branch in the EAS dashboard."
+              exit 1
+            fi
+            echo "${PLATFORM}_group_id=$(echo "$OUTPUT" | jq -r '.[0].group')" >> "$GITHUB_OUTPUT"
+            echo "${PLATFORM}_runtime_version=$RV" >> "$GITHUB_OUTPUT"
+          done
 
       - name: Tag and release
         uses: actions/github-script@v7
@@ -181,6 +195,7 @@ jobs:
           IOS_RUNTIME_VERSION: ${{ steps.ota.outputs.ios_runtime_version }}
           ANDROID_RUNTIME_VERSION: ${{ steps.ota.outputs.android_runtime_version }}
           ISSUE_NUMBER: ${{ inputs.issue }}
+          PLATFORMS: ${{ steps.platforms.outputs.list }}
         with:
           script: |
             const { execSync } = require('child_process');
@@ -193,10 +208,22 @@ jobs:
             const androidRv = process.env.ANDROID_RUNTIME_VERSION;
             // Short form (first 8 chars) is what goes in the project board's Runtime version field
             const short = (rv) => (rv && rv !== 'n/a' ? rv.slice(0, 8) : rv);
+            const published = (process.env.PLATFORMS || '').split(' ').filter(Boolean);
             const dashboardUrl = (groupId) => `https://expo.dev/accounts/rawestmoreland/projects/uben/updates/${groupId}`;
 
             // Unique per run: the app version doesn't change between OTAs
             const tag = `v${version}-ota.${process.env.GITHUB_RUN_NUMBER}`;
+
+            const details = {
+              groups: 'EAS update groups: ' + [
+                published.includes('ios') && `iOS [\`${iosGroupId}\`](${dashboardUrl(iosGroupId)})`,
+                published.includes('android') && `Android [\`${androidGroupId}\`](${dashboardUrl(androidGroupId)})`,
+              ].filter(Boolean).join(', '),
+              runtime: 'Runtime version: ' + [
+                published.includes('ios') && `iOS \`${iosRv}\``,
+                published.includes('android') && `Android \`${androidRv}\``,
+              ].filter(Boolean).join(', '),
+            };
 
             await github.rest.git.createRef({
               owner, repo,
@@ -208,7 +235,7 @@ jobs:
               owner, repo,
               tag_name: tag,
               name: `v${version} OTA`,
-              body: `## Production OTA\n\n${message}\n\nEAS update groups: iOS [\`${iosGroupId}\`](${dashboardUrl(iosGroupId)}), Android [\`${androidGroupId}\`](${dashboardUrl(androidGroupId)})\n\nRuntime version: iOS \`${iosRv}\`, Android \`${androidRv}\`\n\nDelivered over the air. No store update is required.`,
+              body: `## Production OTA\n\n${message}\n\nPlatforms: ${published.join(', ')}\n\n${details.groups}\n\n${details.runtime}\n\nDelivered over the air. No store update is required.`,
               draft: false,
               prerelease: true,
             });
@@ -222,10 +249,14 @@ jobs:
                 body: [
                   `OTA published to \`production\` (${tag}).`,
                   '',
-                  `- Update group (iOS): [\`${iosGroupId}\`](${dashboardUrl(iosGroupId)})`,
-                  `- Update group (Android): [\`${androidGroupId}\`](${dashboardUrl(androidGroupId)})`,
-                  `- Runtime version (iOS): \`${short(iosRv)}\` (full: \`${iosRv}\`)`,
-                  `- Runtime version (Android): \`${short(androidRv)}\` (full: \`${androidRv}\`)`,
+                  ...(published.includes('ios') ? [
+                    `- Update group (iOS): [\`${iosGroupId}\`](${dashboardUrl(iosGroupId)})`,
+                    `- Runtime version (iOS): \`${short(iosRv)}\` (full: \`${iosRv}\`)`,
+                  ] : []),
+                  ...(published.includes('android') ? [
+                    `- Update group (Android): [\`${androidGroupId}\`](${dashboardUrl(androidGroupId)})`,
+                    `- Runtime version (Android): \`${short(androidRv)}\` (full: \`${androidRv}\`)`,
+                  ] : []),
                   `- Board field: enter the 8-character form above`,
                   `- Commit: ${context.sha.slice(0, 7)}`,
                   `- Rollback: \`eas update:republish --group <previous group id> --destination-branch production\``,
