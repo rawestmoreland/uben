@@ -263,6 +263,25 @@ class PurchaseService {
   }
 
   /**
+   * The RevenueCat `originalAppUserId` used to key the cloud backup. Unlike
+   * the current anonymous app user ID, it survives a reinstall once the user
+   * taps Restore Purchases, so it can identify their backup without an
+   * account. Returns `null` on web or if the SDK call fails (no network).
+   * It is an identifier, not a secret.
+   */
+  async getBackupIdentity(): Promise<string | null> {
+    if (Platform.OS === 'web') return null;
+
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      return customerInfo.originalAppUserId || null;
+    } catch (error) {
+      console.error('[Purchase] Failed to read backup identity:', error);
+      return null;
+    }
+  }
+
+  /**
    * One-time migration that runs on app startup: grandfathers in users who
    * already had B1+ selected, or already had more than the new free word
    * cap, before the Pro bundle (and its gates) shipped. Safe to call on
