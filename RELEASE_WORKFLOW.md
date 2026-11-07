@@ -118,6 +118,26 @@ Pushing the tag triggers `production.yml`. **Do not run `eas build` yourself.** 
 
 To re-run or override platforms, use Actions → "Production - App Store Release" → Run workflow with the tag as the ref.
 
+### 8. Bump the version in PocketBase (once the build is live)
+
+The app tells users when their installed build is behind the store by reading the PocketBase `app_config` collection (see `.claude/rules/backend/pocketbase.md`). It has **one row per platform** (`ios`, `android`) and is edited on every store release. Nothing updates it automatically.
+
+**Only do this after that platform's build is live in the store** (approved and released on App Store Connect / Google Play), not when the tag is pushed or the build is submitted. Updating it earlier tells users to update to a version they can't download yet.
+
+In the PocketBase admin UI (production), open `app_config` and, for each platform that went live:
+
+| Field            | Set to                                                                                                                                                                      |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `latest_version` | The released version, `x.y.z` with no `v` (e.g. `1.3.0`). Matches `app.config.js`.                                                                                          |
+| `store_url`      | The store listing, `https://…` (only needs changing if the listing URL changed).                                                                                            |
+| `min_version`    | Leave empty unless old builds must be blocked (e.g. they can't read the new data). Installs below it get an unskippable update screen. Never set it above `latest_version`. |
+| `message`        | Optional. Custom banner text; leave empty for the default.                                                                                                                  |
+
+- iOS and Android usually go live at different times, so update each row when its own build is live.
+- If a release is halted or rolled back in a store, set `latest_version` back to the last good version.
+- Users see the banner at their next app open after the daily check, so there is no rush within the day.
+- The store release ticket template has a checklist item for this under "After submission".
+
 ---
 
 ## OTA Flow
@@ -126,7 +146,7 @@ Use this when a JS-only fix or feature needs to go out via Expo Updates, **witho
 
 > **Do not bump any version numbers for OTA updates.**
 >
-> The runtime version policy is `fingerprint` (`app.config.js`): an update is delivered only to builds whose native fingerprint matches the update's. The app `version` plays no part in that, so a bump gains nothing and just makes `package.json` / `app.config.js` drift from the shipped store build. An OTA can only carry JS changes; if the native fingerprint has changed since the last production build, the OTA workflow refuses to publish and you need a full store release instead. The only versioning artifact for an OTA is the git tag, which the workflow creates for you.
+> The runtime version policy is `fingerprint` (`app.config.js`): an update is delivered only to builds whose native fingerprint matches the update's. The app `version` plays no part in that, so a bump gains nothing and just makes `package.json` / `app.config.js` drift from the shipped store build. An OTA can only carry JS changes; if the native fingerprint has changed since the last production build, the OTA workflow refuses to publish and you need a full store release instead. The only versioning artifact for an OTA is the git tag, which the workflow creates for you. For the same reason, leave the PocketBase `app_config` row alone: it tracks the **store** version, and an OTA doesn't change what is in the store.
 
 **Always branch from `main`, not from `staging` or `develop`.**
 
@@ -223,4 +243,5 @@ Release tickets are tracked on the release kanban board. Each week:
 - Always use `--no-ff` merges to preserve branch history and avoid ambiguous commit graphs
 - Never rebase branches that have already been merged — this generates duplicate commits with new SHAs on future merges
 - After an OTA, confirm the fix is present in both `staging` and `develop` before closing the ticket
+- Update the PocketBase `app_config` row for each store release (step 8), and only once that build is live, never at tag time and never for an OTA
 - Never bump `version` in `app.config.js` for an OTA — it isn't needed (runtime compatibility comes from the native fingerprint, not the version) and it makes the repo version drift from the shipped store build

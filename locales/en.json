@@ -419,6 +419,15 @@
       "two_way_rule": "Two-way prepositions: movement takes the accusative, position takes the dative.",
       "two_way_motion": "(movement: accusative)",
       "two_way_location": "(position: dative)"
+    },
+    "app_update": {
+      "title_available": "Update available",
+      "body_available": "Version {{version}} is out. Update to get the latest fixes and features.",
+      "update": "Update",
+      "later": "Later",
+      "title_required": "Update required",
+      "body_required": "This version of Üben is no longer supported. Update to version {{version}} to keep practicing.",
+      "dismiss_label": "Dismiss update notice"
     }
   }
 }

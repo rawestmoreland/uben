@@ -396,6 +396,15 @@
       "two_way_rule": "Prépositions mixtes : le mouvement demande l'accusatif, la position le datif.",
       "two_way_motion": "(mouvement : accusatif)",
       "two_way_location": "(position : datif)"
+    },
+    "app_update": {
+      "title_available": "Mise à jour disponible",
+      "body_available": "La version {{version}} est disponible. Mettez à jour pour profiter des derniers correctifs et fonctionnalités.",
+      "update": "Mettre à jour",
+      "later": "Plus tard",
+      "title_required": "Mise à jour requise",
+      "body_required": "Cette version d'Üben n'est plus prise en charge. Passez à la version {{version}} pour continuer à vous entraîner.",
+      "dismiss_label": "Ignorer l'avis de mise à jour"
     }
   }
 }
