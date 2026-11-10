@@ -39,6 +39,8 @@ export default function AddWordScreen() {
   // Form state
   const [german, setGerman] = useState('');
   const [article, setArticle] = useState<Article | null>(null);
+  // Optional second article for the same meaning (der/die Gleichgesinnte)
+  const [articleAlt, setArticleAlt] = useState<Article | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [plural, setPlural] = useState('');
   const [english, setEnglish] = useState('');
@@ -118,6 +120,7 @@ export default function AddWordScreen() {
       const result = await vocabularyService.addUserNoun({
         german: german.trim(),
         article,
+        article_alt: articleAlt ?? undefined,
         category_id: categoryId,
         plural: plural.trim() || undefined,
         english: english.trim() || undefined,
@@ -156,7 +159,7 @@ export default function AddWordScreen() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [german, article, categoryId, plural, english, isValid]);
+  }, [german, article, articleAlt, categoryId, plural, english, isValid]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -227,6 +230,7 @@ export default function AddWordScreen() {
                     ]}
                     onPress={() => {
                       setArticle(a);
+                      if (articleAlt === a) setArticleAlt(null);
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                     accessibilityRole="button"
@@ -246,6 +250,49 @@ export default function AddWordScreen() {
               })}
             </View>
           </View>
+
+          {/* ── Second Article (optional) ─────────────────────── */}
+          {article && (
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>SECOND ARTICLE (OPTIONAL)</Text>
+              <Text style={styles.fieldHint}>
+                Only if both are correct for the same meaning, like der/die
+                Gleichgesinnte.
+              </Text>
+              <View style={styles.articleRow}>
+                {ARTICLES.filter((a) => a !== article).map((a) => {
+                  const isSelected = articleAlt === a;
+                  return (
+                    <Pressable
+                      key={a}
+                      style={[
+                        styles.articleButton,
+                        shadowStyleSmall,
+                        isSelected && styles.articleButtonSelected,
+                      ]}
+                      onPress={() => {
+                        // Tap again to clear
+                        setArticleAlt(isSelected ? null : a);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Also accept ${a}`}
+                      accessibilityState={{ selected: isSelected }}
+                    >
+                      <Text
+                        style={[
+                          styles.articleButtonText,
+                          isSelected && styles.articleButtonTextSelected,
+                        ]}
+                      >
+                        {a}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          )}
 
           {/* ── Category Selector ─────────────────────────────── */}
           <View style={styles.fieldGroup}>
@@ -415,6 +462,11 @@ const styles = StyleSheet.create({
     fontWeight: Typography.bold,
     color: AppColors.black,
     letterSpacing: 1,
+    marginBottom: Spacing.sm,
+  },
+  fieldHint: {
+    fontSize: Typography.small,
+    color: AppColors.black,
     marginBottom: Spacing.sm,
   },
 

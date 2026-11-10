@@ -403,6 +403,48 @@ describe('syncService.syncIfOnline()', () => {
       expect(insertCall[1]).toContain(sampleNoun.id);
     });
 
+    it('syncs a second article (article_alt) on insert', async () => {
+      setNounsFetch([{ ...sampleNoun, article_alt: 'die' }]);
+      mockDb.getFirstAsync.mockResolvedValue(null);
+      mockDb.runAsync.mockResolvedValue({ changes: 1 });
+
+      await syncService.syncIfOnline();
+
+      const insertCall = (mockDb.runAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) => sql.includes('INSERT INTO nouns'),
+      );
+      expect(insertCall[0]).toContain('article_alt');
+      expect(insertCall[1].slice(0, 3)).toEqual(['Hund', 'der', 'die']);
+    });
+
+    it('treats an empty PocketBase article_alt as null on insert', async () => {
+      setNounsFetch([{ ...sampleNoun, article_alt: '' }]);
+      mockDb.getFirstAsync.mockResolvedValue(null);
+      mockDb.runAsync.mockResolvedValue({ changes: 1 });
+
+      await syncService.syncIfOnline();
+
+      const emptyInsert = (mockDb.runAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) => sql.includes('INSERT INTO nouns'),
+      );
+      expect(emptyInsert[1].slice(0, 3)).toEqual(['Hund', 'der', null]);
+    });
+
+    it('never clears a local article_alt when the PocketBase record has none', async () => {
+      setNounsFetch([{ ...sampleNoun, article_alt: '' }]);
+      mockDb.getFirstAsync.mockResolvedValue({ id: 5 }); // existing by remote_id
+      mockDb.runAsync.mockResolvedValue({ changes: 1 });
+
+      await syncService.syncIfOnline();
+
+      const updateCall = (mockDb.runAsync as jest.Mock).mock.calls.find(
+        ([sql]: [string]) =>
+          sql.includes('UPDATE nouns') && sql.includes('WHERE remote_id = ?'),
+      );
+      expect(updateCall[0]).toContain('article_alt = COALESCE(?, article_alt)');
+      expect(updateCall[1].slice(0, 3)).toEqual(['Hund', 'der', null]);
+    });
+
     it('only assigns remote_id for user-added words on UNIQUE conflict (preserves user data)', async () => {
       setNounsFetch([sampleNoun]);
       mockDb.getFirstAsync

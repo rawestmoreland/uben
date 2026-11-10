@@ -6,6 +6,7 @@ import {
 import { settingsService } from '@/services/settingsService';
 import { submitQuizResult } from '@/services/quizResultsService';
 import type { DueCard, ReviewSession } from '@/types/database';
+import { isAcceptedArticle } from '@/utils/nounArticles';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -116,7 +117,8 @@ export function useQuizSession(mode: QuizMode = 'daily'): QuizSessionData {
       if (phase !== 'playing' || !currentCard) return;
 
       const timeTakenMs = Date.now() - cardStartTime.current;
-      const correct = article === currentCard.article;
+      // Nouns with a second valid article (der/die Gleichgesinnte) accept either
+      const correct = isAcceptedArticle(currentCard, article);
       const quality = getQualityFromResponse(correct, timeTakenMs);
 
       setSelectedArticle(article);

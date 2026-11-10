@@ -90,6 +90,7 @@ nounsCollection.AddIndex("idx_nouns_german_article", true, "german, article", ""
 - `id` (auto, 15-char) — deterministic remote ID from import
 - `german` (text, required) — the German noun
 - `article` (select, required) — "der", "die", or "das"
+- `article_alt` (select, optional) — second article for the *same* meaning (`der`/`die`/`das`), e.g. `article="der"`, `article_alt="die"` for Gleichgesinnte. `article` stays the primary one, so remote IDs and the unique index are unchanged. Not for different-meaning pairs (use separate records with `sense`). Migration: `base/migrations/1794400000_add_article_alt_field.go`; `scripts/csv-to-pocketbase.js` reads an optional `article_alt` CSV column
 - `plural` (text) — plural form
 - `english` (text) — translation
 - `level` (select, required) — CEFR level (A1-C2)

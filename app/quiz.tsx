@@ -18,6 +18,7 @@ import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize, NOUN_SINGLE_LINE_PROPS } from '@/utils/typography';
+import { formatArticles, isAcceptedArticle } from '@/utils/nounArticles';
 import { uiUpperCase } from '@/utils/uiText';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -249,7 +250,7 @@ function PlayingState({
                   },
                 ]}
               >
-                {currentCard.article}{' '}
+                {formatArticles(currentCard)}{' '}
               </Text>
               {applyGermanTextPreference(currentCard.word, eszettPreference)}
             </Text>
@@ -295,7 +296,7 @@ function PlayingState({
       <View style={styles.articlesSection}>
         <View style={styles.articlesRow}>
           {ARTICLES.map((article) => {
-            const isCorrectAnswer = currentCard.article === article;
+            const isCorrectAnswer = isAcceptedArticle(currentCard, article);
 
             let buttonBg: string = AppColors.white;
             if (isFeedback && isCorrectAnswer) {
@@ -410,7 +411,7 @@ function CompleteState({ results, eszettPreference }: CompleteStateProps) {
               />
               <Text style={styles.resultWord}>
                 <Text style={styles.resultArticle}>
-                  {result.correctArticle}{' '}
+                  {formatArticles(result.card)}{' '}
                 </Text>
                 {applyGermanTextPreference(result.card.word, eszettPreference)}
               </Text>
