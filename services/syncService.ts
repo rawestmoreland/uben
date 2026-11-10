@@ -31,6 +31,8 @@ interface PBNoun {
   id: string;
   german: string;
   article: 'der' | 'die' | 'das';
+  /** Second valid article for the same meaning; PocketBase returns '' when unset */
+  article_alt?: 'der' | 'die' | 'das' | '' | null;
   plural: string;
   english: string;
   translation_key: string;
@@ -383,14 +385,17 @@ class SyncService {
         );
 
         if (existing) {
-          // Update existing noun
+          // Update existing noun. article_alt uses COALESCE so a record
+          // whose PocketBase row hasn't been given a second article yet
+          // can't wipe one set by a local seed or correction.
           const result = await this.db.runAsync(
             `UPDATE nouns
-             SET german = ?, article = ?, plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?
+             SET german = ?, article = ?, article_alt = COALESCE(?, article_alt), plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?
              WHERE remote_id = ?`,
             [
               noun.german,
               noun.article,
+              noun.article_alt || null,
               noun.plural || null,
               noun.english || null,
               noun.translation_key || null,
@@ -404,11 +409,12 @@ class SyncService {
           // Insert new noun
           try {
             const result = await this.db.runAsync(
-              `INSERT INTO nouns (german, article, plural, english, translation_key, sense, level, category_id, remote_id, is_user_added)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+              `INSERT INTO nouns (german, article, article_alt, plural, english, translation_key, sense, level, category_id, remote_id, is_user_added)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
               [
                 noun.german,
                 noun.article,
+                noun.article_alt || null,
                 noun.plural || null,
                 noun.english || null,
                 noun.translation_key || null,
@@ -455,9 +461,10 @@ class SyncService {
                 // Pre-seeded word without remote_id — safe to update with PocketBase data
                 const result = await this.db.runAsync(
                   `UPDATE nouns
-                   SET plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?, remote_id = ?
+                   SET article_alt = COALESCE(?, article_alt), plural = ?, english = ?, translation_key = ?, level = ?, category_id = ?, remote_id = ?
                    WHERE id = ?`,
                   [
+                    noun.article_alt || null,
                     noun.plural || null,
                     noun.english || null,
                     noun.translation_key || null,

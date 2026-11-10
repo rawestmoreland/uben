@@ -12,6 +12,7 @@ export interface DailyActivity {
 export interface HardWord {
   german: string;
   article: 'der' | 'die' | 'das';
+  article_alt: 'der' | 'die' | 'das' | null;
   english: string | null;
   /** PocketBase ID used to look up the translation in the app language. Null for user-added words. */
   remote_id: string | null;
@@ -76,6 +77,7 @@ export class StatisticsService {
       `SELECT
          n.german,
          n.article,
+         n.article_alt,
          n.english,
          n.remote_id,
          cp.total_reviews,

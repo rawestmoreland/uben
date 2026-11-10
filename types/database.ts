@@ -7,6 +7,8 @@ export interface Noun {
   id: number;
   german: string;
   article: 'der' | 'die' | 'das';
+  /** Second valid article for the same meaning (der/die Gleichgesinnte); null for most nouns */
+  article_alt: 'der' | 'die' | 'das' | null;
   plural: string | null;
   english: string | null;
   translation_key: string | null; // Derived from english field, used for i18n lookups
@@ -183,6 +185,8 @@ export interface CardReview {
 export interface DueCard extends CardProgress {
   word: string;
   article: string | null;
+  /** Second valid article for the same meaning, null for most nouns */
+  article_alt: string | null;
   english: string | null;
   translation_key: string | null;
   sense: string | null; // Disambiguation hint for homographs, null for most words
@@ -295,6 +299,8 @@ export interface UserNounWithCategory extends Noun {
 export interface UserNounInput {
   german: string;
   article: 'der' | 'die' | 'das';
+  /** Second valid article for the same meaning (optional) */
+  article_alt?: 'der' | 'die' | 'das';
   category_id: number;
   plural?: string;
   english?: string;
@@ -338,6 +344,8 @@ export type CategoryName =
 export interface SeedNoun {
   german: string;
   article: 'der' | 'die' | 'das';
+  /** Second valid article for the same meaning (der/die Gleichgesinnte). Not for different-meaning pairs: use `sense` rows. */
+  article_alt?: 'der' | 'die' | 'das' | null;
   plural: string | null;
   english: string;
   sense?: string | null; // Disambiguation hint for homographs (optional)
@@ -442,6 +450,7 @@ export interface NounCorrection {
   /** Fields to overwrite — only specify fields that need correction */
   corrections: {
     article?: 'der' | 'die' | 'das';
+    article_alt?: 'der' | 'die' | 'das' | null;
     plural?: string | null;
     english?: string;
     category?: CategoryName;

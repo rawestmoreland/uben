@@ -92,7 +92,7 @@ The app uses expo-sqlite for local data persistence:
 
 #### Schema
 
-- **nouns** - German nouns with articles, plurals, English translations, and CEFR level
+- **nouns** - German nouns with articles, plurals, English translations, and CEFR level. Nouns that take two articles for the *same meaning* (`der/die Gleichgesinnte`, `der/das Joghurt`) are **one row**: `article` is the primary article and the nullable `article_alt` the second; the quiz accepts either (`utils/nounArticles.ts`), one SM-2 card, and add-word offers an optional second article. Pairs whose meaning changes with the article (`der See` / `die See`) stay separate rows with a `sense`. Set `article_alt` in seeds (`SeedNoun`, `database/seeds/nouns/dual-article.ts`), via a correction (`database/seeds/corrections/dual-article-nouns.ts`) or on the PocketBase record; sync never clears a local `article_alt`
 - **verbs** - German verbs with conjugations and separable prefix flag
 - **card_progress** - Spaced repetition tracking (ease factor, interval, repetitions)
 - **review_history** - Historical review data for analytics

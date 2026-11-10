@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { applyGermanTextPreference } from '@/utils/germanText';
+import { formatArticles } from '@/utils/nounArticles';
 import { uiUpperCase } from '@/utils/uiText';
 
 // ── Heatmap constants ────────────────────────────────────────────────
@@ -256,7 +257,7 @@ function HardWordRow({ word, isLast, eszettPreference }: HardWordRowProps) {
     <View style={[styles.hardWordRow, !isLast && styles.hardWordRowBorder]}>
       {/* Article badge */}
       <View style={[styles.articleBadge, { backgroundColor: articleColor }]}>
-        <Text style={styles.articleBadgeText}>{word.article.toUpperCase()}</Text>
+        <Text style={styles.articleBadgeText}>{formatArticles(word).toUpperCase()}</Text>
       </View>
 
       {/* Word info */}

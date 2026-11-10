@@ -1,4 +1,5 @@
 import type { NounCorrectionVersion } from '@/types/database';
+import { dualArticleCorrections } from './dual-article-nouns';
 import { homographSenseCorrections } from './homograph-senses';
 
 /**
@@ -18,4 +19,5 @@ import { homographSenseCorrections } from './homograph-senses';
  */
 export const nounCorrectionVersions: NounCorrectionVersion[] = [
   homographSenseCorrections,
+  dualArticleCorrections,
 ];

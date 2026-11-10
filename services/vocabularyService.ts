@@ -38,6 +38,9 @@ export class VocabularyService {
           WHEN cp.word_type = 'noun' THEN n.article
         END AS article,
         CASE
+          WHEN cp.word_type = 'noun' THEN n.article_alt
+        END AS article_alt,
+        CASE
           WHEN cp.word_type = 'noun' THEN n.english
         END AS english,
         CASE
@@ -82,9 +85,11 @@ export class VocabularyService {
     german: string,
     article: string,
   ): Promise<{ exists: boolean; isUserAdded?: boolean }> {
+    // A noun's second article (article_alt) is as taken as its primary one:
+    // adding "die Gleichgesinnte" next to "der/die Gleichgesinnte" is a duplicate.
     const existing = await this.db.getFirstAsync<{ is_user_added: number }>(
-      'SELECT is_user_added FROM nouns WHERE german = ? AND article = ? AND sense IS NULL',
-      [german, article],
+      'SELECT is_user_added FROM nouns WHERE german = ? AND (article = ? OR article_alt = ?) AND sense IS NULL',
+      [german, article, article],
     );
     if (existing) {
       return { exists: true, isUserAdded: !!existing.is_user_added };
@@ -124,6 +129,13 @@ export class VocabularyService {
       }
     }
 
+    if (noun.article_alt && noun.article_alt === noun.article) {
+      return {
+        success: false,
+        error: 'The second article must differ from the first',
+      };
+    }
+
     // Validate category exists
     const categoryExists = await this.db.getFirstAsync<{ '1': number }>(
       'SELECT 1 FROM categories WHERE id = ?',
@@ -140,9 +152,12 @@ export class VocabularyService {
     // Check if the word already exists in the null-sense slot (the slot that
     // the new user-added row would occupy).  Homograph siblings with explicit
     // senses are separate entries and do not block user additions.
+    // Either article counts, including a stored article_alt, so a second
+    // article can't be added as a separate "different meaning" row.
+    const articles = [noun.article, noun.article_alt ?? noun.article];
     const existing = await this.db.getFirstAsync<{ id: number; is_user_added: number }>(
-      'SELECT id, is_user_added FROM nouns WHERE german = ? AND article = ? AND sense IS NULL',
-      [noun.german, noun.article],
+      'SELECT id, is_user_added FROM nouns WHERE german = ? AND sense IS NULL AND (article IN (?, ?) OR article_alt IN (?, ?))',
+      [noun.german, ...articles, ...articles],
     );
 
     if (existing) {
@@ -157,11 +172,12 @@ export class VocabularyService {
 
     try {
       const result = await this.db.runAsync(
-        `INSERT INTO nouns (german, article, category_id, plural, english, is_user_added)
-         VALUES (?, ?, ?, ?, ?, 1)`,
+        `INSERT INTO nouns (german, article, article_alt, category_id, plural, english, is_user_added)
+         VALUES (?, ?, ?, ?, ?, ?, 1)`,
         [
           noun.german,
           noun.article,
+          noun.article_alt ?? null,
           noun.category_id,
           noun.plural ?? null,
           noun.english ?? null,
