@@ -565,9 +565,10 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
         const sense = noun.sense ?? null;
 
         await db.runAsync(
-          `INSERT INTO nouns (german, article, plural, english, translation_key, sense, level, category_id, is_user_added)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+          `INSERT INTO nouns (german, article, article_alt, plural, english, translation_key, sense, level, category_id, is_user_added)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
            ON CONFLICT DO UPDATE SET
+             article_alt = COALESCE(nouns.article_alt, excluded.article_alt),
              level = COALESCE(nouns.level, excluded.level),
              english = COALESCE(nouns.english, excluded.english),
              translation_key = excluded.translation_key,
@@ -581,6 +582,7 @@ async function seedNounVersions(db: SQLite.SQLiteDatabase): Promise<void> {
           [
             noun.german,
             noun.article,
+            noun.article_alt ?? null,
             noun.plural,
             noun.english,
             translationKey,
@@ -674,6 +676,11 @@ async function applyNounCorrection(
   if (correction.corrections.article !== undefined) {
     setClauses.push('article = ?');
     params.push(correction.corrections.article);
+  }
+
+  if (correction.corrections.article_alt !== undefined) {
+    setClauses.push('article_alt = ?');
+    params.push(correction.corrections.article_alt);
   }
 
   if (correction.corrections.plural !== undefined) {

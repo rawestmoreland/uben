@@ -21,6 +21,7 @@ import {
   shadowStyleSmall,
 } from '@/constants/design';
 import { vocabularyService } from '@/services/vocabularyService';
+import { formatArticles } from '@/utils/nounArticles';
 import type { UserNounWithCategory } from '@/types/database';
 
 // ── My Words Screen ──────────────────────────────────────────────────
@@ -51,7 +52,7 @@ export default function MyWordsScreen() {
     (word: UserNounWithCategory) => {
       Alert.alert(
         'Delete Word',
-        `Remove "${word.article} ${word.german}" from your words? This will also delete any review progress for this word.`,
+        `Remove "${formatArticles(word)} ${word.german}" from your words? This will also delete any review progress for this word.`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -146,7 +147,7 @@ function WordRow({ word, onDelete }: WordRowProps) {
     <View style={[styles.wordRow, shadowStyleSmall]}>
       <View style={styles.wordInfo}>
         <Text style={styles.wordText}>
-          <Text style={styles.wordArticle}>{word.article} </Text>
+          <Text style={styles.wordArticle}>{formatArticles(word)} </Text>
           {word.german}
         </Text>
         <View style={styles.wordMeta}>

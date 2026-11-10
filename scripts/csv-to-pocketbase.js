@@ -52,6 +52,9 @@ const main = async () => {
             level: keepLevel,
             sources: mergedSources,
             category: categoryId,
+            // Optional CSV column: a second article for the same meaning
+            // (der/die Gleichgesinnte). Never clears an existing value.
+            article_alt: noun.article_alt || existingNoun.article_alt,
           });
           updated++;
           continue;

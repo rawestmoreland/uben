@@ -73,6 +73,7 @@ export const vocabA110: SeedNoun[] = [
   {
     german: 'Bekannte',
     article: 'der',
+    article_alt: 'die',
     plural: 'Bekannten',
     english: 'acquaintance',
     level: 'A1',

@@ -898,6 +898,30 @@ export const migrations: Migration[] = [
       await db.execAsync('ALTER TABLE verb_prepositions DROP COLUMN kind;');
     },
   },
+  {
+    version: '014',
+    name: 'add_noun_article_alt',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log('[Migration 014] Adding nouns.article_alt...');
+
+      // Some nouns take two articles for the SAME meaning (der/die
+      // Gleichgesinnte, der/das Joghurt). `article` stays the primary article
+      // (so remote IDs and the UNIQUE index are untouched) and `article_alt`
+      // holds the second one; the quiz accepts either. NULL for almost every
+      // word. Different-meaning pairs (der/die See) stay separate rows with a
+      // `sense`. Nothing else references this column, so no table rebuild.
+      await db.execAsync(`
+        ALTER TABLE nouns
+          ADD COLUMN article_alt TEXT
+          CHECK(article_alt IS NULL OR article_alt IN ('der', 'die', 'das'));
+      `);
+
+      console.log('[Migration 014] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      await db.execAsync('ALTER TABLE nouns DROP COLUMN article_alt;');
+    },
+  },
 ];
 
 /**
