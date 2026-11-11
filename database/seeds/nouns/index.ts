@@ -1,4 +1,5 @@
 import type { SeedNoun } from '@/types/database';
+import { dualArticleNouns } from './dual-article';
 import { homographNouns } from './homographs';
 import { v1InitialNouns } from './v1-initial';
 import { vocabA110 } from './vocab-a1-10';
@@ -21,4 +22,5 @@ export const nounSeedVersions: NounSeedVersion[] = [
   { version: '3.2.0_a1_nouns_v3', nouns: vocabA19 },
   { version: '3.3.0_a1_nouns_v4', nouns: vocabA110 },
   { version: '3.4.0_homographs_v1', nouns: homographNouns },
+  { version: '3.5.0_dual_article_nouns_v1', nouns: dualArticleNouns },
 ];

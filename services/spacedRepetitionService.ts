@@ -355,7 +355,7 @@ export class SpacedRepetitionService {
 
     // Due cards (already in the review system)
     const dueCards = await this.db.getAllAsync<DueCard>(
-      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id,
+      `SELECT cp.*, n.german AS word, n.article, n.article_alt, n.english, n.translation_key, n.sense, n.remote_id,
               (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS has_homograph_siblings,
               (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM card_progress cp
@@ -382,6 +382,7 @@ export class SpacedRepetitionService {
          n.created_at,
          n.german AS word,
          n.article,
+         n.article_alt,
          n.english,
          n.translation_key,
          n.sense,
@@ -410,7 +411,7 @@ export class SpacedRepetitionService {
    */
   async getStrugglingWordsSession(limit: number = 15): Promise<ReviewSession> {
     const cards = await this.db.getAllAsync<DueCard>(
-      `SELECT cp.*, n.german AS word, n.article, n.english, n.translation_key, n.sense, n.remote_id,
+      `SELECT cp.*, n.german AS word, n.article, n.article_alt, n.english, n.translation_key, n.sense, n.remote_id,
               (SELECT MIN(1, COUNT(*)) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS has_homograph_siblings,
               (SELECT GROUP_CONCAT(DISTINCT n2.article) FROM nouns n2 WHERE n2.german = n.german AND n2.id != n.id) AS sibling_articles
        FROM card_progress cp

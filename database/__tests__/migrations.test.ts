@@ -96,7 +96,7 @@ describe('runMigrations()', () => {
   });
 
   it('applies only unapplied migrations in a partial state', async () => {
-    // Migration 001 already applied; 002–013 not yet applied
+    // Migration 001 already applied; 002–014 not yet applied
     mockDb.getFirstAsync
       .mockResolvedValueOnce({ '1': 1 }) // 001 → applied
       .mockResolvedValueOnce(null) // 002 → unapplied
@@ -110,7 +110,8 @@ describe('runMigrations()', () => {
       .mockResolvedValueOnce(null) // 010 → unapplied
       .mockResolvedValueOnce(null) // 011 → unapplied
       .mockResolvedValueOnce(null) // 012 → unapplied
-      .mockResolvedValueOnce(null); // 013 → unapplied
+      .mockResolvedValueOnce(null) // 013 → unapplied
+      .mockResolvedValueOnce(null); // 014 → unapplied
 
     await runMigrations(mockDb as any);
 
@@ -119,7 +120,7 @@ describe('runMigrations()', () => {
         sql === 'INSERT INTO migrations (version) VALUES (?)',
     );
 
-    expect(insertCalls).toHaveLength(12);
+    expect(insertCalls).toHaveLength(13);
     expect(insertCalls[0][1]).toEqual(['002']);
     expect(insertCalls[1][1]).toEqual(['003']);
     expect(insertCalls[2][1]).toEqual(['004']);
@@ -132,6 +133,7 @@ describe('runMigrations()', () => {
     expect(insertCalls[9][1]).toEqual(['011']);
     expect(insertCalls[10][1]).toEqual(['012']);
     expect(insertCalls[11][1]).toEqual(['013']);
+    expect(insertCalls[12][1]).toEqual(['014']);
   });
 
   it('calls each migration up() with the db object', async () => {
@@ -889,5 +891,73 @@ describeWithSqlite('migrations against real SQLite', () => {
         )
         .all(),
     ).toEqual([]);
+  });
+  describe('014 add_noun_article_alt', () => {
+    const migration014 = migrations.find((m) => m.version === '014')!;
+
+    it('adds a nullable article_alt that leaves existing nouns and cards untouched', async () => {
+      await migrateTo('013');
+      const kindId = insertNoun('Kind', 'das', 'Kinder');
+      const kindCard = insertCard('noun', kindId, 6);
+
+      await runMigrations(db as any);
+
+      expect(
+        raw
+          .prepare('SELECT german, article, article_alt FROM nouns')
+          .all(),
+      ).toEqual([{ german: 'Kind', article: 'das', article_alt: null }]);
+      expect(raw.prepare('SELECT id FROM card_progress').all()).toEqual([
+        { id: kindCard },
+      ]);
+    });
+
+    it('stores a second article on one row and still blocks a duplicate (german, article)', async () => {
+      await runMigrations(db as any);
+      insertNoun('Hund', 'der', 'Hunde');
+      const insertDual = raw.prepare(
+        'INSERT INTO nouns (german, article, article_alt, plural, category_id) VALUES (?, ?, ?, ?, 1)',
+      );
+
+      insertDual.run('Gleichgesinnte', 'der', 'die', 'Gleichgesinnten');
+
+      expect(
+        raw
+          .prepare(
+            "SELECT article, article_alt FROM nouns WHERE german = 'Gleichgesinnte'",
+          )
+          .all(),
+      ).toEqual([{ article: 'der', article_alt: 'die' }]);
+      expect(() =>
+        insertDual.run('Gleichgesinnte', 'der', null, null),
+      ).toThrow(/UNIQUE/);
+    });
+
+    it('rejects an article_alt that is not der, die or das', async () => {
+      await runMigrations(db as any);
+      insertNoun('Hund', 'der', 'Hunde');
+
+      expect(() =>
+        raw
+          .prepare("UPDATE nouns SET article_alt = 'den' WHERE german = 'Hund'")
+          .run(),
+      ).toThrow(/CHECK/);
+    });
+
+    it('down() drops the column and keeps the nouns', async () => {
+      await runMigrations(db as any);
+      insertNoun('Hund', 'der', 'Hunde');
+
+      await migration014.down!(db as any);
+
+      expect(
+        raw
+          .prepare(
+            "SELECT name FROM pragma_table_info('nouns') WHERE name = 'article_alt'",
+          )
+          .all(),
+      ).toEqual([]);
+      expect(count('SELECT COUNT(*) AS count FROM nouns')).toBe(1);
+    });
   });
 });

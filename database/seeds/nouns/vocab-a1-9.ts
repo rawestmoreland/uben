@@ -257,6 +257,7 @@ export const vocabA19: SeedNoun[] = [
   {
     german: 'Angestellte',
     article: 'der',
+    article_alt: 'die',
     plural: 'Angestellten',
     english: 'employee',
     level: 'A1',
