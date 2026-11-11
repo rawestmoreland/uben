@@ -294,6 +294,8 @@
       "feature_4": "Ćwiczenie końcówek przymiotników z natychmiastową informacją zwrotną",
       "unlock_button": "Odblokuj teraz",
       "one_time_purchase": "Jednorazowy zakup. Bez subskrypcji.",
+      "sale_title": "Świąteczna wyprzedaż",
+      "sale_body": "Üben Pro za {{price}} do {{date}}.",
       "purchase_failed": "Coś poszło nie tak. Spróbuj ponownie.",
       "restore_button": "Przywróć zakupy",
       "restoring": "Przywracanie…",

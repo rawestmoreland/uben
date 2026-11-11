@@ -284,6 +284,8 @@
       "feature_4": "Melléknévragok gyakorlása azonnali visszajelzéssel",
       "unlock_button": "Feloldás most",
       "one_time_purchase": "Egyszeri vásárlás. Nincs előfizetés.",
+      "sale_title": "Karácsonyi akció",
+      "sale_body": "Üben Pro {{price}} áron eddig: {{date}}.",
       "purchase_failed": "Valami hiba történt. Kérjük, próbáld újra.",
       "restore_button": "Vásárlások visszaállítása",
       "restoring": "Visszaállítás…",

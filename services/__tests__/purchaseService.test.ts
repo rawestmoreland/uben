@@ -290,6 +290,39 @@ describe('purchaseService.purchasePro', () => {
   });
 });
 
+describe('purchaseService.getLifetimePriceString', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns the lifetime package's store price string", async () => {
+    const lifetimePackage = {
+      identifier: '$rc_lifetime',
+      product: { identifier: LIFETIME_PRO_PRODUCT_ID, priceString: '$4.99' },
+    };
+    mockPurchases.getOfferings.mockResolvedValue({
+      current: { lifetime: lifetimePackage, availablePackages: [lifetimePackage] },
+      all: {},
+    });
+
+    await expect(purchaseService.getLifetimePriceString()).resolves.toBe('$4.99');
+  });
+
+  it('returns null when no lifetime package is available', async () => {
+    mockPurchases.getOfferings.mockResolvedValue({ current: null, all: {} });
+
+    await expect(purchaseService.getLifetimePriceString()).resolves.toBeNull();
+  });
+
+  it('returns null instead of throwing when offerings fail to load', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockPurchases.getOfferings.mockRejectedValue(new Error('offline'));
+
+    await expect(purchaseService.getLifetimePriceString()).resolves.toBeNull();
+    consoleError.mockRestore();
+  });
+});
+
 describe('purchaseService.restorePurchases', () => {
   beforeEach(() => {
     jest.clearAllMocks();
