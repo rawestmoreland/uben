@@ -289,6 +289,8 @@
       "feature_4": "Prática de terminações de adjetivos com feedback instantâneo",
       "unlock_button": "Desbloquear agora",
       "one_time_purchase": "Compra única. Sem subscrição.",
+      "sale_title": "Promoção de Natal",
+      "sale_body": "Üben Pro por {{price}} até {{date}}.",
       "purchase_failed": "Algo correu mal. Tenta novamente.",
       "restore_button": "Restaurar compras",
       "restoring": "A restaurar…",

@@ -168,6 +168,23 @@ class PurchaseService {
     await settingsService.setAdjectiveDeclensionTrialQuestionsUsed(used + 1);
   }
 
+  /**
+   * The lifetime package's current store price as the store formats it
+   * (e.g. "$4.99", in the user's currency), or null when it can't be loaded.
+   * Used to announce a sale with the price the store will actually charge.
+   */
+  async getLifetimePriceString(): Promise<string | null> {
+    if (Platform.OS === 'web') return null;
+
+    try {
+      const offerings = await Purchases.getOfferings();
+      return this.findLifetimePackage(offerings)?.product.priceString ?? null;
+    } catch (error) {
+      console.error('[Purchase] Failed to load the lifetime price:', error);
+      return null;
+    }
+  }
+
   /** Track that the paywall was shown, and from where (for funnel analytics). */
   trackPaywallViewed(source?: string | null): void {
     trackPurchaseFunnelEvent('paywall_viewed', source);
