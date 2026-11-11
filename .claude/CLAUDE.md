@@ -173,6 +173,14 @@ Services use the database singleton and provide clean APIs to components.
 - Tapping a reminder opens `/quiz`
 - Keep scheduling rules in `reminderPlanner.ts` (pure, unit tested); `notificationService.ts` owns scheduling and permissions (the tap handler lives in `use-reminder-scheduler.ts`); keep expo-notifications calls out of components
 
+#### Sale Banner (paywall)
+
+A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price in App Store Connect / Play Console** on the same `lifetime_pro` product (no new product, no RevenueCat change). The code only *announces* it:
+
+- Date flag: `constants/sale.ts` holds one UTC window per platform (`startsAt` inclusive, `endsAt` exclusive); `services/saleService.ts` (`getActiveSale`, pure, unit tested) decides if it is on. Ship the code early, it stays hidden until `startsAt`. Outside any window the paywall is unchanged
+- The banner (`components/paywall/sale-banner.tsx`, hook `hooks/use-sale-banner.ts`, strings `paywall.sale_title` / `paywall.sale_body`) shows the **live store price** from `purchaseService.getLifetimePriceString()`, never a hard-coded price, and hides if the price can't be loaded
+- Apple does not switch prices at one UTC instant (start/end times vary by region and the scheduled date), so keep the `ios` window in line with App Store Connect. To run a new sale, edit the windows and strings and make the matching store price change
+
 #### App Update Notice
 
 `services/appUpdateService.ts` + `services/appVersion.ts` tell users when their installed build is behind the store (store auto-updates lag). Display only; free for everyone:

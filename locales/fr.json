@@ -258,6 +258,8 @@
       "feature_4": "Entraînement aux terminaisons d'adjectifs avec retour immédiat",
       "unlock_button": "Débloquer maintenant",
       "one_time_purchase": "Achat unique. Sans abonnement.",
+      "sale_title": "Offre de Noël",
+      "sale_body": "Üben Pro à {{price}} jusqu'au {{date}}.",
       "purchase_failed": "Une erreur s'est produite. Veuillez réessayer.",
       "restore_button": "Restaurer les achats",
       "restoring": "Restauration…",

@@ -284,6 +284,8 @@
       "feature_4": "形容词词尾练习,即时反馈",
       "unlock_button": "立即解锁",
       "one_time_purchase": "一次性购买,无需订阅。",
+      "sale_title": "圣诞特惠",
+      "sale_body": "Üben Pro 仅需 {{price}},优惠至 {{date}}。",
       "purchase_failed": "出了点问题,请重试。",
       "restore_button": "恢复购买",
       "restoring": "正在恢复…",
