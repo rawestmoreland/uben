@@ -50,7 +50,8 @@
       "hard_words_drill": "Zor kelime çalışması",
       "no_struggling_words": "Çok iyi gidiyorsunuz!",
       "no_struggling_words_desc": "Henüz doğruluk oranı %60'ın altında olan kelimeniz yok.\n\nAlıştırmaya devam edin; en zor kelimeleriniz burada görünecek.",
-      "also_valid_for_sibling": "Ayrıca: {{article}} {{word}} (farklı anlam)"
+      "also_valid_for_sibling": "Ayrıca: {{article}} {{word}} (farklı anlam)",
+      "next_word": "Sonraki kelime"
     },
     "settings": {
       "title": "Ayarlar",

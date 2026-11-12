@@ -50,7 +50,8 @@
       "hard_words_drill": "难词强化练习",
       "no_struggling_words": "表现很好!",
       "no_struggling_words_desc": "目前没有正确率低于 60% 的单词。\n\n继续练习,最难的单词会出现在这里。",
-      "also_valid_for_sibling": "另外:{{article}} {{word}}(含义不同)"
+      "also_valid_for_sibling": "另外:{{article}} {{word}}(含义不同)",
+      "next_word": "下一个词"
     },
     "settings": {
       "title": "设置",

@@ -2,6 +2,7 @@ import {
   formatArticles,
   getAcceptedArticles,
   isAcceptedArticle,
+  isSiblingArticle,
 } from '../nounArticles';
 
 describe('nounArticles', () => {
@@ -37,5 +38,18 @@ describe('nounArticles', () => {
     expect(formatArticles({ article: 'das', article_alt: 'der' })).toBe(
       'das / der',
     );
+  });
+});
+
+describe('isSiblingArticle', () => {
+  it('matches an article held by a sibling noun', () => {
+    expect(isSiblingArticle({ sibling_articles: 'die' }, 'die')).toBe(true);
+    expect(isSiblingArticle({ sibling_articles: 'die,das' }, 'das')).toBe(true);
+  });
+
+  it('does not match other articles or missing siblings', () => {
+    expect(isSiblingArticle({ sibling_articles: 'die' }, 'das')).toBe(false);
+    expect(isSiblingArticle({ sibling_articles: null }, 'der')).toBe(false);
+    expect(isSiblingArticle({}, 'der')).toBe(false);
   });
 });

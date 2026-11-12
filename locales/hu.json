@@ -50,7 +50,8 @@
       "hard_words_drill": "Nehéz szavak gyakorlása",
       "no_struggling_words": "Jól haladsz!",
       "no_struggling_words_desc": "Még nincs 60% alatti pontosságú szavad.\n\nGyakorolj tovább, és a legnehezebb szavaid itt fognak megjelenni.",
-      "also_valid_for_sibling": "Szintén: {{article}} {{word}} (más jelentés)"
+      "also_valid_for_sibling": "Szintén: {{article}} {{word}} (más jelentés)",
+      "next_word": "Következő szó"
     },
     "settings": {
       "title": "Beállítások",

@@ -18,7 +18,11 @@ import { useSettings } from '@/hooks/use-settings';
 import { useStoreReview } from '@/hooks/use-store-review';
 import { applyGermanTextPreference } from '@/utils/germanText';
 import { getNounFontSize, NOUN_SINGLE_LINE_PROPS } from '@/utils/typography';
-import { formatArticles, isAcceptedArticle } from '@/utils/nounArticles';
+import {
+  formatArticles,
+  isAcceptedArticle,
+  isSiblingArticle,
+} from '@/utils/nounArticles';
 import { uiUpperCase } from '@/utils/uiText';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -63,12 +67,21 @@ export default function QuizScreen() {
   const { phase, nextCard, results } = quiz;
   const { showEnglishHint, eszettPreference } = useSettings();
 
-  // Auto-advance after feedback
+  // A wrong answer that is valid for a sibling noun shows a tip. Hold the
+  // screen on it until the user taps "next" so there is time to read it.
+  const holdForTip =
+    phase === 'feedback' &&
+    !quiz.isCorrect &&
+    quiz.currentCard !== null &&
+    quiz.selectedArticle !== null &&
+    isSiblingArticle(quiz.currentCard, quiz.selectedArticle);
+
+  // Auto-advance after feedback (unless a tip is waiting to be dismissed)
   useEffect(() => {
-    if (phase !== 'feedback') return;
+    if (phase !== 'feedback' || holdForTip) return;
     const timer = setTimeout(nextCard, FEEDBACK_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [phase, nextCard]);
+  }, [phase, holdForTip, nextCard]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -167,8 +180,7 @@ function PlayingState({
     !isCorrect &&
     selectedArticle !== null &&
     currentCard !== null &&
-    currentCard.sibling_articles !== null &&
-    currentCard.sibling_articles.split(',').includes(selectedArticle);
+    isSiblingArticle(currentCard, selectedArticle);
 
   // Fire haptic on feedback (must be before any early return)
   useEffect(() => {
@@ -329,6 +341,22 @@ function PlayingState({
             );
           })}
         </View>
+        {/* The sibling tip doesn't auto-advance; the user moves on when ready */}
+        {siblingArticleSelected && (
+          <Pressable
+            style={({ pressed }) => [
+              styles.nextButton,
+              pressed && styles.backButtonPressed,
+            ]}
+            onPress={quiz.nextCard}
+            accessibilityRole="button"
+            accessibilityLabel={t('quiz_mode.next_word')}
+          >
+            <Text style={styles.backButtonText}>
+              {uiUpperCase(t('quiz_mode.next_word'))}
+            </Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -604,6 +632,19 @@ const styles = StyleSheet.create({
     color: AppColors.blue,
     marginTop: Spacing.sm,
     textAlign: 'center',
+  },
+
+  nextButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: Layout.buttonHeight,
+    marginTop: Spacing.md,
+    ...shadowStyle,
   },
 
   // Article buttons

@@ -58,7 +58,8 @@
       "hard_words_drill": "Тренировка сложных слов",
       "no_struggling_words": "Отлично!",
       "no_struggling_words_desc": "Пока нет слов с точностью ниже 60%.\n\nПродолжайте заниматься — самые трудные слова появятся здесь.",
-      "also_valid_for_sibling": "Также: {{article}} {{word}} (другое значение)"
+      "also_valid_for_sibling": "Также: {{article}} {{word}} (другое значение)",
+      "next_word": "Следующее слово"
     },
     "settings": {
       "title": "Настройки",

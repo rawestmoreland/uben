@@ -34,3 +34,15 @@ export function isAcceptedArticle(noun: ArticleFields, picked: string): boolean 
 export function formatArticles(noun: ArticleFields): string {
   return getAcceptedArticles(noun).join(' / ');
 }
+
+/**
+ * Whether the picked article belongs to a sibling noun with the same spelling
+ * but a different meaning (der See / die See). `sibling_articles` is the
+ * comma-joined list of the siblings' articles.
+ */
+export function isSiblingArticle(
+  noun: { sibling_articles?: string | null },
+  picked: string,
+): boolean {
+  return (noun.sibling_articles ?? '').split(',').includes(picked);
+}

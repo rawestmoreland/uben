@@ -54,7 +54,8 @@
       "hard_words_drill": "Mots difficiles",
       "no_struggling_words": "Bien joué !",
       "no_struggling_words_desc": "Aucun mot n'est encore en dessous de 60 % de réussite.\n\nContinuez à vous entraîner et vos mots les plus difficiles apparaîtront ici.",
-      "also_valid_for_sibling": "Aussi : {{article}} {{word}} (sens différent)"
+      "also_valid_for_sibling": "Aussi : {{article}} {{word}} (sens différent)",
+      "next_word": "Mot suivant"
     },
     "settings": {
       "title": "Réglages",

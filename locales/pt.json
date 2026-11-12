@@ -54,7 +54,8 @@
       "hard_words_drill": "Treino de palavras difíceis",
       "no_struggling_words": "Estás muito bem!",
       "no_struggling_words_desc": "Ainda não tens palavras com precisão inferior a 60%.\n\nContinua a praticar e as palavras mais difíceis vão aparecer aqui.",
-      "also_valid_for_sibling": "Também: {{article}} {{word}} (significado diferente)"
+      "also_valid_for_sibling": "Também: {{article}} {{word}} (significado diferente)",
+      "next_word": "Próxima palavra"
     },
     "settings": {
       "title": "Definições",
