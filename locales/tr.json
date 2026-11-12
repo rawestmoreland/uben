@@ -284,6 +284,8 @@
       "feature_4": "Anında geri bildirimli sıfat çekimi alıştırması",
       "unlock_button": "Şimdi aç",
       "one_time_purchase": "Tek seferlik satın alma. Abonelik yok.",
+      "sale_title": "Noel indirimi",
+      "sale_body": "Üben Pro {{price}}, {{date}} tarihine kadar.",
       "purchase_failed": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
       "restore_button": "Satın alımları geri yükle",
       "restoring": "Geri yükleniyor…",

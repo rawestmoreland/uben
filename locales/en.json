@@ -284,6 +284,8 @@
       "feature_4": "Adjective endings practice with instant feedback",
       "unlock_button": "Unlock now",
       "one_time_purchase": "One-time purchase. No subscription.",
+      "sale_title": "Christmas sale",
+      "sale_body": "Üben Pro for {{price}} until {{date}}.",
       "purchase_failed": "Something went wrong. Please try again.",
       "restore_button": "Restore purchases",
       "restoring": "Restoring…",

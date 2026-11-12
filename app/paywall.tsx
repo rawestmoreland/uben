@@ -1,3 +1,4 @@
+import { SaleBanner } from '@/components/paywall/sale-banner';
 import { PromoCodeForm } from '@/components/promo-code-form';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import {
@@ -9,6 +10,7 @@ import {
 } from '@/constants/design';
 import { PAYWALL_ID } from '@/constants/purchases';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
+import { useSaleBanner } from '@/hooks/use-sale-banner';
 import { purchaseService } from '@/services/purchaseService';
 import { uiUpperCase } from '@/utils/uiText';
 import * as Haptics from 'expo-haptics';
@@ -33,7 +35,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // ── Paywall Screen ───────────────────────────────────────────────────
 
 export default function PaywallScreen() {
-  const { t } = useTranslation('app');
+  const { t, i18n } = useTranslation('app');
+  const sale = useSaleBanner();
   const { redirectTo, source } = useLocalSearchParams<{
     redirectTo?: string;
     source?: string;
@@ -186,6 +189,18 @@ export default function PaywallScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.content}>
+              {sale && (
+                <SaleBanner
+                  title={t('paywall.sale_title')}
+                  body={t('paywall.sale_body', {
+                    price: sale.price,
+                    date: sale.endsAt.toLocaleDateString(i18n.language, {
+                      month: 'long',
+                      day: 'numeric',
+                    }),
+                  })}
+                />
+              )}
               <View style={[styles.badgeCard, shadowStyle]}>
                 <Text style={styles.badgeText}>
                   {uiUpperCase(t('paywall.premium_badge'))}

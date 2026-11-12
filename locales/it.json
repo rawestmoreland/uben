@@ -284,6 +284,8 @@
       "feature_4": "Pratica delle desinenze degli aggettivi con feedback immediato",
       "unlock_button": "Sblocca ora",
       "one_time_purchase": "Acquisto una tantum. Nessun abbonamento.",
+      "sale_title": "Offerta di Natale",
+      "sale_body": "Üben Pro a {{price}} fino al {{date}}.",
       "purchase_failed": "Qualcosa è andato storto. Riprova.",
       "restore_button": "Ripristina acquisti",
       "restoring": "Ripristino in corso…",
