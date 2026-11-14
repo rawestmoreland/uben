@@ -57,7 +57,7 @@
     "react-i18next": "^16.5.4",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
-    "react-native-google-mobile-ads": "^15.4.0",
+    "react-native-google-mobile-ads": "^17.4.0",
     "react-native-keyboard-controller": "1.22.7",
     "react-native-purchases": "^10.10.2",
     "react-native-purchases-ui": "^10.10.2",
