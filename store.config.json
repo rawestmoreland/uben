@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "v1.14.1",
+    "version": "v1.14.2",
     "copyright": "2026",
     "release": {
       "automaticRelease": false
@@ -23,13 +23,13 @@
           "test",
           "learn"
         ],
-        "releaseNotes": "- New Reference tab with gender hints and a case cheat sheet\n- Nouns that take two articles (like der/das Joghurt) now accept either one\n- The reference screens follow your ß / ss setting\n- A notice tells you when a newer version is available",
+        "releaseNotes": "Bug fixes and improvements.",
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "title": "Üben: German Grammar Practice",
         "subtitle": "Der Die Das Trainer & Quiz",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "New: a Reference tab with gender hints and a case cheat sheet. Free, offline, no account, no ads."
+        "promoText": "Master der, die, das with spaced repetition. Free, offline, no account, no ads."
       },
       "de-DE": {
         "title": "Üben: Grammatik-Training",
@@ -51,8 +51,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Neu: Reiter Nachschlagen mit Genus-Tipps und Kasus-Spickzettel. Kostenlos, offline, ohne Konto, ohne Werbung.",
-        "releaseNotes": "- Neuer Reiter Nachschlagen mit Genus-Tipps und Kasus-Spickzettel\n- Nomen mit zwei möglichen Artikeln (z. B. der/das Joghurt) akzeptieren jetzt beide\n- Die Nachschlage-Bildschirme beachten deine ß/ss-Einstellung\n- Ein Hinweis zeigt dir, wenn eine neuere Version verfügbar ist"
+        "promoText": "Meistere der, die, das mit Spaced Repetition. Kostenlos, offline, ohne Konto, ohne Werbung.",
+        "releaseNotes": "Fehlerbehebungen und Verbesserungen."
       },
       "pl": {
         "title": "Üben: Ćwiczenia z niemieckiego",
@@ -73,8 +73,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nowość: karta Informator ze wskazówkami o rodzaju i ściągą z przypadków. Za darmo, offline, bez konta i reklam.",
-        "releaseNotes": "- Nowa karta Informator z wskazówkami o rodzaju i ściągą z przypadków\n- Rzeczowniki z dwoma poprawnymi rodzajnikami (np. der/das Joghurt) akceptują teraz oba\n- Ekrany informatora respektują ustawienie ß / ss\n- Powiadomienie informuje, gdy dostępna jest nowsza wersja aplikacji"
+        "promoText": "Opanuj der, die, das dzięki powtórkom w odstępach. Za darmo, offline, bez konta i reklam.",
+        "releaseNotes": "Poprawki błędów i ulepszenia."
       },
       "fr-FR": {
         "title": "Üben : Pratique de l'allemand",
@@ -95,8 +95,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nouveau : un onglet Référence avec astuces sur le genre et aide-mémoire des cas. Gratuit, hors ligne, sans compte ni pub.",
-        "releaseNotes": "- Nouvel onglet Référence avec des astuces sur le genre et un aide-mémoire des cas\n- Les noms qui admettent deux articles (comme der/das Joghurt) acceptent désormais les deux\n- Les écrans de référence respectent votre réglage ß / ss\n- Un message vous prévient quand une version plus récente est disponible"
+        "promoText": "Maîtrisez der, die, das grâce à la répétition espacée. Gratuit, hors ligne, sans compte ni pub.",
+        "releaseNotes": "Corrections de bugs et améliorations."
       },
       "es-ES": {
         "title": "Üben: Práctica de alemán",
@@ -116,8 +116,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Nuevo: pestaña Referencia con pistas de género y guía de casos. Gratis, sin conexión, sin cuenta ni anuncios.",
-        "releaseNotes": "- Nueva pestaña Referencia con pistas sobre el género y una guía rápida de casos\n- Los sustantivos con dos artículos válidos (como der/das Joghurt) ahora aceptan ambos\n- Las pantallas de referencia respetan tu ajuste de ß / ss\n- Un aviso te informa cuando hay una versión más reciente disponible"
+        "promoText": "Domina der, die, das con repetición espaciada. Gratis, sin conexión, sin cuenta ni anuncios.",
+        "releaseNotes": "Corrección de errores y mejoras."
       },
       "tr": {
         "title": "Üben: Almanca Gramer Pratiği",
@@ -140,8 +140,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Yeni: cinsiyet ipuçları ve hâl özeti içeren Başvuru sekmesi. Ücretsiz, çevrimdışı, hesapsız, reklamsız.",
-        "releaseNotes": "- Cinsiyet ipuçları ve hâl özet sayfası içeren yeni Başvuru sekmesi\n- İki artikel alabilen isimler (der/das Joghurt gibi) artık ikisini de kabul ediyor\n- Başvuru ekranları ß / ss ayarını takip ediyor\n- Daha yeni bir sürüm olduğunda bir bildirim gösteriliyor"
+        "promoText": "der, die, das'ı aralıklı tekrarla öğren. Ücretsiz, çevrimdışı, hesapsız, reklamsız.",
+        "releaseNotes": "Hata düzeltmeleri ve iyileştirmeler."
       },
       "zh-Hans": {
         "title": "Üben：德语语法练习",
@@ -164,8 +164,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "新增：参考标签页，含词性提示与格速查表。免费、离线、无需账号、无广告。",
-        "releaseNotes": "- 新增“参考”标签页，包含词性提示和格的速查表\n- 可接受两个冠词的名词（如 der/das Joghurt）现在两个都算对\n- 参考页面会遵循你的 ß / ss 设置\n- 有新版本可用时会收到提示"
+        "promoText": "用间隔重复掌握 der、die、das。免费、离线、无需账号、无广告。",
+        "releaseNotes": "修复问题并进行改进。"
       }
     },
     "categories": ["EDUCATION"],
