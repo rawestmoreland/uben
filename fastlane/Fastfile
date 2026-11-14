@@ -1,0 +1,39 @@
+# Google Play listing text (title, short/full description, release notes).
+# Builds and store submissions stay with EAS; this only pushes listing metadata.
+#
+# Generate the files first:  npm run store:android:generate
+# Credentials: set SUPPLY_JSON_KEY (path to the Play service account JSON) or
+# SUPPLY_JSON_KEY_DATA (the JSON contents, for CI).
+
+require 'json'
+
+default_platform(:android)
+
+PLAY_PACKAGE_NAME = JSON.parse(File.read(File.expand_path('../store.config.android.json', __dir__)))['packageName']
+
+platform :android do
+  desc 'Check the listing text with Google Play without publishing it'
+  lane :play_metadata_check do
+    push_play_listing(validate_only: true)
+  end
+
+  desc 'Upload the listing text to Google Play (version_code: also sets that release\'s notes)'
+  lane :play_metadata do |options|
+    push_play_listing(version_code: options[:version_code])
+  end
+
+  def push_play_listing(validate_only: false, version_code: nil)
+    upload_to_play_store(
+      package_name: PLAY_PACKAGE_NAME,
+      metadata_path: 'fastlane/metadata/android',
+      validate_only: validate_only,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      # Release notes belong to a specific release, so they only go up when a version code is given
+      skip_upload_changelogs: version_code.nil?,
+      version_code: version_code
+    )
+  end
+end
