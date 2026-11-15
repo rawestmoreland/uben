@@ -11,7 +11,8 @@ import { useCallback, useState } from 'react';
 
 /**
  * State for the Home nudge to set up cloud backup. Re-checks on every focus,
- * so it disappears as soon as the user comes back from creating an account.
+ * so it appears once a session finishes and disappears as soon as the user
+ * comes back from creating an account.
  */
 export function useBackupNudge() {
   const { isPro, isLoading } = useProEntitlement();
