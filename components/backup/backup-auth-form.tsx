@@ -2,8 +2,9 @@ import { BackupButton } from '@/components/backup/backup-button';
 import { AppColors, Layout, Spacing, Typography } from '@/constants/design';
 import { PRIVACY_POLICY_URL } from '@/constants/links';
 import type { BackupAction } from '@/hooks/use-backup';
+import { isPlausibleEmail } from '@/services/backupAccountService';
 import { uiUpperCase } from '@/utils/uiText';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState, type ComponentRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Linking,
@@ -32,6 +33,8 @@ export function BackupAuthForm({
   const [creating, setCreating] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const emailInputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   const submit = useCallback(() => {
     if (creating) onRegister(email, password);
@@ -39,7 +42,26 @@ export function BackupAuthForm({
   }, [creating, email, password, onRegister, onSignIn]);
 
   const toggleMode = useCallback(() => setCreating((value) => !value), []);
-  const reset = useCallback(() => onRequestReset(email), [email, onRequestReset]);
+  const changeEmail = useCallback((value: string) => {
+    setEmail(value);
+    setEmailError(null);
+  }, []);
+
+  // "Forgot password?" stays tappable even without an email: a silently dead
+  // link is confusing, so say what is missing and move the cursor there.
+  const reset = useCallback(() => {
+    if (email.trim().length === 0) {
+      setEmailError(t('backup.reset_needs_email'));
+      emailInputRef.current?.focus();
+      return;
+    }
+    if (!isPlausibleEmail(email)) {
+      setEmailError(t('backup.errors.invalid_email'));
+      emailInputRef.current?.focus();
+      return;
+    }
+    onRequestReset(email);
+  }, [email, onRequestReset, t]);
 
   const openPrivacyPolicy = useCallback(() => {
     // No browser available is not worth an error message.
@@ -53,9 +75,10 @@ export function BackupAuthForm({
     <View>
       <Text style={styles.label}>{uiUpperCase(t('backup.email'))}</Text>
       <TextInput
-        style={styles.input}
+        ref={emailInputRef}
+        style={[styles.input, emailError !== null && styles.inputError]}
         value={email}
-        onChangeText={setEmail}
+        onChangeText={changeEmail}
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
@@ -64,6 +87,11 @@ export function BackupAuthForm({
         editable={!busy}
         accessibilityLabel={t('backup.email')}
       />
+      {emailError !== null && (
+        <Text style={styles.fieldError} accessibilityRole="alert">
+          {emailError}
+        </Text>
+      )}
 
       <Text style={styles.label}>{uiUpperCase(t('backup.password'))}</Text>
       <TextInput
@@ -110,7 +138,7 @@ export function BackupAuthForm({
       {!creating && (
         <Pressable
           onPress={reset}
-          disabled={Boolean(busy) || email.trim().length === 0}
+          disabled={Boolean(busy)}
           accessibilityRole="button"
           hitSlop={8}
         >
@@ -138,6 +166,17 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: Typography.semibold,
     color: AppColors.black,
+    marginBottom: Spacing.md,
+  },
+  inputError: {
+    borderColor: AppColors.red,
+  },
+  fieldError: {
+    fontSize: Typography.small,
+    fontWeight: Typography.bold,
+    color: AppColors.red,
+    lineHeight: 20,
+    marginTop: -Spacing.sm,
     marginBottom: Spacing.md,
   },
   hint: {

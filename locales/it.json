@@ -448,6 +448,7 @@
       "have_account": "Ho già un account",
       "need_account": "Crea un nuovo account",
       "forgot_password": "Password dimenticata?",
+      "reset_needs_email": "Inserisci prima il tuo indirizzo email qui sopra, poi tocca «Password dimenticata?».",
       "reset_sent": "Se esiste un account per questa email, il link di reimpostazione è in arrivo.",
       "signed_in_as": "Accesso come {{email}}",
       "last_backup": "Ultimo backup da questo dispositivo: {{when}}",

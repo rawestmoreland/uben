@@ -456,6 +456,7 @@
       "have_account": "Já tenho uma conta",
       "need_account": "Criar uma nova conta",
       "forgot_password": "Esqueceu a senha?",
+      "reset_needs_email": "Informe primeiro seu e-mail acima e depois toque em “Esqueceu a senha?”.",
       "reset_sent": "Se existir uma conta com esse e-mail, um link de redefinição está a caminho.",
       "signed_in_as": "Conectado como {{email}}",
       "last_backup": "Último backup deste dispositivo: {{when}}",

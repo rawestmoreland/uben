@@ -425,6 +425,7 @@
       "have_account": "J'ai déjà un compte",
       "need_account": "Créer un nouveau compte",
       "forgot_password": "Mot de passe oublié ?",
+      "reset_needs_email": "Saisissez d'abord votre adresse e-mail ci-dessus, puis touchez « Mot de passe oublié ? ».",
       "reset_sent": "Si un compte existe pour cet e-mail, un lien de réinitialisation est en route.",
       "signed_in_as": "Connecté en tant que {{email}}",
       "last_backup": "Dernière sauvegarde de cet appareil : {{when}}",

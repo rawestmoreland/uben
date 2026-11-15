@@ -448,6 +448,7 @@
       "have_account": "I already have an account",
       "need_account": "Create a new account",
       "forgot_password": "Forgot password?",
+      "reset_needs_email": "Enter your email address above first, then tap “Forgot password?”.",
       "reset_sent": "If an account exists for that email, a reset link is on its way.",
       "signed_in_as": "Signed in as {{email}}",
       "last_backup": "Last backup from this device: {{when}}",

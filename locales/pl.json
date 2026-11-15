@@ -464,6 +464,7 @@
       "have_account": "Mam już konto",
       "need_account": "Utwórz nowe konto",
       "forgot_password": "Nie pamiętasz hasła?",
+      "reset_needs_email": "Najpierw wpisz powyżej swój adres e-mail, a potem dotknij „Nie pamiętasz hasła?”.",
       "reset_sent": "Jeśli istnieje konto z tym adresem e-mail, link do zresetowania hasła jest już w drodze.",
       "signed_in_as": "Zalogowano jako {{email}}",
       "last_backup": "Ostatnia kopia z tego urządzenia: {{when}}",

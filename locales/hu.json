@@ -448,6 +448,7 @@
       "have_account": "Már van fiókom",
       "need_account": "Új fiók létrehozása",
       "forgot_password": "Elfelejtetted a jelszót?",
+      "reset_needs_email": "Először add meg fent az e-mail-címedet, majd koppints az „Elfelejtetted a jelszót?” gombra.",
       "reset_sent": "Ha létezik fiók ezzel az e-mail-címmel, hamarosan megérkezik a visszaállítási link.",
       "signed_in_as": "Bejelentkezve: {{email}}",
       "last_backup": "Utolsó mentés erről az eszközről: {{when}}",

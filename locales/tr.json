@@ -448,6 +448,7 @@
       "have_account": "Zaten hesabım var",
       "need_account": "Yeni hesap oluştur",
       "forgot_password": "Şifreni mi unuttun?",
+      "reset_needs_email": "Önce yukarıya e-posta adresini yaz, sonra “Şifreni mi unuttun?” bağlantısına dokun.",
       "reset_sent": "Bu e-postaya ait bir hesap varsa sıfırlama bağlantısı yolda.",
       "signed_in_as": "{{email}} olarak giriş yapıldı",
       "last_backup": "Bu cihazdan son yedek: {{when}}",
