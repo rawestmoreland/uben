@@ -467,7 +467,12 @@
         "busy": "Une autre sauvegarde est déjà en cours.",
         "not_configured": "La sauvegarde dans le cloud n'est pas disponible dans cette version.",
         "unknown": "Un problème est survenu. Réessayez."
-      }
+      },
+      "nudge_title": "Sauvegardez votre progression",
+      "nudge_body": "Pro inclut la sauvegarde dans le cloud. Créez un compte gratuit pour garder votre progression en sécurité si vous changez de téléphone ou réinstallez l'application.",
+      "nudge_action": "Configurer la sauvegarde",
+      "nudge_later": "Plus tard",
+      "nudge_dismiss": "Ignorer le rappel de sauvegarde"
     }
   }
 }

@@ -39,6 +39,8 @@ export const SETTINGS_KEYS = {
   BACKUP_LAST_SUCCESS: 'backup_last_success',
   /** ISO timestamp of the last automatic attempt (success or failure), to avoid hammering. */
   BACKUP_LAST_ATTEMPT: 'backup_last_attempt',
+  /** `'true'` once the Home nudge to set up cloud backup was dismissed or the user signed in. */
+  BACKUP_NUDGE_DISMISSED: 'backup_nudge_dismissed',
   /** `'false'` turns automatic backup off; anything else (including unset) leaves it on. */
   BACKUP_AUTO_ENABLED: 'backup_auto_enabled',
 } as const;

@@ -498,7 +498,12 @@
         "busy": "Outro backup já está em andamento.",
         "not_configured": "O backup na nuvem não está disponível nesta versão.",
         "unknown": "Algo deu errado. Tente novamente."
-      }
+      },
+      "nudge_title": "Faça backup do seu progresso",
+      "nudge_body": "O Pro inclui backup na nuvem. Crie uma conta gratuita para manter seu progresso seguro se você trocar de celular ou reinstalar o app.",
+      "nudge_action": "Configurar backup",
+      "nudge_later": "Agora não",
+      "nudge_dismiss": "Dispensar lembrete de backup"
     }
   }
 }

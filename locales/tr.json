@@ -490,7 +490,12 @@
         "busy": "Başka bir yedekleme zaten çalışıyor.",
         "not_configured": "Bulut yedekleme bu sürümde kullanılamıyor.",
         "unknown": "Bir sorun oluştu. Tekrar dene."
-      }
+      },
+      "nudge_title": "İlerlemeni yedekle",
+      "nudge_body": "Pro, bulut yedeklemeyi içerir. Telefon değiştirirsen veya uygulamayı yeniden yüklersen ilerlemen güvende olsun diye ücretsiz bir hesap oluştur.",
+      "nudge_action": "Yedeklemeyi ayarla",
+      "nudge_later": "Şimdi değil",
+      "nudge_dismiss": "Yedekleme hatırlatıcısını kapat"
     }
   }
 }

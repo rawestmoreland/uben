@@ -490,7 +490,12 @@
         "busy": "已有另一个备份正在进行。",
         "not_configured": "此版本不支持云备份。",
         "unknown": "出了点问题。请再试一次。"
-      }
+      },
+      "nudge_title": "备份你的学习进度",
+      "nudge_body": "Pro 包含云备份。创建免费账号，换手机或重新安装应用时进度也不会丢失。",
+      "nudge_action": "设置备份",
+      "nudge_later": "暂不",
+      "nudge_dismiss": "关闭备份提醒"
     }
   }
 }

@@ -490,7 +490,12 @@
         "busy": "È già in corso un altro backup.",
         "not_configured": "Il backup nel cloud non è disponibile in questa versione.",
         "unknown": "Qualcosa è andato storto. Riprova."
-      }
+      },
+      "nudge_title": "Salva i tuoi progressi",
+      "nudge_body": "Pro include il backup nel cloud. Crea un account gratuito per tenere al sicuro i tuoi progressi se cambi telefono o reinstalli l'app.",
+      "nudge_action": "Configura il backup",
+      "nudge_later": "Non ora",
+      "nudge_dismiss": "Ignora il promemoria del backup"
     }
   }
 }

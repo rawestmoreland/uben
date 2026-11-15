@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@/constants/design';
 import { AppUpdateNotice } from '@/components/app-update/app-update-notice';
+import { BackupNudge } from '@/components/backup/backup-nudge';
 import { ExerciseTileGrid } from '@/components/home/exercise-tile-grid';
 import { useHomeData, type LevelOption } from '@/hooks/use-home-data';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
@@ -92,6 +93,9 @@ export default function HomeScreen() {
 
         {/* ── Store update notice (banner or blocking modal) ──── */}
         <AppUpdateNotice />
+
+        {/* ── Pro: nudge to set up cloud backup ───────────────── */}
+        <BackupNudge />
 
         {/* ── Stats Row ───────────────────────────────────────── */}
         <View style={styles.statsRow}>

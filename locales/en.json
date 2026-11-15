@@ -490,7 +490,12 @@
         "busy": "Another backup is already running.",
         "not_configured": "Cloud backup isn't available in this build.",
         "unknown": "Something went wrong. Try again."
-      }
+      },
+      "nudge_title": "Back up your progress",
+      "nudge_body": "Pro includes cloud backup. Create a free account to keep your progress safe if you switch phones or reinstall.",
+      "nudge_action": "Set up backup",
+      "nudge_later": "Not now",
+      "nudge_dismiss": "Dismiss backup reminder"
     }
   }
 }

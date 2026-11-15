@@ -80,6 +80,9 @@ export async function signIn(
   const previous = await getSession();
   if (previous && previous.userId !== session.userId) await clearSession();
   await saveSession(session);
+  // Once someone has an account the Home nudge has done its job, even if they
+  // sign out later.
+  await settingsService.setSetting(SETTINGS_KEYS.BACKUP_NUDGE_DISMISSED, 'true');
   return session;
 }
 

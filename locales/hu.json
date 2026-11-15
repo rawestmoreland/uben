@@ -490,7 +490,12 @@
         "busy": "Már fut egy másik mentés.",
         "not_configured": "A felhőmentés ebben a verzióban nem érhető el.",
         "unknown": "Hiba történt. Próbáld újra."
-      }
+      },
+      "nudge_title": "Mentsd el a haladásodat",
+      "nudge_body": "A Pro tartalmazza a felhőmentést. Hozz létre egy ingyenes fiókot, hogy a haladásod biztonságban legyen, ha telefont váltasz vagy újratelepíted az appot.",
+      "nudge_action": "Mentés beállítása",
+      "nudge_later": "Most nem",
+      "nudge_dismiss": "Mentési emlékeztető elvetése"
     }
   }
 }

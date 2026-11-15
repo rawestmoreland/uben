@@ -506,7 +506,12 @@
         "busy": "Trwa już inna kopia zapasowa.",
         "not_configured": "Kopia zapasowa w chmurze nie jest dostępna w tej wersji.",
         "unknown": "Coś poszło nie tak. Spróbuj ponownie."
-      }
+      },
+      "nudge_title": "Zapisz swoje postępy",
+      "nudge_body": "Pro zawiera kopię zapasową w chmurze. Załóż darmowe konto, aby Twoje postępy były bezpieczne po zmianie telefonu lub ponownej instalacji aplikacji.",
+      "nudge_action": "Skonfiguruj kopię",
+      "nudge_later": "Nie teraz",
+      "nudge_dismiss": "Odrzuć przypomnienie o kopii zapasowej"
     }
   }
 }
