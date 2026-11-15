@@ -28,8 +28,14 @@ RUN mkdir -p /pb/pb_data /pb/pb_public /pb/pb_migrations
 # Copy the compiled binary from the builder stage
 COPY --from=builder /build/pocketbase /pb/
 
+# Static pages served at the site root (password reset page)
+COPY --from=builder /build/pb_public /pb/pb_public
+
 # Set proper permissions
 RUN chmod +x /pb/pocketbase
+
+# main.go serves ./pb_public, so the working directory must be /pb
+WORKDIR /pb
 
 # Expose the port
 EXPOSE 8080

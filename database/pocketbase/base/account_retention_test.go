@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -170,5 +172,27 @@ func TestNewAccountIsNotPurged(t *testing.T) {
 	}
 	if !userExists(app, user.Id) {
 		t.Fatal("new account missing")
+	}
+}
+
+func TestResetPasswordEmailLinksToTheAppPage(t *testing.T) {
+	app := newMigratedApp(t)
+	users, err := app.FindCollectionByNameOrId("users")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	body := users.ResetPasswordTemplate.Body
+	if !strings.Contains(body, "{APP_URL}/reset-password.html#{TOKEN}") {
+		t.Errorf("reset email must link to the app's reset page with the token in the fragment, got:\n%s", body)
+	}
+	if strings.Contains(body, "/_/#/auth/confirm-password-reset") {
+		t.Error("reset email still links to the admin dashboard")
+	}
+	if _, err := os.Stat("pb_public/reset-password.html"); err != nil {
+		t.Errorf("the page the email links to is missing: %v", err)
+	}
+	if _, err := os.Stat("pb_public/reset-password.js"); err != nil {
+		t.Errorf("the page script is missing: %v", err)
 	}
 }
