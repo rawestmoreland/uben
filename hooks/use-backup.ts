@@ -12,7 +12,8 @@ import {
   type RemoteBackupInfo,
 } from '@/services/backupService';
 import type { RestoreSummary } from '@/types/backup';
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router/react-navigation';
+import { useCallback, useState } from 'react';
 
 export type BackupAction =
   | 'sign_in'
@@ -75,9 +76,13 @@ export function useBackup() {
     }
   }, []);
 
-  useEffect(() => {
-    refresh().catch(() => undefined);
-  }, [refresh]);
+  // On every focus, not just mount: coming back from the paywall (or any other
+  // screen) must not show sign-in state from before.
+  useFocusEffect(
+    useCallback(() => {
+      refresh().catch(() => undefined);
+    }, [refresh]),
+  );
 
   /** Run an action: busy flag, then a success or error notice, then refresh. */
   const run = useCallback(

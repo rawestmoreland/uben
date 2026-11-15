@@ -25,8 +25,6 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Plain strings so the paywall can replay this route after a purchase.
-const BACKUP_ROUTE = '/backup';
 const BACKUP_PAYWALL_SOURCE = 'cloud_backup_entry';
 
 function goBack() {
@@ -41,10 +39,13 @@ export default function BackupScreen() {
   const { isPro, isLoading: proLoading } = useProEntitlement();
   const backup = useBackup();
 
+  // No `redirectTo`: this screen is already in the stack, so the paywall just
+  // goes back to it. Redirecting would stack a second copy of this screen on
+  // top, leaving the first one (with stale sign-in state) underneath.
   const openPaywall = useCallback(() => {
     router.push({
       pathname: '/paywall',
-      params: { redirectTo: BACKUP_ROUTE, source: BACKUP_PAYWALL_SOURCE },
+      params: { source: BACKUP_PAYWALL_SOURCE },
     });
   }, []);
 
