@@ -65,12 +65,15 @@ When you create an account and back up, we store:
 | Learning progress | Spaced-repetition values and review history for each card |
 | Words you added | The nouns, adjectives and verbs you created yourself |
 | A few preferences | For example hint and level settings |
+| Last activity date | The date you last signed in, backed up or restored, so we can delete inactive accounts |
 
 **Unlike the anonymous quiz analytics, this data is linked to your account.** We use it only to provide the backup and restore feature. We do not use it for advertising, we do not sell it, and we do not combine it with the anonymous analytics. We do not receive your payment details or your RevenueCat identifier as part of the backup.
 
 Backups are sent over HTTPS and stored on our server (PocketBase, hosted on Fly.io in the United States). They are readable only by your account and by our server administrators; they are not end-to-end encrypted. A sign-in token is kept on your device so you stay signed in.
 
 You can delete your account and its backup at any time in **Settings > Cloud backup > Delete account**. Signing out does not delete the backup. Deleting the account deletes the backup with it, and does not change the progress on your device.
+
+**Inactive accounts are deleted automatically.** If an account has no activity (no sign-in, backup or restore) for 2 years, we delete it and its backup. We don't send a warning first, so keep using the App, or back up again, if you want to keep your backup. Your progress on your device is never affected.
 
 ## Third-Party Services
 
@@ -129,7 +132,7 @@ Expo's privacy practices are governed by their Privacy Policy: https://expo.dev/
 - **Device backups**: Your local data may be included in device backups (iCloud, iTunes, etc.) per your device settings.
 - **Analytics server**: Anonymous quiz records, purchase events, and promo code redemption counts are stored on Fly.io servers in the United States. Records contain no personal data.
 - **Server access logs**: Retained for 30 days, then deleted. Not linked to quiz result records.
-- **Cloud Backup (optional)**: Your account email, hashed password and backup are stored on Fly.io servers in the United States until you delete your account.
+- **Cloud Backup (optional)**: Your account email, hashed password and backup are stored on Fly.io servers in the United States until you delete your account, or until it is deleted automatically after 2 years without activity.
 
 ## Children's Privacy
 
@@ -177,7 +180,7 @@ Under the General Data Protection Regulation (GDPR), EU residents have certain r
 
 **Server access logs**: Our server's HTTP access logs contain IP addresses, which are personal data under GDPR. We process these on the basis of **legitimate interest** (Article 6(1)(f)) for server security, abuse detection, and technical debugging. Logs are retained for 30 days. This processing is necessary and proportionate to our operational needs.
 
-**Cloud Backup**: If you create a Cloud Backup account, your email address and backup are personal data. We process them to provide the feature you asked for, on the basis of **performance of a contract** (Article 6(1)(b)), and keep them until you delete your account. You have the rights of access, rectification, erasure and portability: erasure is available in the App, and you can email us for the rest.
+**Cloud Backup**: If you create a Cloud Backup account, your email address and backup are personal data. We process them to provide the feature you asked for, on the basis of **performance of a contract** (Article 6(1)(b)), and keep them until you delete your account or it has had no activity for 2 years, whichever comes first. You have the rights of access, rectification, erasure and portability: erasure is available in the App, and you can email us for the rest.
 
 **Advertising and purchases**: AdMob's and RevenueCat's GDPR compliance is governed by Google's and RevenueCat's privacy practices. RevenueCat's anonymous app user ID is processed on the basis of our legitimate interest (Article 6(1)(f)) in validating purchases and restoring access to what you bought.
 
@@ -214,7 +217,7 @@ This Privacy Policy is designed to comply with:
 - ✅ Pro is a one-time purchase handled by Apple or Google; RevenueCat sees an anonymous ID and your receipt, never your name or email
 - ✅ Pro removes ads
 - ⚠️ Ads are shown through Google AdMob (they may collect device/ad data)
-- ✅ Delete the app = delete all your on-device data permanently (a Cloud Backup stays until you delete your account in the App)
+- ✅ Delete the app = delete all your on-device data permanently (a Cloud Backup stays until you delete your account in the App, or after 2 years without activity)
 - ✅ Works completely offline (analytics are sent when online, silently skipped when offline)
 
 **We built Üben to respect your privacy. Your German learning journey is yours alone.**

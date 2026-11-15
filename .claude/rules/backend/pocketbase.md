@@ -128,7 +128,7 @@ One progress snapshot per user for the Pro cloud backup (see `.claude/CLAUDE.md`
 
 #### `users` Collection (Built-in)
 
-PocketBase's auth collection, modified by migrations. `1794500000_cloud_backup.go` opens registration to app installs (shared app key: `CreateRule` is `@request.query.key="…"`), blocks self-setting `verified`, sets a 1-year token and adds rate-limit rules (`users:auth` 10/min, `users:create` 5/h, `users:requestPasswordReset` 5/h; they only match the users collection, so quiz result writes are never throttled). Password reset email needs SMTP configured in the admin UI. Original rules from the first migration:
+PocketBase's auth collection, modified by migrations. `1794500000_cloud_backup.go` opens registration to app installs (shared app key: `CreateRule` is `@request.query.key="…"`), blocks self-setting `verified`, sets a 1-year token and adds rate-limit rules (`users:auth` 10/min, `users:create` 5/h, `users:requestPasswordReset` 5/h; they only match the users collection, so quiz result writes are never throttled). Password reset email needs SMTP configured in the admin UI. `1794500100_users_last_active.go` adds a server-only `last_active` date (create/update rules refuse it in the request body) that `account_retention.go` maintains and uses to delete accounts inactive for 24 months (daily cron, max 200 per run, backups cascade). Test: `go test ./...` in `database/pocketbase/base` runs the real migrations. Original rules from the first migration:
 
 ```go
 usersCollection.ListRule = types.Pointer("id = @request.auth.id")     // users can list themselves

@@ -436,6 +436,8 @@
       "row_subtitle": "Mentsd el a haladásodat, és állítsd vissza egy új telefonon",
       "intro": "Hozz létre egy ingyenes fiókot, hogy a haladásodat a felhőbe mentsd. Újratelepítés után vagy új telefonon jelentkezz be, és állítsd vissza.",
       "what_is_saved": "Mentve: a kártyáid, a gyakorlási előzményeid, a hozzáadott szavaid és néhány beállítás.",
+      "privacy_notice": "Az e-mail-címedet és a mentésedet a szerverünkön tároljuk, hogy vissza tudd állítani őket. A 2 évig inaktív fiókokat automatikusan töröljük.",
+      "privacy_link": "Adatvédelmi irányelvek elolvasása",
       "pro_required": "A felhőmentés az Üben Pro része.",
       "unlock_pro": "Pro feloldása",
       "email": "E-mail",

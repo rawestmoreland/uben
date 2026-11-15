@@ -444,6 +444,8 @@
       "row_subtitle": "Salve seu progresso e restaure-o em um novo celular",
       "intro": "Crie uma conta gratuita para salvar seu progresso na nuvem. Depois de reinstalar o app ou em um novo celular, entre e restaure.",
       "what_is_saved": "Salvos: seus cartões, o histórico de revisões, as palavras que você adicionou e algumas configurações.",
+      "privacy_notice": "Seu e-mail e seu backup ficam armazenados em nosso servidor para que você possa restaurá-los. Contas sem atividade por 2 anos são excluídas automaticamente.",
+      "privacy_link": "Ler a política de privacidade",
       "pro_required": "O backup na nuvem faz parte do Üben Pro.",
       "unlock_pro": "Desbloquear Pro",
       "email": "E-mail",

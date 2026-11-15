@@ -413,6 +413,8 @@
       "row_subtitle": "Sauvegardez votre progression et restaurez-la sur un nouveau téléphone",
       "intro": "Créez un compte gratuit pour sauvegarder votre progression dans le cloud. Après une réinstallation ou sur un nouveau téléphone, connectez-vous et restaurez.",
       "what_is_saved": "Sauvegardés : vos cartes, votre historique de révisions, les mots que vous avez ajoutés et quelques réglages.",
+      "privacy_notice": "Votre e-mail et votre sauvegarde sont stockés sur notre serveur pour que vous puissiez les restaurer. Les comptes inactifs depuis 2 ans sont supprimés automatiquement.",
+      "privacy_link": "Lire la politique de confidentialité",
       "pro_required": "La sauvegarde dans le cloud fait partie d'Üben Pro.",
       "unlock_pro": "Débloquer Pro",
       "email": "E-mail",

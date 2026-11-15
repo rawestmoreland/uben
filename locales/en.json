@@ -436,6 +436,8 @@
       "row_subtitle": "Back up your progress and restore it on a new phone",
       "intro": "Create a free account to back up your progress to the cloud. After a reinstall or on a new phone, sign in and restore.",
       "what_is_saved": "Saved: your cards, review history, words you added and a few settings.",
+      "privacy_notice": "Your email and backup are stored on our server so you can restore them. Accounts with no activity for 2 years are deleted automatically.",
+      "privacy_link": "Read the privacy policy",
       "pro_required": "Cloud backup is part of Üben Pro.",
       "unlock_pro": "Unlock Pro",
       "email": "Email",

@@ -436,6 +436,8 @@
       "row_subtitle": "Salva i tuoi progressi e ripristinali su un nuovo telefono",
       "intro": "Crea un account gratuito per salvare i tuoi progressi nel cloud. Dopo una reinstallazione o su un nuovo telefono, accedi e ripristina.",
       "what_is_saved": "Vengono salvati: le tue carte, la cronologia dei ripassi, le parole che hai aggiunto e alcune impostazioni.",
+      "privacy_notice": "La tua email e il tuo backup sono salvati sul nostro server così puoi ripristinarli. Gli account inattivi da 2 anni vengono eliminati automaticamente.",
+      "privacy_link": "Leggi l'informativa sulla privacy",
       "pro_required": "Il backup nel cloud fa parte di Üben Pro.",
       "unlock_pro": "Sblocca Pro",
       "email": "Email",

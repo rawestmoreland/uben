@@ -1,10 +1,18 @@
 import { BackupButton } from '@/components/backup/backup-button';
 import { AppColors, Layout, Spacing, Typography } from '@/constants/design';
+import { PRIVACY_POLICY_URL } from '@/constants/links';
 import type { BackupAction } from '@/hooks/use-backup';
 import { uiUpperCase } from '@/utils/uiText';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 interface BackupAuthFormProps {
   busy: BackupAction | null;
@@ -32,6 +40,11 @@ export function BackupAuthForm({
 
   const toggleMode = useCallback(() => setCreating((value) => !value), []);
   const reset = useCallback(() => onRequestReset(email), [email, onRequestReset]);
+
+  const openPrivacyPolicy = useCallback(() => {
+    // No browser available is not worth an error message.
+    Linking.openURL(PRIVACY_POLICY_URL).catch(() => undefined);
+  }, []);
 
   const submitting = busy === 'register' || busy === 'sign_in';
   const canSubmit = email.trim().length > 0 && password.length > 0;
@@ -67,6 +80,19 @@ export function BackupAuthForm({
         accessibilityLabel={t('backup.password')}
       />
       {creating && <Text style={styles.hint}>{t('backup.password_hint')}</Text>}
+
+      {creating && (
+        <View style={styles.privacy}>
+          <Text style={styles.privacyText}>{t('backup.privacy_notice')}</Text>
+          <Pressable
+            onPress={openPrivacyPolicy}
+            accessibilityRole="link"
+            hitSlop={8}
+          >
+            <Text style={styles.link}>{t('backup.privacy_link')}</Text>
+          </Pressable>
+        </View>
+      )}
 
       <BackupButton
         label={creating ? t('backup.create_account') : t('backup.sign_in')}
@@ -119,6 +145,19 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
     marginTop: -Spacing.sm,
     marginBottom: Spacing.md,
+  },
+  privacy: {
+    borderWidth: Layout.borderWidthThin,
+    borderColor: AppColors.black,
+    backgroundColor: AppColors.cream,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  privacyText: {
+    fontSize: Typography.small,
+    color: AppColors.textPrimary,
+    lineHeight: 20,
   },
   link: {
     fontSize: Typography.small,
