@@ -189,10 +189,38 @@ func TestResetPasswordEmailLinksToTheAppPage(t *testing.T) {
 	if strings.Contains(body, "/_/#/auth/confirm-password-reset") {
 		t.Error("reset email still links to the admin dashboard")
 	}
+	// The link is also shown as text, for clients that block buttons.
+	if got := strings.Count(body, "{APP_URL}/reset-password.html#{TOKEN}"); got < 2 {
+		t.Errorf("expected the button and a plain-text fallback link, found %d link(s)", got)
+	}
 	if _, err := os.Stat("pb_public/reset-password.html"); err != nil {
 		t.Errorf("the page the email links to is missing: %v", err)
 	}
 	if _, err := os.Stat("pb_public/reset-password.js"); err != nil {
 		t.Errorf("the page script is missing: %v", err)
+	}
+}
+
+// Email clients support a small slice of CSS. These features work in browsers
+// but break in Outlook, Gmail or others, so the reset email must not use them.
+func TestResetPasswordEmailOnlyUsesEmailSafeCSS(t *testing.T) {
+	app := newMigratedApp(t)
+	users, err := app.FindCollectionByNameOrId("users")
+	if err != nil {
+		t.Fatal(err)
+	}
+	body := strings.ToLower(users.ResetPasswordTemplate.Body)
+
+	unsafe := []string{
+		"display:flex", "display: flex", "display:grid", "display: grid",
+		"box-shadow", "border-radius", "float:", "position:", "calc(", "var(",
+		"rgba(", "hsl(", "gradient", "@media", "@import", "@font-face",
+		"background-image", "url(", "<style", "<script", "<img", " class=",
+		"transform", "opacity", "<link",
+	}
+	for _, feature := range unsafe {
+		if strings.Contains(body, feature) {
+			t.Errorf("reset email uses %q, which is not safe across email clients", feature)
+		}
 	}
 }
