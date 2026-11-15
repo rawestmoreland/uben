@@ -118,9 +118,17 @@ Drives the in-app "update available" notice (see `services/appUpdateService.ts`)
 
 **API Rules:** public read, admin-only write. Migration: `base/migrations/1794054353_created_app_config.go`.
 
+#### `backups` Collection
+
+One progress snapshot per user for the Pro cloud backup (see `.claude/CLAUDE.md` > Cloud Backup). Migration: `base/migrations/1794500000_cloud_backup.go`.
+
+- `user` (relation to `users`, required, **cascade delete**, unique index) — deleting an account deletes its backup
+- `payload` (json, required, max 8 MB), `payload_version` (int, required), `app_version` (text), `card_count` (int)
+- **API Rules:** list/view/delete `user = @request.auth.id`; create requires `@request.body.user = @request.auth.id`; update `user = @request.auth.id && @request.body.user:isset = false` (a backup can't be reassigned). Other users get 404, anonymous gets an empty list
+
 #### `users` Collection (Built-in)
 
-PocketBase's auth collection, modified by migration:
+PocketBase's auth collection, modified by migrations. `1794500000_cloud_backup.go` opens registration to app installs (shared app key: `CreateRule` is `@request.query.key="…"`), blocks self-setting `verified`, sets a 1-year token and adds rate-limit rules (`users:auth` 10/min, `users:create` 5/h, `users:requestPasswordReset` 5/h; they only match the users collection, so quiz result writes are never throttled). Password reset email needs SMTP configured in the admin UI. Original rules from the first migration:
 
 ```go
 usersCollection.ListRule = types.Pointer("id = @request.auth.id")     // users can list themselves
@@ -130,7 +138,7 @@ usersCollection.UpdateRule = types.Pointer("id = @request.auth.id")   // users c
 usersCollection.DeleteRule = types.Pointer("id = @request.auth.id")   // users can delete themselves
 ```
 
-**Future use**: User accounts, progress sync (Phase 2+).
+**Use today**: optional accounts for Pro cloud backup. Full multi-device progress sync is still Phase 2+.
 
 ## Development
 

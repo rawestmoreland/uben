@@ -33,6 +33,14 @@ export const SETTINGS_KEYS = {
   APP_UPDATE_CACHE: 'app_update_cache',
   /** The `latest_version` the user last dismissed the update banner for. */
   APP_UPDATE_DISMISSED_VERSION: 'app_update_dismissed_version',
+  /** JSON `{ token, userId, email }` — the signed-in cloud backup account. Empty when signed out. */
+  BACKUP_ACCOUNT: 'backup_account',
+  /** ISO timestamp of the last backup this device uploaded successfully. */
+  BACKUP_LAST_SUCCESS: 'backup_last_success',
+  /** ISO timestamp of the last automatic attempt (success or failure), to avoid hammering. */
+  BACKUP_LAST_ATTEMPT: 'backup_last_attempt',
+  /** `'false'` turns automatic backup off; anything else (including unset) leaves it on. */
+  BACKUP_AUTO_ENABLED: 'backup_auto_enabled',
 } as const;
 
 // ── Settings Service ──────────────────────────────────────────────────
