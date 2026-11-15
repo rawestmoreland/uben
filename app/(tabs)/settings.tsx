@@ -1,4 +1,5 @@
 import { LanguagePicker } from '@/components/settings/language-picker';
+import { ReferenceRow } from '@/components/reference/reference-row';
 import { RemindersCard } from '@/components/settings/reminders-card';
 import { TranslationSyncOverlay } from '@/components/settings/translation-sync-overlay';
 import {
@@ -9,11 +10,13 @@ import {
   shadowStyle,
 } from '@/constants/design';
 import { getMigrationDiagnostics } from '@/database/db';
+import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useSettings } from '@/hooks/use-settings';
 import type { MigrationDiagnostics } from '@/types/database';
 import { APP_LANGUAGE_NAMES } from '@/types/language';
 import Constants from 'expo-constants';
-import { useEffect, useRef, useState } from 'react';
+import { router } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Platform,
@@ -48,6 +51,9 @@ export default function SettingsScreen() {
     setVerbPrepositionCaseStep,
     isLoading,
   } = useSettings();
+
+  const { isPro } = useProEntitlement();
+  const openBackup = useCallback(() => router.push('/backup'), []);
 
   const [diagnostics, setDiagnostics] = useState<MigrationDiagnostics | null>(
     null,
@@ -280,6 +286,19 @@ export default function SettingsScreen() {
         {/* ── Reminders Card ──────────────────────────────────── */}
         <RemindersCard />
 
+        {/* ── Cloud Backup (SQLite and accounts are native-only) ── */}
+        {Platform.OS !== 'web' && (
+          <View style={styles.backupRow}>
+            <ReferenceRow
+              title={t('backup.title')}
+              subtitle={t('backup.row_subtitle')}
+              accentColor={AppColors.blue}
+              badge={isPro ? undefined : t('paywall.premium_badge')}
+              onPress={openBackup}
+            />
+          </View>
+        )}
+
         {/* ── Database Diagnostics Card (unlocked by tapping header 7×) ── */}
         {showDiagnostics && (
           <View style={[styles.card, shadowStyle]}>
@@ -428,6 +447,9 @@ const styles = StyleSheet.create({
   },
 
   // Setting row
+  backupRow: {
+    marginBottom: Spacing.lg,
+  },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',

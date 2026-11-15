@@ -44,7 +44,7 @@
         <a href="index.html" class="back-link">&larr; Back to Home</a>
 
         <h1>Privacy Policy for Üben</h1>
-        <p class="policy-date"><strong>Last Updated:</strong> October 9, 2026</p>
+        <p class="policy-date"><strong>Last Updated:</strong> November 15, 2026</p>
 
         <!-- ── Introduction ──────────────────────────────────────── -->
         <h2>Introduction</h2>
@@ -56,8 +56,9 @@
         <div class="policy-callout">
           <p>
             <strong>The short version:</strong> Your personal learning data
-            stays on your device. We also collect anonymous quiz analytics — no
-            account, no name, no location attached.
+            stays on your device, unless you choose to turn on the optional Pro
+            Cloud Backup, which needs an account. We also collect anonymous quiz
+            analytics — no account, no name, no location attached.
           </p>
         </div>
 
@@ -71,15 +72,21 @@
         <ul>
           <li>
             Personal identification information (name, email, phone number,
-            etc.)
+            etc.), except the email address of the optional Cloud Backup
+            account described below
           </li>
           <li>
             Device identifiers or advertising IDs ourselves (our advertising
             and purchase partners, described below, may process them)
           </li>
           <li>Location data</li>
-          <li>Your individual learning progress or review history</li>
-          <li>Any information that can be used to identify you personally</li>
+          <li>
+            Your individual learning progress or review history, unless you
+            turn on Cloud Backup
+          </li>
+          <li>
+            Any other information that can be used to identify you personally
+          </li>
         </ul>
 
         <h3>What Stays on Your Device</h3>
@@ -103,7 +110,7 @@
             <strong>User-added content:</strong> Any custom words you create
           </li>
         </ul>
-        <p>This data never leaves your device.</p>
+        <p>This data stays on your device unless you turn on Cloud Backup (see below).</p>
 
         <h3>Anonymous Quiz Analytics</h3>
         <p>
@@ -157,6 +164,71 @@
           This data cannot be linked back to you. We use it in aggregate — for
           example, to identify which words learners find hardest or to publish
           anonymised statistics in blog posts.
+        </p>
+
+        <h3>Cloud Backup (Üben Pro, optional)</h3>
+        <p>
+          Cloud Backup is a Pro feature that lets you restore your progress
+          after reinstalling the App or on a new phone. It is off until you
+          create an account in <strong>Settings &gt; Cloud backup</strong>. If
+          you never create one, none of this applies.
+        </p>
+        <p>When you create an account and back up, we store:</p>
+        <ul>
+          <li>
+            <strong>Email address:</strong> to identify your account and let
+            you reset your password
+          </li>
+          <li>
+            <strong>Password:</strong> stored only as a salted hash; we cannot
+            read it
+          </li>
+          <li>
+            <strong>Learning progress:</strong> spaced-repetition values and
+            review history for each card
+          </li>
+          <li>
+            <strong>Words you added:</strong> the nouns, adjectives and verbs
+            you created yourself
+          </li>
+          <li>
+            <strong>A few preferences:</strong> for example hint and level
+            settings
+          </li>
+          <li>
+            <strong>Last activity date:</strong> the date you last signed in,
+            backed up or restored, so we can delete inactive accounts
+          </li>
+        </ul>
+        <p>
+          <strong
+            >Unlike the anonymous quiz analytics, this data is linked to your
+            account.</strong
+          >
+          We use it only to provide the backup and restore feature. We do not
+          use it for advertising, we do not sell it, and we do not combine it
+          with the anonymous analytics. We do not receive your payment details
+          or your RevenueCat identifier as part of the backup.
+        </p>
+        <p>
+          Backups are sent over HTTPS and stored on our server (PocketBase,
+          hosted on Fly.io in the United States). They are readable only by your
+          account and by our server administrators; they are not end-to-end
+          encrypted. A sign-in token is kept on your device so you stay signed
+          in.
+        </p>
+        <p>
+          You can delete your account and its backup at any time in
+          <strong>Settings &gt; Cloud backup &gt; Delete account</strong>.
+          Signing out does not delete the backup. Deleting the account deletes
+          the backup with it, and does not change the progress on your device.
+        </p>
+        <p>
+          <strong>Inactive accounts are deleted automatically.</strong> If an
+          account has no activity (no sign-in, backup or restore) for 2 years,
+          we delete it and its backup. We don't send a warning first, so keep
+          using the App, or back up again, if you want to keep your backup. Your
+          progress on your device is never affected.
         </p>
 
         <!-- ── Third-Party Services ─────────────────────────────── -->
@@ -295,6 +367,12 @@
             <strong>Server access logs:</strong> Retained for 30 days, then
             deleted. Not linked to quiz result records.
           </li>
+          <li>
+            <strong>Cloud Backup (optional):</strong> Your account email,
+            hashed password and backup are stored on Fly.io servers in the
+            United States until you delete your account, or until it is deleted
+            automatically after 2 years without activity.
+          </li>
         </ul>
 
         <!-- ── Children's Privacy ───────────────────────────────── -->
@@ -302,15 +380,18 @@
         <p>
           Our App does not knowingly collect any personal information from
           anyone, including children under 13. The anonymous analytics we
-          collect contain no personally identifiable information. The App is
-          designed to be used by language learners of all ages.
+          collect contain no personally identifiable information. Cloud Backup
+          accounts are not intended for children under 13, and we do not
+          knowingly create accounts for them. The App is designed to be used by
+          language learners of all ages.
         </p>
 
         <!-- ── Data Sharing ─────────────────────────────────────── -->
         <h2>Data Sharing</h2>
         <p>
-          We do not sell personal data, and we do not collect personal data
-          ourselves. Our service providers (Google AdMob, RevenueCat, Apple,
+          We do not sell personal data. Apart from the optional Cloud Backup
+          account described above, we do not collect personal data ourselves.
+          Our service providers (Google AdMob, RevenueCat, Apple,
           and Google) process the limited data described above to provide ads
           and purchases. Aggregated, anonymised quiz statistics (e.g., "the ten
           hardest nouns for learners") may be published in blog posts or shown
@@ -320,15 +401,21 @@
         <!-- ── Your Rights ──────────────────────────────────────── -->
         <h2>Your Rights</h2>
         <p>
-          Since we do not collect personal data linked to you, there is
-          generally nothing to access, modify, or delete. You have complete
-          control over your on-device data through:
+          Unless you use Cloud Backup, we do not collect personal data linked to
+          you, so there is generally nothing to access, modify, or delete. You
+          have complete control over your on-device data through:
         </p>
         <ul>
           <li>Deleting the App (removes all local data)</li>
           <li>Managing your device's storage</li>
           <li>Controlling your device's backup settings</li>
         </ul>
+        <p>
+          If you use Cloud Backup, you can delete your account and backup
+          yourself in the App
+          (<strong>Settings &gt; Cloud backup &gt; Delete account</strong>), or
+          email us to request a copy of your account data or its deletion.
+        </p>
         <p>
           EU residents may contact us at
           <a href="mailto:richard@westmorelandcreative.com"
@@ -356,8 +443,9 @@
         <h2>International Users</h2>
         <p>
           The App can be used anywhere in the world. Your personal learning data
-          is stored locally on your device. Anonymous quiz and purchase
-          analytics are transmitted to and stored on servers located in the
+          is stored locally on your device; if you use Cloud Backup, your
+          account and backup are stored on servers in the United States
+          (Fly.io). Anonymous quiz and purchase analytics are transmitted to and stored on servers located in the
           United States (Fly.io). No personal data is included in these
           transfers. Purchase processing by RevenueCat, Apple, and Google may
           also occur in the United States and other countries.
@@ -367,9 +455,11 @@
         <h2>California Privacy Rights (CCPA)</h2>
         <p>
           Under the California Consumer Privacy Act (CCPA), California residents
-          have certain rights regarding their personal information. Since we do
-          not collect personal information that is linked or linkable to you,
-          CCPA does not materially apply to our App.
+          have certain rights regarding their personal information. Apart from
+          the optional Cloud Backup account (email address and backup), we do
+          not collect personal information that is linked or linkable to you. We
+          do not sell that information, and you can delete it at any time in the
+          App.
         </p>
 
         <!-- ── GDPR ─────────────────────────────────────────────── -->
@@ -391,6 +481,16 @@
           6(1)(f)) for server security, abuse detection, and technical
           debugging. Logs are retained for 30 days. This processing is necessary
           and proportionate to our operational needs.
+        </p>
+        <p>
+          <strong>Cloud Backup:</strong> If you create a Cloud Backup account,
+          your email address and backup are personal data. We process them to
+          provide the feature you asked for, on the basis of
+          <strong>performance of a contract</strong> (Article 6(1)(b)), and keep
+          them until you delete your account or it has had no activity for 2
+          years, whichever comes first. You have the rights of access,
+          rectification, erasure and portability: erasure is available in the
+          App, and you can email us for the rest.
         </p>
         <p>
           <strong>Advertising and purchases:</strong> AdMob's and RevenueCat's
@@ -451,17 +551,26 @@
         <div class="policy-summary">
           <p><strong>In plain English:</strong></p>
           <ul>
-            <li>Your learning progress and vocabulary stay on your device</li>
+            <li>
+              Your learning progress and vocabulary stay on your device, unless
+              you turn on Cloud Backup
+            </li>
             <li>
               We can't see what words you're practicing or your personal
-              statistics
+              statistics, unless you turn on Cloud Backup
             </li>
-            <li>No account required, no login</li>
+            <li>
+              No account required. An account is only needed for the optional
+              Pro Cloud Backup
+            </li>
             <li>
               Anonymous quiz results (no name, no location, no device ID) are
               sent to our server to identify hard words
             </li>
-            <li>Words you add yourself are never sent to our server</li>
+            <li>
+              Words you add yourself are never sent to our server, unless you
+              turn on Cloud Backup (it includes them)
+            </li>
             <li>
               Pro is a one-time purchase handled by Apple or Google; RevenueCat
               sees an anonymous ID and your receipt, never your name or email
@@ -471,7 +580,11 @@
               Ads are shown through Google AdMob (they may collect device/ad
               data)
             </li>
-            <li>Delete the app = delete all your on-device data permanently</li>
+            <li>
+              Delete the app = delete all your on-device data permanently (a
+              Cloud Backup stays until you delete your account in the App, or
+              after 2 years without activity)
+            </li>
             <li>
               Works completely offline (analytics are sent when online, silently
               skipped when offline)
@@ -496,7 +609,7 @@
 
         <p>
           <strong>Effective Date:</strong> This Privacy Policy is effective as
-          of October 9, 2026.
+          of November 15, 2026.
         </p>
         <p>
           <strong>Questions?</strong> Email us at

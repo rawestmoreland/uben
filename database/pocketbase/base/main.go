@@ -16,6 +16,8 @@ import (
 func main() {
 	app := pocketbase.New()
 
+	registerAccountRetention(app)
+
 	// loosely check if it was executed using "go run"
 	// go run compiles to a temp directory, check multiple possible patterns
 	execPath := os.Args[0]

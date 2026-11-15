@@ -14,6 +14,7 @@ import '@/constants/i18n'; // Initialize i18next before any component renders
 import { useAdsInit } from '@/hooks/use-ads-init';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
+import { useAutoBackup } from '@/hooks/use-auto-backup';
 import { useReminderScheduler } from '@/hooks/use-reminder-scheduler';
 import { purchaseService } from '@/services/purchaseService';
 import { Platform } from 'react-native';
@@ -33,6 +34,7 @@ export default function RootLayout() {
   const [showingSplash, setShowingSplash] = useState(true);
   const [splashAnimationDone, setSplashAnimationDone] = useState(false);
   useReminderScheduler(isReady && !showingSplash);
+  useAutoBackup(isReady && !showingSplash);
 
   useEffect(() => {
     if (Platform.OS !== 'ios' && Platform.OS !== 'android') return;
@@ -105,6 +107,13 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="add-word"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="backup"
             options={{
               headerShown: false,
               animation: 'slide_from_bottom',
