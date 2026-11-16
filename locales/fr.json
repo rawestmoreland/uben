@@ -251,11 +251,12 @@
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Débloquez Üben Pro",
-      "subtitle": "Un seul achat. Sans publicité, vocabulaire de niveau B, mots ajoutés illimités et entraînement aux terminaisons d'adjectifs.",
+      "subtitle": "Un seul achat. Sans publicité, vocabulaire de niveau B, mots ajoutés illimités, tous les exercices et sauvegarde dans le cloud.",
       "feature_1": "Sans publicité, pour toujours",
       "feature_2": "Vocabulaire B1+ débloqué",
       "feature_3": "Ajoutez autant de mots personnels que vous voulez",
-      "feature_4": "Entraînement aux terminaisons d'adjectifs avec retour immédiat",
+      "feature_4": "Tous les exercices : pluriels, terminaisons d'adjectifs, verbes au Präteritum, prépositions et Da- / Wo-",
+      "feature_5": "Sauvegarde dans le cloud pour retrouver votre progression sur un nouveau téléphone",
       "unlock_button": "Débloquer maintenant",
       "one_time_purchase": "Achat unique. Sans abonnement.",
       "sale_title": "Offre de Noël",
@@ -277,7 +278,7 @@
       "promo_error_not_configured": "Les codes promo ne sont pas disponibles pour le moment.",
       "close": "Fermer",
       "success_title": "Vous êtes Pro !",
-      "success_subtitle": "Sans publicité, vocabulaire B1+, mots ajoutés illimités et entraînement aux terminaisons d'adjectifs sont tous débloqués.",
+      "success_subtitle": "Sans publicité, vocabulaire B1+, mots ajoutés illimités, tous les exercices et sauvegarde dans le cloud sont débloqués.",
       "success_continue": "Continuer"
     },
     "home_screen": {
