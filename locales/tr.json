@@ -277,11 +277,12 @@
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Üben Pro'nun kilidini açın",
-      "subtitle": "Tek seferlik satın alma. Reklamsız, B seviyesi kelimeler, sınırsız kelime ekleme ve sıfat çekimi alıştırması.",
+      "subtitle": "Tek seferlik satın alma. Reklamsız, B seviyesi kelimeler, sınırsız kelime ekleme, tüm alıştırmalar ve bulut yedekleme.",
       "feature_1": "Sonsuza dek reklamsız",
       "feature_2": "B1+ kelimelerin kilidi açık",
       "feature_3": "Kendi kelimelerinizi sınırsız ekleyin",
-      "feature_4": "Anında geri bildirimli sıfat çekimi alıştırması",
+      "feature_4": "Tüm alıştırmalar: çoğullar, sıfat çekimi, Präteritum fiilleri, edatlar ve Da- / Wo-",
+      "feature_5": "İlerlemeni yeni bir telefonda geri yüklemek için bulut yedekleme",
       "unlock_button": "Şimdi aç",
       "one_time_purchase": "Tek seferlik satın alma. Abonelik yok.",
       "sale_title": "Noel indirimi",
@@ -303,7 +304,7 @@
       "promo_error_not_configured": "Promosyon kodları şu anda kullanılamıyor.",
       "close": "Kapat",
       "success_title": "Artık Pro'sunuz!",
-      "success_subtitle": "Reklamsız deneyim, B1+ kelimeler, sınırsız kelime ekleme ve sıfat çekimi alıştırmasının hepsi açıldı.",
+      "success_subtitle": "Reklamsız deneyim, B1+ kelimeler, sınırsız kelime ekleme, tüm alıştırmalar ve bulut yedekleme açıldı.",
       "success_continue": "Devam"
     },
     "home_screen": {

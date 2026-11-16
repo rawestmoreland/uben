@@ -277,11 +277,12 @@
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "解锁 Üben Pro",
-      "subtitle": "一次购买。无广告、B 级词汇、无限添加单词,以及形容词词尾练习。",
+      "subtitle": "一次购买。无广告、B 级词汇、无限添加单词、全部练习题型和云备份。",
       "feature_1": "永久无广告",
       "feature_2": "解锁 B1+ 词汇",
       "feature_3": "无限添加你自己的单词",
-      "feature_4": "形容词词尾练习,即时反馈",
+      "feature_4": "全部练习：复数、形容词词尾、Präteritum 动词、介词和 Da- / Wo-",
+      "feature_5": "云备份，换新手机也能恢复进度",
       "unlock_button": "立即解锁",
       "one_time_purchase": "一次性购买,无需订阅。",
       "sale_title": "圣诞特惠",
@@ -303,7 +304,7 @@
       "promo_error_not_configured": "优惠码目前不可用。",
       "close": "关闭",
       "success_title": "你已升级为 Pro!",
-      "success_subtitle": "无广告、B1+ 词汇、无限添加单词和形容词词尾练习均已解锁。",
+      "success_subtitle": "无广告、B1+ 词汇、无限添加单词、全部练习题型和云备份均已解锁。",
       "success_continue": "继续"
     },
     "home_screen": {

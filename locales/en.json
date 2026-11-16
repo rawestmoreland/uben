@@ -277,11 +277,12 @@
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Unlock Üben Pro",
-      "subtitle": "One purchase. No ads, B-level vocabulary, unlimited added words, and adjective endings practice.",
+      "subtitle": "One purchase. No ads, B-level vocabulary, unlimited added words, every practice quiz and cloud backup.",
       "feature_1": "No ads, ever",
       "feature_2": "B1+ vocabulary unlocked",
       "feature_3": "Add unlimited words of your own",
-      "feature_4": "Adjective endings practice with instant feedback",
+      "feature_4": "All practice quizzes: plurals, adjective endings, Präteritum verbs, prepositions and Da- / Wo-",
+      "feature_5": "Cloud backup to restore your progress on a new phone",
       "unlock_button": "Unlock now",
       "one_time_purchase": "One-time purchase. No subscription.",
       "sale_title": "Christmas sale",
@@ -303,7 +304,7 @@
       "promo_error_not_configured": "Promo codes aren't available right now.",
       "close": "Close",
       "success_title": "You're Pro now!",
-      "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, and adjective endings practice are all unlocked.",
+      "success_subtitle": "No ads, B1+ vocabulary, unlimited added words, every practice quiz and cloud backup are all unlocked.",
       "success_continue": "Continue"
     },
     "home_screen": {
