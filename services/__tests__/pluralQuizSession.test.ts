@@ -384,8 +384,6 @@ describeWithSqlite('plural quiz against real SQLite', () => {
       { word_type: 'noun', total_reviews: 0 },
       { word_type: 'noun_plural', total_reviews: 5 },
     ]);
-    // Plural reviews still count as study activity (streak / heatmap)
-    expect(await service.hasReviewedToday()).toBe(true);
 
     // Kind's plural card is now due rather than new
     const session = await service.getPluralQuizSession(20, 5);

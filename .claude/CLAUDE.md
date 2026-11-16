@@ -96,6 +96,7 @@ The app uses expo-sqlite for local data persistence:
 - **verbs** - German verbs with conjugations and separable prefix flag
 - **card_progress** - Spaced repetition tracking (ease factor, interval, repetitions)
 - **review_history** - Historical review data for analytics
+- **study_days** - One row per *local* calendar day (`YYYY-MM-DD`) on which the user finished a quiz session; the streak is built from this, not from `review_history`
 - **settings** - User preferences
 - **data_versions** - Migration tracking for vocabulary updates
 
@@ -157,12 +158,25 @@ Business logic abstracted from UI components:
 - **verbPrepositionCompoundService.ts** - Builds da(r)-/wo(r)- questions by deriving the compound from a pattern's preposition and reusing the preposition question shape (buttons carry the compounds); one card per pattern per session
 - **verbPrepositionBrowseService.ts** - Verb preposition cheat sheet: all patterns grouped by preposition (synonym alternates listed under each), with mastery from `verb_prep` progress
 - **statisticsService.ts** - User progress, streaks, forecasting
+- **streakService.ts** + **utils/streak.ts** - Duolingo-style streak. `utils/streak.ts` is the pure, unit-tested rule set; `streakService` reads/writes `study_days`. See Study Streak below
 - **notificationService.ts** - Local practice reminders (expo-notifications; no remote push). Re-plans pending reminders from card/streak data via the pure `reminderPlanner.ts`
 - **syncService.ts** - Optional PocketBase vocabulary sync
 - **backupPayloadService.ts** / **backupService.ts** / **backupAccountService.ts** / **backupApi.ts** - Pro cloud backup: portable payload build + transactional restore, upload/download, optional account, PocketBase REST client (see Cloud Backup)
 - **appUpdateService.ts** + **appVersion.ts** - Optional "your app is behind the store" notice. `appVersion.ts` is the pure semver/decision logic (unit tested); `appUpdateService.ts` fetches the PocketBase `app_config` row, caches it in `settings` and fetches at most once a day
 
 Services use the database singleton and provide clean APIs to components.
+
+#### Study Streak
+
+Duolingo-style rules (`utils/streak.ts`, issue #213):
+
+- A streak day is a **local calendar day** with at least one **finished quiz session**. Answering cards without finishing the session does not count. Several sessions on one day count once
+- Today is never a miss while it is still going: studying yesterday keeps the streak until the end of today. It resets once a full local day passes with no finished session
+- `useStoreReview().handleSessionComplete()` (called once per finished session by every quiz type's results screen) records the day via `streakService.recordStudyDay()`. New quiz types must call it too
+- Days are stored as local `YYYY-MM-DD` keys in `study_days`; never derive the streak from `review_history.reviewed_at` (UTC) or `toISOString()`. Compare days with `dayNumber()` (UTC-based day index), not milliseconds, so DST changes can't skew it
+- `spacedRepetitionService.getStudyStreak()`/`hasReviewedToday()` and `statisticsService.getLongestStreak()` delegate to `streakService`; `hasReviewedToday()` now means "finished a session today"
+- Migration 015 and cloud-backup restore backfill `study_days` from existing review history (any day with a review counts), so nobody's streak resets. Study days aren't in the backup payload
+- The Progress heatmap (`getActivityData`) still buckets reviews by UTC day; it is separate from the streak
 
 #### Practice Reminders
 
