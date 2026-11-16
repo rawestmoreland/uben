@@ -11,8 +11,9 @@
 - ✅ All data stored locally in SQLite (primary source of truth)
 - ✅ App works fully offline (no network required)
 - ✅ Optional PocketBase sync for vocabulary updates (categories, nouns)
-- ❌ No user authentication yet (Phase 2)
-- ❌ No user progress sync yet (Phase 2)
+- ✅ Optional accounts (PocketBase `users`) exist only for Pro cloud backup
+- ✅ Pro cloud backup uploads a progress snapshot on request (see `.claude/CLAUDE.md` > Cloud Backup)
+- ❌ No live multi-device progress sync yet (Phase 2)
 
 ### External APIs
 
@@ -28,7 +29,7 @@
 - Categories (read-only from PocketBase)
 - Nouns (read-only from PocketBase)
 
-**What doesn't sync** (stays local):
+**What doesn't sync** (stays local, except in the opt-in Pro cloud backup):
 - User-added words (`is_user_added = 1`)
 - Card progress (`card_progress` table)
 - Review history (`review_history` table)

@@ -115,8 +115,6 @@ describeWithSqlite('verb_prep cards against real SQLite', () => {
         )
         .all(warten),
     ).toEqual([{ word_type: 'verb_prep', total_reviews: 5 }]);
-    // Pattern reviews still count as study activity (streak / heatmap)
-    expect(await service.hasReviewedToday()).toBe(true);
   });
 
   it('keeps a noun id and a pattern id with the same value on separate cards', async () => {

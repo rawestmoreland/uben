@@ -215,6 +215,7 @@ export default function PaywallScreen() {
                 <FeatureRow text={t('paywall.feature_2')} />
                 <FeatureRow text={t('paywall.feature_3')} />
                 <FeatureRow text={t('paywall.feature_4')} />
+                <FeatureRow text={t('paywall.feature_5')} />
               </View>
 
               {error && <Text style={styles.errorText}>{error}</Text>}

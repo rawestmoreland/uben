@@ -22,7 +22,7 @@ The app uses a tab-based navigation structure and supports iOS, Android, and web
 ### Core Functionality
 
 1. **Article Quiz** - Users practice identifying the correct article (der/die/das) for German nouns
-   - **Plural Ending Quiz** - Users pick a noun's plural ending from nine fixed textbook buttons (`-`, `¨-`, `-e`, `¨-e`, `-er`, `¨-er`, `-n`, `-en`, `-s`). The answer is derived from the stored `nouns.plural` (`services/pluralService.ts`), never predicted; nouns whose plural fits no button are excluded. Progress uses separate `card_progress` rows with `word_type = 'noun_plural'` and is excluded from article stats.
+   - **Plural Ending Quiz (Pro)** - Pro-only with no free trial (`pro_only` entitlement in `components/home/exercise-tile-grid.tsx`, defensive redirect in `app/plural-quiz.tsx`). Users pick a noun's plural ending from nine fixed textbook buttons (`-`, `¨-`, `-e`, `¨-e`, `-er`, `¨-er`, `-n`, `-en`, `-s`). The answer is derived from the stored `nouns.plural` (`services/pluralService.ts`), never predicted; nouns whose plural fits no button are excluded. Progress uses separate `card_progress` rows with `word_type = 'noun_plural'` and is excluded from article stats.
    - **Verb Preposition Quiz (Pro)** - Cloze sentence (`Ich warte ____ meine Frau.`) with a fixed grid of 13 preposition buttons; feedback shows the full pattern with its case (`warten auf + Akk.`), the completed sentence and an optional English-trap note. Cards are `(head word, preposition, case)` patterns from `verb_prepositions`, tracked with `word_type = 'verb_prep'` (excluded from article stats). A `kind` column (`verb` | `adjective` | `noun`) extends the same table to adjective (`stolz auf`) and noun (`Angst vor`) patterns: the head word stays in the `verb` column, progress rows are shared (`verb_prep`), and sibling distractors / browse contrasts are scoped per kind. Pro-only with no free trial, same gating as the Präteritum quiz (`purchaseService.isProUnlocked`, `locked` phase, paywall redirect). Screen: `app/verb-preposition-quiz.tsx`; hook: `hooks/use-verb-preposition-quiz-session.ts`. The cheat sheet (`app/verb-preposition-patterns.tsx`) is also a standalone reference: the Reference tab (`app/(tabs)/reference.tsx`) opens it without a quiz, going to the paywall first for non-Pro users. Seeds: `database/seeds/verb-prepositions/v2-core.ts` (verbs) and `v2-adjectives-nouns.ts` (adjectives and nouns, one sentence each), together one list that `seedVerbPrepositions` syncs the table to. `v2-core.ts` is a curated A1-B1 list of 57 patterns with two example sentences each (one card per sentence; a session asks a pattern at most once, and the cheat sheet lists it once). `seedVerbPrepositions` makes the table match the list, retiring rows (and their progress) that are no longer in it, so edit the list under a new data version.
    - **Da(r)-/Wo(r)- Quiz (Pro)** - The pronominal-adverb forms of those same patterns: `Ich warte ____.` → `darauf`, `____ wartest du?` → `worauf`. Same 13-button grid, but the buttons carry the compounds. Cards are authored sentences in `verb_preposition_compounds` (one `da` and one `wo` row per pattern whose preposition takes a *thing*), tracked as their own `word_type = 'verb_prep_compound'` cards (excluded from article stats). The answer is derived from the pattern's preposition (`da`/`wo` + `r` before a vowel), never stored. A pattern is asked at most once per session so its da and wo questions can't give each other away. Feedback shows how the compound is built (`da + r + auf`) and the rule for people (`Ich warte auf ihn`, not `darauf`). Seed: `database/seeds/verb-prepositions/v2-compounds.ts` (patterns about people, and ones where two compounds fit, are deliberately left out). Screen: `app/verb-preposition-compound-quiz.tsx` (shares `components/quiz/verb-preposition-quiz-screen.tsx` and the session hook, which takes a `mode`).
 2. **Spaced Repetition** - SM-2 algorithm schedules optimal review times based on user performance
@@ -96,6 +96,7 @@ The app uses expo-sqlite for local data persistence:
 - **verbs** - German verbs with conjugations and separable prefix flag
 - **card_progress** - Spaced repetition tracking (ease factor, interval, repetitions)
 - **review_history** - Historical review data for analytics
+- **study_days** - One row per *local* calendar day (`YYYY-MM-DD`) on which the user finished a quiz session; the streak is built from this, not from `review_history`
 - **settings** - User preferences
 - **data_versions** - Migration tracking for vocabulary updates
 
@@ -124,14 +125,15 @@ Optional Go backend for vocabulary sync. The app works fully offline without it.
 
 - **categories** - Vocabulary categories (people, animals, home, etc.)
 - **nouns** - German nouns with articles, plurals, translations
-- **users** (built-in) - For future user accounts (Phase 2+)
+- **users** (built-in) - Optional accounts, used only by Pro cloud backup (see Cloud Backup)
+- **backups** - One progress snapshot per user, owner-only (see Cloud Backup)
 
 #### What Syncs
 
 - ✅ Categories (read-only from PocketBase → SQLite)
 - ✅ Nouns (read-only from PocketBase → SQLite)
-- ❌ User progress (stays local for now)
-- ❌ User-added words (stays local for now)
+- ❌ User progress (stays local, except an optional Pro cloud backup of it)
+- ❌ User-added words (stays local, except in that backup)
 
 #### Key Features
 
@@ -156,11 +158,25 @@ Business logic abstracted from UI components:
 - **verbPrepositionCompoundService.ts** - Builds da(r)-/wo(r)- questions by deriving the compound from a pattern's preposition and reusing the preposition question shape (buttons carry the compounds); one card per pattern per session
 - **verbPrepositionBrowseService.ts** - Verb preposition cheat sheet: all patterns grouped by preposition (synonym alternates listed under each), with mastery from `verb_prep` progress
 - **statisticsService.ts** - User progress, streaks, forecasting
+- **streakService.ts** + **utils/streak.ts** - Duolingo-style streak. `utils/streak.ts` is the pure, unit-tested rule set; `streakService` reads/writes `study_days`. See Study Streak below
 - **notificationService.ts** - Local practice reminders (expo-notifications; no remote push). Re-plans pending reminders from card/streak data via the pure `reminderPlanner.ts`
 - **syncService.ts** - Optional PocketBase vocabulary sync
+- **backupPayloadService.ts** / **backupService.ts** / **backupAccountService.ts** / **backupApi.ts** - Pro cloud backup: portable payload build + transactional restore, upload/download, optional account, PocketBase REST client (see Cloud Backup)
 - **appUpdateService.ts** + **appVersion.ts** - Optional "your app is behind the store" notice. `appVersion.ts` is the pure semver/decision logic (unit tested); `appUpdateService.ts` fetches the PocketBase `app_config` row, caches it in `settings` and fetches at most once a day
 
 Services use the database singleton and provide clean APIs to components.
+
+#### Study Streak
+
+Duolingo-style rules (`utils/streak.ts`, issue #213):
+
+- A streak day is a **local calendar day** with at least one **finished quiz session**. Answering cards without finishing the session does not count. Several sessions on one day count once
+- Today is never a miss while it is still going: studying yesterday keeps the streak until the end of today. It resets once a full local day passes with no finished session
+- `useStoreReview().handleSessionComplete()` (called once per finished session by every quiz type's results screen) records the day via `streakService.recordStudyDay()`. New quiz types must call it too
+- Days are stored as local `YYYY-MM-DD` keys in `study_days`; never derive the streak from `review_history.reviewed_at` (UTC) or `toISOString()`. Compare days with `dayNumber()` (UTC-based day index), not milliseconds, so DST changes can't skew it
+- `spacedRepetitionService.getStudyStreak()`/`hasReviewedToday()` and `statisticsService.getLongestStreak()` delegate to `streakService`; `hasReviewedToday()` now means "finished a session today"
+- Migration 015 and cloud-backup restore backfill `study_days` from existing review history (any day with a review counts), so nobody's streak resets. Study days aren't in the backup payload
+- The Progress heatmap (`getActivityData`) still buckets reviews by UTC day; it is separate from the streak
 
 #### Practice Reminders
 
@@ -188,8 +204,26 @@ A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price 
 - Data: PocketBase `app_config` collection, public read, **one row per platform** (`ios`/`android`, unique index on `platform`). Fields: `latest_version` (required), `min_version` (optional), `store_url` (required, https only), `message` (optional). Update `latest_version` only once that build is **live in the store**; keep `min_version` <= `latest_version` (a `min_version` above it is ignored)
 - `installed < min_version` -> blocking `UpdateRequiredModal`; `installed < latest_version` -> dismissible `UpdateBanner` on Home (dismissal is remembered per `latest_version`)
 - Installed version is read from the native binary (`expo-application`), **not** `Constants.expoConfig.version`: an OTA can carry a newer `version` than the binary. `expo-application` is already compiled in via `expo-notifications`, so the native fingerprint is unchanged and this ships over the air
-- Skipped on web and in dev/preview builds (`extra.appEnv`). Never throws; the last good row is cached so a mandatory update is still enforced offline
+- Skipped on web, in dev/preview builds (`extra.appEnv`) and whenever `__DEV__` is true (a local `expo run:ios` has no `APP_ENV`, so `appEnv` falls back to `production`). Never throws; the last good row is cached so a mandatory update is still enforced offline
 - UI: `components/app-update/`, hook `hooks/use-app-update.ts`, mounted via `<AppUpdateNotice />` on Home
+
+#### Cloud Backup (Pro)
+
+Pro users can back up their progress and restore it after a reinstall or on a new phone (issue #87). It is **opt-in, needs an optional account**, and the app is fully usable without it. This is the one place user data leaves the device, so the privacy policy (`marketing/public/privacy.md` and `.html`) covers it; keep them in sync with any change here.
+
+- **Identity**: a PocketBase `users` account (email + password). The first design keyed backups to the RevenueCat anonymous ID, which changes on reinstall, so it can't find the backup again. Registration needs the shared app key (`?key=`, same as `quiz_results`); sign-in/registration/reset are rate limited by the `1794500000_cloud_backup.go` migration. The session token is stored in the `settings` table (`backup_account`), no new native module, so it ships over the air
+- **Storage**: `backups` collection, **one row per user** (unique index), rules `user = @request.auth.id` for list/view/update/delete, `user` immutable, `payload` JSON up to 8 MB, `payload_version`, `app_version`, `card_count`. `CascadeDelete` on `user`, so deleting the account deletes the backup (the in-app **Delete account** is required by the app stores). No custom Go route: the client uses the collection API directly (`services/backupApi.ts`)
+- **Payload** (`types/backup.ts`, `services/backupPayloadService.ts`): compact tuples, **never a local integer id**. A card is keyed by its word (nouns `[german, article, sense]`, adjectives/verbs by lemma, verb patterns by `[kind, head word, reflexive, preposition, sentence]`, da/wo compounds add the form). It covers every `card_progress` word type (articles, plurals, verb/adjective, prepositions, da(r)/wo(r)), review history, **user-added** nouns/adjectives/verbs and the settings allow-list `BACKUP_SETTING_KEYS`. Left out on purpose: `pro_unlocked`/promo flags, `selected_categories` (local ids), ad/review counters, `app_language` and reminders (restoring them needs a translation download / permission prompt)
+- **Versioning**: bump `BACKUP_PAYLOAD_VERSION` when the shape changes in a way old apps can't read; restore refuses a newer payload (`unsupported_version`) before parsing it. Adding an optional field doesn't need a bump
+- **Restore** runs in ONE transaction (all or nothing). A backed-up card overwrites the local card and its history for the same word; cards for words this install lacks are skipped and counted; missing user-added words are re-created without duplicating words that exist (either article counts). It always asks for confirmation in the UI
+- **Gating**: backup/restore need `purchaseService.isProUnlocked()` (includes promo unlocks), checked **client-side only**. The server only checks the account, so a modified client could back up without Pro; the cost is storage, capped by the 8 MB limit. Account sign-out and delete never need Pro
+- **Auto backup**: `hooks/use-auto-backup.ts` (mounted in the root layout) calls `backupService.maybeAutoBackup()` when the app opens and when it goes to the background. Signed in + Pro + switch on, at most every 12 h, and 1 h between attempts after a failure. Never throws, never blocks the quiz
+- **Retention (GDPR storage limitation)**: accounts with no activity for **24 months** are deleted with their backup by a daily PocketBase cron job (`database/pocketbase/base/account_retention.go`, `inactiveAccountDays`). Activity is tracked server-side in `users.last_active` (written only by the server; client create/update requests that include it are rejected): sign-in, token refresh, and backup upload/list/view all count, because the app uses a stored token and does not sign in again. The privacy policy (md + html) and the in-app notice `app.backup.privacy_notice` (every locale) state "2 years": change them together with the constant. No warning email is sent (no SMTP guarantee)
+- **Errors**: everything surfaces as a `BackupError` code with a translated message under `app.backup.errors.*`. Adding a code means adding it in every locale (`utils/__tests__/backupLocales.test.ts` enforces this)
+- **Password reset**: the email (migrations `1794500200_reset_password_template.go`, styled by `1794500300_reset_email_design.go`) links to `/reset-password.html#<token>`, a static page in `database/pocketbase/base/pb_public/` that calls `confirm-password-reset`. PocketBase's default email links to the admin dashboard, which doesn't work for app users. The token is in the URL fragment so it never reaches server logs. English only. The email has the app's look (yellow bar, thick borders, hard shadow, yellow button) using **only email-safe CSS**: table layout, inline styles and `bgcolor`, no flexbox/grid/`box-shadow`/`border-radius`/CSS variables/`rgba`/`@media`/images (the shadow is a thicker black right/bottom border). `TestResetPasswordEmailOnlyUsesEmailSafeCSS` fails if that rule is broken. PocketBase wraps the body in its own layout (white page), so don't rely on `<head>` styles or its `.btn` class. Needs, in the PocketBase admin: **Settings > Application > Application URL** set to the public server URL (the link is built from it) and **Settings > Mail** configured (SMTP + sender). Without SMTP, sign-in and backup work but "Forgot password?" does nothing. Changing a password invalidates the old sessions, so other devices get `session_expired` and sign in again
+- **Sign-up notice**: the create-account form shows what is stored, the retention period and a link to `PRIVACY_POLICY_URL` (`constants/links.ts`) (Art. 13: inform at collection)
+- **Home nudge**: Pro users with no backup account who have finished at least `BACKUP_NUDGE_MIN_SESSIONS` (3) quiz sessions (the `quiz_sessions_completed` counter that every quiz type feeds) see a dismissible card on Home (`components/backup/backup-nudge.tsx`, reusing `UpdateBanner`; rule in `services/backupNudge.ts`, hook `hooks/use-backup-nudge.ts`) because the feature otherwise lives only in Settings. "Not now" is permanent (`backup_nudge_dismissed`), and so is signing in once, so signing out later doesn't bring it back. Never on web or for non-Pro users
+- UI: `app/backup.tsx`, `components/backup/`, `hooks/use-backup.ts`; entry row in Settings
 
 #### Sync Service
 
@@ -371,6 +405,10 @@ eas submit --platform ios
 
 ## Monetization
 
+### Pro Feature Lists
+
+Pro features are advertised in three places that must change together: the paywall (`app/paywall.tsx`, strings `app.paywall.*` in **every** locale under `locales/`), the marketing page (`marketing/public/index.html`: practice cards, Free/Pro pricing lists, meta description) and the Pro entries in this file. When a feature becomes Pro-only (or stops being), update all three. The paywall groups the practice quizzes into one row (`feature_4`) so a new quiz usually needs a wording change there, not a new row.
+
 ### AdMob Integration
 
 - Banner ads on non-critical screens (progress, word list) — `components/ads/ad-banner.tsx`
@@ -395,7 +433,7 @@ eas submit --platform ios
 
 ### Phase 2 (Post-launch)
 
-- Cloud backup (export/import JSON)
+- ✅ Cloud backup (Pro, optional account)
 - Verb conjugation quiz
 - ✅ Plural ending quiz
 - More vocabulary levels (A2, B1)
