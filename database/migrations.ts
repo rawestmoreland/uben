@@ -922,6 +922,39 @@ export const migrations: Migration[] = [
       await db.execAsync('ALTER TABLE nouns DROP COLUMN article_alt;');
     },
   },
+  {
+    version: '015',
+    name: 'add_study_days',
+    up: async (db: SQLite.SQLiteDatabase) => {
+      console.log('[Migration 015] Adding study_days...');
+
+      // One row per *local* calendar day (YYYY-MM-DD) on which the user
+      // finished a quiz session. This is what the streak is built from: it is
+      // written in the device's local time, unlike review_history.reviewed_at
+      // (UTC), and a day only lands here when a session is completed, not when
+      // a single card is answered.
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS study_days (
+          day TEXT PRIMARY KEY,
+          recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // Grandfather existing users: every day they already reviewed counts as
+      // a study day (we never recorded which sessions were finished), so the
+      // new rule doesn't reset anyone's streak. 'localtime' turns the stored
+      // UTC timestamps into the device's local calendar day.
+      await db.execAsync(`
+        INSERT OR IGNORE INTO study_days (day)
+        SELECT DISTINCT date(reviewed_at, 'localtime') FROM review_history;
+      `);
+
+      console.log('[Migration 015] Complete');
+    },
+    down: async (db: SQLite.SQLiteDatabase) => {
+      await db.execAsync('DROP TABLE IF EXISTS study_days;');
+    },
+  },
 ];
 
 /**

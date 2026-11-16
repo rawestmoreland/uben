@@ -147,6 +147,13 @@ describeWithSqlite('backupPayloadService', () => {
       .all(hundCard.id) as { quality: number }[];
     expect(history.map((row) => row.quality)).toEqual([4, 5]);
 
+    // Study days aren't in the payload: they are rebuilt from the restored
+    // review history so the streak survives a restore
+    const studyDays = target.raw
+      .prepare('SELECT COUNT(*) AS count FROM study_days')
+      .get() as { count: number };
+    expect(studyDays.count).toBeGreaterThan(0);
+
     // The sense-qualified card lands on "die See", not "der See".
     const seaId = idOf(target, 'nouns', "german = 'See' AND sense = 'sea'");
     expect(

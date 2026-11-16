@@ -1,4 +1,5 @@
 import { SETTINGS_KEYS, settingsService } from '@/services/settingsService';
+import { streakService } from '@/services/streakService';
 import * as StoreReview from 'expo-store-review';
 import { useCallback } from 'react';
 
@@ -28,6 +29,16 @@ const MIN_DAYS_BETWEEN_REQUESTS = 90;
  */
 export function useStoreReview() {
   const handleSessionComplete = useCallback(async () => {
+    // Every quiz type calls this once per finished session, so it is also the
+    // one place that extends the study streak (a day counts only when a
+    // session is finished). Kept separate from the review logic below so a
+    // failure in either never affects the other.
+    try {
+      await streakService.recordStudyDay();
+    } catch (error) {
+      console.warn('[Streak] Failed to record study day:', error);
+    }
+
     try {
       // Increment completed session count
       const countStr = await settingsService.getSetting(

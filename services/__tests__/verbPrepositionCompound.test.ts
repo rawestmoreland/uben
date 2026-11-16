@@ -570,7 +570,6 @@ describeWithSqlite('da(r)-/wo(r)- quiz against real SQLite', () => {
       .run(mastered);
 
     expect(await articleStats()).toEqual(before);
-    expect(await service.hasReviewedToday()).toBe(true);
   });
 
   it('seeds a da and a wo question for every entry, and seeding is idempotent', async () => {
