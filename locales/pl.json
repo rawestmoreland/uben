@@ -459,6 +459,8 @@
       "email": "E-mail",
       "password": "Hasło",
       "password_hint": "Co najmniej 8 znaków",
+      "confirm_password": "Potwierdź hasło",
+      "password_mismatch": "Hasła nie są takie same",
       "create_account": "Utwórz konto",
       "sign_in": "Zaloguj się",
       "have_account": "Mam już konto",
