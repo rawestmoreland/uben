@@ -204,7 +204,7 @@ A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price 
 - Data: PocketBase `app_config` collection, public read, **one row per platform** (`ios`/`android`, unique index on `platform`). Fields: `latest_version` (required), `min_version` (optional), `store_url` (required, https only), `message` (optional). Update `latest_version` only once that build is **live in the store**; keep `min_version` <= `latest_version` (a `min_version` above it is ignored)
 - `installed < min_version` -> blocking `UpdateRequiredModal`; `installed < latest_version` -> dismissible `UpdateBanner` on Home (dismissal is remembered per `latest_version`)
 - Installed version is read from the native binary (`expo-application`), **not** `Constants.expoConfig.version`: an OTA can carry a newer `version` than the binary. `expo-application` is already compiled in via `expo-notifications`, so the native fingerprint is unchanged and this ships over the air
-- Skipped on web and in dev/preview builds (`extra.appEnv`). Never throws; the last good row is cached so a mandatory update is still enforced offline
+- Skipped on web, in dev/preview builds (`extra.appEnv`) and whenever `__DEV__` is true (a local `expo run:ios` has no `APP_ENV`, so `appEnv` falls back to `production`). Never throws; the last good row is cached so a mandatory update is still enforced offline
 - UI: `components/app-update/`, hook `hooks/use-app-update.ts`, mounted via `<AppUpdateNotice />` on Home
 
 #### Cloud Backup (Pro)

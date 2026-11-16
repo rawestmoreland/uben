@@ -5,10 +5,14 @@ import Constants from 'expo-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState, Linking, Platform } from 'react-native';
 
-/** Dev-client and preview builds aren't distributed through the stores. */
-const IS_STORE_BUILD = !['development', 'preview'].includes(
-  Constants.expoConfig?.extra?.appEnv,
-);
+/**
+ * Dev-client and preview builds aren't distributed through the stores.
+ * `__DEV__` also covers local `expo run:ios|android`, where `APP_ENV` is unset
+ * and `appEnv` falls back to 'production'.
+ */
+const IS_STORE_BUILD =
+  !__DEV__ &&
+  !['development', 'preview'].includes(Constants.expoConfig?.extra?.appEnv);
 
 /**
  * Tells the user when the installed binary is behind the store version
