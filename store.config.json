@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "v1.14.2",
+    "version": "v1.15.0",
     "copyright": "2026",
     "release": {
       "automaticRelease": false
@@ -23,13 +23,13 @@
           "test",
           "learn"
         ],
-        "releaseNotes": "Bug fixes and improvements.",
+        "releaseNotes": "- New: Pro cloud backup. Save your progress with an optional account and restore it on a new phone.\n- Streaks now count a day once you finish a quiz session.\n- Bug fixes and improvements.",
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "title": "Üben: German Grammar Practice",
         "subtitle": "Der Die Das Trainer & Quiz",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Master der, die, das with spaced repetition. Free, offline, no account, no ads."
+        "promoText": "New: back up your progress with Pro cloud backup. Master der, die, das with spaced repetition. Free, offline, no account needed, no ads."
       },
       "de-DE": {
         "title": "Üben: Grammatik-Training",
@@ -51,8 +51,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Meistere der, die, das mit Spaced Repetition. Kostenlos, offline, ohne Konto, ohne Werbung.",
-        "releaseNotes": "Fehlerbehebungen und Verbesserungen."
+        "promoText": "Neu: Cloud-Backup für deinen Fortschritt mit Pro. Meistere der, die, das mit Spaced Repetition. Kostenlos, offline, ohne Konto, ohne Werbung.",
+        "releaseNotes": "- Neu: Cloud-Backup für Pro. Sichere deinen Fortschritt mit einem optionalen Konto und stelle ihn auf einem neuen Handy wieder her.\n- Streaks zählen einen Tag jetzt, sobald du eine Quiz-Runde abschließt.\n- Fehlerbehebungen und Verbesserungen."
       },
       "pl": {
         "title": "Üben: Ćwiczenia z niemieckiego",
@@ -73,8 +73,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Opanuj der, die, das dzięki powtórkom w odstępach. Za darmo, offline, bez konta i reklam.",
-        "releaseNotes": "Poprawki błędów i ulepszenia."
+        "promoText": "Nowość: kopia zapasowa postępów w chmurze w Pro. Opanuj der, die, das z powtórkami w odstępach. Za darmo, offline, bez reklam.",
+        "releaseNotes": "- Nowość: kopia zapasowa w chmurze w wersji Pro. Zapisz postępy na opcjonalnym koncie i przywróć je na nowym telefonie.\n- Serie dni liczą się teraz po ukończeniu sesji quizu.\n- Poprawki błędów i ulepszenia."
       },
       "fr-FR": {
         "title": "Üben : Pratique de l'allemand",
@@ -95,8 +95,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Maîtrisez der, die, das grâce à la répétition espacée. Gratuit, hors ligne, sans compte ni pub.",
-        "releaseNotes": "Corrections de bugs et améliorations."
+        "promoText": "Nouveau : sauvegardez votre progression avec Pro. Maîtrisez der, die, das par la répétition espacée. Gratuit, hors ligne, sans pub.",
+        "releaseNotes": "- Nouveau : sauvegarde cloud Pro. Enregistrez votre progression avec un compte facultatif et retrouvez-la sur un nouveau téléphone.\n- Les séries comptent désormais un jour dès que vous terminez une session de quiz.\n- Corrections de bugs et améliorations."
       },
       "es-ES": {
         "title": "Üben: Práctica de alemán",
@@ -116,8 +116,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "Domina der, die, das con repetición espaciada. Gratis, sin conexión, sin cuenta ni anuncios.",
-        "releaseNotes": "Corrección de errores y mejoras."
+        "promoText": "Novedad: copia de seguridad de tu progreso con Pro. Domina der, die, das con repetición espaciada. Gratis, sin conexión y sin anuncios.",
+        "releaseNotes": "- Novedad: copia de seguridad en la nube con Pro. Guarda tu progreso con una cuenta opcional y recupéralo en un teléfono nuevo.\n- Las rachas ahora cuentan un día cuando terminas una sesión de quiz.\n- Corrección de errores y mejoras."
       },
       "tr": {
         "title": "Üben: Almanca Gramer Pratiği",
@@ -140,8 +140,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "der, die, das'ı aralıklı tekrarla öğren. Ücretsiz, çevrimdışı, hesapsız, reklamsız.",
-        "releaseNotes": "Hata düzeltmeleri ve iyileştirmeler."
+        "promoText": "Yeni: Pro ile ilerlemeni buluta yedekle. der, die, das'ı aralıklı tekrarla öğren. Ücretsiz, çevrimdışı, reklamsız.",
+        "releaseNotes": "- Yeni: Pro için bulut yedekleme. İlerlemeni isteğe bağlı bir hesapla kaydet ve yeni telefonda geri yükle.\n- Seriler artık bir quiz oturumunu bitirdiğin günü sayıyor.\n- Hata düzeltmeleri ve iyileştirmeler."
       },
       "zh-Hans": {
         "title": "Üben：德语语法练习",
@@ -164,8 +164,8 @@
         "marketingUrl": "https://ubenapp.com",
         "supportUrl": "https://ubenapp.com",
         "privacyPolicyUrl": "https://ubenapp.com/privacy",
-        "promoText": "用间隔重复掌握 der、die、das。免费、离线、无需账号、无广告。",
-        "releaseNotes": "修复问题并进行改进。"
+        "promoText": "新增 Pro 云备份，随时保存学习进度。用间隔重复掌握 der、die、das。免费、离线、无广告。",
+        "releaseNotes": "- 新增：Pro 云备份。使用可选账号保存学习进度，并在新手机上恢复。\n- 连续学习天数现在以完成一次测验为准。\n- 修复问题并改进体验。"
       }
     },
     "categories": ["EDUCATION"],
