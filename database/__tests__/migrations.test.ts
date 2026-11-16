@@ -3,6 +3,7 @@ import {
   openTestDatabase,
   type NodeSqliteDatabase,
 } from '@/test-utils/sqlite';
+import { toLocalDayKey } from '@/utils/streak';
 import { migrations, runMigrations } from '../migrations';
 
 // ── Mock db factory ───────────────────────────────────────────────────────────
@@ -96,7 +97,7 @@ describe('runMigrations()', () => {
   });
 
   it('applies only unapplied migrations in a partial state', async () => {
-    // Migration 001 already applied; 002–014 not yet applied
+    // Migration 001 already applied; 002–015 not yet applied
     mockDb.getFirstAsync
       .mockResolvedValueOnce({ '1': 1 }) // 001 → applied
       .mockResolvedValueOnce(null) // 002 → unapplied
@@ -111,7 +112,8 @@ describe('runMigrations()', () => {
       .mockResolvedValueOnce(null) // 011 → unapplied
       .mockResolvedValueOnce(null) // 012 → unapplied
       .mockResolvedValueOnce(null) // 013 → unapplied
-      .mockResolvedValueOnce(null); // 014 → unapplied
+      .mockResolvedValueOnce(null) // 014 → unapplied
+      .mockResolvedValueOnce(null); // 015 → unapplied
 
     await runMigrations(mockDb as any);
 
@@ -120,7 +122,7 @@ describe('runMigrations()', () => {
         sql === 'INSERT INTO migrations (version) VALUES (?)',
     );
 
-    expect(insertCalls).toHaveLength(13);
+    expect(insertCalls).toHaveLength(14);
     expect(insertCalls[0][1]).toEqual(['002']);
     expect(insertCalls[1][1]).toEqual(['003']);
     expect(insertCalls[2][1]).toEqual(['004']);
@@ -134,6 +136,7 @@ describe('runMigrations()', () => {
     expect(insertCalls[10][1]).toEqual(['012']);
     expect(insertCalls[11][1]).toEqual(['013']);
     expect(insertCalls[12][1]).toEqual(['014']);
+    expect(insertCalls[13][1]).toEqual(['015']);
   });
 
   it('calls each migration up() with the db object', async () => {
@@ -958,6 +961,57 @@ describeWithSqlite('migrations against real SQLite', () => {
           .all(),
       ).toEqual([]);
       expect(count('SELECT COUNT(*) AS count FROM nouns')).toBe(1);
+    });
+  });
+  describe('015 add_study_days', () => {
+    const migration015 = migrations.find((m) => m.version === '015')!;
+
+    it('grandfathers every day that already has a review, in local time', async () => {
+      await migrateTo('014');
+      const kindId = insertNoun('Kind', 'das', 'Kinder');
+      const card = insertCard('noun', kindId);
+      const insertReview = raw.prepare(
+        'INSERT INTO review_history (card_progress_id, quality, reviewed_at) VALUES (?, 4, ?)',
+      );
+      // Two reviews on one day and one on another; midday UTC so the expected
+      // local day can be derived in JS whatever timezone the test runs in
+      insertReview.run(card, '2026-10-05 12:00:00');
+      insertReview.run(card, '2026-10-05 12:30:00');
+      insertReview.run(card, '2026-10-07 12:00:00');
+
+      await runMigrations(db as any);
+
+      const days = (
+        raw.prepare('SELECT day FROM study_days ORDER BY day').all() as {
+          day: string;
+        }[]
+      ).map((row) => row.day);
+      expect(days).toEqual([
+        toLocalDayKey(new Date('2026-10-05T12:00:00Z')),
+        toLocalDayKey(new Date('2026-10-07T12:00:00Z')),
+      ]);
+    });
+
+    it('creates an empty table for a fresh install and rejects a duplicate day', async () => {
+      await runMigrations(db as any);
+
+      expect(count('SELECT COUNT(*) AS count FROM study_days')).toBe(0);
+      raw.prepare("INSERT INTO study_days (day) VALUES ('2026-10-05')").run();
+      expect(() =>
+        raw.prepare("INSERT INTO study_days (day) VALUES ('2026-10-05')").run(),
+      ).toThrow(/UNIQUE/);
+    });
+
+    it('down() drops the table', async () => {
+      await runMigrations(db as any);
+
+      await migration015.down!(db as any);
+
+      expect(
+        raw
+          .prepare("SELECT name FROM sqlite_master WHERE name = 'study_days'")
+          .all(),
+      ).toEqual([]);
     });
   });
 });

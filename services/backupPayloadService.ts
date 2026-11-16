@@ -505,6 +505,14 @@ export async function restoreBackupPayload(
       summary.restoredCards += 1;
     }
 
+    // Study days (the streak) are device-local and not part of the payload, so
+    // rebuild them from the restored history: every day with a review counts,
+    // the same grandfathering as migration 015.
+    await db.runAsync(
+      `INSERT OR IGNORE INTO study_days (day)
+       SELECT DISTINCT date(reviewed_at, 'localtime') FROM review_history`,
+    );
+
     for (const key of BACKUP_SETTING_KEYS) {
       const value = payload.settings[key];
       if (typeof value !== 'string') continue;

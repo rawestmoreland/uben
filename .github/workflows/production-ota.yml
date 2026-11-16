@@ -111,15 +111,19 @@ jobs:
           }
 
           # The update is only delivered to builds with the same runtime version, so look for a
-          # finished production-channel build with exactly the current fingerprint.
+          # finished build with exactly the current fingerprint. Match on the fingerprint hash,
+          # not on --channel/--runtime-version: a build built locally and added with
+          # `eas upload` has no profile, channel or runtime version recorded in EAS (only its
+          # fingerprint), so those filters never find it. The fingerprint already covers the
+          # production environment (APP_ENV, bundle id), so preview/dev builds don't collide.
           check_platform() {
             local platform="$1" current="$2" builds
-            if ! builds=$(eas build:list --channel production --platform "$platform" --status finished --runtime-version "$current" --limit 1 --non-interactive --json); then
+            if ! builds=$(eas build:list --platform "$platform" --status finished --fingerprint-hash "$current" --limit 1 --non-interactive --json); then
               echo "::error::eas build:list failed for $platform (see output above)."
               return 1
             fi
             if [ "$(echo "$builds" | jq 'length')" -eq 0 ]; then
-              echo "::error::No finished $platform build on the production channel has runtime version $current. Either the native fingerprint changed since the last store build (do a full store release), the build was uploaded without channel/runtime metadata (re-run with skip_build_check after confirming the binary's runtime version), or the project is not using runtimeVersion.policy 'fingerprint'."
+              echo "::error::No finished $platform build has fingerprint $current. Either the native fingerprint changed since the last store build (do a full store release), the build was made with a different environment or profile than production, or the project is not using runtimeVersion.policy 'fingerprint'."
               return 1
             fi
             echo "$platform: found a finished build with runtime version $current"

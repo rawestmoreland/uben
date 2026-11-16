@@ -96,6 +96,7 @@ The app uses expo-sqlite for local data persistence:
 - **verbs** - German verbs with conjugations and separable prefix flag
 - **card_progress** - Spaced repetition tracking (ease factor, interval, repetitions)
 - **review_history** - Historical review data for analytics
+- **study_days** - One row per *local* calendar day (`YYYY-MM-DD`) on which the user finished a quiz session; the streak is built from this, not from `review_history`
 - **settings** - User preferences
 - **data_versions** - Migration tracking for vocabulary updates
 
@@ -157,12 +158,25 @@ Business logic abstracted from UI components:
 - **verbPrepositionCompoundService.ts** - Builds da(r)-/wo(r)- questions by deriving the compound from a pattern's preposition and reusing the preposition question shape (buttons carry the compounds); one card per pattern per session
 - **verbPrepositionBrowseService.ts** - Verb preposition cheat sheet: all patterns grouped by preposition (synonym alternates listed under each), with mastery from `verb_prep` progress
 - **statisticsService.ts** - User progress, streaks, forecasting
+- **streakService.ts** + **utils/streak.ts** - Duolingo-style streak. `utils/streak.ts` is the pure, unit-tested rule set; `streakService` reads/writes `study_days`. See Study Streak below
 - **notificationService.ts** - Local practice reminders (expo-notifications; no remote push). Re-plans pending reminders from card/streak data via the pure `reminderPlanner.ts`
 - **syncService.ts** - Optional PocketBase vocabulary sync
 - **backupPayloadService.ts** / **backupService.ts** / **backupAccountService.ts** / **backupApi.ts** - Pro cloud backup: portable payload build + transactional restore, upload/download, optional account, PocketBase REST client (see Cloud Backup)
 - **appUpdateService.ts** + **appVersion.ts** - Optional "your app is behind the store" notice. `appVersion.ts` is the pure semver/decision logic (unit tested); `appUpdateService.ts` fetches the PocketBase `app_config` row, caches it in `settings` and fetches at most once a day
 
 Services use the database singleton and provide clean APIs to components.
+
+#### Study Streak
+
+Duolingo-style rules (`utils/streak.ts`, issue #213):
+
+- A streak day is a **local calendar day** with at least one **finished quiz session**. Answering cards without finishing the session does not count. Several sessions on one day count once
+- Today is never a miss while it is still going: studying yesterday keeps the streak until the end of today. It resets once a full local day passes with no finished session
+- `useStoreReview().handleSessionComplete()` (called once per finished session by every quiz type's results screen) records the day via `streakService.recordStudyDay()`. New quiz types must call it too
+- Days are stored as local `YYYY-MM-DD` keys in `study_days`; never derive the streak from `review_history.reviewed_at` (UTC) or `toISOString()`. Compare days with `dayNumber()` (UTC-based day index), not milliseconds, so DST changes can't skew it
+- `spacedRepetitionService.getStudyStreak()`/`hasReviewedToday()` and `statisticsService.getLongestStreak()` delegate to `streakService`; `hasReviewedToday()` now means "finished a session today"
+- Migration 015 and cloud-backup restore backfill `study_days` from existing review history (any day with a review counts), so nobody's streak resets. Study days aren't in the backup payload
+- The Progress heatmap (`getActivityData`) still buckets reviews by UTC day; it is separate from the streak
 
 #### Practice Reminders
 
@@ -190,7 +204,7 @@ A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price 
 - Data: PocketBase `app_config` collection, public read, **one row per platform** (`ios`/`android`, unique index on `platform`). Fields: `latest_version` (required), `min_version` (optional), `store_url` (required, https only), `message` (optional). Update `latest_version` only once that build is **live in the store**; keep `min_version` <= `latest_version` (a `min_version` above it is ignored)
 - `installed < min_version` -> blocking `UpdateRequiredModal`; `installed < latest_version` -> dismissible `UpdateBanner` on Home (dismissal is remembered per `latest_version`)
 - Installed version is read from the native binary (`expo-application`), **not** `Constants.expoConfig.version`: an OTA can carry a newer `version` than the binary. `expo-application` is already compiled in via `expo-notifications`, so the native fingerprint is unchanged and this ships over the air
-- Skipped on web and in dev/preview builds (`extra.appEnv`). Never throws; the last good row is cached so a mandatory update is still enforced offline
+- Skipped on web, in dev/preview builds (`extra.appEnv`) and whenever `__DEV__` is true (a local `expo run:ios` has no `APP_ENV`, so `appEnv` falls back to `production`). Never throws; the last good row is cached so a mandatory update is still enforced offline
 - UI: `components/app-update/`, hook `hooks/use-app-update.ts`, mounted via `<AppUpdateNotice />` on Home
 
 #### Cloud Backup (Pro)

@@ -141,13 +141,17 @@ jobs:
               CURRENT=""
             fi
 
-            # Ask EAS for a finished preview-channel build with exactly this runtime version.
-            # Preview builds live on the "preview" channel, which the "staging" EAS branch feeds.
+            # Ask EAS for a finished build with exactly this fingerprint. Match on the fingerprint
+            # hash, not on --channel/--runtime-version: a build built locally and added with
+            # `eas upload` has no profile, channel or runtime version recorded in EAS (only its
+            # fingerprint), so those filters never find it. The fingerprint already covers the
+            # preview environment (APP_ENV, bundle id), so production/dev builds don't collide.
+            # The staging EAS branch feeds the "preview" channel the preview builds listen on.
             MATCHING_BUILDS=0
             if [ -n "$CURRENT" ]; then
               # Capture stdout separately so a failed lookup shows eas-cli's real error
               # instead of a confusing jq parse error.
-              if BUILDS=$(eas build:list --channel preview --platform "$PLATFORM" --status finished --runtime-version "$CURRENT" --limit 1 --non-interactive --json); then
+              if BUILDS=$(eas build:list --platform "$PLATFORM" --status finished --fingerprint-hash "$CURRENT" --limit 1 --non-interactive --json); then
                 MATCHING_BUILDS=$(echo "$BUILDS" | jq 'length') || MATCHING_BUILDS=0
               else
                 echo "::warning::eas build:list failed for $PLATFORM; treating as no matching build. Output: $BUILDS"

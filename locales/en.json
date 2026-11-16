@@ -443,6 +443,8 @@
       "email": "Email",
       "password": "Password",
       "password_hint": "At least 8 characters",
+      "confirm_password": "Confirm password",
+      "password_mismatch": "Passwords don't match",
       "create_account": "Create account",
       "sign_in": "Sign in",
       "have_account": "I already have an account",

@@ -1,4 +1,5 @@
 import { getDatabase } from '@/database/db';
+import { streakService } from '@/services/streakService';
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -125,36 +126,11 @@ export class StatisticsService {
   }
 
   /**
-   * Compute the user's all-time longest study streak (in days).
-   * Iterates over all distinct review dates in ascending order.
+   * The user's all-time longest study streak (in days), using the same
+   * local-day, finished-session rules as the current streak.
    */
   async getLongestStreak(): Promise<number> {
-    const reviews = await this.db.getAllAsync<{ review_date: string }>(
-      `SELECT DISTINCT date(reviewed_at) AS review_date
-       FROM review_history
-       ORDER BY review_date ASC`,
-    );
-
-    if (reviews.length === 0) return 0;
-
-    let longest = 1;
-    let current = 1;
-
-    for (let i = 1; i < reviews.length; i++) {
-      const prev = new Date(reviews[i - 1].review_date);
-      const curr = new Date(reviews[i].review_date);
-      const diffMs = curr.getTime() - prev.getTime();
-      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-
-      if (diffDays === 1) {
-        current++;
-        if (current > longest) longest = current;
-      } else {
-        current = 1;
-      }
-    }
-
-    return longest;
+    return streakService.getLongestStreak();
   }
 }
 

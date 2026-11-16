@@ -443,6 +443,8 @@
       "email": "E-posta",
       "password": "Şifre",
       "password_hint": "En az 8 karakter",
+      "confirm_password": "Şifreyi onayla",
+      "password_mismatch": "Şifreler eşleşmiyor",
       "create_account": "Hesap oluştur",
       "sign_in": "Giriş yap",
       "have_account": "Zaten hesabım var",
