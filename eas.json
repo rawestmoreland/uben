@@ -14,8 +14,11 @@
         "resourceClass": "m-medium"
       },
       "android": {
-        "buildType": "app-bundle",
+        "buildType": "apk",
         "image": "latest"
+      },
+      "env": {
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a"
       }
     },
     "development-simulator": {
@@ -37,9 +40,13 @@
         "resourceClass": "m-medium"
       },
       "android": {
-        "buildType": "app-bundle",
+        "buildType": "apk",
         "image": "latest"
-      }
+      },
+      "env": {
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a"
+      },
+      "cache": { "key": "v1" }
     },
     "preview-store": {
       "environment": "preview",
@@ -50,9 +57,13 @@
         "resourceClass": "m-medium"
       },
       "android": {
-        "buildType": "app-bundle",
+        "buildType": "apk",
         "image": "latest"
-      }
+      },
+      "env": {
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a"
+      },
+      "cache": { "key": "v1" }
     },
     "production": {
       "environment": "production",
@@ -65,7 +76,11 @@
       "android": {
         "buildType": "app-bundle",
         "image": "latest"
-      }
+      },
+      "env": {
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a,armeabi-v7a"
+      },
+      "cache": { "key": "v1" }
     }
   },
   "submit": {
