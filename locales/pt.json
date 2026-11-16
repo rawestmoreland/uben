@@ -451,6 +451,8 @@
       "email": "E-mail",
       "password": "Senha",
       "password_hint": "Pelo menos 8 caracteres",
+      "confirm_password": "Confirmar senha",
+      "password_mismatch": "As senhas não coincidem",
       "create_account": "Criar conta",
       "sign_in": "Entrar",
       "have_account": "Já tenho uma conta",

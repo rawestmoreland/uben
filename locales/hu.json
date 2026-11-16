@@ -443,6 +443,8 @@
       "email": "E-mail",
       "password": "Jelszó",
       "password_hint": "Legalább 8 karakter",
+      "confirm_password": "Jelszó megerősítése",
+      "password_mismatch": "A jelszavak nem egyeznek",
       "create_account": "Fiók létrehozása",
       "sign_in": "Bejelentkezés",
       "have_account": "Már van fiókom",

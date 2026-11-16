@@ -33,15 +33,25 @@ export function BackupAuthForm({
   const [creating, setCreating] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
   const emailInputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
-  const submit = useCallback(() => {
-    if (creating) onRegister(email, password);
-    else onSignIn(email, password);
-  }, [creating, email, password, onRegister, onSignIn]);
+  // Only flag a mismatch once the user has typed something to confirm.
+  const mismatch =
+    creating && confirmPassword.length > 0 && confirmPassword !== password;
 
-  const toggleMode = useCallback(() => setCreating((value) => !value), []);
+  const submit = useCallback(() => {
+    if (creating) {
+      if (confirmPassword !== password) return;
+      onRegister(email, password);
+    } else onSignIn(email, password);
+  }, [creating, email, password, confirmPassword, onRegister, onSignIn]);
+
+  const toggleMode = useCallback(() => {
+    setCreating((value) => !value);
+    setConfirmPassword('');
+  }, []);
   const changeEmail = useCallback((value: string) => {
     setEmail(value);
     setEmailError(null);
@@ -69,7 +79,10 @@ export function BackupAuthForm({
   }, []);
 
   const submitting = busy === 'register' || busy === 'sign_in';
-  const canSubmit = email.trim().length > 0 && password.length > 0;
+  const canSubmit =
+    email.trim().length > 0 &&
+    password.length > 0 &&
+    (!creating || confirmPassword === password);
 
   return (
     <View>
@@ -108,6 +121,32 @@ export function BackupAuthForm({
         accessibilityLabel={t('backup.password')}
       />
       {creating && <Text style={styles.hint}>{t('backup.password_hint')}</Text>}
+
+      {creating && (
+        <>
+          <Text style={styles.label}>
+            {uiUpperCase(t('backup.confirm_password'))}
+          </Text>
+          <TextInput
+            style={[styles.input, mismatch && styles.inputError]}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="new-password"
+            textContentType="newPassword"
+            editable={!busy}
+            onSubmitEditing={canSubmit && !busy ? submit : undefined}
+            accessibilityLabel={t('backup.confirm_password')}
+          />
+          {mismatch && (
+            <Text style={styles.fieldError} accessibilityRole="alert">
+              {t('backup.password_mismatch')}
+            </Text>
+          )}
+        </>
+      )}
 
       {creating && (
         <View style={styles.privacy}>

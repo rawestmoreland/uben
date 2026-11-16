@@ -459,6 +459,8 @@
       "email": "Эл. почта",
       "password": "Пароль",
       "password_hint": "Не менее 8 символов",
+      "confirm_password": "Подтвердите пароль",
+      "password_mismatch": "Пароли не совпадают",
       "create_account": "Создать аккаунт",
       "sign_in": "Войти",
       "have_account": "У меня уже есть аккаунт",
