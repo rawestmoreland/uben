@@ -36,6 +36,8 @@ export function BackupAuthForm({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
   const emailInputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const passwordInputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const confirmInputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   // Only flag a mismatch once the user has typed something to confirm.
   const mismatch =
@@ -47,6 +49,13 @@ export function BackupAuthForm({
       onRegister(email, password);
     } else onSignIn(email, password);
   }, [creating, email, password, confirmPassword, onRegister, onSignIn]);
+
+  const focusPassword = useCallback(() => {
+    passwordInputRef.current?.focus();
+  }, []);
+  const focusConfirm = useCallback(() => {
+    confirmInputRef.current?.focus();
+  }, []);
 
   const toggleMode = useCallback(() => {
     setCreating((value) => !value);
@@ -98,6 +107,9 @@ export function BackupAuthForm({
         autoComplete="email"
         textContentType="emailAddress"
         editable={!busy}
+        returnKeyType="next"
+        submitBehavior="submit"
+        onSubmitEditing={focusPassword}
         accessibilityLabel={t('backup.email')}
       />
       {emailError !== null && (
@@ -108,6 +120,7 @@ export function BackupAuthForm({
 
       <Text style={styles.label}>{uiUpperCase(t('backup.password'))}</Text>
       <TextInput
+        ref={passwordInputRef}
         style={styles.input}
         value={password}
         onChangeText={setPassword}
@@ -117,7 +130,11 @@ export function BackupAuthForm({
         autoComplete={creating ? 'new-password' : 'current-password'}
         textContentType={creating ? 'newPassword' : 'password'}
         editable={!busy}
-        onSubmitEditing={canSubmit && !busy ? submit : undefined}
+        returnKeyType={creating ? 'next' : 'go'}
+        submitBehavior={creating ? 'submit' : 'blurAndSubmit'}
+        onSubmitEditing={
+          creating ? focusConfirm : canSubmit && !busy ? submit : undefined
+        }
         accessibilityLabel={t('backup.password')}
       />
       {creating && <Text style={styles.hint}>{t('backup.password_hint')}</Text>}
@@ -128,6 +145,7 @@ export function BackupAuthForm({
             {uiUpperCase(t('backup.confirm_password'))}
           </Text>
           <TextInput
+            ref={confirmInputRef}
             style={[styles.input, mismatch && styles.inputError]}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -137,6 +155,8 @@ export function BackupAuthForm({
             autoComplete="new-password"
             textContentType="newPassword"
             editable={!busy}
+            returnKeyType="go"
+            submitBehavior="blurAndSubmit"
             onSubmitEditing={canSubmit && !busy ? submit : undefined}
             accessibilityLabel={t('backup.confirm_password')}
           />

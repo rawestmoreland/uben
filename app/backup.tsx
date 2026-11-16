@@ -25,6 +25,7 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+const KEYBOARD_BOTTOM_OFFSET = 140;
 const BACKUP_PAYWALL_SOURCE = 'cloud_backup_entry';
 
 function goBack() {
@@ -58,6 +59,10 @@ export default function BackupScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        // Keep the focused field this far above the keyboard so the field
+        // error, privacy notice and submit button below it stay visible.
+        bottomOffset={KEYBOARD_BOTTOM_OFFSET}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
