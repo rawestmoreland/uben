@@ -287,11 +287,12 @@
     "paywall": {
       "premium_badge": "Üben Pro",
       "title": "Odblokuj Üben Pro",
-      "subtitle": "Jeden zakup. Bez reklam, słownictwo poziomu B, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników.",
+      "subtitle": "Jeden zakup. Bez reklam, słownictwo poziomu B, nieograniczona liczba dodanych słów, wszystkie ćwiczenia i kopia zapasowa w chmurze.",
       "feature_1": "Żadnych reklam, nigdy",
       "feature_2": "Odblokowane słownictwo B1+",
       "feature_3": "Dodawaj nieograniczoną liczbę własnych słów",
-      "feature_4": "Ćwiczenie końcówek przymiotników z natychmiastową informacją zwrotną",
+      "feature_4": "Wszystkie ćwiczenia: liczba mnoga, końcówki przymiotników, czasowniki w Präteritum, przyimki i Da- / Wo-",
+      "feature_5": "Kopia zapasowa w chmurze, by odzyskać postępy na nowym telefonie",
       "unlock_button": "Odblokuj teraz",
       "one_time_purchase": "Jednorazowy zakup. Bez subskrypcji.",
       "sale_title": "Świąteczna wyprzedaż",
@@ -313,7 +314,7 @@
       "promo_error_not_configured": "Kody promocyjne są obecnie niedostępne.",
       "close": "Zamknij",
       "success_title": "Masz teraz Pro!",
-      "success_subtitle": "Brak reklam, słownictwo B1+, nieograniczona liczba dodanych słów i ćwiczenie końcówek przymiotników są odblokowane.",
+      "success_subtitle": "Bez reklam, słownictwo B1+, nieograniczona liczba dodanych słów, wszystkie ćwiczenia i kopia zapasowa w chmurze są odblokowane.",
       "success_continue": "Dalej"
     },
     "home_screen": {

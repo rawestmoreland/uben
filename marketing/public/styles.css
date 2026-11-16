@@ -19,6 +19,7 @@
   --red: #ff3333;
   --green: #00cc66;
   --purple: #9933ff;
+  --pink: #ff4d9e;
   --cream: #fff8e1;
   --light-gray: #f5f5f5;
   --text-primary: #000000;
@@ -410,6 +411,10 @@ img {
 
 .exercise-card--anchor {
   margin-bottom: var(--sp-lg);
+}
+
+.exercise-card--footer {
+  margin-top: var(--sp-lg);
 }
 
 .exercise-title {
