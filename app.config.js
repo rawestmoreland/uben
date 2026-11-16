@@ -34,7 +34,7 @@ export default {
     // CFBundleDisplayName below.
     name: `uben${getAppVariant()}`,
     slug: 'uben',
-    version: '1.14.2',
+    version: '1.15.0',
     orientation: 'portrait',
     icon: `./assets/images/icon${IS_PREVIEW ? '-preview' : ''}.png`,
     scheme: `germanpractice${getSchemeSuffix()}`,
