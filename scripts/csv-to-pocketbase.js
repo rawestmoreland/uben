@@ -5,7 +5,7 @@ const { convertToTranslationKey } = require('../utils/helpers.ts');
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
+const PB_URL = 'https://ubenapp.com/api/collections';
 const main = async () => {
   const categories = await getCategories();
 

@@ -1,5 +1,5 @@
 const { convertToTranslationKey } = require('../utils/helpers.ts');
-// const PB_URL = 'https://uben-pocketbase-backend.fly.dev/api/collections';
+// const PB_URL = 'https://ubenapp.com/api/collections';
 const PB_URL = 'http://localhost:8080/api/collections';
 
 async function main() {
