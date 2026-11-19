@@ -54,6 +54,23 @@ function getArticleColor(article: Article): string {
   }
 }
 
+/**
+ * True when a wrong answer was valid for a sibling noun (same spelling,
+ * different article). The feedback then shows a tip the learner needs time
+ * to read, so the quiz waits for them instead of auto-advancing.
+ */
+function hasSiblingTip(quiz: ReturnType<typeof useQuizSession>): boolean {
+  const { phase, isCorrect, selectedArticle, currentCard } = quiz;
+  return (
+    phase === 'feedback' &&
+    !isCorrect &&
+    selectedArticle !== null &&
+    currentCard !== null &&
+    currentCard.sibling_articles !== null &&
+    currentCard.sibling_articles.split(',').includes(selectedArticle)
+  );
+}
+
 // ── Quiz Screen ──────────────────────────────────────────────────────
 
 export default function QuizScreen() {
@@ -63,12 +80,15 @@ export default function QuizScreen() {
   const { phase, nextCard, results } = quiz;
   const { showEnglishHint, eszettPreference } = useSettings();
 
-  // Auto-advance after feedback
+  // Auto-advance after feedback, except while a tip is showing: then the
+  // learner taps Continue. The next card's timer starts in nextCard(), so
+  // reading time never counts against the next card.
+  const waitForTip = hasSiblingTip(quiz);
   useEffect(() => {
-    if (phase !== 'feedback') return;
+    if (phase !== 'feedback' || waitForTip) return;
     const timer = setTimeout(nextCard, FEEDBACK_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [phase, nextCard]);
+  }, [phase, waitForTip, nextCard]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -162,13 +182,7 @@ function PlayingState({
 
   // Check if the user's wrong answer happens to be valid for a sibling noun.
   // Only meaningful for improper homographs (different articles).
-  const siblingArticleSelected =
-    isFeedback &&
-    !isCorrect &&
-    selectedArticle !== null &&
-    currentCard !== null &&
-    currentCard.sibling_articles !== null &&
-    currentCard.sibling_articles.split(',').includes(selectedArticle);
+  const siblingArticleSelected = hasSiblingTip(quiz);
 
   // Fire haptic on feedback (must be before any early return)
   useEffect(() => {
@@ -329,6 +343,21 @@ function PlayingState({
             );
           })}
         </View>
+        {siblingArticleSelected && (
+          <Pressable
+            style={({ pressed }) => [
+              styles.continueButton,
+              pressed && styles.backButtonPressed,
+            ]}
+            onPress={quiz.nextCard}
+            accessibilityRole="button"
+            accessibilityLabel={t('quiz_mode.continue_after_tip')}
+          >
+            <Text style={styles.backButtonText}>
+              {uiUpperCase(t('quiz_mode.continue_after_tip'))}
+            </Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -622,6 +651,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 64,
+  },
+  continueButton: {
+    backgroundColor: AppColors.yellow,
+    borderWidth: Layout.borderWidth,
+    borderColor: AppColors.black,
+    marginTop: Spacing.md,
+    minHeight: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadowStyleSmall,
   },
   articleButtonPressed: {
     transform: [{ translateY: 2 }],
