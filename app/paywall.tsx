@@ -191,7 +191,7 @@ export default function PaywallScreen() {
             <View style={styles.content}>
               {sale && (
                 <SaleBanner
-                  title={t('paywall.sale_title')}
+                  title={t(`paywall.${sale.titleKey}`)}
                   body={t('paywall.sale_body', {
                     price: sale.price,
                     date: sale.endsAt.toLocaleDateString(i18n.language, {

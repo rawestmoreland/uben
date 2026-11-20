@@ -6,6 +6,8 @@ import { Platform } from 'react-native';
 export interface SaleBanner {
   /** Store-formatted sale price, e.g. "$4.99". */
   price: string;
+  /** Key under `paywall.` for the banner title (differs per sale). */
+  titleKey: string;
   endsAt: Date;
 }
 
@@ -31,5 +33,5 @@ export function useSaleBanner(): SaleBanner | null {
   }, [sale]);
 
   if (!sale || !price) return null;
-  return { price, endsAt: sale.endsAt };
+  return { price, titleKey: sale.titleKey, endsAt: sale.endsAt };
 }
