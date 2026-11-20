@@ -1,0 +1,26 @@
+{
+  "packageName": "com.westmorelandcreative.uben",
+  "info": {
+    "en-US": {
+      "shortDescription": "Learn der, die, das with spaced repetition. Free, offline, no account."
+    },
+    "de-DE": {
+      "shortDescription": "Der, die, das lernen mit Spaced Repetition. Kostenlos, offline, ohne Konto."
+    },
+    "pl": {
+      "shortDescription": "Ucz się der, die, das z powtórkami. Za darmo, offline, bez konta."
+    },
+    "fr-FR": {
+      "shortDescription": "Maîtrisez der, die, das par répétition espacée. Gratuit, hors ligne."
+    },
+    "es-ES": {
+      "shortDescription": "Domina der, die, das con repetición espaciada. Gratis y sin conexión."
+    },
+    "tr": {
+      "shortDescription": "Aralıklı tekrarla der, die, das öğren. Ücretsiz, çevrimdışı, hesapsız."
+    },
+    "zh-Hans": {
+      "shortDescription": "用间隔重复法掌握 der、die、das。免费、离线、无需账号。"
+    }
+  }
+}

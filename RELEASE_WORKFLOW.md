@@ -238,6 +238,18 @@ Release tickets are tracked on the release kanban board. Each week:
 
 ---
 
+## Google Play Listing Text
+
+`eas metadata` is App Store only, so the Play listing text is pushed with fastlane `supply` (metadata only; builds and submits stay with EAS).
+
+- **Source:** the App Store copy in `store.config.json` (`apple.info`: title, description, release notes) plus `store.config.android.json`, which holds the Play-only `shortDescription` per locale (80 chars) and optional `title` / `description` / `releaseNotes` overrides. Play has no keywords or promo text.
+- **Generate and validate:** `npm run store:android:generate` writes `fastlane/metadata/android/<play-locale>/` (gitignored) and fails on missing locales or Play length limits (title 30, short description 80, full description 4000, release notes 500). `node scripts/generate-play-metadata.cjs --check` validates without writing.
+- **Check with Google, no publish:** `npm run store:android:check`
+- **Upload:** `npm run store:android`. Release notes only go up when a version code is passed: `bundle exec fastlane android play_metadata version_code:123`
+- **Credentials:** set `SUPPLY_JSON_KEY` (path) or `SUPPLY_JSON_KEY_DATA` (contents) from a Play Console service account with API access. Keep the key out of git (`play-service-account*.json` is ignored). Setup: `bundle install`.
+- **Adding a language:** add it to both config files, add its Play code to `PLAY_LOCALES` if missing, and add the language once in Play Console before the first upload.
+- **Release notes length:** the iOS notes limit is 4000 but Play's is 500, and `prepare-release.yml` writes the iOS notes. Keep them short, or set an Android `releaseNotes` override.
+
 ## Gotchas
 
 - Always use `--no-ff` merges to preserve branch history and avoid ambiguous commit graphs
