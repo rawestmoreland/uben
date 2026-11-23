@@ -91,7 +91,6 @@ export function useLaunchUpdate(canReload: boolean): boolean {
 
   useEffect(() => {
     if (decision !== 'reload') return;
-    console.log('[LaunchUpdate] Update downloaded, reloading into it');
     let graceTimer: ReturnType<typeof setTimeout> | undefined;
     // On failure the update still runs on the next cold start.
     Updates.reloadAsync({ reloadScreenOptions: RELOAD_SCREEN_OPTIONS })
