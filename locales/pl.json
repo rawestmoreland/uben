@@ -58,7 +58,8 @@
       "hard_words_drill": "Trudne słowa",
       "no_struggling_words": "Świetnie!",
       "no_struggling_words_desc": "Nie masz jeszcze słów poniżej 60% trafności.\n\nĆwicz dalej, a najtrudniejsze słowa pojawią się tutaj.",
-      "also_valid_for_sibling": "Także: {{article}} {{word}} (inne znaczenie)"
+      "also_valid_for_sibling": "Także: {{article}} {{word}} (inne znaczenie)",
+      "continue_after_tip": "Dalej"
     },
     "settings": {
       "title": "Ustawienia",
@@ -295,7 +296,8 @@
       "feature_5": "Kopia zapasowa w chmurze, by odzyskać postępy na nowym telefonie",
       "unlock_button": "Odblokuj teraz",
       "one_time_purchase": "Jednorazowy zakup. Bez subskrypcji.",
-      "sale_title": "Świąteczna wyprzedaż",
+      "sale_christmas_title": "Świąteczna wyprzedaż",
+      "sale_black_friday_title": "Wyprzedaż Black Friday",
       "sale_body": "Üben Pro za {{price}} do {{date}}.",
       "purchase_failed": "Coś poszło nie tak. Spróbuj ponownie.",
       "restore_button": "Przywróć zakupy",

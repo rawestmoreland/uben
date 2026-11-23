@@ -50,7 +50,8 @@
       "hard_words_drill": "Ripasso parole difficili",
       "no_struggling_words": "Ottimo lavoro!",
       "no_struggling_words_desc": "Non hai ancora parole con precisione inferiore al 60%.\n\nContinua a praticare e le parole più difficili appariranno qui.",
-      "also_valid_for_sibling": "Anche: {{article}} {{word}} (significato diverso)"
+      "also_valid_for_sibling": "Anche: {{article}} {{word}} (significato diverso)",
+      "continue_after_tip": "Continua"
     },
     "settings": {
       "title": "Impostazioni",
@@ -285,7 +286,8 @@
       "feature_5": "Backup nel cloud per ritrovare i tuoi progressi su un nuovo telefono",
       "unlock_button": "Sblocca ora",
       "one_time_purchase": "Acquisto una tantum. Nessun abbonamento.",
-      "sale_title": "Offerta di Natale",
+      "sale_christmas_title": "Offerta di Natale",
+      "sale_black_friday_title": "Offerta Black Friday",
       "sale_body": "Üben Pro a {{price}} fino al {{date}}.",
       "purchase_failed": "Qualcosa è andato storto. Riprova.",
       "restore_button": "Ripristina acquisti",
