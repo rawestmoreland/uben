@@ -12,6 +12,8 @@ import {
 import { getMigrationDiagnostics } from '@/database/db';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useSettings } from '@/hooks/use-settings';
+import { otaUpdateService } from '@/services/otaUpdateService';
+import { formatInstalledUpdate } from '@/utils/otaUpdate';
 import type { MigrationDiagnostics } from '@/types/database';
 import { APP_LANGUAGE_NAMES } from '@/types/language';
 import Constants from 'expo-constants';
@@ -386,7 +388,8 @@ export default function SettingsScreen() {
 
         {/* ── Version ─────────────────────────────────────────── */}
         <Text style={styles.versionText}>
-          v{Constants.expoConfig?.version ?? '—'}
+          v{Constants.expoConfig?.version ?? '—'} ·{' '}
+          {formatInstalledUpdate(otaUpdateService.getInstalledUpdate())}
         </Text>
       </KeyboardAwareScrollView>
       <TranslationSyncOverlay language={syncingLanguage} />

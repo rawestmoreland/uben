@@ -207,6 +207,16 @@ A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price 
 - Skipped on web, in dev/preview builds (`extra.appEnv`) and whenever `__DEV__` is true (a local `expo run:ios` has no `APP_ENV`, so `appEnv` falls back to `production`). Never throws; the last good row is cached so a mandatory update is still enforced offline
 - UI: `components/app-update/`, hook `hooks/use-app-update.ts`, mounted via `<AppUpdateNotice />` on Home
 
+#### OTA Updates (expo-updates)
+
+Different from the App Update Notice above: that one nags about the *store binary*, this one keeps the *JS bundle* current (issue #227). Free for everyone, no UI besides the Settings footer:
+
+- expo-updates alone only checks at cold start and applies the download on the launch after that, so users who keep the app in the background sat on old bundles for days. `hooks/use-ota-update.ts` (mounted in the root layout) checks on app open and on every foreground, then calls `reloadAsync()`
+- The reload only happens on a bottom-tab route (`isSafeToReload` in `utils/otaUpdate.ts`, an **allowlist**), never mid-quiz, mid-form or on the paywall. A new screen is unsafe by default; only add a route to the list if restarting there loses nothing
+- `services/otaUpdateService.ts` owns the expo-updates calls: throttled to one check per `OTA_CHECK_INTERVAL_MS` (10 min), never throws, a failed (offline) check is retried on the next foreground. Skipped on web, `__DEV__`, `appEnv === 'development'` and when `Updates.isEnabled` is false. The pure rules (throttle, safe routes, footer label) live in `utils/otaUpdate.ts` and are unit tested
+- `updates.fallbackToCacheTimeout: 5000` in `app.config.js` makes a cold start wait up to 5 s for a fresh update. It is **native config** (changes the fingerprint), so it only applies from the next store build, unlike the JS hook which ships over the air
+- Settings footer shows `v<version> · update <8-char id> · <UTC date>` or `embedded` (no OTA applied; `Updates.isEmbeddedLaunch`). The id matches the EAS dashboard. `Constants.expoConfig.version` is from the JS bundle, so use the footer's update id, not the version, to tell which update a user runs
+
 #### Cloud Backup (Pro)
 
 Pro users can back up their progress and restore it after a reinstall or on a new phone (issue #87). It is **opt-in, needs an optional account**, and the app is fully usable without it. This is the one place user data leaves the device, so the privacy policy (`marketing/public/privacy.md` and `.html`) covers it; keep them in sync with any change here.

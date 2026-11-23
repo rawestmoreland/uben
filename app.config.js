@@ -155,6 +155,11 @@ export default {
     },
     updates: {
       url: 'https://u.expo.dev/a1b09294-f1e5-411b-8ba0-a710103aa648',
+      // On a cold start, wait up to this long for a fresh update and launch
+      // with it. The default (0) launches the cached bundle at once and only
+      // applies the download on the launch after that. Native config: needs a
+      // store build, it can't be shipped over the air.
+      fallbackToCacheTimeout: 5000,
     },
   },
 };

@@ -15,6 +15,7 @@ import { useAdsInit } from '@/hooks/use-ads-init';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
 import { useAutoBackup } from '@/hooks/use-auto-backup';
+import { useOtaUpdate } from '@/hooks/use-ota-update';
 import { useReminderScheduler } from '@/hooks/use-reminder-scheduler';
 import { purchaseService } from '@/services/purchaseService';
 import { Platform } from 'react-native';
@@ -35,6 +36,7 @@ export default function RootLayout() {
   const [splashAnimationDone, setSplashAnimationDone] = useState(false);
   useReminderScheduler(isReady && !showingSplash);
   useAutoBackup(isReady && !showingSplash);
+  useOtaUpdate(isReady && !showingSplash);
 
   useEffect(() => {
     if (Platform.OS !== 'ios' && Platform.OS !== 'android') return;
