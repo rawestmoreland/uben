@@ -58,7 +58,8 @@
       "hard_words_drill": "Тренировка сложных слов",
       "no_struggling_words": "Отлично!",
       "no_struggling_words_desc": "Пока нет слов с точностью ниже 60%.\n\nПродолжайте заниматься — самые трудные слова появятся здесь.",
-      "also_valid_for_sibling": "Также: {{article}} {{word}} (другое значение)"
+      "also_valid_for_sibling": "Также: {{article}} {{word}} (другое значение)",
+      "continue_after_tip": "Далее"
     },
     "settings": {
       "title": "Настройки",
@@ -295,7 +296,8 @@
       "feature_5": "Резервная копия в облаке: восстановите прогресс на новом телефоне",
       "unlock_button": "Открыть сейчас",
       "one_time_purchase": "Разовая покупка. Без подписки.",
-      "sale_title": "Рождественская распродажа",
+      "sale_christmas_title": "Рождественская распродажа",
+      "sale_black_friday_title": "Распродажа «Чёрная пятница»",
       "sale_body": "Üben Pro за {{price}} до {{date}}.",
       "purchase_failed": "Что-то пошло не так. Попробуйте ещё раз.",
       "restore_button": "Восстановить покупки",

@@ -1,10 +1,14 @@
 import {
-  CHRISTMAS_SALE_WINDOWS,
+  SALES,
+  type Sale,
   type SalePlatform,
   type SaleWindow,
 } from '@/constants/sale';
 
 export interface ActiveSale {
+  id: Sale['id'];
+  /** Key under `paywall.` for the banner title. */
+  titleKey: string;
   /** When the sale (and so the banner) ends. */
   endsAt: Date;
 }
@@ -21,14 +25,24 @@ export function isWithinSaleWindow(window: SaleWindow, now: Date): boolean {
 
 /**
  * The sale to announce right now on this platform, or null when no sale is
- * running (before it starts, after it ends, or on web).
+ * running (before it starts, after it ends, or on web). If windows overlap,
+ * the first sale in `SALES` wins.
  */
 export function getActiveSale(
   platform: string,
   now: Date = new Date(),
+  sales: readonly Sale[] = SALES,
 ): ActiveSale | null {
   if (platform !== 'ios' && platform !== 'android') return null;
-  const window = CHRISTMAS_SALE_WINDOWS[platform as SalePlatform];
-  if (!isWithinSaleWindow(window, now)) return null;
-  return { endsAt: new Date(window.endsAt) };
+  for (const sale of sales) {
+    const window = sale.windows[platform as SalePlatform];
+    if (isWithinSaleWindow(window, now)) {
+      return {
+        id: sale.id,
+        titleKey: sale.titleKey,
+        endsAt: new Date(window.endsAt),
+      };
+    }
+  }
+  return null;
 }

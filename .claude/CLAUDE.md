@@ -193,9 +193,9 @@ Duolingo-style rules (`utils/streak.ts`, issue #213):
 
 A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price in App Store Connect / Play Console** on the same `lifetime_pro` product (no new product, no RevenueCat change). The code only *announces* it:
 
-- Date flag: `constants/sale.ts` holds one UTC window per platform (`startsAt` inclusive, `endsAt` exclusive); `services/saleService.ts` (`getActiveSale`, pure, unit tested) decides if it is on. Ship the code early, it stays hidden until `startsAt`. Outside any window the paywall is unchanged
-- The banner (`components/paywall/sale-banner.tsx`, hook `hooks/use-sale-banner.ts`, strings `paywall.sale_title` / `paywall.sale_body`) shows the **live store price** from `purchaseService.getLifetimePriceString()`, never a hard-coded price, and hides if the price can't be loaded
-- Apple does not switch prices at one UTC instant (start/end times vary by region and the scheduled date), so keep the `ios` window in line with App Store Connect. To run a new sale, edit the windows and strings and make the matching store price change
+- Date flag: `constants/sale.ts` holds a `SALES` list (Black Friday, Christmas), each with one UTC window per platform (`startsAt` inclusive, `endsAt` exclusive) and a `titleKey`; `services/saleService.ts` (`getActiveSale`, pure, unit tested) decides which one, if any, is on (first match wins). Ship the code early, it stays hidden until `startsAt`. Outside any window the paywall is unchanged
+- The banner (`components/paywall/sale-banner.tsx`, hook `hooks/use-sale-banner.ts`, strings `paywall.sale_<id>_title`, e.g. `sale_black_friday_title`, plus the shared `paywall.sale_body`) shows the **live store price** from `purchaseService.getLifetimePriceString()`, never a hard-coded price, and hides if the price can't be loaded
+- Apple does not switch prices at one UTC instant (start/end times vary by region and the scheduled date), so keep the `ios` window in line with App Store Connect. To run a new sale, add an entry to `SALES` with its title string in every locale and make the matching store price change
 
 #### App Update Notice
 
