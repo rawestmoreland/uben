@@ -162,6 +162,7 @@ Business logic abstracted from UI components:
 - **notificationService.ts** - Local practice reminders (expo-notifications; no remote push). Re-plans pending reminders from card/streak data via the pure `reminderPlanner.ts`
 - **syncService.ts** - Optional PocketBase vocabulary sync
 - **backupPayloadService.ts** / **backupService.ts** / **backupAccountService.ts** / **backupApi.ts** - Pro cloud backup: portable payload build + transactional restore, upload/download, optional account, PocketBase REST client (see Cloud Backup)
+- **launchUpdate.ts** + **hooks/use-launch-update.ts** - Applies a newly published OTA (EAS) update on the launch that finds it instead of the next cold start. See OTA Updates on Launch below
 - **appUpdateService.ts** + **appVersion.ts** - Optional "your app is behind the store" notice. `appVersion.ts` is the pure semver/decision logic (unit tested); `appUpdateService.ts` fetches the PocketBase `app_config` row, caches it in `settings` and fetches at most once a day
 
 Services use the database singleton and provide clean APIs to components.
@@ -196,6 +197,16 @@ A limited-time sale on the lifetime Pro unlock is a **scheduled temporary price 
 - Date flag: `constants/sale.ts` holds a `SALES` list (Black Friday, Christmas), each with one UTC window per platform (`startsAt` inclusive, `endsAt` exclusive) and a `titleKey`; `services/saleService.ts` (`getActiveSale`, pure, unit tested) decides which one, if any, is on (first match wins). Ship the code early, it stays hidden until `startsAt`. Outside any window the paywall is unchanged
 - The banner (`components/paywall/sale-banner.tsx`, hook `hooks/use-sale-banner.ts`, strings `paywall.sale_<id>_title`, e.g. `sale_black_friday_title`, plus the shared `paywall.sale_body`) shows the **live store price** from `purchaseService.getLifetimePriceString()`, never a hard-coded price, and hides if the price can't be loaded
 - Apple does not switch prices at one UTC instant (start/end times vary by region and the scheduled date), so keep the `ios` window in line with App Store Connect. To run a new sale, add an entry to `SALES` with its title string in every locale and make the matching store price change
+
+#### OTA Updates on Launch
+
+By default expo-updates starts the bundle already on the device (on a fresh install, the one embedded in the store binary) and downloads a newer update in the background, so a new OTA only runs on the *second* cold start. `useLaunchUpdate()` (root layout) fixes that:
+
+- It follows expo-updates' own launch check/download through `Updates.useUpdates()` (no extra requests) and keeps the animated splash up while it runs. Once the update is on the device it reloads into it (`Updates.reloadAsync`, black reload screen), so the user sees the new code on this launch
+- Never reloads before the database has finished initializing, and never after the splash is gone (the user must not be restarted mid-session)
+- Deadlines from launch (`services/launchUpdate.ts`, pure, unit tested): 5 s for the check to answer, 10 s for a found update to download. Past them the app opens on the current bundle and the update runs on the next cold start, as before. Offline or up to date, the splash is not extended
+- Skipped on web and whenever `__DEV__` is true; runs in store and preview builds
+- JS only (native fingerprint unchanged), so it ships over the air too. But a fresh install's first launch runs the bundle **embedded** in its store build, so fresh installs only get this behaviour from store builds that include it (1.15.0 and earlier still need a second launch). Code that must be there on a first launch even on a slow connection has to be in the store build
 
 #### App Update Notice
 

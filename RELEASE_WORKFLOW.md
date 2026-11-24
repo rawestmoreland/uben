@@ -193,6 +193,8 @@ Trigger `production-ota.yml` manually (Actions tab → Run workflow, ref `main`)
 
 The tag includes the run number because the app version doesn't change between OTAs, so a fixed tag would collide.
 
+**When users get it:** the app checks for an update at launch and, if it downloads within 10 seconds, reloads into it before leaving the splash screen (`hooks/use-launch-update.ts`), so users see it on the first launch after it is published. On a slow connection it runs on the next cold start instead. This needs `use-launch-update.ts` in the bundle that is running, and a **fresh install's** first launch runs the one embedded in its store build: fresh installs of store builds made before it (1.15.0 and earlier) still only see an OTA on their second launch. Anything that must be there on a first launch even on a slow connection has to ship in a store build.
+
 If the fingerprint check fails, the fix touches native code (or a dependency that affects it) and can't go out over the air. Ship it through the standard release flow instead.
 
 **5. Back-merge into staging and develop**
