@@ -10,6 +10,7 @@ import {
   shadowStyle,
 } from '@/constants/design';
 import { getMigrationDiagnostics } from '@/database/db';
+import { useOtaUpdateInfo } from '@/hooks/use-ota-update-info';
 import { useProEntitlement } from '@/hooks/use-pro-entitlement';
 import { useSettings } from '@/hooks/use-settings';
 import type { MigrationDiagnostics } from '@/types/database';
@@ -53,6 +54,7 @@ export default function SettingsScreen() {
   } = useSettings();
 
   const { isPro } = useProEntitlement();
+  const otaUpdateInfo = useOtaUpdateInfo();
   const openBackup = useCallback(() => router.push('/backup'), []);
 
   const [diagnostics, setDiagnostics] = useState<MigrationDiagnostics | null>(
@@ -387,6 +389,7 @@ export default function SettingsScreen() {
         {/* ── Version ─────────────────────────────────────────── */}
         <Text style={styles.versionText}>
           v{Constants.expoConfig?.version ?? '—'}
+          {otaUpdateInfo ? ` · ${otaUpdateInfo}` : ''}
         </Text>
       </KeyboardAwareScrollView>
       <TranslationSyncOverlay language={syncingLanguage} />
