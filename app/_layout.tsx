@@ -15,6 +15,7 @@ import { useAdsInit } from '@/hooks/use-ads-init';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDatabase } from '@/hooks/use-database';
 import { useAutoBackup } from '@/hooks/use-auto-backup';
+import { useLaunchUpdate } from '@/hooks/use-launch-update';
 import { useReminderScheduler } from '@/hooks/use-reminder-scheduler';
 import { purchaseService } from '@/services/purchaseService';
 import { Platform } from 'react-native';
@@ -30,6 +31,9 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { isReady, error } = useDatabase();
+  // Holds the splash while a newly published OTA update downloads, then
+  // reloads into it, so it runs on this launch rather than the next one
+  const launchUpdateSettled = useLaunchUpdate(isReady || error !== null);
   useAdsInit();
   const [showingSplash, setShowingSplash] = useState(true);
   const [splashAnimationDone, setSplashAnimationDone] = useState(false);
@@ -69,10 +73,10 @@ export default function RootLayout() {
     };
   }, []);
 
-  // When splash animation finishes AND database is ready, hide splash
-  // (adjusted during render rather than in an effect: the splash only ever
-  // goes from showing to hidden)
-  if (showingSplash && splashAnimationDone && isReady) {
+  // When splash animation finishes AND database is ready AND no OTA update is
+  // about to be applied, hide splash (adjusted during render rather than in an
+  // effect: the splash only ever goes from showing to hidden)
+  if (showingSplash && splashAnimationDone && isReady && launchUpdateSettled) {
     setShowingSplash(false);
   }
 
