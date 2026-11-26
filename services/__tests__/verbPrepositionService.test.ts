@@ -1,4 +1,5 @@
 import {
+  MIN_DISTRACTORS,
   OPTIONS_PER_QUESTION,
   PREPOSITION_GRID,
   buildVerbPrepositionCards,
@@ -255,6 +256,18 @@ describe('buildVerbPrepositionQuestion()', () => {
       expect(question.acceptedAnswers).toEqual(['auf', 'über']);
       expect(offered(question)).toHaveLength(OPTIONS_PER_QUESTION);
       expect(wrongOffers).toHaveLength(OPTIONS_PER_QUESTION - 2);
+    });
+
+    it('keeps a minimum of wrong options when alternates fill the slots', () => {
+      const question = buildVerbPrepositionQuestion(
+        pattern({ alt_prepositions: '["für","um","an","über"]' }),
+      )!;
+
+      const wrongOffers = offered(question).filter(
+        (preposition) => !question.acceptedAnswers.includes(preposition),
+      );
+      expect(question.acceptedAnswers).toHaveLength(5);
+      expect(wrongOffers).toHaveLength(MIN_DISTRACTORS);
     });
   });
 });
