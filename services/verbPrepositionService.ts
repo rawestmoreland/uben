@@ -42,9 +42,17 @@ export const PREPOSITION_GRID: readonly string[] = [
 
 /**
  * Enabled buttons per question: every accepted answer plus enough
- * distractors to reach this count.
+ * distractors to reach this count. Kept small (#231): the useful traps
+ * (siblings, English interference, common confusions) rarely number more
+ * than three, so extra slots were only random noise.
  */
-export const OPTIONS_PER_QUESTION = 8;
+export const OPTIONS_PER_QUESTION = 5;
+
+/**
+ * Fewest wrong buttons a question offers, even when a pattern has enough
+ * accepted alternates to fill `OPTIONS_PER_QUESTION` on its own.
+ */
+export const MIN_DISTRACTORS = 2;
 
 // ── Case labels ──────────────────────────────────────────────────────
 
@@ -307,7 +315,7 @@ function selectDistractors(
 
   // Accepted answers are enabled as buttons, so they take up option slots
   const distractorCount = Math.max(
-    1,
+    MIN_DISTRACTORS,
     OPTIONS_PER_QUESTION - acceptedAnswers.length,
   );
 

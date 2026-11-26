@@ -223,9 +223,9 @@ describe('buildVerbPrepositionCompoundQuestion()', () => {
       .filter((b) => b.enabled)
       .map((b) => b.preposition);
     expect(enabled).toEqual(expect.arrayContaining(['darum', 'darauf']));
-    // Eight buttons in total: two answers plus six distractors
-    expect(enabled).toHaveLength(8);
-    expect(new Set(enabled).size).toBe(8);
+    // Five buttons in total: two answers plus three distractors
+    expect(enabled).toHaveLength(5);
+    expect(new Set(enabled).size).toBe(5);
   });
 
   it('returns null when the sentence has no blank or the preposition has no button', () => {
